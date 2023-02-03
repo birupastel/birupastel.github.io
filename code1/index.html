@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title> About You </title>
+		<link type="text/css" href="swipe.css" rel="stylesheet">
+	</head>
+
+	<body>
+		<main>
+			<section class="section section-header text-dark pb-md-8">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-12 col-md-10 text-center mb-5 mb-md-7">
+							<h1 class="display-2 font-weight-bolder mb-4">
+								apakah kamu suka CODING ?
+							</h1>
+							<p class="lead mb-4 mb-lg-5">coding adalah aktivitas membuat kode program.</p>
+							
+								<a href="#" class="btn btn-dark" id="tidak">
+									<span class="d-flex align-items-center">
+										<span class="d-inline-block text-left">
+											TIDAK
+										</span> 
+									</span>
+								</a>
+								<a href="#" class="btn btn-dark" id="tentu">
+									<span class="d-flex align-items-center">
+										<span class="d-inline-block text-left">
+											TENTU
+										</span> 
+									</span>
+								</a>
+							
+						</div>
+						<div class="col-12 col-md-10 justify-content-center">
+							<img class="d-none d-md-inline-block" src="./assets/img/illustrations/scene.svg" alt="Mobile App Mockup">
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+		
+		<script>
+			const button = document.getElementById('tidak');
+			const button2 = document.getElementById('tentu');
+			button.addEventListener('mouseover', function () {
+				button.style.left = `${Math.ceil(Math.random() * 90)}%`;
+				button.style.top = `${Math.ceil(Math.random() * 90)}%`;
+			});
+			button.addEventListener('click', function () {
+				alert('Affa iyya?')
+			})
+			button2.addEventListener('click', function () {
+				alert('I know it!')
+			})
+		</script>
+	</body>
+</html>
