@@ -52,6 +52,9 @@
 			function answer(correct,which) {
 				if (document.forms[0].elements[which].value == correct) {
 					alert("Benar!");
+					document.forms[0].elements[which].style.backgroundColor = "gray";
+					document.forms[0].elements[which].style.color = "white";
+					document.forms[0].elements[which].disabled = true;
 				}
 				else {
 					alert("Salah! Coba Lagi!");
