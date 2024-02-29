@@ -1,0 +1,511 @@
+<HTML>
+	<HEAD>
+		<TITLE>Informatics War</TITLE>
+		<META NAME="resource-type" VALUE="document">
+		<META NAME="description" VALUE="Quiz">
+		<META NAME="author" VALUE="">
+		<STYLE>
+		input{
+			font-style : bold;
+			font-size: 16px;
+		}
+		.container {
+			padding-top: 20px;
+			padding-bottom: 20px;
+			padding-left: 10%;
+			background: #999;
+			overflow: hidden; /* for float containment */
+		}
+
+		.field {
+			padding: 4px;
+			background: #fff;
+			border: 2px solid #999;
+			width: 20%;
+			float: left;
+			-webkit-box-sizing: border-box; /* 33% effective width */
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+		}
+		.font{
+			padding-left: 10%;
+			font-size: 18px;
+		}
+		</STYLE>
+		<SCRIPT LANGUAGE="JavaScript">
+			<!-- Hide scripts from old browsers
+			function reload(){
+				location.reload();
+			}
+			function Decimal_to_binary(x){
+				z= new Number(x);
+				//document.forms[0].elements[1].value=z.toString(2);
+				return z.toString(2);
+			}
+
+			function Binary_to_decimal(x){
+				y=parseInt(x,2);
+				return (y);
+				//document.forms[1].elements[1].value=y;
+			}
+
+			function answer(correct,which) {
+				if (document.forms[0].elements[which].value == correct) {
+					alert("Benar!");
+				}
+				else {
+					alert("Salah! Coba Lagi!");
+					document.forms[0].elements[which].value = "";
+				}
+			}
+
+			function give(correct,which) {
+				document.forms[0].elements[which].value = correct;
+			}
+			//End hide -->
+		</SCRIPT>
+	</HEAD>
+
+	<SCRIPT>
+		<!--- Hide script from old browsers
+		if (navigator.appVersion.substring(0,1)<3){
+			document.write("you are using an older browser. Wait a minute.");
+			document.close();
+			document.location="nav2quiz.html";
+			document.open();
+		}
+		//End hide -->
+	</SCRIPT>
+
+	<BODY BACKGROUND="../images/data02.jpg">
+		<H1> <center>INFORMATICS WAR </center></H1>
+		<hr style="height:5px;border-width:0;color:gray;background-color:gray">
+		
+		<FORM>
+			<p class="font">Konversi bilangan desimal ini ke bilangan biner! </p>			
+			<div class="container">
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT  SIZE=7>
+									<SCRIPT>
+										<!--- Hide from old browsers
+										xnum=Math.ceil(Math.random()*100);
+										document.forms[0].elements[0].value=xnum;
+										// End hide -->
+									</SCRIPT>
+								</td>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=24></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Decimal_to_binary(document.forms[0].elements[0].value),1);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Decimal_to_binary(document.forms[0].elements[0].value),1);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>
+				</div>
+				
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT  SIZE=7>
+									<SCRIPT>
+										<!--- Hide from old browsers
+										xnum=Math.ceil(Math.random()*100);
+										document.forms[0].elements[4].value=xnum;
+										// End hide -->
+									</SCRIPT>
+								</td>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=24></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Decimal_to_binary(document.forms[0].elements[4].value),5);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Decimal_to_binary(document.forms[0].elements[4].value),5);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>
+				</div>
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT  SIZE=7>
+									<SCRIPT>
+										<!--- Hide from old browsers
+										xnum=Math.ceil(Math.random()*100);
+										document.forms[0].elements[8].value=xnum;
+										// End hide -->
+									</SCRIPT>
+								</td>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=24></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Decimal_to_binary(document.forms[0].elements[8].value),9);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Decimal_to_binary(document.forms[0].elements[8].value),9);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>
+				</div>
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT  SIZE=7>
+									<SCRIPT>
+										<!--- Hide from old browsers
+										xnum=Math.ceil(Math.random()*100);
+										document.forms[0].elements[12].value=xnum;
+										// End hide -->
+									</SCRIPT>
+								</td>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=24></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Decimal_to_binary(document.forms[0].elements[12].value),13);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Decimal_to_binary(document.forms[0].elements[12].value),13);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<hr style="height:2px;border-width:0;color:gray;background-color:gray">
+			
+			<p class="font"> Konversi bilangan biner ini ke bilangan desimal! </p>
+			
+			<div class="container">
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT SIZE=24>
+									<SCRIPT>
+									<!--- Hide from old browsers
+									xnum=Math.ceil(Math.random()*100);
+									document.forms[0].elements[16].value=Decimal_to_binary(xnum);
+									// End hide -->
+									</SCRIPT>
+								</td>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=7></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Binary_to_decimal(document.forms[0].elements[16].value),17);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Binary_to_decimal(document.forms[0].elements[16].value),17);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>	
+				</div>	
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT SIZE=24>
+									<SCRIPT>
+									<!--- Hide from old browsers
+									xnum=Math.ceil(Math.random()*100);
+									document.forms[0].elements[20].value=Decimal_to_binary(xnum);
+									// End hide -->
+									</SCRIPT>
+								</td>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=7></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Binary_to_decimal(document.forms[0].elements[20].value),21);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Binary_to_decimal(document.forms[0].elements[20].value),21);">
+								</td>
+							</tr>
+		
+						</table>
+						</div>	
+				</div>	
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT SIZE=24>
+									<SCRIPT>
+									<!--- Hide from old browsers
+									xnum=Math.ceil(Math.random()*100);
+									document.forms[0].elements[24].value=Decimal_to_binary(xnum);
+									// End hide -->
+									</SCRIPT>
+								</td>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=7></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Binary_to_decimal(document.forms[0].elements[24].value),25);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Binary_to_decimal(document.forms[0].elements[24].value),25);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>	
+				</div>	
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT SIZE=24>
+									<SCRIPT>
+									<!--- Hide from old browsers
+									xnum=Math.ceil(Math.random()*100);
+									document.forms[0].elements[28].value=Decimal_to_binary(xnum);
+									// End hide -->
+									</SCRIPT>
+								</td>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=7></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Binary_to_decimal(document.forms[0].elements[28].value),29);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Binary_to_decimal(document.forms[0].elements[28].value),29);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>
+				</div>
+			</div>
+			
+			<hr style="height:2px;border-width:0;color:gray;background-color:gray">
+			
+			<p class="font"> Hitung penjulahan bilangan biner ini kedalam bilangan desimal! </p>
+			
+			<div class="container">
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT SIZE=7>
+									
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><INPUT TYPE="HIDDEN" SIZE=7></td>
+								<SCRIPT>
+									<!--- Hide from old browsers
+										xnum1=Math.ceil(Math.random()*100);
+										xnum2=Math.ceil(Math.random()*100);
+										document.forms[0].elements[33].value=xnum1+xnum2;
+										document.forms[0].elements[32].value=xnum1+" + "+xnum2;
+										// End hide -->
+									</SCRIPT>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=24></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Decimal_to_binary(document.forms[0].elements[33].value),34);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Decimal_to_binary(document.forms[0].elements[33].value),34);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>	
+				</div>
+
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT SIZE=7>
+									
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><INPUT TYPE="HIDDEN" SIZE=7></td>
+								<SCRIPT>
+									<!--- Hide from old browsers
+										xnum1=Math.ceil(Math.random()*100);
+										xnum2=Math.ceil(Math.random()*100);
+										document.forms[0].elements[38].value=xnum1+xnum2;
+										document.forms[0].elements[37].value=xnum1+" + "+xnum2;
+										// End hide -->
+									</SCRIPT>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=24></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Decimal_to_binary(document.forms[0].elements[38].value),39);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Decimal_to_binary(document.forms[0].elements[38].value),39);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>	
+				</div>
+				
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT SIZE=7>
+									
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><INPUT TYPE="HIDDEN" SIZE=7></td>
+								<SCRIPT>
+									<!--- Hide from old browsers
+										xnum1=Math.ceil(Math.random()*100);
+										xnum2=Math.ceil(Math.random()*100);
+										document.forms[0].elements[43].value=xnum1+xnum2;
+										document.forms[0].elements[42].value=xnum1+" + "+xnum2;
+										// End hide -->
+									</SCRIPT>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=24></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Decimal_to_binary(document.forms[0].elements[43].value),44);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Decimal_to_binary(document.forms[0].elements[43].value),44);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>	
+				</div>
+				
+				<div class="field">
+					<div>
+						<table>
+							<tr>
+								<td>Soal</td>
+								<td>
+									<INPUT SIZE=7>
+									
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><INPUT TYPE="HIDDEN" SIZE=7></td>
+								<SCRIPT>
+									<!--- Hide from old browsers
+										xnum1=Math.ceil(Math.random()*100);
+										xnum2=Math.ceil(Math.random()*100);
+										document.forms[0].elements[48].value=xnum1+xnum2;
+										document.forms[0].elements[47].value=xnum1+" + "+xnum2;
+										// End hide -->
+									</SCRIPT>
+							</tr>
+							<tr>
+								<td>Jawab</td>
+								<td><INPUT SIZE=24></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<INPUT TYPE="button" VALUE="Koreksi" onClick="answer(Decimal_to_binary(document.forms[0].elements[48].value),49);">
+									&nbsp; &nbsp;
+									<INPUT TYPE="button" VALUE="Kunci" onClick="give(Decimal_to_binary(document.forms[0].elements[48].value),49);">
+								</td>
+							</tr>
+		
+						</table>
+					</div>	
+				</div>
+			</div>
+			<br>
+			<center><INPUT TYPE="Reset" VALUE="New Quiz" onClick="reload()"></center>
+			<BR>
+		</FORM>
+	</BODY>
+</HTML>
