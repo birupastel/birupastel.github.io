@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buka Gembok</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            color: #334155;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            transition: background-color 0.5s;
+        }
+        .lock-icon-container {
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .lock-icon {
+            width: 80px;
+            height: 80px;
+        }
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .input-box {
+            width: 60px;
+            height: 60px;
+            text-align: center;
+            font-size: 2rem;
+            border-radius: 0.75rem;
+            border: 2px solid #cbd5e1;
+            background-color: #f8fafc;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .input-box:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.5);
+        }
+        .submit-button {
+            padding: 0.75rem 2rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #ffffff;
+            background-color: #2563eb;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .submit-button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        .submit-button:active {
+            transform: translateY(0);
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        .modal.open .modal-content {
+            transform: scale(1);
+        }
+        .modal-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+        }
+        .modal-icon {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1rem;
+        }
+        .modal-close-button {
+            background-color: #ef4444;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .modal-close-button:hover {
+            background-color: #dc2626;
+        }
+        
+        /* Animation for wrong answer */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        .shake-animation {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        .wrong-answer-bg {
+            background-color: #fee2e2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="main-container">
+        <h1 class="title">Buka Gembok Ini</h1>
+        <div class="lock-icon-container">
+            <!-- New closed lock icon from user's image -->
+            <svg id="lock-closed" class="lock-icon text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="currentColor">
+                <path d="M50,15c-11.046,0-20,8.954-20,20v10h-5c-2.761,0-5,2.239-5,5v30c0,2.761,2.239,5,5,5h50c2.761,0,5-2.239,5-5v-30c0-2.761-2.239-5-5-5h-5v-10c0-11.046-8.954-20-20-20zm0,5c8.284,0,15,6.716,15,15v10h-30v-10c0-8.284,6.716-15,15-15zM65,45h-30v-10c0-8.284,6.716-15,15-15s15,6.716,15,15v10zM75,50v30h-50v-30h50zM50,60c-2.761,0-5,2.239-5,5s2.239,5,5,5s5-2.239,5-5s-2.239-5-5-5z"/>
+            </svg>
+
+            <!-- New open lock icon from user's image -->
+            <svg id="lock-open" class="lock-icon text-green-500 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#4CAF50">
+  
+              <path d="M75 40H25C22.239 40 20 42.239 20 45V75C20 77.761 22.239 80 25 80H75C77.761 80 80 77.761 80 75V45C80 42.239 77.761 40 75 40Z" />
+              
+              <path d="M50 50A7 7 0 0 0 43 57V65C43 66.6568 44.3432 68 46 68H54C55.6568 68 57 66.6568 57 65V57A7 7 0 0 0 50 50Z" fill="white" />
+              <circle cx="50" cy="50" r="3" fill="#4CAF50" />
+              
+              <path d="M30 35C30 22.0833 40 10 50 10C60 10 70 22.0833 70 35H60C60 27.5 54.4772 20 50 20C45.5228 20 40 27.5 40 35H30Z" fill="#4CAF50" />
+            </svg>
+            
+        </div>
+        <div class="input-group">
+            <input type="number" id="box1" class="input-box" maxlength="1" oninput="this.value=this.value.slice(0,1)" />
+            <input type="number" id="box2" class="input-box" maxlength="1" oninput="this.value=this.value.slice(0,1)" />
+            <input type="number" id="box3" class="input-box" maxlength="1" oninput="this.value=this.value.slice(0,1)" />
+        </div>
+        <button id="submitBtn" class="submit-button">Submit</button>
+    </div>
+
+    <!-- Modal for correct answer -->
+    <div id="correctModal" class="modal">
+        <div class="modal-content">
+            <center>
+            <svg id="modal-lock-open" class="modal-icon text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#4CAF50">
+  
+              <path d="M75 40H25C22.239 40 20 42.239 20 45V75C20 77.761 22.239 80 25 80H75C77.761 80 80 77.761 80 75V45C80 42.239 77.761 40 75 40Z" />
+              
+              <path d="M50 50A7 7 0 0 0 43 57V65C43 66.6568 44.3432 68 46 68H54C55.6568 68 57 66.6568 57 65V57A7 7 0 0 0 50 50Z" fill="white" />
+              <circle cx="50" cy="50" r="3" fill="#4CAF50" />
+              
+              <path d="M30 35C30 22.0833 40 10 50 10C60 10 70 22.0833 70 35H60C60 27.5 54.4772 20 50 20C45.5228 20 40 27.5 40 35H30Z" fill="#4CAF50" />
+            </svg>
+            </center>
+            <p class="modal-text">Jawaban Benar!</p>
+            <button id="closeModalBtn" class="modal-close-button">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const correctCode = "335";
+        const box1 = document.getElementById("box1");
+        const box2 = document.getElementById("box2");
+        const box3 = document.getElementById("box3");
+        const submitBtn = document.getElementById("submitBtn");
+        const lockClosed = document.getElementById("lock-closed");
+        const lockOpen = document.getElementById("lock-open");
+        const correctModal = document.getElementById("correctModal");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const container = document.querySelector(".container");
+
+        // Focus management to move to the next box
+        const inputs = [box1, box2, box3];
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', () => {
+                if (input.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keyup', (event) => {
+                if (event.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        submitBtn.addEventListener("click", () => {
+            const enteredCode = box1.value + box2.value + box3.value;
+            
+            if (enteredCode === correctCode) {
+                // Correct answer
+                lockClosed.classList.add("hidden");
+                lockOpen.classList.remove("hidden");
+                correctModal.classList.add("open");
+            } else {
+                // Incorrect answer
+                container.classList.add("shake-animation");
+                container.classList.add("wrong-answer-bg");
+                setTimeout(() => {
+                    container.classList.remove("shake-animation");
+                    container.classList.remove("wrong-answer-bg");
+                }, 500);
+            }
+        });
+
+        closeModalBtn.addEventListener("click", () => {
+            correctModal.classList.remove("open");
+            // Reset the state and inputs
+            box1.value = "";
+            box2.value = "";
+            box3.value = "";
+            lockClosed.classList.remove("hidden");
+            lockOpen.classList.add("hidden");
+        });
+
+        // Close modal when clicking outside
+        correctModal.addEventListener("click", (e) => {
+            if (e.target === correctModal) {
+                correctModal.classList.remove("open");
+                box1.value = "";
+                box2.value = "";
+                box3.value = "";
+                lockClosed.classList.remove("hidden");
+                lockOpen.classList.add("hidden");
+            }
+        });
+    </script>
+
+</body>
+</html>
