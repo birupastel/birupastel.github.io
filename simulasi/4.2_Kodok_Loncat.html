@@ -1,10 +1,9 @@
-<!-- Peta Kodok Loncat-->
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Ajar Interaktif: Loncatan Kodok (Dynamic Programming)</title>
+    <title>DP : Kodok Loncat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,7 +73,7 @@
 
     <div class="w-full max-w-5xl mx-auto bg-white p-6 rounded-2xl shadow-2xl">
         <header class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-indigo-600">Media Ajar Interaktif: Loncatan Kodok</h1>
+            <h1 class="text-3xl font-bold text-indigo-600">DP : Kodok Loncat</h1>
             <p class="text-gray-600 mt-2">Visualisasi solusi Dynamic Programming untuk masalah jalur kodok.</p>
         </header>
 
@@ -137,8 +136,8 @@
 
     <script>
         // --- Ikon SVG sebagai string untuk kemudahan ---
-        const frogSVG = <svg class="frog-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#84cc16" d="M165.7,-20.9C180.2,1.8,181.1,32,165.8,55.1C150.5,78.2,119,94.2,87.9,103.2C56.9,112.2,26.2,114.3,-2,114.7C-30.2,115.1,-60.4,113.8,-84.3,100.5C-108.2,87.2,-125.8,61.9,-132.8,35.1C-139.9,8.3,-136.4,-20,-121.2,-41.8C-106,-63.5,-79.1,-78.7,-53,-86.3C-26.9,-93.8,-1.7,-93.8,24.4,-88.4C50.5,-83,77.4,-72.2,103.2,-56.3C129,-40.4,151.2,-19.4,165.7,-2.9L165.7,-20.9Z" transform="translate(100 100)" /></svg>;
-        const flagSVG = <svg class="flag-icon" fill="#1f2937" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M6 28v-28h2v28h-2zM24.561 15.345l-10.8-7.2c-0.453-0.302-1.025-0.34-1.517-0.099s-0.844 0.69-0.844 1.255v13.4c0 0.565 0.355 1.064 0.844 1.255 0.222 0.086 0.457 0.128 0.69 0.128 0.287 0 0.572-0.076 0.828-0.229l10.8-7.2c0.413-0.275 0.659-0.734 0.659-1.228s-0.246-0.953-0.659-1.228zM13.4 20.303v-9.406l7.054 4.703-7.054 4.703z"></path></svg>;
+        const frogSVG = `<svg class="frog-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><path fill="#84cc16" d="M165.7,-20.9C180.2,1.8,181.1,32,165.8,55.1C150.5,78.2,119,94.2,87.9,103.2C56.9,112.2,26.2,114.3,-2,114.7C-30.2,115.1,-60.4,113.8,-84.3,100.5C-108.2,87.2,-125.8,61.9,-132.8,35.1C-139.9,8.3,-136.4,-20,-121.2,-41.8C-106,-63.5,-79.1,-78.7,-53,-86.3C-26.9,-93.8,-1.7,-93.8,24.4,-88.4C50.5,-83,77.4,-72.2,103.2,-56.3C129,-40.4,151.2,-19.4,165.7,-2.9L165.7,-20.9Z" transform="translate(100 100)" /></svg>`;
+        const flagSVG = `<svg class="flag-icon" fill="#1f2937" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M6 28v-28h2v28h-2zM24.561 15.345l-10.8-7.2c-0.453-0.302-1.025-0.34-1.517-0.099s-0.844 0.69-0.844 1.255v13.4c0 0.565 0.355 1.064 0.844 1.255 0.222 0.086 0.457 0.128 0.69 0.128 0.287 0 0.572-0.076 0.828-0.229l10.8-7.2c0.413-0.275 0.659-0.734 0.659-1.228s-0.246-0.953-0.659-1.228zM13.4 20.303v-9.406l7.054 4.703-7.054 4.703z"></path></svg>`;
 
         // --- Variabel State Aplikasi ---
         let boxCount = 8;
@@ -166,7 +165,7 @@
             maxSteps = parseInt(maxStepsInput.value);
 
             if (maxSteps >= boxCount - 1) {
-                alert(Langkah maksimal (${maxSteps}) harus lebih kecil dari (Jumlah Kotak - 1), yaitu ${boxCount - 1}.);
+                alert(`Langkah maksimal (${maxSteps}) harus lebih kecil dari (Jumlah Kotak - 1), yaitu ${boxCount - 1}.`);
                 return;
             }
             if(boxCount > 20 || boxCount < 3) {
@@ -308,3 +307,7 @@
     </script>
 </body>
 </html>
+
+
+
+
