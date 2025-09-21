@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DP : Jalan Pulang</title>
+    <style>
+        /* --- Global Styles & Fonts --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #10b981;
+            --tertiary-color: #0891b2;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+            --background-color: #f3f4f6;
+            --panel-color: #ffffff;
+            --text-color: #1f2937;
+            --muted-text-color: #6b7280;
+            --border-color: #e5e7eb;
+            --start-color: #fb923c;
+            --end-color: #60a5fa;
+            --path-color: #a78bfa;
+            --path-color-light: #ddd6fe;
+            --user-path-color: #67e8f9;
+            --dependency-color: #facc15;
+            --current-step-color: #38bdf8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* --- Main Layout --- */
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            background-color: var(--panel-color);
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+
+        .control-panel { flex: 1; min-width: 300px; }
+        .visualization-panel { flex: 2; min-width: 400px; display: flex; flex-direction: column; align-items: center; }
+
+        /* --- Control Panel Elements --- */
+        h1, h2 { color: var(--primary-color); border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 0; }
+        h2 { font-size: 1.25rem; border-width: 1px; margin-top: 2rem; }
+        .control-section, .result-section, .explanation-panel { margin-bottom: 1.5rem; }
+        label { display: block; font-weight: 500; margin-bottom: 0.5rem; }
+
+        input[type="number"], input[type="text"] {
+            width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 1rem; box-sizing: border-box; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="number"]:focus, input[type="text"]:focus {
+            outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        /* --- Toggle Switch for Obstacle Mode --- */
+        .toggle-container { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .toggle-switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 28px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .result-display {
+            background-color: #eef2ff; color: var(--primary-color); padding: 1rem; border-radius: 0.5rem; font-size: 1.1rem; font-weight: 500; text-align: center; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            max-height: 0; opacity: 0; overflow: hidden; padding-top: 0; padding-bottom: 0; box-sizing: border-box;
+        }
+        .result-display.visible { max-height: 100px; opacity: 1; padding-top: 1rem; padding-bottom: 1rem; }
+
+        .explanation-content { padding-top: 1rem; line-height: 1.6; }
+        .formula { font-family: 'Times New Roman', serif; font-size: 1.2rem; margin: 1rem 0; text-align: center; background: #f9fafb; padding: 1rem; border-radius: 0.5rem; }
+        code { background-color: #eef2ff; color: var(--primary-color); padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-family: monospace; }
+
+        /* --- Visualization Panel Elements --- */
+        .action-buttons, .animation-controls { margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+        .animation-controls { width: 100%; max-width: 500px; }
+        .animation-controls .btn { flex-grow: 1; }
+
+        #grid-container { display: grid; border: 2px solid var(--border-color); width: 100%; max-width: 500px; aspect-ratio: 1 / 1; }
+        #grid-container.edit-obstacle-mode .grid-node:not(.start-node):not(.end-node) { cursor: crosshair; }
+        
+        .answer-submission { margin-top: 1.5rem; display: flex; gap: 1rem; width: 100%; max-width: 500px; }
+        .answer-submission input { flex-grow: 1; }
+
+        .grid-node {
+            border: 1px solid var(--border-color); display: flex; justify-content: center; align-items: center; font-size: 1.1rem; font-weight: 700; cursor: pointer; position: relative; transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+        .grid-node:hover { background-color: #eef2ff; transform: scale(1.05); z-index: 10; }
+        
+        .grid-node.filled .node-value { animation: pop-in 0.5s forwards; }
+        .grid-node .node-value { opacity: 0; transform: scale(0.5); }
+        .grid-node.current-step { box-shadow: 0 0 0 3px var(--current-step-color); z-index: 15; }
+        .grid-node.dependency-highlight { background-color: var(--dependency-color); transition: background-color 0.1s; }
+
+        .start-node, .end-node { font-size: 1.5rem; font-weight: bold; color: white; }
+        .start-node { background-color: var(--start-color); }
+        .end-node { background-color: var(--end-color); }
+        .path-node { background-color: var(--path-color-light); }
+        .path-node.start-node, .path-node.end-node { background-color: inherit; }
+        .user-path-node { background-color: var(--user-path-color); }
+        .user-path-node.start-node, .user-path-node.end-node { background-color: inherit; }
+        .selectable-node { box-shadow: 0 0 0 3px var(--tertiary-color); z-index: 5; }
+
+        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: none; font-size: 1rem; font-weight: 500; cursor: pointer; transition: background-color 0.2s, transform 0.1s, opacity 0.2s; }
+        .btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        .btn:active { transform: translateY(1px); }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: #4338ca; }
+        .btn-secondary { background-color: var(--secondary-color); color: white; }
+        .btn-secondary:hover:not(:disabled) { background-color: #059669; }
+        .btn-tertiary { background-color: var(--tertiary-color); color: white; }
+        .btn-tertiary:hover:not(:disabled) { background-color: #0e7490; }
+        .hidden { display: none; }
+
+        .obstacle-node { background-color: var(--text-color); color: white; }
+        .obstacle-node:hover { background-color: var(--text-color); transform: scale(1); }
+
+        .notification {
+            position: fixed; bottom: 2rem; left: 50%; transform: translate(-50%, 10rem); padding: 1rem 2rem; border-radius: 0.5rem; color: white; font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); z-index: 1000;
+        }
+        .notification.show { transform: translate(-50%, 0); }
+        .notification.success { background-color: var(--success-color); }
+        .notification.error { background-color: var(--error-color); }
+
+        @keyframes pop-in { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="control-panel">
+            <h1>DP : Jalan Pulang</h1>
+            <div class="control-section">
+                <label for="m-input">Langkah ke Kanan (M)</label>
+                <input type="number" id="m-input" value="4" min="1" max="10">
+            </div>
+            <div class="control-section">
+                <label for="n-input">Langkah ke Atas (N)</label>
+                <input type="number" id="n-input" value="4" min="1" max="10">
+            </div>
+            <div class="toggle-container">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="obstacle-mode-toggle">
+                    <span class="slider"></span>
+                </label>
+                <label for="obstacle-mode-toggle">Mode Edit Rintangan</label>
+            </div>
+            <div class="control-section">
+                <button id="random-obstacle-btn" class="btn btn-secondary" style="width: 100%;">Buat Rintangan Acak</button>
+            </div>
+            <div class="control-section">
+                <button id="hint-btn" class="btn btn-secondary" style="width: 100%;">Tampilkan Petunjuk (Hint)</button>
+            </div>
+            <div class="result-section">
+                <div id="result-display" class="result-display"></div>
+            </div>
+            <div class="explanation-panel">
+                <h2>Solusi Pemrograman Dinamis</h2>
+                <div class="explanation-content">
+                    <p>Jumlah jalan ke titik <code>(i, j)</code> adalah jumlah jalan dari titik di bawahnya <code>(i-1, j)</code> ditambah jumlah dari titik di kirinya <code>(i, j-1)</code>.</p>
+                    <div class="formula"><code>Jalan(i, j) = Jalan(i-1, j) + Jalan(i, j-1)</code></div>
+                </div>
+                <h2>Visualisasi Peta</h2>
+                <div class="explanation-content">
+                    <p>Klik tombol <strong>"Tampilkan Solusi (DP)"</strong> untuk melihat bagaimana nilai-nilai ini diisi di grid secara otomatis.</p>
+                </div>
+            </div>
+        </div>
+        <div class="visualization-panel">
+            <div class="action-buttons">
+                <button id="solve-dp-btn" class="btn btn-primary">Tampilkan Solusi (DP)</button>
+                <button id="show-path-btn" class="btn btn-secondary">Tampilkan Jalur Otomatis</button>
+                <button id="manual-path-btn" class="btn btn-tertiary">Mulai/Reset Jalur Manual</button>
+            </div>
+            <div id="grid-container"></div>
+            <div class="answer-submission">
+                <input type="text" id="user-answer-input" placeholder="Masukkan jawabanmu...">
+                <button id="check-answer-btn" class="btn btn-primary">Cek Jawaban</button>
+            </div>
+        </div>
+    </div>
+    <div id="notification" class="notification"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const mInput = document.getElementById('m-input');
+            const nInput = document.getElementById('n-input');
+            const gridContainer = document.getElementById('grid-container');
+            const resultDisplay = document.getElementById('result-display');
+            const hintBtn = document.getElementById('hint-btn');
+            const manualPathBtn = document.getElementById('manual-path-btn');
+            const showPathBtn = document.getElementById('show-path-btn');
+            const userAnswerInput = document.getElementById('user-answer-input');
+            const checkAnswerBtn = document.getElementById('check-answer-btn');
+            const notification = document.getElementById('notification');
+            const obstacleModeToggle = document.getElementById('obstacle-mode-toggle');
+            const randomObstacleBtn = document.getElementById('random-obstacle-btn');
+            const solveDpBtn = document.getElementById('solve-dp-btn');
+
+            // --- State Variables ---
+            let m = 4, n = 4;
+            let dpTable = [];
+            let manualPath = [];
+            let obstacles = new Set();
+            let notificationTimeout;
+            let isObstacleEditMode = false;
+
+            // --- Helper Functions ---
+            const showNotification = (message, type) => {
+                clearTimeout(notificationTimeout);
+                notification.textContent = message;
+                notification.className = `notification ${type} show`;
+                notificationTimeout = setTimeout(() => notification.classList.remove('show'), 3000);
+            };
+
+            const getNode = (i, j) => gridContainer.querySelector(`[data-i='${i}'][data-j='${j}']`);
+
+            // --- Core Logic ---
+            const updateGrid = () => {
+                gridContainer.innerHTML = '';
+                clearAllPaths();
+                resultDisplay.classList.remove('visible');
+                obstacles.clear();
+                userAnswerInput.value = '';
+
+                m = parseInt(mInput.value);
+                n = parseInt(nInput.value);
+                
+                gridContainer.style.gridTemplateColumns = `repeat(${m + 1}, 1fr)`;
+                gridContainer.style.gridTemplateRows = `repeat(${n + 1}, 1fr)`;
+
+                for (let i = n; i >= 0; i--) {
+                    for (let j = 0; j <= m; j++) {
+                        const node = document.createElement('div');
+                        node.classList.add('grid-node');
+                        node.dataset.i = i;
+                        node.dataset.j = j;
+                        
+                        const valueSpan = document.createElement('span');
+                        valueSpan.classList.add('node-value');
+                        node.appendChild(valueSpan);
+
+                        if (i === 0 && j === 0) {
+                            node.classList.add('start-node'); valueSpan.textContent = 'X'; valueSpan.style.opacity = 1;
+                        } else if (i === n && j === m) {
+                            node.classList.add('end-node'); valueSpan.textContent = 'Y'; valueSpan.style.opacity = 1;
+                        }
+                        
+                        node.addEventListener('click', handleNodeClick);
+                        gridContainer.appendChild(node);
+                    }
+                }
+                solveWithDP();
+                updateCalculations();
+            };
+            
+            const handleNodeClick = (event) => {
+                const node = event.currentTarget;
+                const i = parseInt(node.dataset.i);
+                const j = parseInt(node.dataset.j);
+
+                if (isObstacleEditMode) {
+                    toggleObstacle(node, i, j);
+                } else if (manualPath.length > 0) {
+                    handleManualPathDrawing(node, i, j);
+                } else {
+                    showNodeValueWithDependency(node, i, j);
+                }
+            };
+            
+            const toggleObstacle = (node, i, j) => {
+                if ((i === 0 && j === 0) || (i === n && j === m)) return;
+                const key = `${i},${j}`;
+                if (obstacles.has(key)) {
+                    obstacles.delete(key);
+                    node.classList.remove('obstacle-node');
+                    node.querySelector('.node-value').textContent = '';
+                } else {
+                    obstacles.add(key);
+                    node.classList.add('obstacle-node');
+                    node.querySelector('.node-value').textContent = '⛔';
+                }
+                solveWithDP();
+                updateCalculations();
+                clearGridValues();
+            };
+
+            const generateRandomObstacles = () => {
+                obstacles.clear();
+                gridContainer.querySelectorAll('.obstacle-node').forEach(node => {
+                    node.classList.remove('obstacle-node');
+                    if (!node.classList.contains('start-node') && !node.classList.contains('end-node')) {
+                        node.querySelector('.node-value').textContent = '';
+                    }
+                });
+                
+                for (let i = 0; i <= n; i++) {
+                    for (let j = 0; j <= m; j++) {
+                        if ((i === 0 && j === 0) || (i === n && j === m)) continue;
+                        if (Math.random() < 0.2) {
+                            const key = `${i},${j}`;
+                            obstacles.add(key);
+                            const node = getNode(i, j);
+                            if (node) {
+                                node.classList.add('obstacle-node');
+                                node.querySelector('.node-value').textContent = '⛔';
+                            }
+                        }
+                    }
+                }
+                
+                solveWithDP();
+                updateCalculations();
+                clearGridValues();
+            };
+
+            const handleManualPathDrawing = (node, i, j) => {
+                 if (obstacles.has(`${i},${j}`)) return;
+                 const lastNode = manualPath[manualPath.length - 1];
+                 const isNextStepUp = i === lastNode.i + 1 && j === lastNode.j;
+                 const isNextStepRight = i === lastNode.i && j === lastNode.j + 1;
+                 if (isNextStepUp || isNextStepRight) {
+                     manualPath.push({ i, j });
+                     node.classList.add('user-path-node');
+                     highlightNextManualMoves();
+                 }
+            };
+
+            const showNodeValueWithDependency = (node, i, j) => {
+                if (obstacles.has(`${i},${j}`)) return;
+                
+                gridContainer.querySelectorAll('.dependency-highlight').forEach(n => n.classList.remove('dependency-highlight'));
+
+                const valueSpan = node.querySelector('.node-value');
+                if (valueSpan.textContent === 'X' || valueSpan.textContent === 'Y' || node.classList.contains('filled')) return;
+
+                valueSpan.textContent = dpTable[i][j];
+                node.classList.add('filled');
+
+                const fromUp = getNode(i - 1, j);
+                const fromLeft = getNode(i, j - 1);
+                if(fromUp) fromUp.classList.add('dependency-highlight');
+                if(fromLeft) fromLeft.classList.add('dependency-highlight');
+                setTimeout(() => {
+                    if(fromUp) fromUp.classList.remove('dependency-highlight');
+                    if(fromLeft) fromLeft.classList.remove('dependency-highlight');
+                }, 800);
+            };
+
+            const solveWithDP = () => {
+                dpTable = Array(n + 1).fill(0).map(() => Array(m + 1).fill(0));
+                if (!obstacles.has(`0,0`)) dpTable[0][0] = 1;
+                for (let i = 0; i <= n; i++) {
+                    for (let j = 0; j <= m; j++) {
+                        if ((i === 0 && j === 0) || obstacles.has(`${i},${j}`)) continue;
+                        const fromUp = (i > 0 && !obstacles.has(`${i-1},${j}`)) ? dpTable[i - 1][j] : 0;
+                        const fromLeft = (j > 0 && !obstacles.has(`${i},${j-1}`)) ? dpTable[i][j - 1] : 0;
+                        dpTable[i][j] = fromUp + fromLeft;
+                    }
+                }
+            };
+            
+            const updateCalculations = () => {
+                const totalPaths = dpTable[n][m] || 0;
+                resultDisplay.textContent = `Hasil Akhir: Terdapat ${totalPaths} alternatif jalan.`;
+            };
+
+            const clearAllPaths = () => {
+                gridContainer.querySelectorAll('.grid-node').forEach(node => {
+                    node.classList.remove('path-node', 'user-path-node', 'selectable-node');
+                });
+                manualPath = [];
+            };
+
+            const clearGridValues = () => {
+                gridContainer.querySelectorAll('.grid-node.filled').forEach(node => {
+                    node.classList.remove('filled');
+                    const valueSpan = node.querySelector('.node-value');
+                    if (!node.classList.contains('start-node') && !node.classList.contains('end-node') && !node.classList.contains('obstacle-node')) {
+                        valueSpan.textContent = '';
+                    }
+                });
+            };
+
+            const animateDPSolution = () => {
+                clearGridValues();
+                let delay = 0;
+                for (let i = 0; i <= n; i++) {
+                    for (let j = 0; j <= m; j++) {
+                        setTimeout(() => {
+                            const node = getNode(i, j);
+                            if (node && !node.classList.contains('start-node') && !node.classList.contains('end-node') && !node.classList.contains('obstacle-node')) {
+                                const valueSpan = node.querySelector('.node-value');
+                                valueSpan.textContent = dpTable[i][j];
+                                node.classList.add('filled');
+                            }
+                        }, delay);
+                        delay += 50; // 50ms delay between each node
+                    }
+                }
+            };
+
+            // --- Path Drawing Logic ---
+            const showRandomPath = () => {
+                clearAllPaths();
+                if ((dpTable[n][m] || 0) === 0) {
+                    showNotification('Tidak ada jalur yang memungkinkan.', 'error');
+                    return;
+                }
+                
+                let path = [];
+                let currentI = n;
+                let currentJ = m;
+                path.push({i: currentI, j: currentJ});
+
+                while(currentI > 0 || currentJ > 0) {
+                     const fromUpValue = (currentI > 0 && !obstacles.has(`${currentI-1},${currentJ}`)) ? dpTable[currentI-1][currentJ] : 0;
+                     const fromLeftValue = (currentJ > 0 && !obstacles.has(`${currentI},${currentJ-1}`)) ? dpTable[currentI][currentJ-1] : 0;
+                     
+                     const total = fromUpValue + fromLeftValue;
+                     if (total === 0) break; // Stuck, should not happen if path exists
+                     
+                     const goUpProbability = fromUpValue / total;
+
+                     if (fromUpValue > 0 && fromLeftValue > 0) {
+                         if (Math.random() < goUpProbability) currentI--; else currentJ--;
+                     } else if (fromUpValue > 0) {
+                         currentI--;
+                     } else if (fromLeftValue > 0) {
+                         currentJ--;
+                     }
+                     path.push({i: currentI, j: currentJ});
+                }
+                path.reverse();
+                
+                path.forEach(pos => {
+                    getNode(pos.i, pos.j)?.classList.add('path-node');
+                });
+            };
+
+            const startOrResetManualPath = () => {
+                clearAllPaths();
+                if (manualPath.length > 0) {
+                    manualPath = [];
+                } else {
+                    manualPath = [{ i: 0, j: 0 }];
+                    getNode(0, 0)?.classList.add('user-path-node');
+                    highlightNextManualMoves();
+                }
+            };
+
+            const highlightNextManualMoves = () => {
+                gridContainer.querySelectorAll('.selectable-node').forEach(n => n.classList.remove('selectable-node'));
+                if (manualPath.length === 0) return;
+
+                const lastNode = manualPath[manualPath.length - 1];
+
+                if (lastNode.i === n && lastNode.j === m) {
+                    showNotification('Selamat! Anda mencapai tujuan.', 'success');
+                    return;
+                }
+
+                const nextUp = getNode(lastNode.i + 1, lastNode.j);
+                const nextRight = getNode(lastNode.i, lastNode.j + 1);
+
+                if (nextUp && !obstacles.has(`${lastNode.i + 1},${lastNode.j}`)) nextUp.classList.add('selectable-node');
+                if (nextRight && !obstacles.has(`${lastNode.i},${lastNode.j + 1}`)) nextRight.classList.add('selectable-node');
+            };
+
+            const checkAnswer = () => {
+                const userAnswer = userAnswerInput.value.trim();
+                if (userAnswer === '') {
+                    showNotification('Silakan masukkan jawaban terlebih dahulu.', 'error');
+                    return;
+                }
+                const correctAnswer = dpTable[n][m] || 0;
+                if (parseInt(userAnswer) === correctAnswer) {
+                    showNotification('Benar! Jawaban Anda Tepat.', 'success');
+                } else {
+                    showNotification('Salah, coba lagi!', 'error');
+                }
+            };
+
+            // --- Initial Setup and Event Listeners ---
+            mInput.addEventListener('change', updateGrid);
+            nInput.addEventListener('change', updateGrid);
+            hintBtn.addEventListener('click', () => resultDisplay.classList.add('visible'));
+            checkAnswerBtn.addEventListener('click', checkAnswer);
+            userAnswerInput.addEventListener('keyup', (e) => { if(e.key === 'Enter') checkAnswer(); });
+            showPathBtn.addEventListener('click', showRandomPath);
+            manualPathBtn.addEventListener('click', startOrResetManualPath);
+            randomObstacleBtn.addEventListener('click', generateRandomObstacles);
+            solveDpBtn.addEventListener('click', animateDPSolution);
+            obstacleModeToggle.addEventListener('change', () => {
+                isObstacleEditMode = obstacleModeToggle.checked;
+                gridContainer.classList.toggle('edit-obstacle-mode', isObstacleEditMode);
+            });
+
+            updateGrid(); // Initial call
+        });
+    </script>
+</body>
+</html>
+

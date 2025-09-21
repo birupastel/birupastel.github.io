@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DP : Perampok Rumah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind slate-50 */
+        }
+        /* Animasi sederhana untuk rumah saat muncul */
+        @keyframes pop-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .house-animate {
+            animation: pop-in 0.3s ease-out forwards;
+        }
+        /* Efek shake untuk feedback error */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake-error {
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-lg border border-slate-200 p-6 md:p-8 space-y-6">
+        
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-indigo-600">DP : Perampok Rumah</h1>
+            <p class="text-slate-500 mt-2 max-w-2xl mx-auto">Pilih rumah untuk dirampok dan dapatkan harta sebanyak mungkin. Ingat, Anda tidak bisa merampok dua rumah yang bersebelahan!</p>
+        </div>
+
+        <!-- Instruksi Pengguna -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 space-y-2 text-slate-700">
+            <div class="flex items-center gap-3 font-bold text-lg text-indigo-700">
+                <i data-lucide="info"></i>
+                <span>Petunjuk Permainan</span>
+            </div>
+            <ul class="list-disc list-inside space-y-1 pl-2 text-sm md:text-base">
+                <li>Klik pada sebuah rumah untuk memilihnya. Total harta akan dihitung secara otomatis.</li>
+                <li>Aturan utama: Anda <strong>tidak bisa</strong> memilih rumah yang bersebelahan dengan yang sudah dipilih.</li>
+                <li>Gunakan tombol <strong>"Buat Peta Baru"</strong> untuk mencoba tantangan dengan nilai acak yang berbeda.</li>
+                <li>Setelah yakin, tekan <strong>"Periksa Jawaban"</strong> untuk melihat hasilnya.</li>
+            </ul>
+        </div>
+
+        <!-- Pengaturan -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 bg-slate-100 p-4 rounded-lg">
+            <label for="house-count" class="font-medium text-slate-600">Jumlah Rumah:</label>
+            <input type="number" id="house-count" value="8" min="2" max="20" class="bg-white border border-slate-300 rounded-md px-3 py-2 w-24 text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <button id="generate-btn" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 flex items-center justify-center gap-2">
+                <i data-lucide="shuffle"></i>
+                <span>Buat Peta Baru</span>
+            </button>
+        </div>
+
+        <!-- Kontainer Rumah -->
+        <div id="house-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 min-h-[120px]">
+            <!-- Rumah akan dibuat oleh JavaScript di sini -->
+        </div>
+
+        <!-- Hasil & Aksi -->
+        <div class="bg-slate-100 p-6 rounded-lg flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="text-center md:text-left">
+                <h2 class="text-lg font-semibold text-slate-600">Total Harta Terkumpul:</h2>
+                <p id="user-total" class="text-4xl font-bold text-indigo-600">Rp 0</p>
+            </div>
+            <button id="submit-btn" class="w-full md:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-lg transition-transform transform hover:scale-105 text-lg flex items-center justify-center gap-2">
+                <i data-lucide="check-circle"></i>
+                <span>Periksa Jawaban</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Modal untuk Feedback -->
+    <div id="feedback-modal" class="fixed inset-0 bg-slate-900 bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-md w-full transform transition-all scale-95 opacity-0">
+            <h2 id="modal-title" class="text-3xl font-bold mb-4">Hasil</h2>
+            <p id="modal-message" class="text-slate-600 mb-6 text-lg"></p>
+            <button id="close-modal-btn" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-2 px-6 rounded-lg transition">Tutup</button>
+        </div>
+    </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Inisialisasi elemen DOM
+        const houseContainer = document.getElementById('house-container');
+        const userTotalEl = document.getElementById('user-total');
+        const houseCountInput = document.getElementById('house-count');
+        const generateBtn = document.getElementById('generate-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const feedbackModal = document.getElementById('feedback-modal');
+        const modalContent = document.getElementById('modal-content');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        // State aplikasi
+        let houseValues = [];
+        let selectedIndices = new Set();
+
+        // Fungsi untuk membuat peta rumah baru
+        function generateHouses() {
+            const numHouses = parseInt(houseCountInput.value);
+            houseContainer.innerHTML = '';
+            houseValues = [];
+            selectedIndices.clear();
+
+            // Atur grid layout secara dinamis
+            const gridCols = Math.min(numHouses, 8);
+            houseContainer.className = `grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-${gridCols} gap-4 min-h-[120px]`;
+
+            for (let i = 0; i < numHouses; i++) {
+                const value = Math.floor(Math.random() * 50) + 5;
+                houseValues.push(value);
+
+                const houseEl = document.createElement('div');
+                houseEl.className = 'house-item bg-slate-100 border-2 border-transparent rounded-lg p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-200 hover:border-indigo-500 hover:scale-105 house-animate';
+                houseEl.style.animationDelay = `${i * 50}ms`;
+                houseEl.dataset.index = i;
+                
+                houseEl.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-home text-slate-500"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span class="font-bold text-xl text-slate-900">Rp ${value}</span>
+                `;
+                
+                houseEl.addEventListener('click', () => handleHouseClick(i));
+                houseContainer.appendChild(houseEl);
+            }
+            updateDisplay();
+        }
+
+        // Fungsi saat rumah diklik
+        function handleHouseClick(index) {
+            const houseEl = houseContainer.querySelector(`[data-index='${index}']`);
+            const isSelected = selectedIndices.has(index);
+            const leftNeighborSelected = selectedIndices.has(index - 1);
+            const rightNeighborSelected = selectedIndices.has(index + 1);
+
+            if (isSelected) {
+                selectedIndices.delete(index);
+            } else if (!leftNeighborSelected && !rightNeighborSelected) {
+                selectedIndices.add(index);
+            } else {
+                houseEl.classList.add('shake-error');
+                setTimeout(() => houseEl.classList.remove('shake-error'), 500);
+            }
+            updateDisplay();
+        }
+        
+        // Fungsi untuk memperbarui tampilan
+        function updateDisplay() {
+            let currentUserTotal = 0;
+            const houses = houseContainer.querySelectorAll('.house-item');
+
+            houses.forEach((house, index) => {
+                const isSelected = selectedIndices.has(index);
+                const leftNeighborSelected = selectedIndices.has(index - 1);
+                const rightNeighborSelected = selectedIndices.has(index + 1);
+
+                // Reset style
+                house.classList.remove('bg-indigo-500', 'border-indigo-500', 'opacity-50', 'cursor-not-allowed');
+                house.classList.add('bg-slate-100');
+                house.querySelector('svg').classList.remove('text-white');
+                house.querySelector('svg').classList.add('text-slate-500');
+                house.querySelector('span').classList.remove('text-white');
+                house.querySelector('span').classList.add('text-slate-900');
+
+                if (isSelected) {
+                    house.classList.remove('bg-slate-100');
+                    house.classList.add('bg-indigo-500', 'border-indigo-500');
+                    house.querySelector('svg').classList.add('text-white');
+                    house.querySelector('span').classList.add('text-white');
+                    currentUserTotal += houseValues[index];
+                } else if (leftNeighborSelected || rightNeighborSelected) {
+                    house.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            });
+
+            userTotalEl.textContent = `Rp ${currentUserTotal}`;
+        }
+        
+        // Fungsi untuk menyelesaikan masalah House Robber (DP)
+        function solveHouseRobber(nums) {
+            if (!nums || nums.length === 0) return 0;
+            if (nums.length === 1) return nums[0];
+            let prevMax = 0;
+            let currMax = 0;
+            for (const num of nums) {
+                let temp = currMax;
+                currMax = Math.max(prevMax + num, currMax);
+                prevMax = temp;
+            }
+            return currMax;
+        }
+
+        // Fungsi untuk memeriksa jawaban user
+        function checkAnswer() {
+            const userTotal = Array.from(selectedIndices).reduce((sum, i) => sum + houseValues[i], 0);
+            const optimalTotal = solveHouseRobber(houseValues);
+
+            let title, message;
+            
+            modalContent.classList.remove('bg-red-50', 'border-red-300', 'bg-green-50', 'border-green-300');
+            
+            if (userTotal === optimalTotal) {
+                title = "🎉 Jawaban Benar! 🎉";
+                message = `Anda berhasil mendapatkan harta maksimal sebesar <strong>Rp ${optimalTotal}</strong>. Kerja bagus!`;
+                modalContent.classList.add('bg-green-50', 'border', 'border-green-300');
+                modalTitle.className = "text-3xl font-bold mb-4 text-green-600";
+            } else {
+                title = "🤔 Belum Tepat 🤔";
+                message = `Anda mengumpulkan Rp ${userTotal}. Solusi optimalnya adalah <strong>Rp ${optimalTotal}</strong>. Coba lagi untuk menemukan kombinasi terbaik!`;
+                modalContent.classList.add('bg-red-50', 'border', 'border-red-300');
+                modalTitle.className = "text-3xl font-bold mb-4 text-red-600";
+            }
+            
+            showFeedbackModal(title, message);
+        }
+
+        // Fungsi untuk menampilkan modal
+        function showFeedbackModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.innerHTML = message;
+            feedbackModal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // Fungsi untuk menutup modal
+        function closeFeedbackModal() {
+            modalContent.classList.add('scale-95', 'opacity-0');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            setTimeout(() => {
+                feedbackModal.classList.add('hidden');
+            }, 200);
+        }
+
+        // Tambahkan event listeners
+        generateBtn.addEventListener('click', generateHouses);
+        submitBtn.addEventListener('click', checkAnswer);
+        closeModalBtn.addEventListener('click', closeFeedbackModal);
+        feedbackModal.addEventListener('click', (e) => {
+            if (e.target === feedbackModal) {
+                closeFeedbackModal();
+            }
+        });
+
+        // Inisialisasi ikon dan game pertama kali
+        lucide.createIcons();
+        generateHouses();
+    });
+</script>
+
+</body>
+</html>
+
