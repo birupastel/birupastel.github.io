@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimasi Muatan Truk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            text-align: center;
+            color: #334155;
+            padding: 2rem;
+        }
+
+        .main-container {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .description {
+            font-size: 1rem;
+            color: #475569;
+            max-width: 600px;
+            margin-top: -1rem;
+        }
+
+        .truck-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            width: 100%;
+        }
+
+        .truck-illustration {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 1rem;
+            overflow: hidden;
+            background-color: #e2e8f0;
+            position: relative;
+            padding-top: 50%; /* Aspect ratio 2:1 for truck SVG */
+        }
+
+        .truck-illustration svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .truck-container {
+            position: absolute;
+            left: 10%;
+            top: 37%; /* Adjusted top position */
+            width: 50%;
+            height: 40%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .drag-area {
+            width: 30%;
+            height: 100%;
+            border: 2px dashed #94a3b8;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .drag-area.hover {
+            background-color: #dbeafe;
+            border-color: #2563eb;
+        }
+
+        .draggable-box-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            background-color: #f8fafc;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .draggable-box {
+            width: 90px;
+            height: 90px;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffffff;
+            cursor: grab;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            touch-action: none;
+        }
+
+        .draggable-box:active {
+            cursor: grabbing;
+            box-shadow: 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+        
+        /* Box Colors */
+        .bg-box-1 { background-color: #f87171; }
+        .bg-box-2 { background-color: #fca5a5; }
+        .bg-box-3 { background-color: #fcd34d; }
+        .bg-box-4 { background-color: #4ade80; }
+        .bg-box-5 { background-color: #22d3ee; }
+        .bg-box-6 { background-color: #818cf8; }
+        .bg-box-7 { background-color: #c4b5fd; }
+
+        .check-button {
+            padding: 0.75rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #ffffff;
+            background-color: #2563eb;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 1rem;
+        }
+        .check-button:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        .check-button:active {
+            transform: translateY(0);
+        }
+
+        .feedback-message {
+            margin-top: 1rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .feedback-message.correct {
+            color: #16a34a;
+        }
+
+        .feedback-message.incorrect {
+            color: #dc2626;
+        }
+        
+        /* Modal and Shake effects */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .modal-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+        }
+        .modal-close-button {
+            background-color: #ef4444;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .modal-close-button:hover {
+            background-color: #dc2626;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        .shake-animation {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        .bg-wrong-answer {
+            background-color: #fee2e2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container" id="main-container">
+        <h1 class="title">Optimasi Muatan Truk</h1>
+        <p class="description">Pak Budi sedang panen sayuran dan hendak membawa sayuran tersebut ke pasar untuk dijual. Namun karena mobil box yang dimiliki pak Budi hanya dapat menampung 3 box, maka bantu pak Budi untuk menentukan box mana saja yang harus dibawa agar total bobot sayuran yang dibawa oleh mobil maksimal!</p>
+
+        <div class="truck-area">
+            <div class="truck-illustration">
+                <!-- SVG for a simple truck illustration -->
+                <svg viewBox="0 0 100 50" class="truck-svg">
+                    <rect x="5" y="15" width="60" height="30" rx="2" ry="2" fill="#d1d5db" stroke="#9ca3af" stroke-width="1"/>
+                    <path d="M65 15 L80 15 L85 25 L85 45 L65 45 Z" fill="#d1d5db" stroke="#9ca3af" stroke-width="1"/>
+                    <circle cx="15" cy="45" r="5" fill="#4b5563"/>
+                    <circle cx="70" cy="45" r="5" fill="#4b5563"/>
+                </svg>
+
+                <div class="truck-container">
+                    <div class="drag-area" id="drag-area-1"></div>
+                    <div class="drag-area" id="drag-area-2"></div>
+                    <div class="drag-area" id="drag-area-3"></div>
+                </div>
+            </div>
+            <button id="checkBtn" class="check-button">Periksa</button>
+            <div id="feedback" class="feedback-message"></div>
+        </div>
+
+        <div class="draggable-box-container" id="draggable-boxes">
+            <!-- Boxes will be generated here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal for correct answer -->
+    <div id="correctModal" class="modal">
+        <div class="modal-content">
+            <p class="modal-text">Jawaban Benar!</p>
+            <button id="closeModalBtn" class="modal-close-button">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const truckIllustration = document.querySelector('.truck-illustration');
+        const dragAreas = document.querySelectorAll('.drag-area');
+        const draggableContainer = document.getElementById('draggable-boxes');
+        const checkBtn = document.getElementById('checkBtn');
+        const feedbackMessage = document.getElementById('feedback');
+        const correctModal = document.getElementById('correctModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const mainContainer = document.getElementById('main-container');
+
+        const boxData = [
+            { value: 350, color: 'bg-box-1' },
+            { value: 150, color: 'bg-box-2' },
+            { value: 200, color: 'bg-box-3' },
+            { value: 400, color: 'bg-box-4' },
+            { value: 300, color: 'bg-box-5' },
+            { value: 500, color: 'bg-box-6' },
+            { value: 250, color: 'bg-box-7' }
+        ];
+
+        let draggedItem = null;
+
+        // Function to create draggable boxes
+        function createBoxes() {
+            // Clear existing boxes
+            draggableContainer.innerHTML = '';
+            boxData.forEach(data => {
+                const box = document.createElement('div');
+                box.classList.add('draggable-box', data.color);
+                box.textContent = data.value;
+                box.setAttribute('draggable', 'true');
+                box.dataset.value = data.value;
+                box.id = `box-${data.value}`;
+                draggableContainer.appendChild(box);
+            });
+        }
+
+        // Add drag event listeners to draggable boxes
+        draggableContainer.addEventListener('dragstart', (e) => {
+            draggedItem = e.target;
+            e.dataTransfer.setData('text/plain', e.target.id);
+            setTimeout(() => {
+                e.target.style.opacity = '0.5';
+            }, 0);
+        });
+
+        draggableContainer.addEventListener('dragend', (e) => {
+            e.target.style.opacity = '1';
+        });
+
+        // Add drag event listeners to drop areas
+        dragAreas.forEach(area => {
+            area.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                area.classList.add('hover');
+            });
+            area.addEventListener('dragleave', () => {
+                area.classList.remove('hover');
+            });
+            area.addEventListener('drop', (e) => {
+                e.preventDefault();
+                area.classList.remove('hover');
+                
+                // If a box is already in the drop area, move it back
+                if (area.firstChild) {
+                    draggableContainer.appendChild(area.firstChild);
+                }
+
+                const id = e.dataTransfer.getData('text/plain');
+                const droppedBox = document.getElementById(id);
+                area.appendChild(droppedBox);
+            });
+        });
+
+        checkBtn.addEventListener('click', () => {
+            const droppedValues = [];
+            dragAreas.forEach(area => {
+                if (area.firstChild) {
+                    droppedValues.push(parseInt(area.firstChild.dataset.value));
+                }
+            });
+
+            // Check for exact order: 500, 400, 350
+            const correctValues = [500, 400, 350];
+            const isCorrect = JSON.stringify(droppedValues) === JSON.stringify(correctValues);
+
+            if (isCorrect) {
+                // Correct answer
+                feedbackMessage.textContent = "Jawaban Benar!";
+                feedbackMessage.classList.add('correct');
+                feedbackMessage.classList.remove('incorrect');
+                correctModal.style.display = 'flex';
+            } else {
+                // Incorrect answer
+                feedbackMessage.textContent = "Jawaban Salah!";
+                feedbackMessage.classList.add('incorrect');
+                feedbackMessage.classList.remove('correct');
+                
+                // Shake and change background color
+                mainContainer.classList.add('shake-animation', 'bg-wrong-answer');
+                setTimeout(() => {
+                    mainContainer.classList.remove('shake-animation', 'bg-wrong-answer');
+                    // Return all boxes to their original place
+                    dragAreas.forEach(area => {
+                        if (area.firstChild) {
+                            draggableContainer.appendChild(area.firstChild);
+                        }
+                    });
+                }, 500);
+            }
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            correctModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        correctModal.addEventListener('click', (e) => {
+            if (e.target === correctModal) {
+                correctModal.style.display = 'none';
+            }
+        });
+        
+        // Initial setup
+        window.onload = createBoxes;
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Kriptografi: Tebak Kuncinya!</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter and Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc;
+        }
+        .font-crypto {
+            font-family: 'Fira Code', monospace;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-xl mx-auto">
+        
+        <header class="text-center mb-4">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Kuis Polyalphabetic Cipher</h1>
+            <p class="text-gray-600 mt-1">Tebak kunci yang digunakan untuk enkripsi!</p>
+        </header>
+
+        <!-- Panel Poin -->
+        <div class="bg-white p-3 px-5 rounded-lg shadow-sm border border-gray-200 mb-6 flex items-center justify-between">
+            <div class="text-lg font-bold text-blue-600">
+                Poin Anda: <span id="score-display">0</span>
+            </div>
+            <button id="reset-score-btn" class="text-sm bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded-md transition-colors duration-150">
+                Reset Poin
+            </button>
+        </div>
+
+        <main class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-200">
+            
+            <!-- Tampilan Pesan -->
+            <div class="space-y-4 mb-8 text-center">
+                <div>
+                    <p class="text-sm text-gray-500 mb-1">Pesan Asli:</p>
+                    <div id="plaintext-display" class="font-crypto text-2xl tracking-widest bg-gray-100 text-gray-800 p-2 rounded-md inline-block">
+                        KOMPUTER
+                    </div>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 mb-1">Pesan Enkripsi:</p>
+                    <div id="ciphertext-display" class="font-crypto text-2xl tracking-widest bg-green-100 text-green-800 p-2 rounded-md inline-block">
+                        LIMWVNEY
+                    </div>
+                </div>
+            </div>
+
+            <!-- Area Input Jawaban -->
+            <div class="mt-6">
+                <label for="key-input" class="block text-center font-medium text-gray-700 mb-2">Apa kuncinya?</label>
+                <input type="text" id="key-input" placeholder="KETIK JAWABAN KUNCI" class="w-full text-center uppercase font-crypto tracking-wider form-input px-4 py-3 border-2 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+            </div>
+
+            <!-- Tombol Aksi -->
+            <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button id="check-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Submit Jawaban
+                </button>
+                 <button id="next-btn" class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400">
+                    Soal Berikutnya
+                </button>
+            </div>
+
+            <!-- Area Feedback -->
+            <div id="feedback-area" class="mt-6 text-center text-lg font-semibold min-h-[28px] transition-opacity duration-300">
+                <!-- Pesan feedback akan muncul di sini -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- Word & Key Lists ---
+        const wordList = [
+            'KOMPUTER', 'INDONESIA', 'ALGORITMA', 'KRIPTOGRAFI', 'KEAMANAN',
+            'JARINGAN', 'RAHASIA', 'SANDI', 'POLITEKNIK', 'INFORMATIKA',
+            'UNIVERSITAS', 'MAHASISWA', 'PEMROGRAMAN', 'BASISDATA', 'KECERDASAN',
+            'ARTIFISIAL', 'INTERNET', 'APLIKASI', 'PENGEMBANG', 'TEKNOLOGI',
+            'SISTEM', 'INFORMASI', 'SERVER', 'KLIEN', 'PROTOKOL', 'ENKRIPSI', 
+            'DEKRIPSI', 'OTENTIKASI', 'FIREWALL', 'VIRTUAL', 'CLOUD', 'COMPUTING',
+            'ROUTER', 'SWITCH', 'DATABASE', 'FRAMEWORK', 'LIBRARY', 'SOFTWARE',
+            'HARDWARE', 'PROCESSOR', 'MEMORI', 'STORAGE', 'KEYBOARD', 'MONITOR',
+            'GRAPHICS', 'NETWORK', 'SECURITY', 'ANALYSIS', 'DESIGN', 'IMPLEMENTASI'
+        ];
+        const keyList = [
+            'BUAH', 'KUNCI', 'API', 'AMAN', 'SULIT', 'RAHASIA', 'DATA', 'CIPHER', 'KODE',
+            'LOGIKA', 'BYTE', 'BIT', 'MEGA', 'GIGA', 'TERA', 'MATRIX', 'VEKTOR', 'ARRAY', 
+            'STRING', 'INTEGER', 'FLOAT', 'BOOLEAN', 'NULL', 'VOID', 'PUBLIC', 'PRIVATE',
+            'STATIC', 'FINAL', 'CLASS', 'OBJECT', 'METHOD', 'FUNCTION', 'VARIABLE', 
+            'CONSTANT', 'LOOP', 'WHILE', 'FOR', 'IF', 'ELSE', 'SWITCH', 'CASE', 'BREAK',
+            'CONTINUE', 'RETURN', 'TRUE', 'FALSE', 'JAVA', 'PYTHON', 'RUST', 'GO'
+        ];
+
+        // --- DOM Elements ---
+        const plaintextEl = document.getElementById('plaintext-display');
+        const ciphertextEl = document.getElementById('ciphertext-display');
+        const keyInputEl = document.getElementById('key-input');
+        const checkBtn = document.getElementById('check-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const feedbackAreaEl = document.getElementById('feedback-area');
+        const scoreDisplayEl = document.getElementById('score-display');
+        const resetScoreBtn = document.getElementById('reset-score-btn');
+
+        // --- State ---
+        let currentKey = '';
+        let score = 0;
+        let attemptsLeft = 3;
+
+        // --- Core Logic ---
+        
+        /**
+         * Vigenère Cipher Encryption Function
+         * @param {string} text - The plaintext to encrypt.
+         * @param {string} key - The encryption key.
+         * @returns {string} The encrypted ciphertext.
+         */
+        function vigenereEncrypt(text, key) {
+            let result = '';
+            const textUpper = text.toUpperCase();
+            const keyUpper = key.toUpperCase();
+            for (let i = 0, j = 0; i < textUpper.length; i++) {
+                const charCode = textUpper.charCodeAt(i);
+                if (charCode >= 65 && charCode <= 90) { // Check if it's an alphabet character
+                    const keyChar = keyUpper.charCodeAt(j % keyUpper.length);
+                    const encryptedCharCode = ((charCode - 65 + (keyChar - 65)) % 26) + 65;
+                    result += String.fromCharCode(encryptedCharCode);
+                    j++;
+                } else {
+                    result += textUpper.charAt(i); // Keep non-alphabetic characters as they are
+                }
+            }
+            return result;
+        }
+
+        /**
+         * Generates a new quiz question and displays it.
+         */
+        function generateNewQuiz() {
+            // Reset attempts for the new question
+            attemptsLeft = 3;
+            keyInputEl.disabled = false;
+            checkBtn.disabled = false;
+
+            // Select random word and key
+            const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+            const randomKey = keyList[Math.floor(Math.random() * keyList.length)];
+            currentKey = randomKey;
+
+            // Encrypt the word
+            const encryptedWord = vigenereEncrypt(randomWord, currentKey);
+
+            // Update UI
+            plaintextEl.textContent = randomWord;
+            ciphertextEl.textContent = encryptedWord;
+            keyInputEl.value = '';
+            feedbackAreaEl.textContent = '';
+            feedbackAreaEl.className = 'mt-6 text-center text-lg font-semibold min-h-[28px] transition-opacity duration-300';
+            keyInputEl.focus();
+        }
+
+        /**
+         * Checks the user's submitted answer.
+         */
+        function checkAnswer() {
+            const userAnswer = keyInputEl.value.trim().toUpperCase();
+            if (!userAnswer) {
+                showFeedback('Silakan masukkan tebakan kunci Anda.', 'yellow');
+                return;
+            }
+
+            if (userAnswer === currentKey) {
+                showFeedback(Benar! Kuncinya adalah "${currentKey}"., 'green');
+                updateScore(100);
+                // Automatically load next question after a short delay
+                setTimeout(generateNewQuiz, 2000);
+            } else {
+                // Wrong answer
+                attemptsLeft--;
+                if (attemptsLeft > 0) {
+                    const message = Salah. Sisa kesempatan: ${attemptsLeft}. Jika kesempatan habis, poin akan direset.;
+                    showFeedback(message, 'red');
+                } else {
+                    // No attempts left, game over for this round
+                    const message = Kesempatan habis! Kunci yang benar adalah "${currentKey}". Poin direset.;
+                    showFeedback(message, 'red');
+                    resetScore(false); // Reset score without showing the default reset message
+                    keyInputEl.disabled = true;
+                    checkBtn.disabled = true;
+                    // Load a new question after a longer delay
+                    setTimeout(generateNewQuiz, 4000);
+                }
+            }
+        }
+        
+        /**
+         * Displays feedback message with appropriate color.
+         * @param {string} message - The message to display.
+         * @param {string} type - 'green' for correct, 'red' for incorrect, 'yellow' for warning.
+         */
+        function showFeedback(message, type) {
+            feedbackAreaEl.textContent = message;
+            let colorClass = '';
+            if (type === 'green') colorClass = 'text-green-600';
+            else if (type === 'red') colorClass = 'text-red-600';
+            else if (type === 'yellow') colorClass = 'text-yellow-600';
+            
+            feedbackAreaEl.className = mt-6 text-center text-lg font-semibold min-h-[28px] transition-opacity duration-300 ${colorClass};
+        }
+        
+        // --- Score Management ---
+
+        /**
+         * Loads score from localStorage on page start.
+         */
+        function loadScore() {
+            const savedScore = localStorage.getItem('vigenereQuizScore');
+            score = savedScore ? parseInt(savedScore, 10) : 0;
+            scoreDisplayEl.textContent = score;
+        }
+
+        /**
+         * Updates the score and saves it to localStorage.
+         * @param {number} points - The points to add to the score.
+         */
+        function updateScore(points) {
+            score += points;
+            scoreDisplayEl.textContent = score;
+            localStorage.setItem('vigenereQuizScore', score);
+        }
+
+        /**
+         * Resets the score to 0.
+         * @param {boolean} showMsg - Whether to show the feedback message.
+         */
+        function resetScore(showMsg = true) {
+            score = 0;
+            scoreDisplayEl.textContent = score;
+            localStorage.setItem('vigenereQuizScore', score);
+            if (showMsg) {
+                showFeedback('Poin telah direset.', 'yellow');
+            }
+        }
+
+        // --- Event Listeners ---
+        checkBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', generateNewQuiz);
+        resetScoreBtn.addEventListener('click', () => resetScore(true));
+
+        keyInputEl.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadScore();
+            generateNewQuiz();
+        });
+    </script>
+</body>
+</html>

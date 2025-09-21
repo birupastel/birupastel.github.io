@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Kriptografi Caesar Cipher</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            color: #333333;
+        }
+
+        .container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .button {
+            transition: all 0.2s ease-in-out;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-box {
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-size: 1.125rem;
+            text-transform: uppercase;
+        }
+
+        .feedback-correct {
+            color: #28A745;
+        }
+
+        .feedback-wrong {
+            color: #DC3545;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            cursor: pointer;
+            background-color: #e2e8f0;
+            color: #4a5568;
+            font-size: 1.25rem;
+            font-weight: 600;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .back-button:hover {
+            background-color: #cbd5e0;
+            color: #007BFF;
+            transform: translateY(-1px);
+        }
+
+        /* Styling for points display */
+        .points-container {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* New styling for reset points button */
+        .reset-points-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            cursor: pointer;
+            background-color: #ef4444;
+            color: #fff; /* White icon */
+            border-radius: 9999px; /* Make it a circle */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .reset-points-btn:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .score-display {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #333333;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Menu Page -->
+    <div id="main-menu" class="container">
+        <div class="card">
+            <h1 class="text-4xl font-bold mb-4">Kuis Kriptografi: Caesar Cipher</h1>
+            <p class="text-lg mb-8">Uji kemampuan enkripsi dan dekripsi Anda!</p>
+            <div class="flex flex-col gap-4">
+                <button id="start-encrypt-btn" class="button bg-blue-500 text-white hover:bg-blue-600">Mulai Enkripsi</button>
+                <button id="start-decrypt-btn" class="button bg-blue-500 text-white hover:bg-blue-600">Mulai Dekripsi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Encryption Quiz Page -->
+    <div id="encrypt-quiz" class="container hidden">
+        <a id="back-to-menu-encrypt" class="back-button">&#x2190;</a>
+        <div class="points-container">
+            <span class="score-display">Poin: <span id="encrypt-points">0</span></span>
+            <button id="reset-encrypt-points" class="reset-points-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rotate-ccw"><path d="M16 3h5v5"></path><path d="M21 3v5a12.8 12.8 0 0 1-10.2 13.2A11.9 11.9 0 0 1 3 12a10.9 10.9 0 0 1 3.5-7.7"></path></svg>
+            </button>
+        </div>
+        <div class="card">
+            <h2 class="text-3xl font-bold mb-8">Mode Enkripsi</h2>
+            
+            <div class="bg-gray-100 p-6 rounded-lg mb-8">
+                <div class="mb-4">
+                    <p class="font-semibold text-gray-600">Plaintext (Kata Asli):</p>
+                    <p id="encrypt-plaintext" class="text-2xl font-bold text-blue-800">...</p>
+                </div>
+                <div>
+                    <p class="font-semibold text-gray-600">Kunci (Jumlah Pergeseran):</p>
+                    <p id="encrypt-key" class="text-2xl font-bold text-blue-800">...</p>
+                </div>
+            </div>
+
+            <p class="mb-2 text-left">Ketik Hasil Enkripsi Anda di Sini:</p>
+            <input type="text" id="encrypt-input" class="input-box mb-4 uppercase">
+            
+            <button id="encrypt-submit" class="button bg-green-500 text-white hover:bg-green-600 w-full mb-4">Jawab</button>
+            
+            <div id="encrypt-feedback" class="text-xl font-bold hidden"></div>
+            
+            <button id="encrypt-next-btn" class="button bg-blue-500 text-white hover:bg-blue-600 w-full mt-4 hidden">Soal Berikutnya</button>
+        </div>
+    </div>
+
+    <!-- Decryption Quiz Page -->
+    <div id="decrypt-quiz" class="container hidden">
+        <a id="back-to-menu-decrypt" class="back-button">&#x2190;</a>
+        <div class="points-container">
+            <span class="score-display">Poin: <span id="decrypt-points">0</span></span>
+            <button id="reset-decrypt-points" class="reset-points-btn">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rotate-ccw"><path d="M16 3h5v5"></path><path d="M21 3v5a12.8 12.8 0 0 1-10.2 13.2A11.9 11.9 0 0 1 3 12a10.9 10.9 0 0 1 3.5-7.7"></path></svg>
+            </button>
+        </div>
+        <div class="card">
+            <h2 class="text-3xl font-bold mb-8">Mode Dekripsi</h2>
+            
+            <div class="bg-gray-100 p-6 rounded-lg mb-8">
+                <div class="mb-4">
+                    <p class="font-semibold text-gray-600">Ciphertext (Kata Terenkripsi):</p>
+                    <p id="decrypt-ciphertext" class="text-2xl font-bold text-blue-800">...</p>
+                </div>
+                <div>
+                    <p class="font-semibold text-gray-600">Kunci (Jumlah Pergeseran Mundur):</p>
+                    <p id="decrypt-key" class="text-2xl font-bold text-blue-800">...</p>
+                </div>
+            </div>
+
+            <p class="mb-2 text-left">Ketik Hasil Dekripsi Anda di Sini:</p>
+            <input type="text" id="decrypt-input" class="input-box mb-4 uppercase">
+            
+            <button id="decrypt-submit" class="button bg-green-500 text-white hover:bg-green-600 w-full mb-4">Jawab</button>
+            
+            <div id="decrypt-feedback" class="text-xl font-bold hidden"></div>
+            
+            <button id="decrypt-next-btn" class="button bg-blue-500 text-white hover:bg-blue-600 w-full mt-4 hidden">Soal Berikutnya</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // UI Elements
+            const mainMenu = document.getElementById('main-menu');
+            const encryptQuiz = document.getElementById('encrypt-quiz');
+            const decryptQuiz = document.getElementById('decrypt-quiz');
+
+            const startEncryptBtn = document.getElementById('start-encrypt-btn');
+            const startDecryptBtn = document.getElementById('start-decrypt-btn');
+            const backToMenuEncrypt = document.getElementById('back-to-menu-encrypt');
+            const backToMenuDecrypt = document.getElementById('back-to-menu-decrypt');
+
+            const encryptPlaintext = document.getElementById('encrypt-plaintext');
+            const encryptKey = document.getElementById('encrypt-key');
+            const encryptInput = document.getElementById('encrypt-input');
+            const encryptSubmitBtn = document.getElementById('encrypt-submit');
+            const encryptFeedback = document.getElementById('encrypt-feedback');
+            const encryptNextBtn = document.getElementById('encrypt-next-btn');
+            const encryptPointsDisplay = document.getElementById('encrypt-points');
+            const resetEncryptBtn = document.getElementById('reset-encrypt-points');
+
+            const decryptCiphertext = document.getElementById('decrypt-ciphertext');
+            const decryptKey = document.getElementById('decrypt-key');
+            const decryptInput = document.getElementById('decrypt-input');
+            const decryptSubmitBtn = document.getElementById('decrypt-submit');
+            const decryptFeedback = document.getElementById('decrypt-feedback');
+            const decryptNextBtn = document.getElementById('decrypt-next-btn');
+            const decryptPointsDisplay = document.getElementById('decrypt-points');
+            const resetDecryptBtn = document.getElementById('reset-decrypt-points');
+
+            // Data
+            const words = [
+                'GEMA', 'MALAM', 'SIANG', 'KATA', 'KERJA', 'CINTA', 'BAIK', 'AKSES', 'KUNCI', 'BUDAYA',
+                'TEMA', 'KREATIF', 'SENI', 'ALGORITMA', 'PRODUK', 'DESAIN', 'ANALISIS', 'KODE', 'LOGIKA'
+            ];
+            let currentWord;
+            let currentKey;
+            let currentPoints = parseInt(localStorage.getItem('caesarCipherPoints')) || 0;
+
+            // Functions
+            function updatePointsDisplay() {
+                encryptPointsDisplay.textContent = currentPoints;
+                decryptPointsDisplay.textContent = currentPoints;
+            }
+
+            function resetPoints() {
+                currentPoints = 0;
+                localStorage.setItem('caesarCipherPoints', currentPoints);
+                updatePointsDisplay();
+            }
+
+            function switchPage(showPage) {
+                mainMenu.classList.add('hidden');
+                encryptQuiz.classList.add('hidden');
+                decryptQuiz.classList.add('hidden');
+                showPage.classList.remove('hidden');
+                updatePointsDisplay();
+            }
+
+            function generateNewQuestion(mode) {
+                const randomIndex = Math.floor(Math.random() * words.length);
+                currentWord = words[randomIndex];
+                currentKey = Math.floor(Math.random() * 25) + 1; // Key 1-26
+
+                if (mode === 'encrypt') {
+                    encryptPlaintext.textContent = currentWord;
+                    encryptKey.textContent = currentKey;
+                    encryptInput.value = '';
+                    encryptFeedback.classList.add('hidden');
+                    encryptNextBtn.classList.add('hidden');
+                    encryptSubmitBtn.classList.remove('hidden');
+                } else if (mode === 'decrypt') {
+                    const encryptedWord = caesarCipher(currentWord, currentKey, 'encrypt');
+                    decryptCiphertext.textContent = encryptedWord;
+                    decryptKey.textContent = currentKey;
+                    decryptInput.value = '';
+                    decryptFeedback.classList.add('hidden');
+                    decryptNextBtn.classList.add('hidden');
+                    decryptSubmitBtn.classList.remove('hidden');
+                }
+            }
+
+            function caesarCipher(text, key, mode) {
+                let result = '';
+                const shift = mode === 'encrypt' ? key : -key;
+
+                for (let i = 0; i < text.length; i++) {
+                    let char = text[i];
+                    if (char >= 'A' && char <= 'Z') {
+                        let base = 'A'.charCodeAt(0);
+                        let charCode = char.charCodeAt(0);
+                        let newCharCode = (charCode - base + shift + 26) % 26 + base;
+                        result += String.fromCharCode(newCharCode);
+                    } else {
+                        // Keep non-alphabetic characters as is
+                        result += char;
+                    }
+                }
+                return result;
+            }
+
+            function checkAnswer(mode, inputElement, feedbackElement, submitBtn, nextBtn) {
+                const userAnswer = inputElement.value.trim().toUpperCase();
+                let correctAnswer;
+                if (mode === 'encrypt') {
+                    correctAnswer = caesarCipher(currentWord, currentKey, 'encrypt');
+                } else if (mode === 'decrypt') {
+                    correctAnswer = currentWord;
+                }
+
+                if (userAnswer === correctAnswer) {
+                    feedbackElement.textContent = 'Jawaban Benar!';
+                    feedbackElement.classList.remove('feedback-wrong');
+                    feedbackElement.classList.add('feedback-correct');
+                    currentPoints += 100;
+                    localStorage.setItem('caesarCipherPoints', currentPoints);
+                    updatePointsDisplay();
+                } else {
+                    feedbackElement.textContent = 'Jawaban Salah, Coba Lagi!';
+                    feedbackElement.classList.remove('feedback-correct');
+                    feedbackElement.classList.add('feedback-wrong');
+                }
+                
+                feedbackElement.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+                nextBtn.classList.remove('hidden');
+            }
+
+            // Event Listeners
+            startEncryptBtn.addEventListener('click', () => {
+                switchPage(encryptQuiz);
+                generateNewQuestion('encrypt');
+            });
+
+            startDecryptBtn.addEventListener('click', () => {
+                switchPage(decryptQuiz);
+                generateNewQuestion('decrypt');
+            });
+            
+            backToMenuEncrypt.addEventListener('click', () => {
+                switchPage(mainMenu);
+            });
+            
+            backToMenuDecrypt.addEventListener('click', () => {
+                switchPage(mainMenu);
+            });
+
+            encryptSubmitBtn.addEventListener('click', () => {
+                checkAnswer('encrypt', encryptInput, encryptFeedback, encryptSubmitBtn, encryptNextBtn);
+            });
+
+            encryptNextBtn.addEventListener('click', () => {
+                generateNewQuestion('encrypt');
+            });
+
+            decryptSubmitBtn.addEventListener('click', () => {
+                checkAnswer('decrypt', decryptInput, decryptFeedback, decryptSubmitBtn, decryptNextBtn);
+            });
+
+            decryptNextBtn.addEventListener('click', () => {
+                generateNewQuestion('decrypt');
+            });
+
+            resetEncryptBtn.addEventListener('click', resetPoints);
+            resetDecryptBtn.addEventListener('click', resetPoints);
+
+            // Prevent form submission on enter
+            encryptInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !encryptSubmitBtn.classList.contains('hidden')) {
+                    e.preventDefault();
+                    encryptSubmitBtn.click();
+                }
+            });
+
+            decryptInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !decryptSubmitBtn.classList.contains('hidden')) {
+                    e.preventDefault();
+                    decryptSubmitBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

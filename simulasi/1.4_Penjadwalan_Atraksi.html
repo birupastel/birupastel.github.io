@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimasi Pertunjukan Kebun Binatang</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .card {
+            background-color: #f0f4f8;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            touch-action: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card:active {
+            cursor: grabbing;
+        }
+        .card-header {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .card-body {
+            font-size: 0.875rem;
+            color: #4a5568;
+        }
+        .drag-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 1rem;
+            min-height: 400px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: border-color 0.3s;
+        }
+        .drag-area.drag-over {
+            border-color: #4299e1;
+        }
+        .overlap-indicator {
+            border: 2px solid #ef4444 !important;
+        }
+        .correct-solution-card {
+            background-color: #d1f7d3;
+            border: 1px solid #1a7d2b;
+        }
+        .feedback-panel {
+            min-height: 100px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div class="container">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">Optimasi Pertunjukan Kebun Binatang</h1>
+        </header>
+        
+        <div class="md:flex gap-8">
+            <!-- Instruksi dan Daftar Pertunjukan -->
+            <div class="flex-1 mb-8 md:mb-0">
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <h2 class="text-lg font-semibold text-blue-800">Instruksi</h2>
+                    <p class="text-gray-700 mt-2">Dina ingin menonton pertunjukan sebanyak mungkin. Seret dan jatuhkan jadwal ke dalam urutan yang menurut Anda optimal, pastikan tidak ada pertunjukan yang tumpang tindih.</p>
+                </div>
+                
+                <h2 class="text-2xl font-semibold mb-4 text-gray-900">Daftar Pertunjukan</h2>
+                <div id="show-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Cards will be populated here by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Area Solusi dan Panel Hasil -->
+            <div class="flex-1">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-900">Jadwal Dina</h2>
+                <div id="solution-area" class="drag-area">
+                    <!-- Dropped cards will appear here -->
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-4 mt-6 justify-center">
+                    <button id="check-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-transform duration-200 transform hover:scale-105">
+                        Cek Solusi
+                    </button>
+                    <button id="show-solution-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-transform duration-200 transform hover:scale-105 hidden">
+                        Tampilkan Solusi
+                    </button>
+                    <button id="reset-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-transform duration-200 transform hover:scale-105">
+                        Reset
+                    </button>
+                </div>
+
+                <div id="feedback-panel" class="feedback-panel hidden">
+                    <!-- Feedback will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const showList = document.getElementById('show-list');
+            const solutionArea = document.getElementById('solution-area');
+            const checkBtn = document.getElementById('check-btn');
+            const showSolutionBtn = document.getElementById('show-solution-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const feedbackPanel = document.getElementById('feedback-panel');
+
+            // Data pertunjukan baru
+            const shows = [
+                { id: 1, name: 'Pinguin', start: '08:00', end: '09:30', emoji: '🐧' },
+                { id: 2, name: 'Orang Utan', start: '09:15', end: '10:30', emoji: '🦧' },
+                { id: 3, name: 'Harimau', start: '10:00', end: '12:00', emoji: '🐅' },
+                { id: 4, name: 'Burung Pemangsa', start: '11:00', end: '12:30', emoji: '🦅' },
+                { id: 5, name: 'Beruang Madu', start: '13:00', end: '14:30', emoji: '🐻' },
+                { id: 6, name: 'Buaya', start: '14:00', end: '15:00', emoji: '🐊' },
+                { id: 7, name: 'Singa', start: '15:00', end: '15:30', emoji: '🦁' },
+                { id: 8, name: 'Panda', start: '15:30', end: '16:30', emoji: '🐼' },
+                { id: 9, name: 'Anjing Laut', start: '15:30', end: '16:00', emoji: '🦭' },
+                { id: 10, name: 'Ular Piton', start: '16:00', end: '17:00', emoji: '🐍' }
+            ];
+
+            // Solusi optimal baru berdasarkan algoritma greedy
+            const optimalSolutionIds = [1, 3, 5, 7, 9, 10];
+
+            function renderCards(container, items) {
+                container.innerHTML = '';
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.setAttribute('draggable', true);
+                    card.dataset.id = item.id;
+                    card.dataset.start = item.start;
+                    card.dataset.end = item.end;
+                    card.innerHTML = `
+                        <div class="card-header text-gray-900 mb-1">
+                            <span class="text-xl mr-2">${item.emoji}</span>
+                            <span>${item.name}</span>
+                        </div>
+                        <div class="card-body">
+                            <p>Mulai: ${item.start}</p>
+                            <p>Selesai: ${item.end}</p>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            // Helper function to convert time string to minutes
+            function timeToMinutes(timeString) {
+                const [hours, minutes] = timeString.split(':').map(Number);
+                return hours * 60 + minutes;
+            }
+
+            // Fungsi untuk memeriksa tumpang tindih
+            function isOverlapping(newStart, newEnd, existingShows) {
+                const newStartMinutes = timeToMinutes(newStart);
+                const newEndMinutes = timeToMinutes(newEnd);
+
+                for (const show of existingShows) {
+                    const existingStartMinutes = timeToMinutes(show.dataset.start);
+                    const existingEndMinutes = timeToMinutes(show.dataset.end);
+                    if (newStartMinutes < existingEndMinutes && newEndMinutes > existingStartMinutes) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            // Fungsi untuk menampilkan feedback
+            function showFeedback(message, type) {
+                feedbackPanel.classList.remove('hidden');
+                feedbackPanel.textContent = message;
+                if (type === 'success') {
+                    feedbackPanel.style.backgroundColor = '#d1f7d3';
+                    feedbackPanel.style.color = '#1a7d2b';
+                } else if (type === 'error') {
+                    feedbackPanel.style.backgroundColor = '#fce7e7';
+                    feedbackPanel.style.color = '#991b1b';
+                } else if (type === 'warning') {
+                    feedbackPanel.style.backgroundColor = '#fff8e1';
+                    feedbackPanel.style.color = '#92400e';
+                }
+            }
+
+            // Drag and drop event listeners
+            let draggedItem = null;
+
+            showList.addEventListener('dragstart', (e) => {
+                draggedItem = e.target.closest('.card');
+                e.dataTransfer.setData('text/plain', draggedItem.dataset.id);
+                setTimeout(() => draggedItem.style.display = 'none', 0);
+            });
+            
+            showList.addEventListener('dragend', (e) => {
+                 if(draggedItem && !solutionArea.contains(draggedItem)) {
+                     draggedItem.style.display = 'flex';
+                 }
+            });
+
+            solutionArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                solutionArea.classList.add('drag-over');
+            });
+
+            solutionArea.addEventListener('dragleave', () => {
+                solutionArea.classList.remove('drag-over');
+            });
+
+            solutionArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                solutionArea.classList.remove('drag-over');
+                
+                const id = e.dataTransfer.getData('text/plain');
+                const droppedItem = document.querySelector(`[data-id='${id}']`);
+                const droppedItemStart = droppedItem.dataset.start;
+                const droppedItemEnd = droppedItem.dataset.end;
+
+                const existingShows = Array.from(solutionArea.querySelectorAll('.card'));
+                if (isOverlapping(droppedItemStart, droppedItemEnd, existingShows)) {
+                    showFeedback('Tumpang Tindih! Pertunjukan ini berbenturan dengan jadwal yang sudah ada.', 'warning');
+                    if (draggedItem) {
+                        draggedItem.style.display = 'flex';
+                    }
+                } else {
+                    // Temukan posisi yang benar secara kronologis
+                    let inserted = false;
+                    for (let i = 0; i < existingShows.length; i++) {
+                        if (timeToMinutes(droppedItemStart) < timeToMinutes(existingShows[i].dataset.start)) {
+                            solutionArea.insertBefore(droppedItem, existingShows[i]);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    if (!inserted) {
+                        solutionArea.appendChild(droppedItem);
+                    }
+                    droppedItem.style.display = 'flex';
+                }
+                draggedItem = null;
+            });
+            
+            document.body.addEventListener('drop', (e) => {
+                if (draggedItem && !solutionArea.contains(e.target) && !showList.contains(e.target)) {
+                    draggedItem.style.display = 'flex';
+                    draggedItem = null;
+                }
+            });
+
+
+            // Tombol Cek Solusi
+            checkBtn.addEventListener('click', () => {
+                const userSolution = Array.from(solutionArea.querySelectorAll('.card')).map(card => parseInt(card.dataset.id));
+                
+                if (userSolution.length === optimalSolutionIds.length && JSON.stringify(userSolution) === JSON.stringify(optimalSolutionIds)) {
+                    showFeedback('Selamat! Anda berhasil menemukan jadwal optimal dengan 6 pertunjukan!', 'success');
+                    showSolutionBtn.classList.add('hidden');
+                } else {
+                    const message = `Belum optimal. Anda bisa menonton lebih banyak pertunjukan atau kombinasi yang berbeda. Anda berhasil memilih ${userSolution.length} pertunjukan. Coba lagi!`;
+                    showFeedback(message, 'error');
+                    showSolutionBtn.classList.remove('hidden');
+                }
+            });
+
+            // Tombol Tampilkan Solusi
+            showSolutionBtn.addEventListener('click', () => {
+                solutionArea.innerHTML = '';
+                // Kembalikan semua kartu ke daftar awal terlebih dahulu
+                renderCards(showList, shows);
+                
+                // Pindahkan kartu solusi optimal ke area solusi
+                optimalSolutionIds.forEach(id => {
+                    const card = document.querySelector(`#show-list [data-id='${id}']`);
+                    if (card) {
+                        solutionArea.appendChild(card);
+                    }
+                });
+                
+                showSolutionBtn.classList.add('hidden');
+                showFeedback('Ini adalah solusi optimalnya.', 'success');
+            });
+            
+            // Tombol Reset
+            resetBtn.addEventListener('click', () => {
+                renderCards(showList, shows);
+                solutionArea.innerHTML = '';
+                feedbackPanel.classList.add('hidden');
+                showSolutionBtn.classList.add('hidden');
+            });
+
+            // Initial rendering
+            renderCards(showList, shows);
+        });
+    </script>
+</body>
+</html>

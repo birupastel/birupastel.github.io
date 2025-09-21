@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Kriptografi: Vigenère Cipher</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter and Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .font-crypto {
+            font-family: 'Fira Code', monospace;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Container Utama -->
+    <div class="w-full max-w-2xl mx-auto">
+        
+        <!-- Halaman Menu Utama -->
+        <div id="main-menu" class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Kuis Kriptografi: Vigenère Cipher</h1>
+            <p class="text-lg text-gray-600 mb-8">Pilih mode permainan untuk menguji kemampuanmu!</p>
+            <div class="flex flex-col gap-4 max-w-sm mx-auto">
+                <button id="enkripsi-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-transform transform hover:scale-105">Mode Enkripsi</button>
+                <button id="dekripsi-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-transform transform hover:scale-105">Mode Dekripsi</button>
+            </div>
+        </div>
+
+        <!-- Halaman Kuis -->
+        <div id="quiz-page" class="hidden">
+            <header class="flex justify-between items-center mb-6">
+                <div class="flex items-center space-x-2">
+                    <button id="back-btn" class="text-gray-500 hover:text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-left"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                    <h2 id="mode-title" class="text-2xl font-bold text-gray-900"></h2>
+                </div>
+                
+                <div class="flex items-center space-x-4 bg-gray-100 p-3 rounded-xl shadow-inner">
+                    <span class="text-sm font-semibold text-gray-600">SKOR ANDA</span>
+                    <span id="score-display" class="text-2xl font-bold text-blue-600">0</span>
+                    <button id="reset-btn" class="p-1 rounded-full text-white bg-red-500 hover:bg-red-600 shadow-md transition-transform transform hover:scale-110" aria-label="Reset Poin">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-ccw">
+                             <path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.61L23 10"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <main class="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-200">
+                <div class="mb-6 pb-6 border-b border-gray-200">
+                    <p id="label-soal-1" class="text-sm text-gray-500 mb-2 text-center"></p>
+                    <div class="flex items-center justify-center space-x-4 text-xl sm:text-2xl font-medium font-crypto tracking-widest">
+                        <span id="kata-soal-1" class="bg-gray-100 px-3 py-1 rounded-md text-gray-700"></span>
+                    </div>
+                </div>
+
+                <div class="mb-6 pb-6 border-b border-gray-200">
+                    <p id="label-soal-2" class="text-sm text-gray-500 mb-2 text-center"></p>
+                    <div class="flex items-center justify-center space-x-4 text-xl sm:text-2xl font-medium font-crypto tracking-widest">
+                        <span id="kata-soal-2" class="bg-gray-100 px-3 py-1 rounded-md text-gray-700"></span>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <p id="label-input" class="text-sm text-gray-500 mb-2"></p>
+                    <input type="text" id="answer-input" class="w-full sm:w-auto text-center form-input px-4 py-2 border-2 border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out uppercase placeholder:tracking-normal">
+                </div>
+            </main>
+
+            <!-- Area Aksi -->
+            <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button id="submit-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-transform transform hover:scale-105">Submit Jawaban</button>
+                <button id="skip-btn" class="w-full sm:w-auto bg-white hover:bg-gray-100 text-gray-700 font-bold py-3 px-8 rounded-lg border-2 border-gray-300 transition-transform transform hover:scale-105">Lewati / Soal Berikutnya</button>
+            </div>
+
+            <!-- Area Feedback -->
+            <div id="feedback-area" class="mt-6 text-center text-lg font-semibold min-h-[28px]"></div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi Reset -->
+    <div id="reset-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-gray-900 bg-opacity-50">
+        <div class="bg-white p-8 rounded-xl shadow-2xl text-center max-w-sm mx-auto">
+            <p class="text-xl font-semibold mb-4">Apakah Anda yakin ingin mereset skor?</p>
+            <p class="text-sm text-gray-600 mb-6">Skor Anda akan kembali ke 0.</p>
+            <div class="flex justify-center space-x-4">
+                <button id="cancel-reset-btn" class="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium">Batal</button>
+                <button id="confirm-reset-btn" class="px-6 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium">Ya, Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management ---
+        let currentMode = '';
+        let currentPlaintext = '';
+        let currentKey = '';
+        let currentCiphertext = '';
+
+        const wordList = ['INDONESIA', 'PANCASILA', 'NUSANTARA', 'BOROBUDUR', 'YOGYAKARTA', 'GARUDA', 'JAKARTA', 'KEMERDEKAAN', 'REPUBLIK'];
+        const keyList = ['MERDEKA', 'BHINNEKA', 'SATU', 'BUDI', 'JAYA', 'DAMAI', 'CINTA', 'BAHAGIA'];
+
+        // --- DOM Elements ---
+        const mainMenu = document.getElementById('main-menu');
+        const quizPage = document.getElementById('quiz-page');
+        const enkripsiBtn = document.getElementById('enkripsi-btn');
+        const dekripsiBtn = document.getElementById('dekripsi-btn');
+        const backBtn = document.getElementById('back-btn');
+        const modeTitle = document.getElementById('mode-title');
+        const scoreDisplay = document.getElementById('score-display');
+        const resetBtn = document.getElementById('reset-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const skipBtn = document.getElementById('skip-btn');
+        const feedbackArea = document.getElementById('feedback-area');
+        const labelSoal1 = document.getElementById('label-soal-1');
+        const kataSoal1 = document.getElementById('kata-soal-1');
+        const labelSoal2 = document.getElementById('label-soal-2');
+        const kataSoal2 = document.getElementById('kata-soal-2');
+        const labelInput = document.getElementById('label-input');
+        const answerInput = document.getElementById('answer-input');
+        const resetModal = document.getElementById('reset-modal');
+        const cancelResetBtn = document.getElementById('cancel-reset-btn');
+        const confirmResetBtn = document.getElementById('confirm-reset-btn');
+
+        // --- Vigenere Cipher Core Logic ---
+        function cleanText(text) {
+            return text.toUpperCase().replace(/[^A-Z]/g, '');
+        }
+
+        function vigenereEncrypt(plaintext, key) {
+            plaintext = cleanText(plaintext);
+            key = cleanText(key);
+            let ciphertext = '';
+            for (let i = 0; i < plaintext.length; i++) {
+                const p = plaintext.charCodeAt(i) - 65;
+                const k = key.charCodeAt(i % key.length) - 65;
+                const c = (p + k) % 26;
+                ciphertext += String.fromCharCode(c + 65);
+            }
+            return ciphertext;
+        }
+
+        function vigenereDecrypt(ciphertext, key) {
+            ciphertext = cleanText(ciphertext);
+            key = cleanText(key);
+            let plaintext = '';
+            for (let i = 0; i < ciphertext.length; i++) {
+                const c = ciphertext.charCodeAt(i) - 65;
+                const k = key.charCodeAt(i % key.length) - 65;
+                const p = (c - k + 26) % 26;
+                plaintext += String.fromCharCode(p + 65);
+            }
+            return plaintext;
+        }
+
+        // --- Gamification & Storage Logic ---
+        function loadScore() {
+            const score = localStorage.getItem('vigenereScore');
+            return score ? parseInt(score, 10) : 0;
+        }
+
+        function saveScore(score) {
+            localStorage.setItem('vigenereScore', score);
+            scoreDisplay.textContent = score;
+        }
+
+        function addScore(points) {
+            let score = loadScore();
+            score += points;
+            saveScore(score);
+        }
+        
+        // --- View & State Management ---
+        function navigateTo(page) {
+            if (page === 'menu') {
+                mainMenu.classList.remove('hidden');
+                quizPage.classList.add('hidden');
+            } else {
+                mainMenu.classList.add('hidden');
+                quizPage.classList.remove('hidden');
+            }
+        }
+
+        function generateNewQuiz() {
+            feedbackArea.textContent = '';
+            answerInput.value = '';
+            answerInput.focus();
+
+            const randomPlaintext = wordList[Math.floor(Math.random() * wordList.length)];
+            const randomKey = keyList[Math.floor(Math.random() * keyList.length)];
+            const encryptedText = vigenereEncrypt(randomPlaintext, randomKey);
+
+            currentPlaintext = randomPlaintext;
+            currentKey = randomKey;
+            currentCiphertext = encryptedText;
+
+            if (currentMode === 'enkripsi') {
+                labelSoal1.textContent = 'Pesan Asli (Plaintext):';
+                kataSoal1.textContent = currentPlaintext;
+                labelSoal2.textContent = 'Kunci Enkripsi:';
+                kataSoal2.textContent = currentKey;
+                labelInput.textContent = 'Masukkan Hasil Enkripsi (Ciphertext):';
+            } else { // 'dekripsi'
+                labelSoal1.textContent = 'Pesan Terenkripsi (Ciphertext):';
+                kataSoal1.textContent = currentCiphertext;
+                labelSoal2.textContent = 'Kunci Dekripsi:';
+                kataSoal2.textContent = currentKey;
+                labelInput.textContent = 'Masukkan Pesan Asli (Plaintext):';
+            }
+        }
+
+        // --- Event Handlers ---
+        enkripsiBtn.addEventListener('click', () => {
+            currentMode = 'enkripsi';
+            modeTitle.textContent = 'Mode Enkripsi';
+            navigateTo('quiz');
+            generateNewQuiz();
+        });
+
+        dekripsiBtn.addEventListener('click', () => {
+            currentMode = 'dekripsi';
+            modeTitle.textContent = 'Mode Dekripsi';
+            navigateTo('quiz');
+            generateNewQuiz();
+        });
+
+        backBtn.addEventListener('click', () => {
+            navigateTo('menu');
+        });
+
+        submitBtn.addEventListener('click', () => {
+            const userAnswer = cleanText(answerInput.value);
+            let correctAnswer;
+
+            if (currentMode === 'enkripsi') {
+                correctAnswer = vigenereEncrypt(currentPlaintext, currentKey);
+            } else { // 'dekripsi'
+                correctAnswer = vigenereDecrypt(currentCiphertext, currentKey);
+            }
+
+            if (userAnswer === correctAnswer) {
+                feedbackArea.textContent = 'Benar! +100 Poin';
+                feedbackArea.className = 'mt-6 text-center text-lg font-semibold text-green-600';
+                addScore(100);
+                setTimeout(generateNewQuiz, 1500); // Otomatis muat soal baru setelah 1.5 detik
+            } else {
+                feedbackArea.textContent = 'Jawaban Kurang Tepat. Coba Lagi!';
+                feedbackArea.className = 'mt-6 text-center text-lg font-semibold text-red-600';
+            }
+        });
+
+        skipBtn.addEventListener('click', generateNewQuiz);
+
+        resetBtn.addEventListener('click', () => {
+            resetModal.classList.remove('hidden');
+            resetModal.classList.add('flex');
+        });
+
+        cancelResetBtn.addEventListener('click', () => {
+            resetModal.classList.remove('flex');
+            resetModal.classList.add('hidden');
+        });
+
+        confirmResetBtn.addEventListener('click', () => {
+            saveScore(0);
+            feedbackArea.textContent = 'Skor direset.';
+            feedbackArea.className = 'mt-6 text-center text-lg font-semibold text-gray-500';
+            resetModal.classList.remove('flex');
+            resetModal.classList.add('hidden');
+        });
+
+        // Memungkinkan pengguna menekan "Enter" untuk submit jawaban
+        answerInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                submitBtn.click();
+            }
+        });
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            saveScore(loadScore()); // Memuat dan menampilkan skor saat pertama kali dimuat
+        });
+    </script>
+</body>
+</html>

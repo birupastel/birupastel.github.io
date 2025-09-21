@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Penjarah Harta Karun</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Very light gray for clean theme */
+            color: #2d3748;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            background-color: #ffffff;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+        }
+        .treasure-area, .bag-area {
+            flex: 1;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            background-color: #f0f4f8;
+            border: 2px solid #cbd5e0;
+        }
+        .treasure-area {
+            border-color: #f6ad55;
+        }
+        .bag-area {
+            border-color: #63b3ed;
+            position: relative;
+        }
+        .card {
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            touch-action: none;
+        }
+        .card:active {
+            cursor: grabbing;
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(246, 173, 85, 0.5), 0 4px 6px -2px rgba(246, 173, 85, 0.3);
+        }
+        .card-icon {
+            width: 32px;
+            height: 32px;
+            fill: #f6ad55;
+            margin-right: 0.5rem;
+            display: inline-block;
+        }
+        .progress-bar {
+            background-color: #e2e8f0;
+            height: 25px;
+            border-radius: 9999px;
+            overflow: hidden;
+            margin-top: 1rem;
+            border: 2px solid #cbd5e0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #63b3ed;
+            transition: width 0.3s ease-in-out, background-color 0.3s;
+        }
+        .progress-fill.full {
+            background-color: #f56565;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .check-btn {
+            background-color: #48bb78;
+        }
+        .check-btn:hover {
+            background-color: #38a169;
+        }
+        .reset-btn {
+            background-color: #e53e3e;
+        }
+        .reset-btn:hover {
+            background-color: #c53030;
+        }
+        .shake-animation {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        .feedback-message {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+        }
+        .feedback-success {
+            background-color: #d1f7d3;
+            color: #1a7d2b;
+        }
+        .feedback-warning {
+            background-color: #fff8e1;
+            color: #c08502;
+        }
+        .feedback-info {
+            background-color: #e3f2fd;
+            color: #0b5490;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div class="p-6 text-center">
+        <h1 class="text-4xl font-extrabold text-yellow-600 mb-2">Petualangan Penjarah Harta Karun</h1>
+        <p class="text-lg text-gray-600">Pilih harta karun dengan nilai maksimal tanpa melebihi kapasitas tas!</p>
+    </div>
+
+    <div class="container md:flex-row flex-col">
+        <!-- Available Treasures Column -->
+        <div class="treasure-area md:w-1/2" id="treasures-available">
+            <h2 class="text-2xl font-bold mb-4 text-yellow-700">Harta Karun Tersedia</h2>
+            <!-- Treasure items will be rendered here by JS -->
+        </div>
+
+        <!-- Treasure Bag Column -->
+        <div class="bag-area md:w-1/2">
+            <h2 class="text-2xl font-bold mb-4 text-blue-600">Tas Harta Karun</h2>
+            <div class="info-panel mb-4 text-sm md:text-base">
+                <p>Kapasitas Maksimal: <span id="max-capacity" class="font-bold">10 kg</span></p>
+                <p>Berat Saat Ini: <span id="current-weight" class="font-bold">0 kg</span></p>
+                <p>Total Nilai: <span id="total-value" class="font-bold">0 Koin</span></p>
+            </div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <div id="treasure-bag" class="mt-4 min-h-[200px] p-2 border-2 border-dashed border-gray-400 rounded-lg">
+                <!-- Dropped items will appear here -->
+            </div>
+            <div class="flex flex-col md:flex-row gap-4 mt-4 justify-center items-center">
+                <button id="checkBtn" class="btn check-btn">Cek Solusi</button>
+                <button id="resetBtn" class="btn reset-btn">Mulai Ulang</button>
+            </div>
+            <div id="feedback-message" class="feedback-message text-center hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const treasuresAvailable = document.getElementById('treasures-available');
+            const treasureBag = document.getElementById('treasure-bag');
+            const currentWeightDisplay = document.getElementById('current-weight');
+            const totalValueDisplay = document.getElementById('total-value');
+            const progressFill = document.getElementById('progress-fill');
+            const checkBtn = document.getElementById('checkBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const feedbackMessageDiv = document.getElementById('feedback-message');
+
+            const MAX_CAPACITY = 10;
+            const OPTIMAL_VALUE = 40; // Mengubah nilai optimal menjadi 40
+            let currentWeight = 0;
+            let totalValue = 0;
+
+            const items = [
+                { id: 'item-1', name: 'Mahkota Raja', weight: 4, value: 15, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M5.5 16L3 12L5.5 8H18.5L21 12L18.5 16H5.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 8L12 3L18.5 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 3V12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+                { id: 'item-2', name: 'Piala Emas', weight: 5, value: 18, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M8 12.5V20.5M16 12.5V20.5M12 3V12.5M2 20.5H22M4 12.5H20M12 20.5V23.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2.5a5 5 0 015 5v5a5 5 0 01-10 0v-5a5 5 0 015-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+                { id: 'item-3', name: 'Kantong Koin', weight: 3, value: 12, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M15.5 12c0 2.485-2.015 4.5-4.5 4.5S6.5 14.485 6.5 12s2.015-4.5 4.5-4.5 4.5 2.015 4.5 4.5z"/></svg>` },
+                { id: 'item-4', name: 'Kalung Permata', weight: 2, value: 8, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+                { id: 'item-5', name: 'Patung Giok', weight: 1, value: 5, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7s8 6 8 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+            ];
+
+            function renderItems(container, itemsToRender) {
+                container.innerHTML = '';
+                itemsToRender.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.setAttribute('draggable', true);
+                    card.dataset.id = item.id;
+                    card.dataset.weight = item.weight;
+                    card.dataset.value = item.value;
+                    card.innerHTML = `
+                        <div class="flex items-center mb-2">
+                            ${item.icon}
+                            <span class="font-bold text-lg text-gray-700">${item.name}</span>
+                        </div>
+                        <p class="text-sm text-gray-600">Berat: ${item.weight} kg</p>
+                        <p class="text-sm text-gray-600">Nilai: ${item.value} Koin</p>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            function updateDisplay() {
+                currentWeightDisplay.textContent = `${currentWeight} kg`;
+                totalValueDisplay.textContent = `${totalValue} Koin`;
+                const percentage = (currentWeight / MAX_CAPACITY) * 100;
+                progressFill.style.width = `${Math.min(percentage, 100)}%`;
+                if (currentWeight > MAX_CAPACITY) {
+                    progressFill.classList.add('full');
+                } else {
+                    progressFill.classList.remove('full');
+                }
+            }
+            
+            function showFeedback(message, type) {
+                feedbackMessageDiv.textContent = message;
+                feedbackMessageDiv.className = `feedback-message ${type} block`;
+                setTimeout(() => {
+                    feedbackMessageDiv.classList.add('hidden');
+                }, 4000);
+            }
+
+            function resetGame() {
+                currentWeight = 0;
+                totalValue = 0;
+                renderItems(treasuresAvailable, items);
+                treasureBag.innerHTML = '';
+                updateDisplay();
+                feedbackMessageDiv.classList.add('hidden');
+            }
+
+            let draggedItem = null;
+
+            treasuresAvailable.addEventListener('dragstart', (e) => {
+                draggedItem = e.target.closest('.card');
+                e.dataTransfer.setData('text/plain', draggedItem.dataset.id);
+                setTimeout(() => draggedItem.style.display = 'none', 0);
+            });
+
+            treasureBag.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                treasureBag.classList.add('border-blue-500');
+            });
+
+            treasureBag.addEventListener('dragleave', () => {
+                treasureBag.classList.remove('border-blue-500');
+            });
+
+            treasureBag.addEventListener('drop', (e) => {
+                e.preventDefault();
+                treasureBag.classList.remove('border-blue-500');
+                
+                const id = e.dataTransfer.getData('text/plain');
+                const droppedItem = items.find(item => item.id === id);
+                
+                if (currentWeight + droppedItem.weight > MAX_CAPACITY) {
+                    treasureBag.classList.add('shake-animation');
+                    setTimeout(() => {
+                        treasureBag.classList.remove('shake-animation');
+                        if (draggedItem) {
+                            draggedItem.style.display = 'block';
+                        }
+                    }, 500);
+                } else {
+                    currentWeight += droppedItem.weight;
+                    totalValue += droppedItem.value;
+                    treasureBag.appendChild(draggedItem);
+                    draggedItem.style.display = 'block';
+                }
+                updateDisplay();
+            });
+
+            treasureBag.addEventListener('dragstart', (e) => {
+                draggedItem = e.target.closest('.card');
+                e.dataTransfer.setData('text/plain', draggedItem.dataset.id);
+                setTimeout(() => draggedItem.style.display = 'none', 0);
+            });
+            
+            document.body.addEventListener('dragover', (e) => {
+                 e.preventDefault();
+            });
+
+            document.body.addEventListener('drop', (e) => {
+                const isDroppedOutsideBag = !treasureBag.contains(e.target);
+                if (isDroppedOutsideBag && draggedItem && treasuresAvailable.contains(draggedItem) === false) {
+                    const id = draggedItem.dataset.id;
+                    const returnedItem = items.find(item => item.id === id);
+                    if (returnedItem) {
+                        currentWeight -= returnedItem.weight;
+                        totalValue -= returnedItem.value;
+                        draggedItem.style.display = 'block';
+                        treasuresAvailable.appendChild(draggedItem);
+                        updateDisplay();
+                    }
+                }
+            });
+
+            checkBtn.addEventListener('click', () => {
+                if (totalValue === OPTIMAL_VALUE) {
+                    showFeedback('Luar Biasa! Kamu menemukan kombinasi paling berharga! 🎉', 'feedback-success');
+                } else if (totalValue > 0 && totalValue < OPTIMAL_VALUE) {
+                    showFeedback('Sudah bagus! Tapi coba lagi, ada kombinasi lain yang nilainya lebih tinggi.', 'feedback-warning');
+                } else if (totalValue === 0) {
+                    showFeedback('Tas masih kosong, ayo kumpulkan harta karun!', 'feedback-info');
+                }
+            });
+            
+            resetBtn.addEventListener('click', resetGame);
+
+            resetGame(); // Initial render
+        });
+    </script>
+</body>
+</html>
