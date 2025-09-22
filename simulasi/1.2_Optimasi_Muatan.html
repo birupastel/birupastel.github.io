@@ -148,7 +148,7 @@
         .bg-box-6 { background-color: #818cf8; }
         .bg-box-7 { background-color: #c4b5fd; }
 
-        .check-button {
+        .check-button, .reset-button {
             padding: 0.75rem 2.5rem;
             font-size: 1.125rem;
             font-weight: 700;
@@ -160,12 +160,19 @@
             transition: background-color 0.3s, transform 0.2s;
             margin-top: 1rem;
         }
-        .check-button:hover {
+        .check-button:hover, .reset-button:hover {
             background-color: #1d4ed8;
             transform: translateY(-2px);
         }
-        .check-button:active {
+        .check-button:active, .reset-button:active {
             transform: translateY(0);
+        }
+
+        .reset-button {
+            background-color: #ef4444;
+        }
+        .reset-button:hover {
+            background-color: #dc2626;
         }
 
         .feedback-message {
@@ -259,7 +266,10 @@
                     <div class="drag-area" id="drag-area-3"></div>
                 </div>
             </div>
-            <button id="checkBtn" class="check-button">Periksa</button>
+            <div class="flex gap-4">
+                <button id="checkBtn" class="check-button">Periksa</button>
+                <button id="resetBtn" class="reset-button">Mulai Ulang</button>
+            </div>
             <div id="feedback" class="feedback-message"></div>
         </div>
 
@@ -281,36 +291,49 @@
         const dragAreas = document.querySelectorAll('.drag-area');
         const draggableContainer = document.getElementById('draggable-boxes');
         const checkBtn = document.getElementById('checkBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const feedbackMessage = document.getElementById('feedback');
         const correctModal = document.getElementById('correctModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const mainContainer = document.getElementById('main-container');
 
-        const boxData = [
-            { value: 350, color: 'bg-box-1' },
-            { value: 150, color: 'bg-box-2' },
-            { value: 200, color: 'bg-box-3' },
-            { value: 400, color: 'bg-box-4' },
-            { value: 300, color: 'bg-box-5' },
-            { value: 500, color: 'bg-box-6' },
-            { value: 250, color: 'bg-box-7' }
+        const boxColors = [
+            'bg-box-1', 'bg-box-2', 'bg-box-3', 'bg-box-4', 'bg-box-5', 'bg-box-6', 'bg-box-7'
         ];
 
         let draggedItem = null;
+        let optimalValues = [];
+
+        // Function to generate random values for the boxes
+        function generateBoxValues() {
+            const values = [];
+            for (let i = 0; i < 7; i++) {
+                values.push(Math.floor(Math.random() * (550 - 150 + 1)) + 150); // Random value between 150 and 550
+            }
+            return values;
+        }
 
         // Function to create draggable boxes
         function createBoxes() {
+            const boxValues = generateBoxValues();
             // Clear existing boxes
             draggableContainer.innerHTML = '';
-            boxData.forEach(data => {
+            boxValues.forEach((value, index) => {
                 const box = document.createElement('div');
-                box.classList.add('draggable-box', data.color);
-                box.textContent = data.value;
+                box.classList.add('draggable-box', boxColors[index % boxColors.length]);
+                box.textContent = value;
                 box.setAttribute('draggable', 'true');
-                box.dataset.value = data.value;
-                box.id = `box-${data.value}`;
+                box.dataset.value = value;
+                box.id = `box-${value}-${index}`;
                 draggableContainer.appendChild(box);
             });
+            calculateOptimalSolution(boxValues);
+        }
+
+        // Function to calculate the optimal solution
+        function calculateOptimalSolution(values) {
+            const sortedValues = [...values].sort((a, b) => b - a);
+            optimalValues = sortedValues.slice(0, 3);
         }
 
         // Add drag event listeners to draggable boxes
@@ -358,19 +381,27 @@
                 }
             });
 
-            // Check for exact order: 500, 400, 350
-            const correctValues = [500, 400, 350];
-            const isCorrect = JSON.stringify(droppedValues) === JSON.stringify(correctValues);
+            // Check if exactly 3 boxes are in the truck
+            if (droppedValues.length !== 3) {
+                feedbackMessage.textContent = "Masukkan 3 kotak ke dalam truk!";
+                feedbackMessage.classList.add('incorrect');
+                feedbackMessage.classList.remove('correct');
+                return;
+            }
+
+            // Sort both arrays to compare
+            droppedValues.sort((a, b) => b - a);
+            const isCorrect = JSON.stringify(droppedValues) === JSON.stringify(optimalValues);
 
             if (isCorrect) {
                 // Correct answer
-                feedbackMessage.textContent = "Jawaban Benar!";
+                feedbackMessage.textContent = "Jawaban Benar! 🎉";
                 feedbackMessage.classList.add('correct');
                 feedbackMessage.classList.remove('incorrect');
                 correctModal.style.display = 'flex';
             } else {
                 // Incorrect answer
-                feedbackMessage.textContent = "Jawaban Salah!";
+                feedbackMessage.textContent = "Jawaban Salah! Total bobot yang kamu dapatkan adalah " + droppedValues.reduce((a, b) => a + b, 0) + ", sementara solusi maksimal adalah " + optimalValues.reduce((a, b) => a + b, 0) + ".";
                 feedbackMessage.classList.add('incorrect');
                 feedbackMessage.classList.remove('correct');
                 
@@ -386,6 +417,17 @@
                     });
                 }, 500);
             }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            // Return all boxes to their original place before creating new ones
+            dragAreas.forEach(area => {
+                if (area.firstChild) {
+                    draggableContainer.appendChild(area.firstChild);
+                }
+            });
+            createBoxes();
+            feedbackMessage.textContent = '';
         });
 
         closeModalBtn.addEventListener('click', () => {
