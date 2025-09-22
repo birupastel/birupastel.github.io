@@ -188,17 +188,57 @@
             const feedbackMessageDiv = document.getElementById('feedback-message');
 
             const MAX_CAPACITY = 10;
-            const OPTIMAL_VALUE = 40; // Mengubah nilai optimal menjadi 40
             let currentWeight = 0;
             let totalValue = 0;
+            let currentOptimalValue = 0;
 
-            const items = [
-                { id: 'item-1', name: 'Mahkota Raja', weight: 4, value: 15, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M5.5 16L3 12L5.5 8H18.5L21 12L18.5 16H5.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 8L12 3L18.5 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 3V12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
-                { id: 'item-2', name: 'Piala Emas', weight: 5, value: 18, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M8 12.5V20.5M16 12.5V20.5M12 3V12.5M2 20.5H22M4 12.5H20M12 20.5V23.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2.5a5 5 0 015 5v5a5 5 0 01-10 0v-5a5 5 0 015-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
-                { id: 'item-3', name: 'Kantong Koin', weight: 3, value: 12, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M15.5 12c0 2.485-2.015 4.5-4.5 4.5S6.5 14.485 6.5 12s2.015-4.5 4.5-4.5 4.5 2.015 4.5 4.5z"/></svg>` },
-                { id: 'item-4', name: 'Kalung Permata', weight: 2, value: 8, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
-                { id: 'item-5', name: 'Patung Giok', weight: 1, value: 5, icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7s8 6 8 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+            const itemNames = [
+                { name: 'Mahkota Raja', icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M5.5 16L3 12L5.5 8H18.5L21 12L18.5 16H5.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 8L12 3L18.5 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 3V12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+                { name: 'Piala Emas', icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M8 12.5V20.5M16 12.5V20.5M12 3V12.5M2 20.5H22M4 12.5H20M12 20.5V23.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2.5a5 5 0 015 5v5a5 5 0 01-10 0v-5a5 5 0 015-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+                { name: 'Kantong Koin', icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M15.5 12c0 2.485-2.015 4.5-4.5 4.5S6.5 14.485 6.5 12s2.015-4.5 4.5-4.5 4.5 2.015 4.5 4.5z"/></svg>` },
+                { name: 'Kalung Permata', icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+                { name: 'Patung Giok', icon: `<svg viewBox="0 0 24 24" class="card-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7s8 6 8 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
             ];
+            
+            let items = [];
+
+            function generateRandomItems() {
+                const newItems = [];
+                for (let i = 0; i < itemNames.length; i++) {
+                    const randomWeight = Math.floor(Math.random() * 5) + 1; // 1-5 kg
+                    const randomValue = Math.floor(Math.random() * 16) + 5; // 5-20 coins
+                    newItems.push({
+                        id: `item-${i+1}`,
+                        name: itemNames[i].name,
+                        weight: randomWeight,
+                        value: randomValue,
+                        icon: itemNames[i].icon
+                    });
+                }
+                return newItems;
+            }
+            
+            function calculateOptimalValue(items, maxCapacity) {
+                let optimalValue = 0;
+                const numItems = items.length;
+                const numCombinations = Math.pow(2, numItems);
+
+                for (let i = 0; i < numCombinations; i++) {
+                    let currentWeight = 0;
+                    let currentValue = 0;
+                    for (let j = 0; j < numItems; j++) {
+                        // Check if the j-th item is included in the i-th combination
+                        if ((i >> j) & 1) {
+                            currentWeight += items[j].weight;
+                            currentValue += items[j].value;
+                        }
+                    }
+                    if (currentWeight <= maxCapacity && currentValue > optimalValue) {
+                        optimalValue = currentValue;
+                    }
+                }
+                return optimalValue;
+            }
 
             function renderItems(container, itemsToRender) {
                 container.innerHTML = '';
@@ -244,6 +284,8 @@
             function resetGame() {
                 currentWeight = 0;
                 totalValue = 0;
+                items = generateRandomItems();
+                currentOptimalValue = calculateOptimalValue(items, MAX_CAPACITY);
                 renderItems(treasuresAvailable, items);
                 treasureBag.innerHTML = '';
                 updateDisplay();
@@ -317,9 +359,9 @@
             });
 
             checkBtn.addEventListener('click', () => {
-                if (totalValue === OPTIMAL_VALUE) {
+                if (totalValue === currentOptimalValue) {
                     showFeedback('Luar Biasa! Kamu menemukan kombinasi paling berharga! 🎉', 'feedback-success');
-                } else if (totalValue > 0 && totalValue < OPTIMAL_VALUE) {
+                } else if (totalValue > 0 && totalValue < currentOptimalValue) {
                     showFeedback('Sudah bagus! Tapi coba lagi, ada kombinasi lain yang nilainya lebih tinggi.', 'feedback-warning');
                 } else if (totalValue === 0) {
                     showFeedback('Tas masih kosong, ayo kumpulkan harta karun!', 'feedback-info');
