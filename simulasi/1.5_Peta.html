@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembelajaran Algoritma Greedy & Brute-Force</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        #canvas-container {
+            width: 100%;
+            height: 500px;
+            background-color: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .node {
+            fill: #60a5fa;
+            stroke: #3b82f6;
+            stroke-width: 2px;
+        }
+        .node-start {
+            fill: #22c55e;
+            stroke: #16a34a;
+        }
+        .node-end {
+            fill: #ef4444;
+            stroke: #dc2626;
+        }
+        .path {
+            stroke: #9ca3af;
+            stroke-width: 2px;
+            fill: none;
+        }
+        .bruteforce-path {
+            stroke: #0284c7;
+            stroke-width: 3px;
+            animation: dash 1.5s linear infinite;
+            stroke-dasharray: 5, 5;
+        }
+        .greedy-path {
+            stroke: #f59e0b;
+            stroke-width: 3px;
+            animation: dash 1.5s linear infinite;
+            stroke-dasharray: 5, 5;
+        }
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -100;
+            }
+        }
+        .input-group {
+            display: none;
+        }
+        /* Style untuk background dan border kotak input */
+        .input-correct {
+            background-color: #d1fae5; /* green-100 */
+            border-color: #34d399; /* green-400 */
+        }
+        .input-incorrect {
+            background-color: #fee2e2; /* red-100 */
+            border-color: #f87171; /* red-400 */
+        }
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center py-10">
+
+    <div class="container mx-auto px-4">
+        <div class="card">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">Pembelajaran Algoritma Greedy & Brute-Force</h1>
+            <p class="text-center text-gray-600 mb-8">Pelajari cara kerja algoritma Greedy dan Brute-Force dalam menemukan rute terpendek.</p>
+            
+            <div id="canvas-container" class="relative mb-6">
+                <canvas id="mapCanvas"></canvas>
+                <div id="loading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75" style="display: none;">
+                    <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                    <div id="question" class="text-lg font-semibold text-gray-700 mb-4"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div id="input-bruteforce-jarak" class="input-group">
+                            <label for="jarak-bruteforce" class="block text-sm font-medium text-gray-700 mb-1">Jarak Brute-Force (km)</label>
+                            <input type="number" id="jarak-bruteforce" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" placeholder="Masukkan jarak total...">
+                        </div>
+                        <div id="input-bruteforce-rute" class="input-group">
+                            <label for="rute-bruteforce" class="block text-sm font-medium text-gray-700 mb-1">Rute Brute-Force (contoh: A-B-C)</label>
+                            <input type="text" id="rute-bruteforce" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" placeholder="Masukkan rute...">
+                        </div>
+                        <div id="input-greedy-jarak" class="input-group">
+                            <label for="jarak-greedy" class="block text-sm font-medium text-gray-700 mb-1">Jarak Greedy (km)</label>
+                            <input type="number" id="jarak-greedy" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" placeholder="Masukkan jarak total...">
+                        </div>
+                        <div id="input-greedy-rute" class="input-group">
+                            <label for="rute-greedy" class="block text-sm font-medium text-gray-700 mb-1">Rute Greedy (contoh: A-B-C)</label>
+                            <input type="text" id="rute-greedy" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2" placeholder="Masukkan rute...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button id="check-answer" class="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-transform duration-200 transform hover:scale-105">
+                        Cek Jawaban
+                    </button>
+                    <button id="show-answers" class="w-full sm:w-1/2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-xl transition-transform duration-200 transform hover:scale-105" style="display: none;">
+                        Tampilkan Kunci Jawaban
+                    </button>
+                    <button id="new-problem" class="w-full sm:w-1/2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-xl transition-transform duration-200 transform hover:scale-105">
+                        Soal Baru
+                    </button>
+                </div>
+                
+                <div id="result-message" class="mt-4 text-center text-lg font-semibold" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="correctModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-4">Jawaban Benar!</h2>
+            <p class="text-gray-700">Semua jawaban yang Anda masukkan sudah benar.</p>
+            <button id="closeModal" class="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const canvas = document.getElementById('mapCanvas');
+            const ctx = canvas.getContext('2d');
+            let nodes = [];
+            let startNode, endNode;
+            let bruteForceResult = {};
+            let greedyResult = {};
+            let currentQuestions = [];
+
+            const nodeNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+            
+            const questionEl = document.getElementById('question');
+            const jarakBruteforceInput = document.getElementById('jarak-bruteforce');
+            const ruteBruteforceInput = document.getElementById('rute-bruteforce');
+            const jarakGreedyInput = document.getElementById('jarak-greedy');
+            const ruteGreedyInput = document.getElementById('rute-greedy');
+            const checkAnswerBtn = document.getElementById('check-answer');
+            const showAnswersBtn = document.getElementById('show-answers');
+            const newProblemBtn = document.getElementById('new-problem');
+            const resultMessageEl = document.getElementById('result-message');
+            const loadingEl = document.getElementById('loading');
+            const correctModal = document.getElementById('correctModal');
+            const closeModalBtn = document.getElementById('closeModal');
+            
+            const inputGroups = {
+                'brute-force': [document.getElementById('input-bruteforce-jarak'), document.getElementById('input-bruteforce-rute')],
+                'greedy': [document.getElementById('input-greedy-jarak'), document.getElementById('input-greedy-rute')]
+            };
+
+            const NODE_RADIUS = 20;
+
+            function showLoading(show) {
+                loadingEl.style.display = show ? 'flex' : 'none';
+            }
+
+            function generateDynamicGraph() {
+                const numNodes = Math.floor(Math.random() * 5) + 5; // 5 to 9 nodes
+                const startNodeIndex = 0;
+                const endNodeIndex = numNodes - 1;
+                nodes = [];
+                const padding = 50;
+                const minDistance = 100;
+
+                for (let i = 0; i < numNodes; i++) {
+                    let newX, newY, isOverlapping;
+                    do {
+                        isOverlapping = false;
+                        newX = Math.random() * (canvas.width - 2 * padding) + padding;
+                        newY = Math.random() * (canvas.height - 2 * padding) + padding;
+                        for (const node of nodes) {
+                            const dx = newX - node.x;
+                            const dy = newY - node.y;
+                            if (Math.sqrt(dx * dx + dy * dy) < minDistance) {
+                                isOverlapping = true;
+                                break;
+                            }
+                        }
+                    } while (isOverlapping);
+                    nodes.push({ name: nodeNames[i], x: newX, y: newY, edges: [] });
+                }
+
+                startNode = nodes[startNodeIndex];
+                endNode = nodes[endNodeIndex];
+
+                for (let i = 0; i < numNodes; i++) {
+                    const numConnections = Math.floor(Math.random() * 2) + 1; 
+                    const possibleTargets = nodes.slice(i + 1);
+                    const shuffledTargets = possibleTargets.sort(() => 0.5 - Math.random());
+                    
+                    for (let j = 0; j < Math.min(numConnections, shuffledTargets.length); j++) {
+                        const targetNode = shuffledTargets[j];
+                        const dx = nodes[i].x - targetNode.x;
+                        const dy = nodes[i].y - targetNode.y;
+                        const distance = Math.round(Math.sqrt(dx * dx + dy * dy) / 10) + 1;
+                        nodes[i].edges.push({ to: targetNode.name, distance });
+                    }
+                }
+                
+                const hasPath = findPath(startNode, endNode);
+                if (!hasPath) {
+                    const dx = startNode.x - endNode.x;
+                    const dy = startNode.y - endNode.y;
+                    const distance = Math.round(Math.sqrt(dx * dx + dy * dy) / 10) + 1;
+                    startNode.edges.push({ to: endNode.name, distance });
+                }
+            }
+
+            function findPath(start, end) {
+                const visited = new Set();
+                const queue = [start];
+                visited.add(start.name);
+                while (queue.length > 0) {
+                    const currentNode = queue.shift();
+                    if (currentNode.name === end.name) return true;
+                    const current = nodes.find(n => n.name === currentNode.name);
+                    if (current) {
+                        for (const edge of current.edges) {
+                            if (!visited.has(edge.to)) {
+                                visited.add(edge.to);
+                                queue.push(nodes.find(n => n.name === edge.to));
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+
+            function drawGraph() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                nodes.forEach(node => {
+                    node.edges.forEach(edge => {
+                        const toNode = nodes.find(n => n.name === edge.to);
+                        if (toNode) {
+                            ctx.beginPath();
+                            ctx.moveTo(node.x, node.y);
+                            ctx.lineTo(toNode.x, toNode.y);
+                            ctx.strokeStyle = '#9ca3af';
+                            ctx.lineWidth = 2;
+                            ctx.stroke();
+
+                            const midX = (node.x + toNode.x) / 2;
+                            const midY = (node.y + toNode.y) / 2;
+                            ctx.fillStyle = '#374151';
+                            ctx.font = '14px Inter';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(edge.distance + ' km', midX, midY - 10);
+
+                            const angle = Math.atan2(toNode.y - node.y, toNode.x - node.x);
+                            const headlen = 10;
+                            ctx.lineTo(toNode.x - headlen * Math.cos(angle - Math.PI / 6), toNode.y - headlen * Math.sin(angle - Math.PI / 6));
+                            ctx.moveTo(toNode.x, toNode.y);
+                            ctx.lineTo(toNode.x - headlen * Math.cos(angle + Math.PI / 6), toNode.y - headlen * Math.sin(angle + Math.PI / 6));
+                            ctx.stroke();
+                        }
+                    });
+                });
+
+                nodes.forEach(node => {
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, NODE_RADIUS, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#60a5fa';
+                    ctx.strokeStyle = '#3b82f6';
+                    if (node.name === startNode.name) {
+                        ctx.fillStyle = '#22c55e';
+                        ctx.strokeStyle = '#16a34a';
+                    } else if (node.name === endNode.name) {
+                        ctx.fillStyle = '#ef4444';
+                        ctx.strokeStyle = '#dc2626';
+                    }
+                    ctx.fill();
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '16px Inter bold';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(node.name, node.x, node.y);
+                });
+            }
+
+            function solveBruteForce() {
+                function findAllPaths(current, end, path, distance) {
+                    path.push(current.name);
+                    if (current.name === end.name) {
+                        allPaths.push({ path: path, distance: distance });
+                        return;
+                    }
+                    if (path.length > nodes.length) {
+                        return;
+                    }
+                    for (const edge of current.edges) {
+                        const nextNode = nodes.find(n => n.name === edge.to);
+                        findAllPaths(nextNode, end, [...path], distance + edge.distance);
+                    }
+                }
+
+                let allPaths = [];
+                findAllPaths(startNode, endNode, [], 0);
+
+                if (allPaths.length > 0) {
+                    allPaths.sort((a, b) => a.distance - b.distance);
+                    return {
+                        distance: allPaths[0].distance,
+                        path: allPaths[0].path.join('-')
+                    };
+                }
+                return { distance: Infinity, path: 'Tidak ada rute' };
+            }
+
+            function solveGreedy() {
+                let current = startNode;
+                let path = [current.name];
+                let distance = 0;
+
+                while (current.name !== endNode.name) {
+                    if (current.edges.length === 0) {
+                        return { distance: Infinity, path: 'Tidak ada rute' };
+                    }
+                    
+                    let bestEdge = null;
+                    let minDistance = Infinity;
+                    
+                    const unvisitedEdges = current.edges.filter(edge => !path.includes(edge.to));
+                    
+                    if (unvisitedEdges.length === 0) {
+                        return { distance: Infinity, path: 'Tidak ada rute' };
+                    }
+
+                    for (const edge of unvisitedEdges) {
+                        if (edge.distance < minDistance) {
+                            minDistance = edge.distance;
+                            bestEdge = edge;
+                        }
+                    }
+
+                    if (bestEdge) {
+                        distance += bestEdge.distance;
+                        current = nodes.find(n => n.name === bestEdge.to);
+                        path.push(current.name);
+                    } else {
+                        return { distance: Infinity, path: 'Tidak ada rute' };
+                    }
+                }
+
+                return { distance, path: path.join('-') };
+            }
+
+            function drawPath(path, colorClass) {
+                const pathNodes = path.split('-');
+                if (pathNodes.length <= 1) return;
+
+                const startPoint = nodes.find(n => n.name === pathNodes[0]);
+                let prevNode = startPoint;
+                
+                const pathStyle = document.createElement('div');
+                pathStyle.className = colorClass;
+                document.body.appendChild(pathStyle);
+                const computedStyle = getComputedStyle(pathStyle);
+                const strokeColor = computedStyle.stroke;
+                const strokeWidth = computedStyle.strokeWidth;
+                const dasharray = computedStyle.strokeDasharray;
+                document.body.removeChild(pathStyle);
+                
+                ctx.beginPath();
+                ctx.moveTo(prevNode.x, prevNode.y);
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = strokeWidth;
+                if (dasharray) {
+                    ctx.setLineDash(dasharray.split(',').map(Number));
+                }
+                
+                for (let i = 1; i < pathNodes.length; i++) {
+                    const currentNode = nodes.find(n => n.name === pathNodes[i]);
+                    if (currentNode) {
+                        ctx.lineTo(currentNode.x, currentNode.y);
+                        prevNode = currentNode;
+                    }
+                }
+                
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            function clearInputs() {
+                jarakBruteforceInput.value = '';
+                ruteBruteforceInput.value = '';
+                jarakGreedyInput.value = '';
+                ruteGreedyInput.value = '';
+                jarakBruteforceInput.classList.remove('input-correct', 'input-incorrect', 'border-green-400', 'border-red-400');
+                ruteBruteforceInput.classList.remove('input-correct', 'input-incorrect', 'border-green-400', 'border-red-400');
+                jarakGreedyInput.classList.remove('input-correct', 'input-incorrect', 'border-green-400', 'border-red-400');
+                ruteGreedyInput.classList.remove('input-correct', 'input-incorrect', 'border-green-400', 'border-red-400');
+            }
+
+            function initializeProblem() {
+                showLoading(true);
+                setTimeout(() => {
+                    generateDynamicGraph();
+                    drawGraph();
+                    bruteForceResult = solveBruteForce();
+                    greedyResult = solveGreedy();
+                    
+                    const algorithms = ['brute-force', 'greedy'];
+                    const chosenAlgorithm = algorithms[Math.floor(Math.random() * algorithms.length)];
+                    
+                    currentQuestions = [{ type: chosenAlgorithm, subtype: 'jarak' }, { type: chosenAlgorithm, subtype: 'rute' }];
+
+                    const algText = chosenAlgorithm === 'brute-force' ? 'Brute-Force' : 'Greedy';
+                    questionEl.innerHTML = `Jika posisi Anda ada di titik **${startNode.name}** dan tujuan Anda ada di titik **${endNode.name}**, tentukan jarak dan rute menggunakan algoritma **${algText}**.`;
+                    
+                    Object.values(inputGroups).forEach(group => group.forEach(el => el.style.display = 'none'));
+
+                    inputGroups[chosenAlgorithm].forEach(el => el.style.display = 'block');
+
+                    clearInputs();
+                    resultMessageEl.style.display = 'none';
+                    resultMessageEl.innerHTML = '';
+                    showAnswersBtn.style.display = 'none';
+                    correctModal.style.display = 'none';
+                    showLoading(false);
+                }, 500);
+            }
+
+            checkAnswerBtn.addEventListener('click', () => {
+                let jarakCorrect = false;
+                let ruteCorrect = false;
+                
+                // Get the currently active algorithm from the visible input group
+                let activeAlg = Object.keys(inputGroups).find(alg => inputGroups[alg][0].style.display !== 'none');
+                
+                if (!activeAlg) return;
+
+                const result = activeAlg === 'brute-force' ? bruteForceResult : greedyResult;
+                const jarakInput = activeAlg === 'brute-force' ? jarakBruteforceInput : jarakGreedyInput;
+                const ruteInput = activeAlg === 'brute-force' ? ruteBruteforceInput : ruteGreedyInput;
+
+                // Reset classes
+                jarakInput.classList.remove('input-correct', 'input-incorrect');
+                ruteInput.classList.remove('input-correct', 'input-incorrect');
+                jarakInput.classList.remove('border-green-400', 'border-red-400');
+                ruteInput.classList.remove('border-green-400', 'border-red-400');
+                resultMessageEl.style.display = 'none';
+
+                // Check jawaban jarak
+                const userJarak = parseFloat(jarakInput.value);
+                jarakCorrect = (userJarak === result.distance);
+                jarakInput.classList.add(jarakCorrect ? 'input-correct' : 'input-incorrect');
+                jarakInput.classList.add(jarakCorrect ? 'border-green-400' : 'border-red-400');
+
+                // Check jawaban rute
+                const userRute = ruteInput.value.trim().toUpperCase();
+                ruteCorrect = (userRute === result.path);
+                ruteInput.classList.add(ruteCorrect ? 'input-correct' : 'input-incorrect');
+                ruteInput.classList.add(ruteCorrect ? 'border-green-400' : 'border-red-400');
+
+
+                // Tampilkan hasil
+                if (jarakCorrect && ruteCorrect) {
+                    correctModal.style.display = 'flex';
+                } else if (jarakCorrect || ruteCorrect) {
+                    resultMessageEl.innerHTML = `<p class="text-yellow-600">Ada yang benar dan ada yang salah. Silakan periksa kembali.</p>`;
+                    resultMessageEl.style.display = 'block';
+                    showAnswersBtn.style.display = 'inline-block';
+                } else {
+                    resultMessageEl.innerHTML = `<p class="text-red-600">Jawaban Anda salah semua. Silakan coba lagi.</p>`;
+                    resultMessageEl.style.display = 'block';
+                    showAnswersBtn.style.display = 'inline-block';
+                }
+            });
+
+            showAnswersBtn.addEventListener('click', () => {
+                drawGraph();
+                
+                let activeAlg = Object.keys(inputGroups).find(alg => inputGroups[alg][0].style.display !== 'none');
+                const result = activeAlg === 'brute-force' ? bruteForceResult : greedyResult;
+                const algName = activeAlg === 'brute-force' ? 'Brute-Force' : 'Greedy';
+
+                resultMessageEl.innerHTML = `
+                    <p class="font-bold text-gray-800">Kunci Jawaban:</p>
+                    <div class="mt-2 text-left">
+                        <p class="text-blue-600 font-medium">${algName}:</p>
+                        <p class="text-sm">Jarak: ${result.distance} km</p>
+                        <p class="text-sm">Rute: ${result.path}</p>
+                    </div>
+                `;
+                resultMessageEl.style.display = 'block';
+                
+                drawPath(result.path, `${activeAlg}-path`);
+                
+                showAnswersBtn.style.display = 'none';
+            });
+
+            newProblemBtn.addEventListener('click', () => {
+                drawGraph();
+                initializeProblem();
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                correctModal.style.display = 'none';
+                showAnswersBtn.style.display = 'inline-block';
+                
+                let activeAlg = Object.keys(inputGroups).find(alg => inputGroups[alg][0].style.display !== 'none');
+                const result = activeAlg === 'brute-force' ? bruteForceResult : greedyResult;
+                drawPath(result.path, `${activeAlg}-path`);
+            });
+
+            function resizeCanvas() {
+                const container = document.getElementById('canvas-container');
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                initializeProblem();
+            }
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+        };
+    </script>
+</body>
+</html>
