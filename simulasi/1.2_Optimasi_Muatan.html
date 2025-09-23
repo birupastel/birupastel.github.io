@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-        
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f4f8;
@@ -40,7 +40,7 @@
             font-weight: 700;
             color: #1e293b;
         }
-        
+
         .description {
             font-size: 1rem;
             color: #475569;
@@ -75,7 +75,7 @@
             width: 100%;
             height: 100%;
         }
-        
+
         .truck-container {
             position: absolute;
             left: 10%;
@@ -138,7 +138,7 @@
             transform: scale(1.05);
             z-index: 10;
         }
-        
+
         /* Box Colors */
         .bg-box-1 { background-color: #f87171; }
         .bg-box-2 { background-color: #fca5a5; }
@@ -160,10 +160,12 @@
             transition: background-color 0.3s, transform 0.2s;
             margin-top: 1rem;
         }
+
         .check-button:hover, .reset-button:hover {
             background-color: #1d4ed8;
             transform: translateY(-2px);
         }
+
         .check-button:active, .reset-button:active {
             transform: translateY(0);
         }
@@ -171,6 +173,7 @@
         .reset-button {
             background-color: #ef4444;
         }
+
         .reset-button:hover {
             background-color: #dc2626;
         }
@@ -189,7 +192,7 @@
         .feedback-message.incorrect {
             color: #dc2626;
         }
-        
+
         /* Modal and Shake effects */
         .modal {
             position: fixed;
@@ -203,6 +206,7 @@
             align-items: center;
             z-index: 1000;
         }
+
         .modal-content {
             background-color: #ffffff;
             padding: 2.5rem;
@@ -210,12 +214,14 @@
             text-align: center;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
+
         .modal-text {
             font-size: 1.5rem;
             font-weight: 700;
             color: #1e293b;
             margin-bottom: 1.5rem;
         }
+
         .modal-close-button {
             background-color: #ef4444;
             color: #ffffff;
@@ -225,6 +231,7 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         .modal-close-button:hover {
             background-color: #dc2626;
         }
@@ -236,9 +243,11 @@
             75% { transform: translateX(-5px); }
             100% { transform: translateX(0); }
         }
+
         .shake-animation {
             animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
+
         .bg-wrong-answer {
             background-color: #fee2e2;
         }
@@ -266,6 +275,7 @@
                     <div class="drag-area" id="drag-area-3"></div>
                 </div>
             </div>
+
             <div class="flex gap-4">
                 <button id="checkBtn" class="check-button">Periksa</button>
                 <button id="resetBtn" class="reset-button">Mulai Ulang</button>
@@ -355,13 +365,15 @@
                 e.preventDefault();
                 area.classList.add('hover');
             });
+
             area.addEventListener('dragleave', () => {
                 area.classList.remove('hover');
             });
+
             area.addEventListener('drop', (e) => {
                 e.preventDefault();
                 area.classList.remove('hover');
-                
+
                 // If a box is already in the drop area, move it back
                 if (area.firstChild) {
                     draggableContainer.appendChild(area.firstChild);
@@ -374,38 +386,48 @@
         });
 
         checkBtn.addEventListener('click', () => {
-            const droppedValues = [];
+            const droppedValuesInOrder = [];
             dragAreas.forEach(area => {
                 if (area.firstChild) {
-                    droppedValues.push(parseInt(area.firstChild.dataset.value));
+                    droppedValuesInOrder.push(parseInt(area.firstChild.dataset.value));
                 }
             });
 
             // Check if exactly 3 boxes are in the truck
-            if (droppedValues.length !== 3) {
+            if (droppedValuesInOrder.length !== 3) {
                 feedbackMessage.textContent = "Masukkan 3 kotak ke dalam truk!";
                 feedbackMessage.classList.add('incorrect');
                 feedbackMessage.classList.remove('correct');
                 return;
             }
 
-            // Sort both arrays to compare
-            droppedValues.sort((a, b) => b - a);
-            const isCorrect = JSON.stringify(droppedValues) === JSON.stringify(optimalValues);
+            // Get the optimal values sorted descendingly (for value check)
+            const droppedValuesSorted = [...droppedValuesInOrder].sort((a, b) => b - a);
+            const isValueCorrect = JSON.stringify(droppedValuesSorted) === JSON.stringify(optimalValues);
 
-            if (isCorrect) {
-                // Correct answer
+            // Get the optimal values sorted descendingly (for order check)
+            const isOrderCorrect = JSON.stringify(droppedValuesInOrder) === JSON.stringify(optimalValues);
+
+            if (isValueCorrect && isOrderCorrect) {
+                // Correct answer with correct order
                 feedbackMessage.textContent = "Jawaban Benar! 🎉";
                 feedbackMessage.classList.add('correct');
                 feedbackMessage.classList.remove('incorrect');
                 correctModal.style.display = 'flex';
-            } else {
-                // Incorrect answer
-                feedbackMessage.textContent = "Jawaban Salah! Total bobot yang kamu dapatkan adalah " + droppedValues.reduce((a, b) => a + b, 0) + ", sementara solusi maksimal adalah " + optimalValues.reduce((a, b) => a + b, 0) + ".";
+            } else if (isValueCorrect && !isOrderCorrect) {
+                // Correct value but wrong order
+                feedbackMessage.textContent = "Jawaban kurang tepat! Kotak harus diurutkan dari bobot terbesar di kiri ke bobot terkecil di kanan.";
                 feedbackMessage.classList.add('incorrect');
                 feedbackMessage.classList.remove('correct');
-                
-                // Shake and change background color
+                mainContainer.classList.add('shake-animation', 'bg-wrong-answer');
+                setTimeout(() => {
+                    mainContainer.classList.remove('shake-animation', 'bg-wrong-answer');
+                }, 500);
+            } else {
+                // Wrong value
+                feedbackMessage.textContent = "Jawaban Salah! Total bobot yang kamu dapatkan adalah " + droppedValuesInOrder.reduce((a, b) => a + b, 0) + ", sementara solusi maksimal adalah " + optimalValues.reduce((a, b) => a + b, 0) + ".";
+                feedbackMessage.classList.add('incorrect');
+                feedbackMessage.classList.remove('correct');
                 mainContainer.classList.add('shake-animation', 'bg-wrong-answer');
                 setTimeout(() => {
                     mainContainer.classList.remove('shake-animation', 'bg-wrong-answer');
@@ -440,10 +462,9 @@
                 correctModal.style.display = 'none';
             }
         });
-        
+
         // Initial setup
         window.onload = createBoxes;
     </script>
-
 </body>
 </html>
