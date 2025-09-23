@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif - Algoritma Sorting C++</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f1f5f9; /* slate-100 */
+            color: #1e293b; /* slate-800 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0; /* slate-200 */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .drop-slot, .source-slot {
+            transition: background-color 0.2s, border-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .draggable {
+            cursor: move;
+            user-select: none;
+            transition: background-color 0.2s, transform 0.2s;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem; /* Based on rounded-lg of parent */
+        }
+        .dragging {
+            opacity: 0.5;
+            transform: scale(1.1);
+        }
+        .drag-over {
+            background-color: #bae6fd; /* sky-200 */
+            border-color: #7dd3fc !important; /* sky-300 */
+        }
+        .correct-answer-input {
+            animation: flash-green 1s;
+        }
+        @keyframes flash-green {
+            0%, 100% { background-color: #4ade80; } /* green-400 */
+            50% { background-color: #86efac; } /* green-300 */
+        }
+        .incorrect-answer-input {
+            animation: flash-red 1s;
+        }
+        @keyframes flash-red {
+            0%, 100% { background-color: #f87171; } /* red-400 */
+            50% { background-color: #fca5a5; } /* red-300 */
+        }
+        .correct-slot {
+            background-color: #dcfce7 !important; /* green-100 */
+            border-color: #4ade80 !important; /* green-400 */
+        }
+        .incorrect-slot {
+            background-color: #fee2e2 !important; /* red-100 */
+            border-color: #f87171 !important; /* red-400 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4">
+
+    <div id="quiz-container" class="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-6 md:p-8">
+        
+        <!-- Header: Skor dan Kesempatan -->
+        <div class="flex justify-between items-start mb-6 border-b border-gray-200 pb-4">
+            <h1 class="text-2xl md:text-3xl font-bold text-sky-600">Kuis Sorting C++</h1>
+            <div class="text-right">
+                <div class="text-2xl">
+                    <span id="lives" class="text-red-500">❤️❤️❤️</span>
+                </div>
+                 <div class="font-semibold text-lg mt-1">
+                    <span>Poin: </span>
+                    <span id="score" class="text-green-600">0</span>
+                </div>
+                <div class="font-semibold text-base mt-1 text-gray-500">
+                    <span>Skor Tertinggi: </span>
+                    <span id="high-score" class="text-blue-600">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Area Soal -->
+        <div id="question-area">
+            <!-- Konten soal akan dimasukkan oleh JavaScript -->
+        </div>
+        
+        <!-- Kontrol: Input -->
+        <div id="answer-input-container" class="mt-6">
+            <!-- Input atau area drag-drop akan dimasukkan di sini -->
+        </div>
+        
+        <!-- Kontrol: Tombol Cek -->
+        <div id="check-answer-container" class="mt-4 flex justify-center">
+            <button id="check-answer-btn" class="w-full md:w-auto bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300">Cek Jawaban</button>
+        </div>
+
+        <!-- Pesan Hasil Jawaban -->
+        <div id="result-message" class="mt-4 text-center font-semibold text-lg h-8"></div>
+        
+        <!-- Area Penjelasan -->
+        <div id="explanation-area" class="mt-4 p-4 bg-sky-50 border border-sky-200 rounded-lg text-gray-700 hidden">
+            <!-- Penjelasan akan dimasukkan di sini -->
+        </div>
+
+        <!-- Tombol Soal Berikutnya -->
+        <div class="mt-4 flex justify-center">
+             <button id="next-question-btn" class="w-full md:w-auto bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 hidden">Soal Berikutnya</button>
+        </div>
+
+        <!-- Modal Game Over -->
+        <div id="game-over-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div class="bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-200 max-w-md w-full">
+                <h2 class="text-4xl font-bold text-red-500 mb-4">Kesempatan Habis!</h2>
+                <p id="new-highscore-message" class="hidden text-lg font-bold text-amber-500 mb-2">🎉 Skor Tertinggi Baru! 🎉</p>
+                <p class="text-gray-600 text-lg mb-2">Poin Anda akan direset ke 0.</p>
+                
+                <div id="solution-container" class="hidden my-4 text-left">
+                    <p class="text-gray-600">Jawaban yang benar adalah:</p>
+                    <code id="correct-solution-text" class="block bg-gray-200 text-sky-700 p-2 rounded-md font-mono text-sm mt-1 break-words"></code>
+                </div>
+
+                <p id="final-score" class="text-xl font-bold mb-6"></p>
+                <button id="restart-btn" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-10 rounded-lg transition-colors duration-300">Mulai Lagi</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- State Permainan ---
+        let score = 0;
+        let lives = 3;
+        let highScore = 0;
+        let currentQuestion = null;
+        let draggedItem = null;
+
+        // --- Elemen DOM ---
+        const scoreEl = document.getElementById('score');
+        const highScoreEl = document.getElementById('high-score');
+        const livesEl = document.getElementById('lives');
+        const questionAreaEl = document.getElementById('question-area');
+        const answerInputContainerEl = document.getElementById('answer-input-container');
+        const checkAnswerContainer = document.getElementById('check-answer-container');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
+        const resultMessageEl = document.getElementById('result-message');
+        const explanationAreaEl = document.getElementById('explanation-area');
+        const gameOverModalEl = document.getElementById('game-over-modal');
+        const finalScoreEl = document.getElementById('final-score');
+        const newHighscoreMessageEl = document.getElementById('new-highscore-message');
+        const restartBtn = document.getElementById('restart-btn');
+        const solutionContainer = document.getElementById('solution-container');
+        const solutionTextEl = document.getElementById('correct-solution-text');
+        
+        // --- Efek Suara (Tone.js) ---
+        const correctSound = new Tone.Synth().toDestination();
+        const incorrectSound = new Tone.Synth({ oscillator: { type: 'square' } }).toDestination();
+        const clickSound = new Tone.Synth({
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1 }
+        }).toDestination();
+
+        function playSound(sound, note, duration) {
+            if (Tone.context.state !== 'running') {
+                Tone.context.resume();
+            }
+            sound.triggerAttackRelease(note, duration);
+        }
+
+        // --- Variasi Soal ---
+        const questionTemplates = [
+            { type: 'write_code_asc', text: 'Tuliskan kode program untuk mengurutkan data di atas secara <strong>menaik (ascending)</strong>!' },
+            { type: 'write_code_desc', text: 'Tuliskan kode program untuk mengurutkan data di atas secara <strong>menurun (descending)</strong>!' },
+            { type: 'guess_output_asc', text: 'Seret dan susun angka-angka di bawah ini sesuai hasil akhir urutan data array setelah meneksekusi kode program di atas!' },
+            { type: 'guess_output_desc', text: 'Seret dan susun angka-angka di bawah ini sesuai hasil akhir urutan data array setelah meneksekusi kode program di atas!' }
+        ];
+        const ARRAY_NAMES = ['nilai', 'angka', 'tinggiBadan', 'kumpulanData', 'daftarNilai', 'bobot'];
+        const DATA_TYPES = ['int', 'float', 'double'];
+
+        // --- Fungsi Bantuan ---
+        function generateRandomArray(dataType, questionType) {
+            const isDragDrop = questionType.startsWith('guess');
+            const minSize = isDragDrop ? 7 : 8;
+            const range = isDragDrop ? 4 : 5;
+            const size = Math.floor(Math.random() * range) + minSize; 
+            const arr = new Set();
+            while (arr.size < size) {
+                if (dataType === 'int') {
+                    arr.add(Math.floor(Math.random() * 190) + 10);
+                } else {
+                    const num = (Math.random() * 190 + 10).toFixed(1);
+                    arr.add(parseFloat(num));
+                }
+            }
+            return Array.from(arr);
+        }
+
+        // --- Logika Utama Permainan ---
+        function generateQuestion() {
+            const template = questionTemplates[Math.floor(Math.random() * questionTemplates.length)];
+            let dataType, arrayName, arrayData, arraySize, codeSnippet, correctAnswer, explanation = '';
+            let questionText = template.text;
+
+            answerInputContainerEl.innerHTML = '';
+
+            switch (template.type) {
+                case 'write_code_asc':
+                case 'write_code_desc':
+                    dataType = DATA_TYPES[Math.floor(Math.random() * DATA_TYPES.length)];
+                    arrayName = ARRAY_NAMES[Math.floor(Math.random() * ARRAY_NAMES.length)];
+                    arrayData = generateRandomArray(dataType, template.type);
+                    arraySize = arrayData.length;
+                    codeSnippet = `${dataType} ${arrayName}[] = {${arrayData.join(', ')}};`;
+
+                    if (template.type === 'write_code_asc') {
+                        correctAnswer = `sort(${arrayName}, ${arrayName}+${arraySize});`;
+                    } else {
+                        correctAnswer = `sort(${arrayName}, ${arrayName}+${arraySize}, greater<${dataType}>());`;
+                    }
+                    createTextInput();
+                    break;
+
+                case 'guess_output_asc':
+                case 'guess_output_desc':
+                    dataType = 'int';
+                    arrayName = 'data';
+                    arrayData = generateRandomArray(dataType, template.type);
+                    arraySize = arrayData.length;
+                    codeSnippet = `${dataType} ${arrayName}[] = {${arrayData.join(', ')}};`;
+
+                    const sortCount = Math.floor(Math.random() * (arraySize - 3)) + 3;
+                    
+                    if (template.type === 'guess_output_asc') {
+                         codeSnippet += `\nsort(${arrayName}, ${arrayName}+${sortCount});`;
+                         const sortedPart = arrayData.slice(0, sortCount).sort((a, b) => a - b);
+                         const unsortedPart = arrayData.slice(sortCount);
+                         correctAnswer = [...sortedPart, ...unsortedPart];
+                    } else {
+                         codeSnippet += `\nsort(${arrayName}, ${arrayName}+${sortCount}, greater&lt;int&gt;());`;
+                         const sortedPart = arrayData.slice(0, sortCount).sort((a, b) => b - a);
+                         const unsortedPart = arrayData.slice(sortCount);
+                         correctAnswer = [...sortedPart, ...unsortedPart];
+                    }
+                    explanation = `<strong>Penjelasan:</strong> Fungsi <code>sort(${arrayName}, ${arrayName}+${sortCount}, ...)</code> hanya akan mengurutkan ${sortCount} elemen pertama dari array (indeks 0 hingga ${sortCount - 1}). Elemen dari indeks ${sortCount} hingga akhir tidak akan terpengaruh.`;
+                    createDragDropArea(arrayData);
+                    break;
+            }
+
+            currentQuestion = {
+                type: template.type,
+                correctAnswer: correctAnswer,
+                explanation: explanation
+            };
+            
+            questionAreaEl.innerHTML = `
+                <p class="text-lg mb-4">Diketahui potongan program sebagai berikut:</p>
+                <div class="code-block mb-4">${codeSnippet}</div>
+                <p class="text-lg font-medium text-sky-700">${questionText}</p>
+            `;
+        }
+
+        function createTextInput() {
+             answerInputContainerEl.innerHTML = `<input type="text" id="answer-input" class="w-full bg-white border border-gray-300 rounded-lg p-3 text-gray-800 focus:ring-2 focus:ring-sky-500 focus:outline-none" placeholder="Ketik jawaban Anda di sini...">`;
+        }
+
+        function createDragDropArea(arrayData) {
+            const dropSlots = arrayData.map(() => `<div class="drop-slot w-14 h-14 bg-gray-200 rounded-lg border-2 border-dashed border-gray-300"></div>`).join('');
+            const indexLabels = arrayData.map((_, i) => `<div class="w-14 text-center text-xs text-gray-400 font-mono">${i}</div>`).join('');
+            const sourceItems = [...arrayData].map(num => 
+                `<div class="source-slot w-14 h-14 bg-gray-100 rounded-lg border border-gray-200">
+                    <div class="draggable bg-gray-300 hover:bg-gray-400 font-mono" draggable="true">${num}</div>
+                </div>`
+            ).join('');
+            const sourceIndexLabels = arrayData.map((_, i) => `<div class="w-14 text-center text-xs text-gray-400 font-mono">${i}</div>`).join('');
+
+            answerInputContainerEl.innerHTML = `
+                <div class="w-full">
+                    <p class="text-sm text-gray-500 mb-2">Jawaban Anda:</p>
+                    <div id="drop-zone" class="flex flex-wrap justify-center gap-2">${dropSlots}</div>
+                    <div class="flex flex-wrap justify-center gap-2 mt-1">${indexLabels}</div>
+                    <p class="text-sm text-gray-500 mt-6 mb-2">Pilihan Angka:</p>
+                    <div id="source-zone" class="p-2 rounded-lg flex flex-wrap justify-center gap-2 min-h-[72px] bg-gray-50 border-t">${sourceItems}</div>
+                    <div class="flex flex-wrap justify-center gap-2 mt-1">${sourceIndexLabels}</div>
+                </div>
+            `;
+            addDragDropListeners();
+        }
+
+        function checkAnswer() {
+            let isCorrect = false;
+
+            if (currentQuestion.type.startsWith('write_code')) {
+                const answerInput = document.getElementById('answer-input');
+                const userAnswer = answerInput.value.replace(/\s+/g, '');
+                const correctAnswerClean = currentQuestion.correctAnswer.replace(/\s+/g, '');
+                isCorrect = (userAnswer === correctAnswerClean);
+            } else { // Drag and drop
+                const dropSlots = document.querySelectorAll('.drop-slot');
+                let isFullyCorrect = true;
+                dropSlots.forEach((slot, index) => {
+                    slot.classList.remove('correct-slot', 'incorrect-slot');
+                    const itemInSlot = slot.children[0];
+                    const userNumber = itemInSlot ? parseFloat(itemInSlot.textContent) : null;
+                    const correctNumber = currentQuestion.correctAnswer[index];
+                    if (userNumber === correctNumber) {
+                        slot.classList.add('correct-slot');
+                    } else {
+                        slot.classList.add('incorrect-slot');
+                        isFullyCorrect = false;
+                    }
+                });
+                isCorrect = isFullyCorrect;
+            }
+            
+            if (isCorrect) {
+                handleCorrectAnswer();
+            } else {
+                handleIncorrectAnswer();
+            }
+
+            if (currentQuestion.explanation) {
+                explanationAreaEl.innerHTML = currentQuestion.explanation;
+                explanationAreaEl.classList.remove('hidden');
+            }
+        }
+        
+        function handleCorrectAnswer() {
+            playSound(correctSound, "C5", "8n");
+            score += 100;
+            updateUI();
+            resultMessageEl.textContent = "Jawaban Benar! Poin +100";
+            resultMessageEl.className = "mt-4 text-center font-semibold text-lg h-8 text-green-600";
+            checkAnswerContainer.style.display = 'none';
+            nextQuestionBtn.classList.remove('hidden');
+            if (currentQuestion.type.startsWith('write_code')) {
+                document.getElementById('answer-input').classList.add('correct-answer-input', 'text-black', 'font-bold');
+            }
+        }
+
+        function handleIncorrectAnswer() {
+            playSound(incorrectSound, "A3", "8n");
+            lives--;
+            resultMessageEl.textContent = "Jawaban Salah! Kesempatan berkurang.";
+            resultMessageEl.className = "mt-4 text-center font-semibold text-lg h-8 text-red-600";
+            if (currentQuestion.type.startsWith('write_code')) {
+                const input = document.getElementById('answer-input');
+                input.classList.add('incorrect-answer-input');
+                setTimeout(() => input.classList.remove('incorrect-answer-input'), 1000);
+            }
+            updateUI();
+            if (lives <= 0) {
+                gameOver();
+            }
+        }
+        
+        function gameOver() {
+            newHighscoreMessageEl.classList.add('hidden');
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('sortingQuizHighScore', highScore);
+                newHighscoreMessageEl.classList.remove('hidden');
+            }
+            finalScoreEl.textContent = `Poin Akhir Anda: ${score}`;
+            if (currentQuestion.type.startsWith('write_code')) {
+                solutionTextEl.textContent = currentQuestion.correctAnswer;
+                solutionContainer.classList.remove('hidden');
+            }
+            gameOverModalEl.classList.remove('hidden');
+            updateUI();
+        }
+
+        function restartGame() {
+            playSound(clickSound, "C4", "8n");
+            score = 0;
+            lives = 3;
+            solutionContainer.classList.add('hidden');
+            gameOverModalEl.classList.add('hidden');
+            resetControls();
+            generateQuestion();
+            updateUI();
+        }
+
+        function nextQuestion() {
+            playSound(clickSound, "C4", "8n");
+            resetControls();
+            generateQuestion();
+        }
+
+        function resetControls() {
+            checkAnswerContainer.style.display = 'flex';
+            nextQuestionBtn.classList.add('hidden');
+            resultMessageEl.textContent = '';
+            explanationAreaEl.classList.add('hidden');
+            answerInputContainerEl.innerHTML = '';
+        }
+
+        function loadHighScore() {
+            highScore = localStorage.getItem('sortingQuizHighScore') || 0;
+        }
+
+        function updateUI() {
+            scoreEl.textContent = score;
+            highScoreEl.textContent = highScore;
+            livesEl.textContent = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+        }
+
+        // --- Event Listeners ---
+        checkAnswerContainer.addEventListener('click', function(event) {
+            if (event.target && event.target.id === 'check-answer-btn') {
+                playSound(clickSound, "C4", "8n");
+                checkAnswer();
+            }
+        });
+        nextQuestionBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartGame);
+        
+        function addDragDropListeners() {
+            const draggables = document.querySelectorAll('.draggable');
+            const dropZones = document.querySelectorAll('.drop-slot, .source-slot');
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', (e) => {
+                    draggedItem = e.target;
+                    setTimeout(() => e.target.classList.add('dragging'), 0);
+                });
+                draggable.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('dragging');
+                    draggedItem = null;
+                });
+            });
+            dropZones.forEach(zone => {
+                 zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    if (zone.children.length === 0 || zone !== draggedItem.parentElement) {
+                       zone.classList.add('drag-over');
+                    }
+                });
+                zone.addEventListener('dragleave', () => {
+                   zone.classList.remove('drag-over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    if (!draggedItem || zone === draggedItem.parentElement) return;
+                    if (zone.children.length > 0) {
+                        const targetItem = zone.children[0];
+                        const sourceParent = draggedItem.parentElement;
+                        zone.appendChild(draggedItem);
+                        sourceParent.appendChild(targetItem);
+                    } else {
+                        zone.appendChild(draggedItem);
+                    }
+                });
+            });
+        }
+
+        // --- Inisialisasi Permainan ---
+        function init() {
+            loadHighScore();
+            generateQuestion();
+            updateUI();
+        }
+
+        init();
+    </script>
+</body>
+</html>
+
