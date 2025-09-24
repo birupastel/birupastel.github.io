@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dasbor Keterlambatan Siswa XII-2</title>
+    <title>Dasbor Keterlambatan Siswa</title>
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,7 @@
             --text-light: #8a97a6;
             --background-color: #f8f9fa;
             --card-background: #ffffff;
-            --border-color: #e_1_e_4_e_8;
+            --border-color: #e1e4e8;
         }
 
         body {
@@ -128,7 +128,7 @@
         .podium-step[data-rank="1"] { background: linear-gradient(to top, #3a7bd5, #3a60d5); } /* Peringkat 1 */
         .podium-step[data-rank="2"] { background: linear-gradient(to top, #5e94e8, #6ba1ea); } /* Peringkat 2 */
         .podium-step[data-rank="3"] { background: linear-gradient(to top, #7daeed, #94c2ff); } /* Peringkat 3 */
-        .podium-step[data-rank="4"], .podium-step[data-rank="5"] { background: linear-gradient(to top, #e_1_e_4_e_8, #e_8_eaed); }
+        .podium-step[data-rank="4"], .podium-step[data-rank="5"] { background: linear-gradient(to top, #e1e4e8, #e8eaed); }
 
         .podium-icon { font-size: 2em; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .podium-name { font-weight: 600; font-size: 0.9em; margin-top: 5px; word-wrap: break-word; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);}
@@ -207,7 +207,7 @@
 <body>
 
 <div class="container">
-    <h1>🏆 Dasbor Keterlambatan Siswa XII-2</h1>
+    <h1>🏆 Rekap Keterlambatan Siswa XII-2</h1>
     <p class="subtitle">Data diperbarui secara otomatis dari Google Sheet.</p>
 
     <!-- Filter Bulan dan Tahun -->
@@ -226,6 +226,11 @@
         </div>
     </div>
 
+    <!-- Visualisasi Podium -->
+    <div id="podium-container">
+        <!-- Podium akan dibuat oleh JavaScript -->
+    </div>
+
     <!-- Analisis Tren & Statistik Menarik -->
     <div id="stats-container">
         <div class="stat-card">
@@ -236,11 +241,6 @@
             <h3>Hari Paling Rawan</h3>
             <p id="most-late-day">-</p>
         </div>
-    </div>
-
-    <!-- Visualisasi Podium -->
-    <div id="podium-container">
-        <!-- Podium akan dibuat oleh JavaScript -->
     </div>
 
     <!-- Tabel Klasemen dengan Lencana -->
