@@ -1,5 +1,5 @@
 // PENTING: Ganti dengan URL .csv dari Google Sheet Anda
-const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWPV-ygrhLMjDvEM0sg_4L3d2SuPPZt0fN0TBAt2ycGTpJirqPJTxIGVs_aOreswmtzaXtykriMy1R/pubhtml?gid=126319670&single=true';
+const sheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWPV-ygrhLMjDvEM0sg_4L3d2SuPPZt0fN0TBAt2ycGTpJirqPJTxIGVs_aOreswmtzaXtykriMy1R/pub?output=csv';
 
 document.addEventListener('DOMContentLoaded', () => {
     fetch(sheetURL)
