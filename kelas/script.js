@@ -20,16 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
 function processData(csvText) {
     const lines = csvText.split('\n');
     if (lines.length < 2) {
-        // Menangani kasus jika sheet kosong
         displayData([]); 
         return;
     }
 
-    // Baris pertama (index 0) adalah header (Timestamp, Tanggal, [Abdulgani], [Amelya], ...)
     const headers = lines[0].split(',');
     const records = {};
     
-    // Inisialisasi data siswa dari header, dimulai dari kolom ke-3 (index 2)
     for (let i = 2; i < headers.length; i++) {
         const namaSiswa = headers[i].trim().replace(/\[|\]/g, "");
         if (namaSiswa) {
@@ -40,17 +37,16 @@ function processData(csvText) {
         }
     }
 
-    // Proses setiap baris data (mulai dari index 1)
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (line === "") continue;
 
         const columns = line.split(',');
         
-        // Cek setiap kolom data, dimulai dari index 2
         for (let j = 2; j < headers.length; j++) {
             const namaSiswaHeader = headers[j].trim().replace(/\[|\]/g, "");
-            // Pastikan kolom ada di baris data saat ini
+            
+            // ===== PERUBAHAN ADA DI BARIS INI =====
             if (columns[j] && columns[j].trim() === '1') {
                 if (records[namaSiswaHeader]) {
                     records[namaSiswaHeader].total_terlambat++;
@@ -59,7 +55,6 @@ function processData(csvText) {
         }
     }
 
-    // Ubah objek menjadi array agar bisa diurutkan
     const sortedRecords = Object.values(records).sort((a, b) => b.total_terlambat - a.total_terlambat);
 
     displayData(sortedRecords);
