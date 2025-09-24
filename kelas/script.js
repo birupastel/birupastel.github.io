@@ -51,7 +51,7 @@ function processData(csvText) {
         for (let j = 2; j < headers.length; j++) {
             const namaSiswaHeader = headers[j].trim().replace(/\[|\]/g, "");
             // Pastikan kolom ada di baris data saat ini
-            if (columns[j] && columns[j].trim().toLowerCase() === 'ya') {
+            if (columns[j] && columns[j].trim() === '1') {
                 if (records[namaSiswaHeader]) {
                     records[namaSiswaHeader].total_terlambat++;
                 }
