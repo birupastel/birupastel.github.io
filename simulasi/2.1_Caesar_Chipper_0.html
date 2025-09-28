@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Interaktif - Caesar Cipher</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            color: #1e293b;
+        }
+
+        .tab-button.active {
+            background-color: #3b82f6;
+            color: #ffffff;
+        }
+
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+
+        .content-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            padding: 2rem;
+        }
+        
+        .animated-popup {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+
+        .input-field {
+            width: 100%;
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            text-align: center;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #3b82f6;
+            border: 2px solid #cbd5e1; /* border-slate-300 */
+            padding: 1.2rem 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-field::placeholder {
+            color: #94a3b8;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .alphabet-row {
+            display: flex;
+            justify-content: center;
+            font-family: monospace;
+            font-size: 1.25rem;
+            font-weight: bold;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .alphabet-letter {
+            min-width: 28px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-4xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800">Kriptografi Caesar Cipher</h1>
+            <p class="text-slate-500 mt-2 text-lg">Media Pembelajaran Interaktif</p>
+        </header>
+
+        <!-- Navigasi Tab -->
+        <div class="flex flex-wrap justify-center bg-slate-200 rounded-xl p-1 mb-6 max-w-lg mx-auto">
+            <button class="tab-button active w-1/2 md:w-1/4 py-2 px-4 rounded-lg font-semibold" data-tab="konsep">Konsep</button>
+            <button class="tab-button w-1/2 md:w-1/4 py-2 px-4 rounded-lg font-semibold" data-tab="contoh">Contoh</button>
+            <button class="tab-button w-1/2 md:w-1/4 py-2 px-4 rounded-lg font-semibold" data-tab="latihan">Latihan</button>
+            <button class="tab-button w-1/2 md:w-1/4 py-2 px-4 rounded-lg font-semibold" data-tab="kuis">Kuis</button>
+        </div>
+
+        <main>
+            <!-- Konten Konsep -->
+            <div id="konsep" class="tab-content content-card">
+                 <h2 class="text-2xl font-bold mb-4 text-slate-700">Apa itu Caesar Cipher?</h2>
+                <p class="mb-4">Caesar Cipher adalah salah satu teknik enkripsi paling sederhana dan paling terkenal. Dalam kriptografi, Caesar Cipher (atau sandi geser) adalah teknik substitusi di mana setiap huruf dalam teks asli (plaintext) digantikan oleh huruf lain yang memiliki selisih posisi tertentu dalam alfabet.</p>
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-lg my-6">
+                    <p><strong class="font-semibold">Contoh:</strong> Dengan pergeseran (kunci) sebesar 3, huruf 'A' akan menjadi 'D', 'B' menjadi 'E', dan seterusnya.</p>
+                </div>
+                
+                <h3 class="text-xl font-bold mt-8 mb-3 text-slate-700">Visualisasi Pergeseran Alfabet</h3>
+                <div class="p-4 bg-slate-50 rounded-lg">
+                    <div id="alphabet-visualizer">
+                        <div class="alphabet-row text-slate-500" id="alphabet-plain"></div>
+                        <div class="text-center text-2xl font-bold my-2">&darr;</div>
+                        <div class="alphabet-row text-blue-600" id="alphabet-cipher"></div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <label for="key-slider" class="font-semibold">Geser Kunci: <span id="key-display" class="font-bold text-blue-600">3</span></label>
+                        <input id="key-slider" type="range" min="0" max="25" value="3" class="w-full max-w-xs mt-2">
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold mt-8 mb-3 text-slate-700">Sejarah Singkat & Penggunaan</h3>
+                <p>Nama Caesar Cipher berasal dari <strong class="font-semibold">Julius Caesar</strong>, seorang jenderal dan negarawan Romawi yang menggunakan sandi ini untuk melindungi komunikasi militer. Ia menggeser setiap huruf sebanyak 3 posisi, sehingga pesannya tidak bisa dibaca oleh musuh jika berhasil direbut.</p>
+
+                <h3 class="text-xl font-bold mt-8 mb-3 text-slate-700">Kelemahan Caesar Cipher</h3>
+                <p>Meskipun efektif pada zamannya, Caesar Cipher sangat mudah dipecahkan dengan teknik modern yang disebut <strong class="font-semibold">Analisis Frekuensi</strong>. Analisis ini didasarkan pada fakta bahwa dalam setiap bahasa, beberapa huruf muncul lebih sering daripada yang lain (misalnya, huruf 'E' dalam bahasa Inggris atau 'A' dalam bahasa Indonesia). Dengan menghitung frekuensi huruf dalam ciphertext, seorang analis dapat menebak kunci pergeseran yang digunakan.</p>
+
+            </div>
+
+            <!-- Konten Contoh Soal -->
+            <div id="contoh" class="tab-content content-card hidden">
+                <div class="space-y-8">
+                    <!-- Contoh 1: Enkripsi -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 text-slate-700">1. Contoh Enkripsi</h3>
+                        <div class="bg-slate-50 p-6 rounded-lg text-center">
+                            <p>Diketahui <strong>Plaintext:</strong> "BELAJAR" dan <strong>Kunci:</strong> 5. <br>Tentukan Ciphertext-nya!</p>
+                        </div>
+                        <button class="toggle-pembahasan mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition">Lihat Pembahasan</button>
+                        <div class="pembahasan hidden mt-4 p-4 border rounded-lg bg-gray-50">
+                            <p>Setiap huruf pada "BELAJAR" digeser maju sebanyak 5 langkah:</p>
+                            <ul class="list-disc pl-5 mt-2 font-mono">
+                                <li>B + 5 -> G</li>
+                                <li>E + 5 -> J</li>
+                                <li>L + 5 -> Q</li>
+                                <li>A + 5 -> F</li>
+                                <li>J + 5 -> O</li>
+                                <li>A + 5 -> F</li>
+                                <li>R + 5 -> W</li>
+                            </ul>
+                            <p class="mt-2">Jadi, Ciphertext-nya adalah <strong>"GJQFOFW"</strong>.</p>
+                        </div>
+                    </div>
+                    <!-- Contoh 2: Dekripsi -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 text-slate-700">2. Contoh Dekripsi</h3>
+                        <div class="bg-slate-50 p-6 rounded-lg text-center">
+                            <p>Diketahui <strong>Ciphertext:</strong> "KHOOR" dan <strong>Kunci:</strong> 3. <br>Tentukan Plaintext-nya!</p>
+                        </div>
+                        <button class="toggle-pembahasan mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition">Lihat Pembahasan</button>
+                        <div class="pembahasan hidden mt-4 p-4 border rounded-lg bg-gray-50">
+                             <p>Setiap huruf pada "KHOOR" digeser mundur sebanyak 3 langkah:</p>
+                             <ul class="list-disc pl-5 mt-2 font-mono">
+                                <li>K - 3 -> H</li>
+                                <li>H - 3 -> E</li>
+                                <li>O - 3 -> L</li>
+                                <li>O - 3 -> L</li>
+                                <li>R - 3 -> O</li>
+                            </ul>
+                            <p class="mt-2">Jadi, Plaintext-nya adalah <strong>"HELLO"</strong>.</p>
+                        </div>
+                    </div>
+                     <!-- Contoh 3: Mencari Kunci -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-3 text-slate-700">3. Contoh Mencari Kunci</h3>
+                        <div class="bg-slate-50 p-6 rounded-lg text-center">
+                            <p>Diketahui <strong>Plaintext:</strong> "KODE" dan <strong>Ciphertext:</strong> "NRAH". <br>Tentukan Kuncinya!</p>
+                        </div>
+                        <button class="toggle-pembahasan mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition">Lihat Pembahasan</button>
+                        <div class="pembahasan hidden mt-4 p-4 border rounded-lg bg-gray-50">
+                             <p>Kita hitung selisih posisi antara huruf Ciphertext dan Plaintext:</p>
+                             <ul class="list-disc pl-5 mt-2 font-mono">
+                                <li>N - K = 3 (Dari K ke N, maju 3 langkah)</li>
+                                <li>R - O = 3 (Dari O ke R, maju 3 langkah)</li>
+                                <li>A - D = -3 atau 23 (Dari D ke A, maju 23 langkah)</li>
+                                <li>H - E = 3 (Dari E ke H, maju 3 langkah)</li>
+                            </ul>
+                             <p class="mt-2">Selisih yang konsisten adalah 3. Jadi, Kuncinya adalah <strong>3</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Konten Latihan -->
+            <div id="latihan" class="tab-content content-card hidden">
+                <h2 class="text-2xl font-bold mb-6 text-center text-slate-700">Pilih Mode Latihan</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button data-mode="encrypt" class="latihan-mode-btn p-6 text-center border-2 border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105">
+                        <h3 class="text-xl font-bold text-slate-800">Enkripsi</h3>
+                        <p class="text-slate-500 mt-1">Ubah teks asli menjadi teks sandi.</p>
+                    </button>
+                    <button data-mode="decrypt" class="latihan-mode-btn p-6 text-center border-2 border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105">
+                        <h3 class="text-xl font-bold text-slate-800">Dekripsi</h3>
+                        <p class="text-slate-500 mt-1">Kembalikan teks sandi ke teks asli.</p>
+                    </button>
+                    <button data-mode="find-key" class="latihan-mode-btn p-6 text-center border-2 border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 transform hover:scale-105">
+                        <h3 class="text-xl font-bold text-slate-800">Cari Kunci</h3>
+                        <p class="text-slate-500 mt-1">Temukan kunci dari teks yang ada.</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Konten Kuis -->
+            <div id="kuis" class="tab-content content-card hidden">
+                <div id="quiz-start-screen" class="text-center">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Kuis Gamifikasi</h2>
+                    <p class="text-slate-500 mb-6">Uji pemahamanmu dengan 3 nyawa. Skor tertinggi akan disimpan!</p>
+                    <p class="mb-2">Skor Tertinggi: <strong id="highscore" class="text-blue-600">0</strong></p>
+                    <button id="start-quiz-btn" class="w-full max-w-xs mx-auto py-3 px-6 rounded-full font-semibold text-lg btn-primary transform hover:scale-105 transition-transform">Mulai Kuis!</button>
+                </div>
+                <div id="quiz-game-over-screen" class="text-center hidden">
+                     <h2 class="text-3xl font-bold text-red-500 mb-2">Game Over!</h2>
+                    <p class="text-slate-500 mb-6">Kesempatanmu sudah habis. Jangan menyerah dan coba lagi!</p>
+                    <p class="mb-4 text-xl">Skor Akhir Kamu: <strong id="final-score" class="text-blue-600">0</strong></p>
+                    <button id="play-again-btn" class="w-full max-w-xs mx-auto py-3 px-6 rounded-full font-semibold text-lg btn-primary transform hover:scale-105 transition-transform">Main Lagi</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal Latihan Soal -->
+    <div id="latihan-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div id="latihan-modal-content" class="w-full max-w-md bg-white rounded-2xl p-8 shadow-2xl relative animated-popup">
+            <button id="close-latihan-modal" class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-600">&times;</button>
+            <h2 id="latihan-title" class="text-2xl font-bold text-center mb-6 text-slate-700">Mode Latihan</h2>
+            
+            <div class="bg-slate-50 rounded-xl p-6 text-center mb-6">
+                <div id="latihan-question-encrypt" class="hidden">
+                    <p class="text-slate-500">Plaintext (Kata Asli):</p>
+                    <p id="latihan-encrypt-plaintext" class="text-3xl font-bold text-blue-600 tracking-widest my-1">...</p>
+                    <p class="text-slate-500 mt-2">Kunci (Jumlah Pergeseran):</p>
+                    <p id="latihan-encrypt-key" class="text-3xl font-bold text-blue-600 my-1">...</p>
+                </div>
+                 <div id="latihan-question-decrypt" class="hidden">
+                    <p class="text-slate-500">Ciphertext (Kata Terenkripsi):</p>
+                    <p id="latihan-decrypt-ciphertext" class="text-3xl font-bold text-blue-600 tracking-widest my-1">...</p>
+                    <p class="text-slate-500 mt-2">Kunci (Jumlah Pergeseran Mundur):</p>
+                    <p id="latihan-decrypt-key" class="text-3xl font-bold text-blue-600 my-1">...</p>
+                </div>
+                 <div id="latihan-question-find-key" class="hidden">
+                    <p class="text-slate-500">Plaintext:</p>
+                    <p id="latihan-find-key-plaintext" class="text-3xl font-bold text-blue-600 tracking-widest my-1">...</p>
+                    <p class="text-slate-500 mt-2">Ciphertext:</p>
+                    <p id="latihan-find-key-ciphertext" class="text-3xl font-bold text-blue-600 tracking-widest my-1">...</p>
+                </div>
+            </div>
+            
+            <label id="latihan-input-label" class="text-left block mb-2 text-slate-600 font-medium">Ketik jawabanmu di sini:</label>
+            <input type="text" id="latihan-input" class="input-field mb-4">
+            
+            <div class="flex gap-4 mb-4">
+                <button id="latihan-skip" class="w-full py-3 rounded-lg bg-slate-400 text-white font-bold text-lg hover:bg-slate-500 transition-all">Lewati</button>
+                <button id="latihan-submit" class="w-full py-3 rounded-lg bg-green-500 text-white font-bold text-lg hover:bg-green-600 transition-all">Jawab</button>
+            </div>
+            
+            <div id="latihan-feedback" class="text-center font-bold text-lg hidden"></div>
+            <button id="latihan-next" class="w-full py-3 rounded-lg bg-blue-500 text-white font-bold text-lg hover:bg-blue-600 transition-all mt-4 hidden">Soal Berikutnya</button>
+        </div>
+    </div>
+    
+    <!-- Modal Kuis -->
+    <div id="kuis-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 hidden z-50">
+        <div id="kuis-modal-content" class="w-full max-w-lg bg-white rounded-2xl p-8 shadow-2xl relative animated-popup">
+             <button id="close-kuis-modal" class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-gray-600">&times;</button>
+             <!-- Header Kuis -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-lg font-semibold">Skor: <span id="quiz-score" class="text-blue-600">0</span></div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-lg font-semibold">Nyawa:</span>
+                    <div id="quiz-lives" class="flex space-x-1">
+                        <!-- Hearts will be generated by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timer Kuis -->
+            <div id="quiz-timer-container" class="mb-4 text-center hidden">
+                <p class="text-xl font-bold text-red-500">Waktu: <span id="quiz-timer">60</span></p>
+            </div>
+            
+            <!-- Area Pertanyaan Kuis -->
+            <div class="bg-slate-50 rounded-xl p-6 text-center mb-6 min-h-[150px] flex flex-col justify-center">
+                <!-- Soal Enkripsi -->
+                <div id="quiz-question-encrypt" class="hidden">
+                    <p class="text-slate-500">Enkripsikan Plaintext berikut:</p>
+                    <p id="quiz-encrypt-plaintext" class="text-3xl font-bold text-blue-600 tracking-widest my-1">...</p>
+                    <p class="text-slate-500 mt-2">Dengan Kunci:</p>
+                    <p id="quiz-encrypt-key" class="text-3xl font-bold text-blue-600 my-1">...</p>
+                </div>
+                <!-- Soal Dekripsi -->
+                <div id="quiz-question-decrypt" class="hidden">
+                     <p class="text-slate-500">Dekripsikan Ciphertext berikut:</p>
+                    <p id="quiz-decrypt-ciphertext" class="text-3xl font-bold text-blue-600 tracking-widest my-1">...</p>
+                    <p class="text-slate-500 mt-2">Dengan Kunci:</p>
+                    <p id="quiz-decrypt-key" class="text-3xl font-bold text-blue-600 my-1">...</p>
+                </div>
+                <!-- Soal Analogi -->
+                 <div id="quiz-question-analogy" class="hidden">
+                     <p class="text-slate-500 mb-2">Dengan kunci yang sama, tentukan plaintextnya:</p>
+                     <p class="font-mono text-xl"><span id="analogy-plain-1"></span> &rarr; <span id="analogy-cipher-1"></span></p>
+                     <p class="font-mono text-xl mt-1"><strong>???</strong> &rarr; <span id="analogy-cipher-2"></span></p>
+                </div>
+            </div>
+
+            <label class="text-left block mb-2 text-slate-600 font-medium">Ketik jawabanmu:</label>
+            <input type="text" id="quiz-input" class="input-field mb-4">
+
+            <div class="flex gap-4">
+                <button id="quiz-skip" class="w-full py-3 rounded-lg bg-slate-400 text-white font-bold text-lg hover:bg-slate-500 transition-all">Lewati</button>
+                <button id="quiz-submit" class="w-full py-3 rounded-lg bg-green-500 text-white font-bold text-lg hover:bg-green-600 transition-all">Cek Jawaban</button>
+            </div>
+             <div id="quiz-feedback" class="text-center mt-4 font-bold text-lg h-6"></div>
+        </div>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tabs = document.querySelectorAll('.tab-button');
+    const contents = document.querySelectorAll('.tab-content');
+    const pembahasanButtons = document.querySelectorAll('.toggle-pembahasan');
+    
+    // Logika Navigasi Tab
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(item => item.classList.remove('active'));
+            tab.classList.add('active');
+            const target = document.getElementById(tab.dataset.tab);
+            contents.forEach(content => content.classList.add('hidden'));
+            target.classList.remove('hidden');
+        });
+    });
+
+    // Logika Pembahasan Contoh Soal
+    pembahasanButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const pembahasan = button.nextElementSibling;
+            pembahasan.classList.toggle('hidden');
+            if (!pembahasan.classList.contains('hidden')) {
+                pembahasan.style.transition = "max-height 0.5s ease-in-out";
+                pembahasan.style.maxHeight = pembahasan.scrollHeight + "px";
+            } else {
+                 pembahasan.style.maxHeight = "0";
+            }
+        });
+    });
+
+    // --- VISUALISASI ALFABET ---
+    const keySlider = document.getElementById('key-slider');
+    const keyDisplay = document.getElementById('key-display');
+    const alphabetPlainRow = document.getElementById('alphabet-plain');
+    const alphabetCipherRow = document.getElementById('alphabet-cipher');
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    function updateAlphabetVisualizer(key) {
+        key = parseInt(key);
+        keyDisplay.textContent = key;
+        alphabetCipherRow.innerHTML = '';
+        
+        const shiftedAlphabet = caesarCipher(alphabet, key);
+        
+        for (let i = 0; i < shiftedAlphabet.length; i++) {
+            const letterSpan = document.createElement('span');
+            letterSpan.className = 'alphabet-letter';
+            letterSpan.textContent = shiftedAlphabet[i];
+            alphabetCipherRow.appendChild(letterSpan);
+        }
+    }
+
+    // Initialize alphabet visualizer
+    alphabet.split('').forEach(letter => {
+        const letterSpan = document.createElement('span');
+        letterSpan.className = 'alphabet-letter';
+        letterSpan.textContent = letter;
+        alphabetPlainRow.appendChild(letterSpan);
+    });
+    updateAlphabetVisualizer(keySlider.value);
+    keySlider.addEventListener('input', (e) => updateAlphabetVisualizer(e.target.value));
+
+
+    // --- LOGIKA LATIHAN SOAL ---
+    const latihanModeBtns = document.querySelectorAll('.latihan-mode-btn');
+    const latihanModal = document.getElementById('latihan-modal');
+    const closeLatihanModalBtn = document.getElementById('close-latihan-modal');
+    const latihanTitle = document.getElementById('latihan-title');
+    const latihanInput = document.getElementById('latihan-input');
+    const latihanSubmitBtn = document.getElementById('latihan-submit');
+    const latihanSkipBtn = document.getElementById('latihan-skip');
+    const latihanNextBtn = document.getElementById('latihan-next');
+    const latihanFeedback = document.getElementById('latihan-feedback');
+    const latihanInputLabel = document.getElementById('latihan-input-label');
+    
+    const questionContainers = {
+        encrypt: document.getElementById('latihan-question-encrypt'),
+        decrypt: document.getElementById('latihan-question-decrypt'),
+        findKey: document.getElementById('latihan-question-find-key'),
+    };
+
+    let currentLatihanMode = '';
+    let currentLatihanAnswer = '';
+    const words = ['KRIPTOGRAFI', 'KEAMANAN', 'SANDI', 'RAHASIA', 'ALGORITMA', 'KUNCI', 'PESAN', 'ENKRIPSI', 'DEKRIPSI', 'KOMPUTER'];
+
+    function caesarCipher(text, key, mode = 'encrypt') {
+        const shift = mode === 'encrypt' ? key : -key;
+        return text.toUpperCase().split('').map(char => {
+            if (char >= 'A' && char <= 'Z') {
+                return String.fromCharCode((char.charCodeAt(0) - 65 + shift + 26) % 26 + 65);
+            }
+            return char;
+        }).join('');
+    }
+
+    function generateLatihanQuestion(mode) {
+        latihanInput.value = '';
+        latihanFeedback.classList.add('hidden');
+        latihanSubmitBtn.parentElement.classList.remove('hidden');
+        latihanNextBtn.classList.add('hidden');
+        latihanInput.disabled = false;
+        
+        const word = words[Math.floor(Math.random() * words.length)];
+        const key = Math.floor(Math.random() * 25) + 1;
+
+        Object.values(questionContainers).forEach(c => c.classList.add('hidden'));
+        questionContainers[mode.replace('-','')].classList.remove('hidden');
+
+        if (mode === 'encrypt') {
+            document.getElementById('latihan-encrypt-plaintext').textContent = word;
+            document.getElementById('latihan-encrypt-key').textContent = key;
+            currentLatihanAnswer = caesarCipher(word, key, 'encrypt');
+            latihanTitle.textContent = 'Mode Enkripsi';
+            latihanInputLabel.textContent = 'Ketik hasil enkripsinya:';
+        } else if (mode === 'decrypt') {
+            const ciphertext = caesarCipher(word, key, 'encrypt');
+            document.getElementById('latihan-decrypt-ciphertext').textContent = ciphertext;
+            document.getElementById('latihan-decrypt-key').textContent = key;
+            currentLatihanAnswer = word;
+            latihanTitle.textContent = 'Mode Dekripsi';
+            latihanInputLabel.textContent = 'Ketik hasil dekripsinya:';
+        } else if (mode === 'find-key') {
+            const ciphertext = caesarCipher(word, key, 'encrypt');
+            document.getElementById('latihan-find-key-plaintext').textContent = word;
+            document.getElementById('latihan-find-key-ciphertext').textContent = ciphertext;
+            currentLatihanAnswer = key.toString();
+            latihanTitle.textContent = 'Mode Cari Kunci';
+            latihanInputLabel.textContent = 'Ketik kunci yang digunakan:';
+        }
+    }
+
+    latihanModeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentLatihanMode = btn.dataset.mode;
+            generateLatihanQuestion(currentLatihanMode);
+            latihanModal.classList.remove('hidden');
+            setTimeout(() => latihanInput.focus(), 100);
+        });
+    });
+
+    closeLatihanModalBtn.addEventListener('click', () => {
+        latihanModal.classList.add('hidden');
+    });
+
+    latihanSubmitBtn.addEventListener('click', () => {
+        const userAnswer = latihanInput.value.trim().toUpperCase();
+        latihanFeedback.classList.remove('hidden');
+        if (userAnswer === currentLatihanAnswer) {
+            latihanFeedback.textContent = 'Jawaban Benar!';
+            latihanFeedback.className = 'text-center font-bold text-lg text-green-500';
+        } else {
+            latihanFeedback.textContent = `Jawaban Salah. Yang benar: ${currentLatihanAnswer}`;
+            latihanFeedback.className = 'text-center font-bold text-lg text-red-500';
+        }
+        latihanSubmitBtn.parentElement.classList.add('hidden');
+        latihanNextBtn.classList.remove('hidden');
+        latihanInput.disabled = true;
+    });
+    
+    latihanSkipBtn.addEventListener('click', () => {
+        generateLatihanQuestion(currentLatihanMode);
+    });
+
+    latihanNextBtn.addEventListener('click', () => {
+        generateLatihanQuestion(currentLatihanMode);
+    });
+
+    // --- LOGIKA KUIS GAMIFIKASI ---
+    const startQuizBtn = document.getElementById('start-quiz-btn');
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const quizModal = document.getElementById('kuis-modal');
+    const closeKuisModalBtn = document.getElementById('close-kuis-modal');
+    const quizStartScreen = document.getElementById('quiz-start-screen');
+    const quizGameOverScreen = document.getElementById('quiz-game-over-screen');
+
+    const highscoreDisplay = document.getElementById('highscore');
+    const finalScoreDisplay = document.getElementById('final-score');
+    const quizScoreDisplay = document.getElementById('quiz-score');
+    const quizLivesDisplay = document.getElementById('quiz-lives');
+    const quizInput = document.getElementById('quiz-input');
+    const quizSubmitBtn = document.getElementById('quiz-submit');
+    const quizSkipBtn = document.getElementById('quiz-skip');
+    const quizFeedback = document.getElementById('quiz-feedback');
+    
+    const quizTimerContainer = document.getElementById('quiz-timer-container');
+    const quizTimerDisplay = document.getElementById('quiz-timer');
+
+    const quizQuestionContainers = {
+        encrypt: document.getElementById('quiz-question-encrypt'),
+        decrypt: document.getElementById('quiz-question-decrypt'),
+        analogy: document.getElementById('quiz-question-analogy'),
+    };
+    
+    const quizAnalogyWords = [
+        ['INDONESIA', 'REPUBLIK'], ['SEMARANG', 'BANDUNG'], ['JAKARTA', 'IBUKOTA'], ['PRESIDEN', 'MENTERI'],
+        ['MERDEKA', 'BELANDA'], ['PANCASILA', 'GARUDA'], ['KOMPUTER', 'TEKNOLOGI'], ['INTERNET', 'JARINGAN'],
+        ['PROGRAM', 'KODING'], ['DATABASE', 'INFORMASI'], ['KEAMANAN', 'SISTEM'], ['JARINGAN', 'PROTOKOL'],
+        ['SERVER', 'CLIENT'], ['HARDWARE', 'SOFTWARE'], ['MONITOR', 'KEYBOARD'], ['PROCESSOR', 'MEMORY'],
+        ['MOTHERBOARD', 'GRAPHICCARD'], ['JAVASCRIPT', 'PYTHON'], ['HTML', 'CSS'], ['FRAMEWORK', 'LIBRARY'],
+        ['ALGORITMA', 'STRUKTURDATA'], ['KRIPTOGRAFI', 'CIPHER'], ['AUTHENTICATION', 'AUTHORIZATION'],
+        ['FIREWALL', 'ANTIVIRUS'], ['MALWARE', 'VIRUS'], ['HACKER', 'CRACKER'], ['CYBERSECURITY', 'INFORMATIONSECURITY'],
+        ['BLOCKCHAIN', 'CRYPTOCURRENCY'], ['BITCOIN', 'ETHEREUM'], ['DECENTRALIZED', 'CENTRALIZED'],
+        ['ARTIFICIAL', 'INTELLIGENCE'], ['MACHINE', 'LEARNING'], ['DEEPLEARNING', 'NEURALNETWORK'],
+        ['BIGDATA', 'ANALYTICS'], ['DATASCIENCE', 'DATAMINING'], ['CLOUDCOMPUTING', 'VIRTUALIZATION'],
+        ['SAAS', 'PAAS'], ['IAAS', 'FAAS'], ['DEVOPS', 'AGILE'], ['CONTAINER', 'DOCKER'],
+        ['KUBERNETES', 'ORCHESTRATION'], ['MICROSERVICES', 'API'], ['REST', 'SOAP'],
+        ['JSON', 'XML'], ['FRONTEND', 'BACKEND'], ['UI', 'UX'], ['RESPONSIVE', 'ADAPTIVE'],
+        ['MOBILE', 'DESKTOP'], ['ANDROID', 'IOS']
+    ];
+
+    let score, lives, highscore, currentQuizAnswer;
+    let quizQuestionCounter = 0;
+    let quizTimerInterval = null;
+    const QUIZ_TIMER_DURATION = 60;
+
+    function initQuiz() {
+        highscore = localStorage.getItem('caesarCipherHighscore') || 0;
+        highscoreDisplay.textContent = highscore;
+        quizStartScreen.classList.remove('hidden');
+        quizGameOverScreen.classList.add('hidden');
+    }
+
+    function startQuiz() {
+        score = 0;
+        lives = 3;
+        quizQuestionCounter = 0;
+        updateQuizUI();
+        generateQuizQuestion();
+        quizStartScreen.classList.add('hidden');
+        quizModal.classList.remove('hidden');
+        setTimeout(() => quizInput.focus(), 100);
+    }
+    
+    function handleTimeUp() {
+        clearInterval(quizTimerInterval);
+        lives--;
+        quizFeedback.textContent = 'Waktu Habis!';
+        quizFeedback.className = 'text-center mt-4 font-bold text-lg h-6 text-red-500';
+        quizSubmitBtn.disabled = true;
+        quizInput.disabled = true;
+        updateQuizUI();
+
+        if (lives <= 0) {
+            setTimeout(gameOver, 1500);
+        } else {
+             setTimeout(() => {
+                quizInput.disabled = false;
+                quizSubmitBtn.disabled = false;
+                quizInput.value = '';
+                quizInput.focus();
+                quizFeedback.textContent = ''; // Clear feedback
+            }, 1500);
+        }
+    }
+    
+    function generateQuizQuestion() {
+        clearInterval(quizTimerInterval); // Clear previous timer
+        quizTimerContainer.classList.add('hidden');
+        quizInput.value = '';
+        quizInput.disabled = false;
+        quizFeedback.textContent = '';
+        quizSubmitBtn.disabled = false;
+
+        // Check if it's a timed question
+        if ((quizQuestionCounter % 4) === 2) {
+            quizTimerContainer.classList.remove('hidden');
+            let timeLeft = QUIZ_TIMER_DURATION;
+            quizTimerDisplay.textContent = timeLeft;
+            quizTimerInterval = setInterval(() => {
+                timeLeft--;
+                quizTimerDisplay.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    handleTimeUp();
+                }
+            }, 1000);
+        }
+
+        const questionType = quizQuestionCounter % 3; 
+        Object.values(quizQuestionContainers).forEach(c => c.classList.add('hidden'));
+        
+        const key = Math.floor(Math.random() * 25) + 1;
+
+        if (questionType === 0) { // Enkripsi
+            quizQuestionContainers.encrypt.classList.remove('hidden');
+            const word = words[Math.floor(Math.random() * words.length)];
+            document.getElementById('quiz-encrypt-plaintext').textContent = word;
+            document.getElementById('quiz-encrypt-key').textContent = key;
+            currentQuizAnswer = caesarCipher(word, key, 'encrypt');
+        } else if (questionType === 1) { // Dekripsi
+            quizQuestionContainers.decrypt.classList.remove('hidden');
+            const word = words[Math.floor(Math.random() * words.length)];
+            const ciphertext = caesarCipher(word, key, 'encrypt');
+            document.getElementById('quiz-decrypt-ciphertext').textContent = ciphertext;
+            document.getElementById('quiz-decrypt-key').textContent = key;
+            currentQuizAnswer = word;
+        } else { // Analogi
+            quizQuestionContainers.analogy.classList.remove('hidden');
+            const wordPairIndex = Math.floor(Math.random() * quizAnalogyWords.length);
+            const wordPair = quizAnalogyWords[wordPairIndex];
+            
+            const plain1 = wordPair[0];
+            const plain2 = wordPair[1];
+            
+            const cipher1 = caesarCipher(plain1, key, 'encrypt');
+            const cipher2 = caesarCipher(plain2, key, 'encrypt');
+
+            document.getElementById('analogy-plain-1').textContent = plain1;
+            document.getElementById('analogy-cipher-1').textContent = cipher1;
+            document.getElementById('analogy-cipher-2').textContent = cipher2;
+            currentQuizAnswer = plain2;
+        }
+    }
+
+    function checkQuizAnswer() {
+        clearInterval(quizTimerInterval);
+        const userAnswer = quizInput.value.trim().toUpperCase();
+        quizSubmitBtn.disabled = true;
+        quizInput.disabled = true;
+
+        if (userAnswer === currentQuizAnswer) {
+            score += 100;
+            quizQuestionCounter++;
+            quizFeedback.textContent = 'Benar!';
+            quizFeedback.className = 'text-center mt-4 font-bold text-lg h-6 text-green-500';
+            setTimeout(() => {
+                updateQuizUI();
+                generateQuizQuestion();
+                quizInput.focus();
+            }, 1000);
+        } else {
+            lives--;
+            quizFeedback.textContent = 'Salah! Coba lagi.';
+            quizFeedback.className = 'text-center mt-4 font-bold text-lg h-6 text-red-500';
+            updateQuizUI();
+            if (lives <= 0) {
+                setTimeout(gameOver, 1500);
+            } else {
+                setTimeout(() => {
+                    quizInput.disabled = false;
+                    quizSubmitBtn.disabled = false;
+                    quizInput.value = '';
+                    quizInput.focus();
+                }, 1500);
+            }
+        }
+    }
+
+    function gameOver() {
+        clearInterval(quizTimerInterval);
+        if (score > highscore) {
+            highscore = score;
+            localStorage.setItem('caesarCipherHighscore', highscore);
+        }
+        finalScoreDisplay.textContent = score;
+        highscoreDisplay.textContent = highscore;
+        quizModal.classList.add('hidden');
+        quizGameOverScreen.classList.remove('hidden');
+    }
+
+    function updateQuizUI() {
+        quizScoreDisplay.textContent = score;
+        quizLivesDisplay.innerHTML = '';
+        for (let i = 0; i < 3; i++) {
+            const heart = document.createElement('span');
+            heart.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 ${i < lives ? 'text-red-500' : 'text-slate-300'}"><path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-1.344-.688 11.85 11.85 0 0 1-2.131-1.758A10.828 10.828 0 0 1 5.344 14.02c-.96-1.533-1.29-3.21-1.217-4.844.073-1.632.748-3.23 1.954-4.482.954-1.025 2.24-1.64 3.616-1.782.744-.074 1.442.062 2.107.332.658.267 1.25.652 1.77 1.139a.5.5 0 0 0 .752 0 4.108 4.108 0 0 1 1.77-1.14c.664-.268 1.362-.405 2.106-.332 1.377.142 2.662.757 3.617 1.782 1.206 1.252 1.88 2.85 1.953 4.482.074 1.634-.257 3.31-1.218 4.844a10.832 10.832 0 0 1-2.182 3.182c-.624.81-1.345 1.5-2.132 2.057a15.253 15.253 0 0 1-1.344.688l-.022.012-.007.003-.002.001a.5.5 0 0 1-.504 0l-.002-.001Z" /></svg>`;
+            quizLivesDisplay.appendChild(heart);
+        }
+    }
+    
+    quizSkipBtn.addEventListener('click', () => {
+        clearInterval(quizTimerInterval);
+        quizQuestionCounter++;
+        generateQuizQuestion();
+        quizInput.focus();
+    });
+
+    startQuizBtn.addEventListener('click', startQuiz);
+    playAgainBtn.addEventListener('click', () => {
+        quizGameOverScreen.classList.add('hidden');
+        startQuiz();
+    });
+    
+    closeKuisModalBtn.addEventListener('click', () => {
+        clearInterval(quizTimerInterval);
+        quizModal.classList.add('hidden');
+        quizStartScreen.classList.remove('hidden');
+        quizGameOverScreen.classList.add('hidden');
+    });
+
+    quizSubmitBtn.addEventListener('click', checkQuizAnswer);
+    quizInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !quizSubmitBtn.disabled) {
+            checkQuizAnswer();
+        }
+    });
+
+    // Inisialisasi Kuis
+    initQuiz();
+});
+</script>
+
+</body>
+</html>
+
+
