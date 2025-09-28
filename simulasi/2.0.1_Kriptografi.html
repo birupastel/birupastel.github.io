@@ -442,40 +442,40 @@
             const kuisNextBtn = document.getElementById('kuis-next-btn');
             const kuisSkipBtn = document.getElementById('kuis-skip-btn');
 
-            let score, lives, highscore, currentCorrectAnswer;
+            let score, lives, highscore, currentCorrectAnswer, currentQuestion;
             let questions = [];
 
              const questionBank = [
-                { question: "Apa nama lain dari pesan asli yang dapat dibaca?", options: ["Ciphertext", "Plaintext", "Kunci", "Algoritma"], answer: "Plaintext" },
-                { question: "Proses mengubah plaintext menjadi ciphertext disebut...", options: ["Dekripsi", "Analisis", "Enkripsi", "Kompilasi"], answer: "Enkripsi" },
-                { question: "Informasi rahasia yang digunakan untuk mengenkripsi dan mendekripsi pesan adalah...", options: ["Protokol", "Sandi", "Kunci", "Server"], answer: "Kunci" },
-                { question: "Apa nama lain untuk pesan yang sudah dienkripsi dan tidak bisa dibaca?", options: ["Plaintext", "Kode Sumber", "Ciphertext", "Skrip"], answer: "Ciphertext" },
-                { question: "Proses mengembalikan ciphertext ke bentuk aslinya disebut...", options: ["Enkripsi", "Dekripsi", "Hashing", "Otentikasi"], answer: "Dekripsi" },
-                { question: "Julius Caesar menggunakan jenis cipher apa?", options: ["Vigenère Cipher", "Caesar Cipher", "Transposition Cipher", "RSA"], answer: "Caesar Cipher" },
-                { question: "Jenis kriptografi yang menggunakan satu kunci yang sama untuk enkripsi dan dekripsi adalah...", options: ["Asimetris", "Simetris", "Publik", "Hibrida"], answer: "Simetris" },
-                { question: "Jenis kriptografi yang menggunakan Kunci Publik dan Kunci Privat adalah...", options: ["Simetris", "Klasik", "Asimetris", "Stream Cipher"], answer: "Asimetris" },
-                { question: "Pada Kriptografi Asimetris, kunci yang digunakan untuk mengenkripsi adalah...", options: ["Kunci Privat", "Kunci Rahasia", "Kunci Sesi", "Kunci Publik"], answer: "Kunci Publik" },
-                { question: "Pada Kriptografi Asimetris, kunci yang digunakan untuk mendekripsi adalah...", options: ["Kunci Publik", "Kunci Bersama", "Kunci Privat", "Kunci Sementara"], answer: "Kunci Privat" },
-                { question: "Algoritma yang menggeser setiap huruf alfabet sejumlah posisi tetap disebut...", options: ["Vigenère Cipher", "Caesar Cipher", "Substitution Cipher", "Playfair Cipher"], answer: "Caesar Cipher" },
-                { question: "Vigenère Cipher adalah contoh dari jenis kriptografi...", options: ["Transposisi", "Polyalphabetic", "Monoalphabetic", "Asimetris"], answer: "Polyalphabetic" },
-                { question: "Manakah dari berikut ini yang BUKAN tujuan utama kriptografi?", options: ["Kerahasiaan", "Integritas", "Mempercepat koneksi", "Otentikasi"], answer: "Mempercepat koneksi" },
-                { question: "Menjamin bahwa data tidak diubah selama pengiriman adalah tujuan kriptografi yang disebut...", options: ["Kerahasiaan", "Integritas", "Non-repudiasi", "Otentikasi"], answer: "Integritas" },
-                { question: "Memastikan hanya pihak berwenang yang bisa membaca pesan adalah tujuan...", options: ["Integritas", "Kerahasiaan", "Otentikasi", "Ketersediaan"], answer: "Kerahasiaan" },
-                { question: "Verifikasi identitas pengirim dan penerima disebut...", options: ["Otentikasi", "Integritas", "Kerahasiaan", "Non-repudiasi"], answer: "Otentikasi" },
-                { question: "Mencegah seseorang menyangkal telah mengirim pesan disebut...", options: ["Kerahasiaan", "Otentikasi", "Non-repudiasi", "Integritas"], answer: "Non-repudiasi" },
-                { question: "Enkripsi end-to-end pada aplikasi chat adalah contoh penerapan untuk tujuan...", options: ["Integritas", "Ketersediaan", "Otentikasi", "Kerahasiaan"], answer: "Kerahasiaan" },
-                { question: "Ikon gembok (HTTPS) di browser menandakan koneksi yang...", options: ["Cepat", "Terbuka", "Dienkripsi", "Tidak terbatas"], answer: "Dienkripsi" },
-                { question: "Caesar Cipher mudah dipecahkan karena merupakan cipher...", options: ["Polyalphabetic", "Asimetris", "Monoalphabetic", "Kuantum"], answer: "Monoalphabetic" },
-                { question: "Apa kelemahan utama Kriptografi Simetris?", options: ["Prosesnya lambat", "Manajemen dan distribusi kunci", "Ukuran ciphertext besar", "Tidak bisa untuk kerahasiaan"], answer: "Manajemen dan distribusi kunci" },
-                { question: "Kata 'kriptografi' berasal dari bahasa...", options: ["Latin", "Inggris", "Yunani", "Sansekerta"], answer: "Yunani" },
-                { question: "Cipher yang mengubah posisi huruf tanpa menggantinya disebut cipher...", options: ["Substitusi", "Transposisi", "Stream", "Block"], answer: "Transposisi" },
-                { question: "Manakah yang merupakan algoritma kriptografi asimetris modern?", options: ["AES", "DES", "RSA", "Caesar Cipher"], answer: "RSA" },
-                { question: "Manakah yang merupakan algoritma kriptografi simetris modern?", options: ["RSA", "Diffie-Hellman", "ECC", "AES"], answer: "AES" },
-                { question: "Dalam analogi 'Gembok dan Kunci Pribadi', gembok mewakili...", options: ["Kunci Privat", "Pesan", "Kunci Publik", "Algoritma"], answer: "Kunci Publik" },
-                { question: "Dalam analogi 'Gembok dan Kunci Pribadi', siapa yang boleh memiliki gembok?", options: ["Hanya penerima", "Hanya pengirim", "Siapa saja", "Tidak ada yang boleh"], answer: "Siapa saja" },
-                { question: "Tujuan dari 'Integritas' data adalah untuk mencegah...", options: ["Pesan dibaca orang lain", "Pesan diubah di tengah jalan", "Pengirim menyangkal pesan", "Penerima tidak dikenal"], answer: "Pesan diubah di tengah jalan" },
-                { question: "Aplikasi Mobile Banking menggunakan HTTPS untuk tujuan utama...", options: ["Mempercepat transaksi", "Menjaga kerahasiaan data finansial", "Menampilkan iklan", "Meningkatkan sinyal"], answer: "Menjaga kerahasiaan data finansial" },
-                { question: "Mengapa layanan online tidak menyimpan password Anda dalam bentuk plaintext?", options: ["Karena plaintext terlalu panjang", "Untuk menjaga kerahasiaan jika terjadi kebocoran data", "Karena server tidak bisa membaca plaintext", "Agar password lebih mudah diingat"], answer: "Untuk menjaga kerahasiaan jika terjadi kebocoran data" },
+                { question: "Apa nama lain dari pesan asli yang dapat dibaca?", options: ["Ciphertext", "Plaintext", "Kunci", "Algoritma"], answer: "Plaintext", explanation: "Plaintext adalah istilah standar dalam kriptografi untuk pesan asli yang belum dienkripsi." },
+                { question: "Proses mengubah plaintext menjadi ciphertext disebut...", options: ["Dekripsi", "Analisis", "Enkripsi", "Kompilasi"], answer: "Enkripsi", explanation: "Enkripsi adalah proses mengubah data menjadi format yang tidak dapat dibaca untuk melindunginya." },
+                { question: "Informasi rahasia yang digunakan untuk mengenkripsi dan mendekripsi pesan adalah...", options: ["Protokol", "Sandi", "Kunci", "Server"], answer: "Kunci", explanation: "Kunci adalah parameter yang digunakan oleh algoritma untuk mengubah data selama enkripsi dan dekripsi." },
+                { question: "Apa nama lain untuk pesan yang sudah dienkripsi dan tidak bisa dibaca?", options: ["Plaintext", "Kode Sumber", "Ciphertext", "Skrip"], answer: "Ciphertext", explanation: "Ciphertext adalah hasil dari proses enkripsi yang tampak sebagai data acak." },
+                { question: "Proses mengembalikan ciphertext ke bentuk aslinya disebut...", options: ["Enkripsi", "Dekripsi", "Hashing", "Otentikasi"], answer: "Dekripsi", explanation: "Dekripsi adalah kebalikan dari enkripsi, yaitu mengembalikan data terenkripsi ke bentuk aslinya." },
+                { question: "Julius Caesar menggunakan jenis cipher apa?", options: ["Vigenère Cipher", "Caesar Cipher", "Transposition Cipher", "RSA"], answer: "Caesar Cipher", explanation: "Caesar Cipher adalah salah satu bentuk kriptografi paling awal yang tercatat, digunakan oleh Julius Caesar." },
+                { question: "Jenis kriptografi yang menggunakan satu kunci yang sama untuk enkripsi dan dekripsi adalah...", options: ["Asimetris", "Simetris", "Publik", "Hibrida"], answer: "Simetris", explanation: "Kriptografi Simetris, atau kunci privat, menggunakan satu kunci yang sama untuk kedua proses." },
+                { question: "Jenis kriptografi yang menggunakan Kunci Publik dan Kunci Privat adalah...", options: ["Simetris", "Klasik", "Asimetris", "Stream Cipher"], answer: "Asimetris", explanation: "Kriptografi Asimetris menggunakan sepasang kunci: satu publik untuk mengenkripsi dan satu privat untuk mendekripsi." },
+                { question: "Pada Kriptografi Asimetris, kunci yang digunakan untuk mengenkripsi adalah...", options: ["Kunci Privat", "Kunci Rahasia", "Kunci Sesi", "Kunci Publik"], answer: "Kunci Publik", explanation: "Kunci Publik dapat dibagikan secara bebas dan digunakan oleh siapa saja untuk mengenkripsi pesan." },
+                { question: "Pada Kriptografi Asimetris, kunci yang digunakan untuk mendekripsi adalah...", options: ["Kunci Publik", "Kunci Bersama", "Kunci Privat", "Kunci Sementara"], answer: "Kunci Privat", explanation: "Hanya pemilik Kunci Privat yang dapat mendekripsi pesan yang dienkripsi dengan Kunci Publik pasangannya." },
+                { question: "Algoritma yang menggeser setiap huruf alfabet sejumlah posisi tetap disebut...", options: ["Vigenère Cipher", "Caesar Cipher", "Substitution Cipher", "Playfair Cipher"], answer: "Caesar Cipher", explanation: "Caesar Cipher adalah contoh cipher substitusi monoalfabetik dengan pergeseran tetap." },
+                { question: "Vigenère Cipher adalah contoh dari jenis kriptografi...", options: ["Transposisi", "Polyalphabetic", "Monoalphabetic", "Asimetris"], answer: "Polyalphabetic", explanation: "Vigenère Cipher menggunakan kata kunci, sehingga setiap huruf plaintext dapat dienkripsi menjadi beberapa huruf ciphertext yang berbeda (polyalphabetic)." },
+                { question: "Manakah dari berikut ini yang BUKAN tujuan utama kriptografi?", options: ["Kerahasiaan", "Integritas", "Mempercepat koneksi", "Otentikasi"], answer: "Mempercepat koneksi", explanation: "Kriptografi seringkali menambah beban komputasi, yang bisa sedikit memperlambat koneksi, bukan mempercepatnya." },
+                { question: "Menjamin bahwa data tidak diubah selama pengiriman adalah tujuan kriptografi yang disebut...", options: ["Kerahasiaan", "Integritas", "Non-repudiasi", "Otentikasi"], answer: "Integritas", explanation: "Integritas memastikan bahwa pesan yang diterima sama persis dengan pesan yang dikirim." },
+                { question: "Memastikan hanya pihak berwenang yang bisa membaca pesan adalah tujuan...", options: ["Integritas", "Kerahasiaan", "Otentikasi", "Ketersediaan"], answer: "Kerahasiaan", explanation: "Kerahasiaan (Confidentiality) adalah tujuan utama kriptografi untuk melindungi isi pesan." },
+                { question: "Verifikasi identitas pengirim dan penerima disebut...", options: ["Otentikasi", "Integritas", "Kerahasiaan", "Non-repudiasi"], answer: "Otentikasi", explanation: "Otentikasi memastikan Anda berkomunikasi dengan pihak yang benar, bukan penipu." },
+                { question: "Mencegah seseorang menyangkal telah mengirim pesan disebut...", options: ["Kerahasiaan", "Otentikasi", "Non-repudiasi", "Integritas"], answer: "Non-repudiasi", explanation: "Non-repudiasi memberikan bukti bahwa pengirim benar-benar mengirim pesan tersebut." },
+                { question: "Enkripsi end-to-end pada aplikasi chat adalah contoh penerapan untuk tujuan...", options: ["Integritas", "Ketersediaan", "Otentikasi", "Kerahasiaan"], answer: "Kerahasiaan", explanation: "Enkripsi end-to-end secara spesifik dirancang untuk menjaga kerahasiaan isi percakapan." },
+                { question: "Ikon gembok (HTTPS) di browser menandakan koneksi yang...", options: ["Cepat", "Terbuka", "Dienkripsi", "Tidak terbatas"], answer: "Dienkripsi", explanation: "HTTPS (Hypertext Transfer Protocol Secure) menggunakan kriptografi untuk mengenkripsi data antara browser Anda dan server." },
+                { question: "Caesar Cipher mudah dipecahkan karena merupakan cipher...", options: ["Polyalphabetic", "Asimetris", "Monoalphabetic", "Kuantum"], answer: "Monoalphabetic", explanation: "Karena setiap huruf plaintext selalu dipetakan ke huruf ciphertext yang sama (monoalphabetic), polanya mudah dianalisis." },
+                { question: "Apa kelemahan utama Kriptografi Simetris?", options: ["Prosesnya lambat", "Manajemen dan distribusi kunci", "Ukuran ciphertext besar", "Tidak bisa untuk kerahasiaan"], answer: "Manajemen dan distribusi kunci", explanation: "Membagikan kunci rahasia secara aman kepada penerima adalah tantangan terbesar dalam kriptografi simetris." },
+                { question: "Kata 'kriptografi' berasal dari bahasa...", options: ["Latin", "Inggris", "Yunani", "Sansekerta"], answer: "Yunani", explanation: "Berasal dari kata Yunani 'kryptos' (tersembunyi) dan 'graphein' (menulis)." },
+                { question: "Cipher yang mengubah posisi huruf tanpa menggantinya disebut cipher...", options: ["Substitusi", "Transposisi", "Stream", "Block"], answer: "Transposisi", explanation: "Cipher Transposisi bekerja dengan mengacak urutan huruf, seperti anagram." },
+                { question: "Manakah yang merupakan algoritma kriptografi asimetris modern?", options: ["AES", "DES", "RSA", "Caesar Cipher"], answer: "RSA", explanation: "RSA adalah salah satu algoritma kriptografi kunci publik (asimetris) pertama dan paling banyak digunakan." },
+                { question: "Manakah yang merupakan algoritma kriptografi simetris modern?", options: ["RSA", "Diffie-Hellman", "ECC", "AES"], answer: "AES", explanation: "AES (Advanced Encryption Standard) adalah standar enkripsi simetris yang digunakan di seluruh dunia." },
+                { question: "Dalam analogi 'Gembok dan Kunci Pribadi', gembok mewakili...", options: ["Kunci Privat", "Pesan", "Kunci Publik", "Algoritma"], answer: "Kunci Publik", explanation: "Gembok (Kunci Publik) dapat dibagikan kepada siapa saja untuk mengunci pesan, tetapi hanya kunci privat yang bisa membukanya." },
+                { question: "Dalam analogi 'Gembok dan Kunci Pribadi', siapa yang boleh memiliki gembok?", options: ["Hanya penerima", "Hanya pengirim", "Siapa saja", "Tidak ada yang boleh"], answer: "Siapa saja", explanation: "Kunci Publik (gembok) dirancang untuk didistribusikan secara luas agar siapa saja bisa mengirim pesan terenkripsi kepada pemiliknya." },
+                { question: "Tujuan dari 'Integritas' data adalah untuk mencegah...", options: ["Pesan dibaca orang lain", "Pesan diubah di tengah jalan", "Pengirim menyangkal pesan", "Penerima tidak dikenal"], answer: "Pesan diubah di tengah jalan", explanation: "Integritas memastikan data tetap utuh dan tidak dimodifikasi oleh pihak yang tidak sah." },
+                { question: "Aplikasi Mobile Banking menggunakan HTTPS untuk tujuan utama...", options: ["Mempercepat transaksi", "Menjaga kerahasiaan data finansial", "Menampilkan iklan", "Meningkatkan sinyal"], answer: "Menjaga kerahasiaan data finansial", explanation: "HTTPS mengenkripsi semua komunikasi, melindungi detail login, nomor rekening, dan informasi sensitif lainnya." },
+                { question: "Mengapa layanan online tidak menyimpan password Anda dalam bentuk plaintext?", options: ["Karena plaintext terlalu panjang", "Untuk menjaga kerahasiaan jika terjadi kebocoran data", "Karena server tidak bisa membaca plaintext", "Agar password lebih mudah diingat"], answer: "Untuk menjaga kerahasiaan jika terjadi kebocoran data", explanation: "Menyimpan password terenkripsi (di-hash) memastikan bahwa meskipun database dicuri, password pengguna tetap aman." },
             ];
 
             function shuffleArray(array) {
@@ -529,7 +529,7 @@
                     return;
                 }
 
-                const currentQuestion = questions.pop();
+                currentQuestion = questions.pop();
                 kuisQuestionDisplay.textContent = currentQuestion.question;
                 currentCorrectAnswer = currentQuestion.answer;
 
@@ -553,8 +553,8 @@
                     score += 100;
                     button.classList.remove('border-slate-200', 'hover:bg-indigo-50', 'hover:border-indigo-300');
                     button.classList.add('bg-green-500', 'border-green-500', 'text-white');
-                    kuisFeedback.textContent = "Jawaban Benar!";
-                    kuisFeedback.className = "text-center text-lg font-bold my-6 text-green-600";
+                    kuisFeedback.innerHTML = '<span class="font-bold">Jawaban Benar!</span>';
+                    kuisFeedback.className = "text-center text-lg my-6 text-green-600";
                 } else {
                     lives--;
                     button.classList.remove('border-slate-200', 'hover:bg-indigo-50', 'hover:border-indigo-300');
@@ -564,15 +564,16 @@
                              btn.classList.add('bg-green-500', 'border-green-500', 'text-white');
                         }
                     });
-                    kuisFeedback.textContent = "Jawaban Salah!";
-                    kuisFeedback.className = "text-center text-lg font-bold my-6 text-red-600";
+                    
+                    kuisFeedback.innerHTML = `<span class="font-bold">Jawaban Salah!</span><p class="text-base font-normal mt-2">${currentQuestion.explanation}</p>`;
+                    kuisFeedback.className = "text-center text-lg my-6 text-red-600";
                 }
 
                 updateScoreAndLives();
                 kuisFeedback.classList.remove('hidden');
                 
                 if (lives <= 0) {
-                     setTimeout(gameOver, 2000);
+                     setTimeout(gameOver, 2500);
                 } else {
                     kuisNextBtn.classList.remove('hidden');
                 }
@@ -598,12 +599,16 @@
                  }
             }
 
-            function gameOver(isWin = false) {
-                 if (score > highscore) {
+            function checkAndSaveHighscore() {
+                if (score > highscore) {
                     highscore = score;
                     localStorage.setItem('kriptoHighscore', highscore);
                     highscoreDisplay.textContent = highscore;
                 }
+            }
+
+            function gameOver(isWin = false) {
+                checkAndSaveHighscore();
                 finalScoreDisplay.textContent = score;
 
                 if(isWin){
@@ -632,6 +637,7 @@
             });
             kuisNextBtn.addEventListener('click', generateQuestion);
             closeKuisBtn.addEventListener('click', () => {
+                checkAndSaveHighscore();
                 closeModal();
                 kuisStartScreen.classList.remove('hidden');
                 kuisGameOverScreen.classList.add('hidden');
