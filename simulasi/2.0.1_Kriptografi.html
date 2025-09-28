@@ -1,0 +1,648 @@
+<!-- kriptografi.html -->
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasar-Dasar Kriptografi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #4f46e5;
+            border-bottom-color: #4f46e5;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            padding: 2rem;
+        }
+    </style>
+</head>
+
+<body class="text-slate-800">
+
+    <div class="container mx-auto px-4 py-8 md:py-12 max-w-5xl">
+
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900">Selamat Datang di Dunia Kriptografi</h1>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Sebuah pengantar singkat untuk memahami bagaimana
+                data dan pesan diamankan di era digital.</p>
+        </header>
+
+        <!-- Navigasi Tab -->
+        <nav class="flex justify-center border-b border-slate-200 mb-10">
+            <button class="tab-btn active text-lg font-semibold py-4 px-6 border-b-2 border-transparent"
+                data-tab="konsep">Konsep</button>
+            <button class="tab-btn text-lg font-semibold py-4 px-6 border-b-2 border-transparent"
+                data-tab="kuis">Kuis</button>
+        </nav>
+
+        <!-- Konten Konsep -->
+        <div id="konsep" class="content-section active space-y-12">
+
+            <!-- Definisi Dasar -->
+            <div class="card">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-600">Apa itu Kriptografi?</h2>
+                <p class="text-slate-600 leading-relaxed">
+                    Kriptografi, berasal dari bahasa Yunani "kryptos" (tersembunyi) dan "graphein" (menulis), adalah
+                    ilmu dan seni untuk menjaga keamanan pesan. Tujuannya adalah untuk melindungi informasi dari pihak
+                    yang tidak berwenang dengan cara mengubahnya menjadi format yang tidak dapat dibaca.
+                </p>
+
+                <div class="mt-6 space-y-3">
+                    <p><strong class="font-semibold text-slate-900">Plaintext:</strong> Pesan asli yang dapat dibaca
+                        (contoh: "HALO DUNIA").</p>
+                    <p><strong class="font-semibold text-slate-900">Ciphertext:</strong> Pesan yang telah diubah
+                        (dienkripsi) dan tidak dapat dibaca (contoh: "KDOO GXQLD").</p>
+                    <p><strong class="font-semibold text-slate-900">Enkripsi:</strong> Proses mengubah plaintext menjadi
+                        ciphertext.</p>
+                    <p><strong class="font-semibold text-slate-900">Dekripsi:</strong> Proses mengembalikan ciphertext
+                        menjadi plaintext.</p>
+                    <p><strong class="font-semibold text-slate-900">Kunci (Key):</strong> Informasi rahasia yang
+                        digunakan dalam proses enkripsi dan dekripsi.</p>
+                </div>
+            </div>
+            
+            <!-- Ilustrasi Proses Kriptografi -->
+            <div class="card">
+                <h2 class="text-2xl font-bold mb-6 text-indigo-600 text-center">Ilustrasi Proses Kriptografi</h2>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 text-center">
+                    
+                    <!-- Plaintext Awal -->
+                    <div class="flex flex-col items-center">
+                        <span class="font-semibold">Plaintext</span>
+                        <div class="bg-green-100 text-green-800 p-3 rounded-lg mt-2 w-32">Pesan Asli</div>
+                    </div>
+
+                    <!-- Panah ke Enkripsi -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 hidden md:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 md:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" transform="rotate(90 12 12)"/></svg>
+
+                    <!-- Proses Enkripsi -->
+                    <div class="relative flex flex-col items-center">
+                         <div class="bg-indigo-600 text-white p-4 rounded-lg z-10 w-32">Enkripsi</div>
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400 absolute -bottom-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14l-4-4m4 4l4-4" /></svg>
+                         <div class="absolute -bottom-20 flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>
+                            <span class="font-semibold">Kunci</span>
+                         </div>
+                    </div>
+
+                    <!-- Panah ke Ciphertext -->
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 hidden md:block mt-20 md:mt-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 md:hidden mt-20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" transform="rotate(90 12 12)"/></svg>
+                    
+                    <!-- Ciphertext -->
+                    <div class="flex flex-col items-center mt-20 md:mt-0">
+                        <span class="font-semibold">Ciphertext</span>
+                        <div class="bg-red-100 text-red-800 p-3 rounded-lg mt-2 w-32">Pesan Acak</div>
+                    </div>
+
+                    <!-- Panah ke Dekripsi -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 hidden md:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 md:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" transform="rotate(90 12 12)"/></svg>
+
+                     <!-- Proses Dekripsi -->
+                     <div class="relative flex flex-col items-center">
+                         <div class="bg-indigo-600 text-white p-4 rounded-lg z-10 w-32">Dekripsi</div>
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400 absolute -bottom-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14l-4-4m4 4l4-4" /></svg>
+                         <div class="absolute -bottom-20 flex items-center space-x-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>
+                             <span class="font-semibold">Kunci</span>
+                         </div>
+                     </div>
+
+                    <!-- Panah ke Plaintext Akhir -->
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 hidden md:block mt-20 md:mt-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 md:hidden mt-20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" transform="rotate(90 12 12)"/></svg>
+
+                     <!-- Plaintext Akhir -->
+                     <div class="flex flex-col items-center mt-20 md:mt-0">
+                         <span class="font-semibold">Plaintext</span>
+                         <div class="bg-green-100 text-green-800 p-3 rounded-lg mt-2 w-32">Pesan Asli</div>
+                     </div>
+                </div>
+            </div>
+
+            <!-- Jenis Kriptografi -->
+            <div class="card">
+                <h2 class="text-2xl font-bold mb-6 text-indigo-600">Jenis Kriptografi</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <!-- Simetris -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">Kriptografi Simetris</h3>
+                        <p class="text-slate-600 mb-4">
+                            Menggunakan **satu kunci yang sama** untuk proses enkripsi dan dekripsi. Kunci ini harus
+                            dirahasiakan dan dibagikan antara pengirim dan penerima.
+                        </p>
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-center mb-3">Analogi: Kunci Rumah</h4>
+                            <div class="flex justify-around items-center">
+                                <div class="text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-slate-500" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2V7a5 5 0 00-5-5zm0 2a3 3 0 013 3v2H7V7a3 3 0 013-3z" /></svg>
+                                    <p class="text-sm mt-1">Mengunci</p>
+                                </div>
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>
+                                </div>
+                                <div class="text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-slate-500" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2V7a5 5 0 00-5-5zm0 2a3 3 0 013 3v2H7V7a3 3 0 013-3z" transform="scale(-1, 1) translate(-20, 0)" /></svg>
+                                    <p class="text-sm mt-1">Membuka</p>
+                                </div>
+                            </div>
+                            <p class="text-xs text-center mt-3 text-slate-500">Kunci yang sama dipakai untuk mengunci dan membuka.</p>
+                        </div>
+                    </div>
+                    <!-- Asimetris -->
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">Kriptografi Asimetris</h3>
+                        <p class="text-slate-600 mb-4">
+                            Menggunakan **dua kunci yang berbeda**: Kunci Publik (untuk enkripsi) yang boleh disebar,
+                            dan Kunci Privat (untuk dekripsi) yang harus dirahasiakan.
+                        </p>
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-center mb-3">Analogi: Gembok & Kunci Pribadi</h4>
+                             <div class="flex justify-around items-center">
+                                <div class="text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-blue-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2V7a5 5 0 00-5-5zm0 2a3 3 0 013 3v2H7V7a3 3 0 013-3z" clip-rule="evenodd" /></svg>
+                                    <p class="text-sm mt-1 font-semibold">Kunci Publik<br><span class="font-normal">(Mengunci)</span></p>
+                                </div>
+                                <div class="text-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-red-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>
+                                    <p class="text-sm mt-1 font-semibold">Kunci Privat<br><span class="font-normal">(Membuka)</span></p>
+                                </div>
+                            </div>
+                             <p class="text-xs text-center mt-3 text-slate-500">Semua orang bisa mengunci dengan gembok (publik), tapi hanya Anda yang bisa membuka dengan kunci pribadi.</p>
+                        </div>
+                        <!-- Simulasi Asimetris -->
+                        <div id="asymmetric-simulation" class="mt-4 border-t pt-4">
+                            <p class="font-semibold text-center mb-2">Coba Simulasi Sederhana</p>
+                            <div class="space-y-3">
+                                <input type="text" id="sim-message" placeholder="Ketik pesan singkat..." class="w-full border border-slate-300 rounded-md px-3 py-2">
+                                <div class="flex space-x-2">
+                                    <button id="sim-lock-btn" class="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 flex items-center justify-center space-x-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2V7a5 5 0 00-5-5zm0 2a3 3 0 013 3v2H7V7a3 3 0 013-3z" clip-rule="evenodd" /></svg>
+                                        <span>Kunci (Enkripsi)</span>
+                                    </button>
+                                    <button id="sim-unlock-btn" class="w-full bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 flex items-center justify-center space-x-2" disabled>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" /></svg>
+                                        <span>Buka (Dekripsi)</span>
+                                    </button>
+                                </div>
+                                <p id="sim-feedback" class="text-center text-sm h-4"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tujuan Utama Kriptografi -->
+            <div class="card">
+                <h2 class="text-2xl font-bold mb-6 text-indigo-600">Tujuan Utama Kriptografi</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-slate-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-slate-900">1. Kerahasiaan (Confidentiality)</h3>
+                        <p class="text-slate-600 text-sm mt-1">Memastikan hanya pihak berwenang yang dapat membaca dan memahami informasi.</p>
+                    </div>
+                     <div class="bg-slate-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-slate-900">2. Integritas (Integrity)</h3>
+                        <p class="text-slate-600 text-sm mt-1">Menjamin bahwa data tidak diubah atau dimanipulasi oleh pihak tidak berwenang selama transmisi.</p>
+                    </div>
+                     <div class="bg-slate-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-slate-900">3. Otentikasi (Authentication)</h3>
+                        <p class="text-slate-600 text-sm mt-1">Memverifikasi identitas pengirim dan penerima untuk memastikan keaslian pihak yang berkomunikasi.</p>
+                    </div>
+                     <div class="bg-slate-50 p-4 rounded-lg">
+                        <h3 class="font-semibold text-slate-900">4. Non-repudiasi (Non-repudiation)</h3>
+                        <p class="text-slate-600 text-sm mt-1">Mencegah pengirim menyangkal bahwa mereka telah mengirimkan sebuah pesan atau data.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Penerapan Sehari-hari -->
+             <div class="card">
+                <h2 class="text-2xl font-bold mb-6 text-indigo-600">Penerapan Sehari-hari</h2>
+                <div class="space-y-6">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 bg-green-500 text-white rounded-full h-10 w-10 flex items-center justify-center">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg">Pesan Instan (WhatsApp, Telegram)</h3>
+                            <p class="text-slate-600">Menggunakan enkripsi <i>end-to-end</i>, artinya hanya pengirim dan penerima yang bisa membaca pesan. Bahkan penyedia layanan pun tidak bisa mengintip isinya.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 bg-blue-500 text-white rounded-full h-10 w-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg">Belanja Online & Mobile Banking</h3>
+                            <p class="text-slate-600">Saat Anda melihat ikon gembok (HTTPS) di browser, itu berarti koneksi antara Anda dan situs web dienkripsi. Ini melindungi informasi sensitif seperti detail kartu kredit dan password.</p>
+                        </div>
+                    </div>
+                     <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 bg-yellow-500 text-white rounded-full h-10 w-10 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H5v-4l.75-2.25L11 11.5l1.5-1.5L15 7z" /></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-lg">Penyimpanan Kata Sandi (Password)</h3>
+                            <p class="text-slate-600">Layanan online yang baik tidak menyimpan password Anda dalam bentuk teks biasa. Mereka menyimpannya dalam format terenkripsi (atau lebih tepatnya, di-<i>hash</i>) sehingga jika terjadi kebocoran data, password Anda tetap aman.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jenis-jenis Algoritma -->
+            <div class="card">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-600">Jenis-jenis Algoritma Kriptografi</h2>
+                <p class="text-slate-600 mb-6">
+                    Ada banyak algoritma kriptografi, dari yang klasik dan sederhana hingga yang modern dan sangat
+                    kompleks. Beberapa contoh algoritma klasik yang menjadi dasar ilmu ini adalah:
+                </p>
+                <ul class="list-disc list-inside space-y-2 text-slate-700">
+                    <li><strong>Caesar Cipher:</strong> Salah satu teknik enkripsi paling awal dan sederhana, di mana
+                        setiap huruf dalam plaintext digeser sejumlah posisi tertentu dalam alfabet.</li>
+                    <li><strong>Vigenère Cipher (Polyalphabetic):</strong> Versi perbaikan dari Caesar Cipher yang
+                        menggunakan sebuah kata kunci untuk melakukan pergeseran yang berbeda-beda pada setiap huruf,
+                        sehingga lebih sulit dipecahkan.</li>
+                    <li><strong>Substitution Cipher:</strong> Setiap huruf dalam plaintext digantikan dengan huruf,
+                        angka, atau simbol lain secara konsisten.</li>
+                    <li><strong>Transposition Cipher:</strong> Posisi huruf dalam plaintext diubah urutannya, bukan
+                        diganti. Pesannya tetap sama, hanya saja "diacak".</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Konten Kuis -->
+        <div id="kuis" class="content-section">
+            <div id="kuis-start-screen" class="card text-center">
+                <h2 class="text-3xl font-bold mb-2 text-indigo-600">Uji Pengetahuan Anda!</h2>
+                <p class="text-slate-600 mb-6">Jawab pertanyaan seputar konsep dasar kriptografi. Anda punya 3
+                    kesempatan.</p>
+                <div class="mb-6 text-lg">
+                    Skor Tertinggi: <strong id="highscore" class="font-bold text-slate-800">0</strong>
+                </div>
+                <button id="start-kuis-btn"
+                    class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-full hover:bg-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">Mulai
+                    Kuis!</button>
+            </div>
+
+            <div id="kuis-game-over-screen" class="card text-center hidden">
+                <h2 class="text-3xl font-bold mb-2 text-red-600">Game Over</h2>
+                <p class="text-slate-600 mb-6">Kesempatan Anda telah habis.</p>
+                <div class="mb-6 text-xl">
+                    Skor Akhir Anda: <strong id="final-score" class="font-bold text-slate-800">0</strong>
+                </div>
+                <button id="restart-kuis-btn"
+                    class="bg-indigo-600 text-white font-bold py-3 px-8 rounded-full hover:bg-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">Main
+                    Lagi</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Kuis -->
+    <div id="kuis-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 md:p-8 relative transform transition-all duration-300 scale-95 opacity-0" id="kuis-modal-content">
+             <!-- Tombol Keluar -->
+            <button id="close-kuis-btn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            
+            <!-- Header Kuis -->
+            <div class="flex justify-between items-center mb-6">
+                <div class="text-lg font-bold">Skor: <span id="kuis-score" class="text-indigo-600">0</span></div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-lg font-bold">Nyawa:</span>
+                    <div id="kuis-lives" class="flex space-x-1">
+                        <!-- Ikon hati akan di-generate oleh JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pertanyaan Kuis -->
+            <div id="kuis-question-container">
+                <p id="kuis-question" class="text-xl md:text-2xl font-semibold text-center mb-8"></p>
+                <div id="kuis-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Opsi jawaban akan di-generate oleh JS -->
+                </div>
+            </div>
+
+            <!-- Feedback -->
+            <div id="kuis-feedback" class="text-center text-lg font-bold my-6 hidden"></div>
+
+             <!-- Tombol Aksi -->
+            <div class="flex justify-center mt-8 space-x-4">
+                 <button id="kuis-skip-btn" class="bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-lg hover:bg-slate-300 transition-colors">Lewati Soal</button>
+                <button id="kuis-next-btn" class="bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors hidden">Soal Berikutnya</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const sections = document.querySelectorAll('.content-section');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(item => item.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    const target = tab.getAttribute('data-tab');
+                    sections.forEach(section => {
+                        if (section.id === target) {
+                            section.classList.add('active');
+                        } else {
+                            section.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            // --- Simulasi Kriptografi Asimetris ---
+            const simMessage = document.getElementById('sim-message');
+            const simLockBtn = document.getElementById('sim-lock-btn');
+            const simUnlockBtn = document.getElementById('sim-unlock-btn');
+            const simFeedback = document.getElementById('sim-feedback');
+            let originalMessage = '';
+            let isLocked = false;
+
+            simLockBtn.addEventListener('click', () => {
+                const message = simMessage.value.trim();
+                if (message === '') {
+                    simFeedback.textContent = 'Silakan ketik pesan terlebih dahulu.';
+                    simFeedback.className = 'text-center text-sm h-4 text-red-600';
+                    return;
+                }
+                originalMessage = message;
+                isLocked = true;
+                simMessage.value = btoa(message).split('').reverse().join(''); // Simple "encryption"
+                simMessage.disabled = true;
+                simLockBtn.disabled = true;
+                simUnlockBtn.disabled = false;
+                simFeedback.textContent = 'Pesan terkunci dengan Kunci Publik!';
+                simFeedback.className = 'text-center text-sm h-4 text-blue-600';
+            });
+            
+            simUnlockBtn.addEventListener('click', () => {
+                if (!isLocked) return;
+                simMessage.value = originalMessage;
+                isLocked = false;
+                simMessage.disabled = false;
+                simLockBtn.disabled = false;
+                simUnlockBtn.disabled = true;
+                simFeedback.textContent = 'Pesan berhasil dibuka dengan Kunci Privat!';
+                simFeedback.className = 'text-center text-sm h-4 text-green-600';
+            });
+
+
+            // --- Logika Kuis ---
+            const kuisStartScreen = document.getElementById('kuis-start-screen');
+            const kuisGameOverScreen = document.getElementById('kuis-game-over-screen');
+            const kuisModal = document.getElementById('kuis-modal');
+            const kuisModalContent = document.getElementById('kuis-modal-content');
+
+            const startKuisBtn = document.getElementById('start-kuis-btn');
+            const restartKuisBtn = document.getElementById('restart-kuis-btn');
+            const closeKuisBtn = document.getElementById('close-kuis-btn');
+
+            const highscoreDisplay = document.getElementById('highscore');
+            const finalScoreDisplay = document.getElementById('final-score');
+            const kuisScoreDisplay = document.getElementById('kuis-score');
+            const kuisLivesDisplay = document.getElementById('kuis-lives');
+            const kuisQuestionDisplay = document.getElementById('kuis-question');
+            const kuisOptionsContainer = document.getElementById('kuis-options');
+            const kuisFeedback = document.getElementById('kuis-feedback');
+            const kuisNextBtn = document.getElementById('kuis-next-btn');
+            const kuisSkipBtn = document.getElementById('kuis-skip-btn');
+
+            let score, lives, highscore, currentCorrectAnswer;
+            let questions = [];
+
+             const questionBank = [
+                { question: "Apa nama lain dari pesan asli yang dapat dibaca?", options: ["Ciphertext", "Plaintext", "Kunci", "Algoritma"], answer: "Plaintext" },
+                { question: "Proses mengubah plaintext menjadi ciphertext disebut...", options: ["Dekripsi", "Analisis", "Enkripsi", "Kompilasi"], answer: "Enkripsi" },
+                { question: "Informasi rahasia yang digunakan untuk mengenkripsi dan mendekripsi pesan adalah...", options: ["Protokol", "Sandi", "Kunci", "Server"], answer: "Kunci" },
+                { question: "Apa nama lain untuk pesan yang sudah dienkripsi dan tidak bisa dibaca?", options: ["Plaintext", "Kode Sumber", "Ciphertext", "Skrip"], answer: "Ciphertext" },
+                { question: "Proses mengembalikan ciphertext ke bentuk aslinya disebut...", options: ["Enkripsi", "Dekripsi", "Hashing", "Otentikasi"], answer: "Dekripsi" },
+                { question: "Julius Caesar menggunakan jenis cipher apa?", options: ["Vigenère Cipher", "Caesar Cipher", "Transposition Cipher", "RSA"], answer: "Caesar Cipher" },
+                { question: "Jenis kriptografi yang menggunakan satu kunci yang sama untuk enkripsi dan dekripsi adalah...", options: ["Asimetris", "Simetris", "Publik", "Hibrida"], answer: "Simetris" },
+                { question: "Jenis kriptografi yang menggunakan Kunci Publik dan Kunci Privat adalah...", options: ["Simetris", "Klasik", "Asimetris", "Stream Cipher"], answer: "Asimetris" },
+                { question: "Pada Kriptografi Asimetris, kunci yang digunakan untuk mengenkripsi adalah...", options: ["Kunci Privat", "Kunci Rahasia", "Kunci Sesi", "Kunci Publik"], answer: "Kunci Publik" },
+                { question: "Pada Kriptografi Asimetris, kunci yang digunakan untuk mendekripsi adalah...", options: ["Kunci Publik", "Kunci Bersama", "Kunci Privat", "Kunci Sementara"], answer: "Kunci Privat" },
+                { question: "Algoritma yang menggeser setiap huruf alfabet sejumlah posisi tetap disebut...", options: ["Vigenère Cipher", "Caesar Cipher", "Substitution Cipher", "Playfair Cipher"], answer: "Caesar Cipher" },
+                { question: "Vigenère Cipher adalah contoh dari jenis kriptografi...", options: ["Transposisi", "Polyalphabetic", "Monoalphabetic", "Asimetris"], answer: "Polyalphabetic" },
+                { question: "Manakah dari berikut ini yang BUKAN tujuan utama kriptografi?", options: ["Kerahasiaan", "Integritas", "Mempercepat koneksi", "Otentikasi"], answer: "Mempercepat koneksi" },
+                { question: "Menjamin bahwa data tidak diubah selama pengiriman adalah tujuan kriptografi yang disebut...", options: ["Kerahasiaan", "Integritas", "Non-repudiasi", "Otentikasi"], answer: "Integritas" },
+                { question: "Memastikan hanya pihak berwenang yang bisa membaca pesan adalah tujuan...", options: ["Integritas", "Kerahasiaan", "Otentikasi", "Ketersediaan"], answer: "Kerahasiaan" },
+                { question: "Verifikasi identitas pengirim dan penerima disebut...", options: ["Otentikasi", "Integritas", "Kerahasiaan", "Non-repudiasi"], answer: "Otentikasi" },
+                { question: "Mencegah seseorang menyangkal telah mengirim pesan disebut...", options: ["Kerahasiaan", "Otentikasi", "Non-repudiasi", "Integritas"], answer: "Non-repudiasi" },
+                { question: "Enkripsi end-to-end pada aplikasi chat adalah contoh penerapan untuk tujuan...", options: ["Integritas", "Ketersediaan", "Otentikasi", "Kerahasiaan"], answer: "Kerahasiaan" },
+                { question: "Ikon gembok (HTTPS) di browser menandakan koneksi yang...", options: ["Cepat", "Terbuka", "Dienkripsi", "Tidak terbatas"], answer: "Dienkripsi" },
+                { question: "Caesar Cipher mudah dipecahkan karena merupakan cipher...", options: ["Polyalphabetic", "Asimetris", "Monoalphabetic", "Kuantum"], answer: "Monoalphabetic" },
+                { question: "Apa kelemahan utama Kriptografi Simetris?", options: ["Prosesnya lambat", "Manajemen dan distribusi kunci", "Ukuran ciphertext besar", "Tidak bisa untuk kerahasiaan"], answer: "Manajemen dan distribusi kunci" },
+                { question: "Kata 'kriptografi' berasal dari bahasa...", options: ["Latin", "Inggris", "Yunani", "Sansekerta"], answer: "Yunani" },
+                { question: "Cipher yang mengubah posisi huruf tanpa menggantinya disebut cipher...", options: ["Substitusi", "Transposisi", "Stream", "Block"], answer: "Transposisi" },
+                { question: "Manakah yang merupakan algoritma kriptografi asimetris modern?", options: ["AES", "DES", "RSA", "Caesar Cipher"], answer: "RSA" },
+                { question: "Manakah yang merupakan algoritma kriptografi simetris modern?", options: ["RSA", "Diffie-Hellman", "ECC", "AES"], answer: "AES" },
+                { question: "Dalam analogi 'Gembok dan Kunci Pribadi', gembok mewakili...", options: ["Kunci Privat", "Pesan", "Kunci Publik", "Algoritma"], answer: "Kunci Publik" },
+                { question: "Dalam analogi 'Gembok dan Kunci Pribadi', siapa yang boleh memiliki gembok?", options: ["Hanya penerima", "Hanya pengirim", "Siapa saja", "Tidak ada yang boleh"], answer: "Siapa saja" },
+                { question: "Tujuan dari 'Integritas' data adalah untuk mencegah...", options: ["Pesan dibaca orang lain", "Pesan diubah di tengah jalan", "Pengirim menyangkal pesan", "Penerima tidak dikenal"], answer: "Pesan diubah di tengah jalan" },
+                { question: "Aplikasi Mobile Banking menggunakan HTTPS untuk tujuan utama...", options: ["Mempercepat transaksi", "Menjaga kerahasiaan data finansial", "Menampilkan iklan", "Meningkatkan sinyal"], answer: "Menjaga kerahasiaan data finansial" },
+                { question: "Mengapa layanan online tidak menyimpan password Anda dalam bentuk plaintext?", options: ["Karena plaintext terlalu panjang", "Untuk menjaga kerahasiaan jika terjadi kebocoran data", "Karena server tidak bisa membaca plaintext", "Agar password lebih mudah diingat"], answer: "Untuk menjaga kerahasiaan jika terjadi kebocoran data" },
+            ];
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function initGame() {
+                highscore = localStorage.getItem('kriptoHighscore') || 0;
+                highscoreDisplay.textContent = highscore;
+            }
+
+            function startGame() {
+                score = 0;
+                lives = 3;
+                questions = shuffleArray([...questionBank]).slice(0, 15); // Ambil 15 soal acak
+                kuisStartScreen.classList.add('hidden');
+                kuisGameOverScreen.classList.add('hidden');
+                kuisModal.classList.remove('hidden');
+                setTimeout(() => {
+                     kuisModalContent.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+                
+                updateScoreAndLives();
+                generateQuestion();
+            }
+
+            function updateScoreAndLives() {
+                kuisScoreDisplay.textContent = score;
+                kuisLivesDisplay.innerHTML = '';
+                for (let i = 0; i < 3; i++) {
+                    const heartIcon = document.createElement('span');
+                    heartIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>`;
+                    heartIcon.classList.add(i < lives ? 'text-red-500' : 'text-slate-300');
+                    kuisLivesDisplay.appendChild(heartIcon);
+                }
+            }
+
+            function generateQuestion() {
+                kuisFeedback.classList.add('hidden');
+                kuisNextBtn.classList.add('hidden');
+                kuisSkipBtn.classList.remove('hidden');
+                kuisSkipBtn.disabled = false;
+
+
+                if (questions.length === 0) {
+                    gameOver(true); // Menang
+                    return;
+                }
+
+                const currentQuestion = questions.pop();
+                kuisQuestionDisplay.textContent = currentQuestion.question;
+                currentCorrectAnswer = currentQuestion.answer;
+
+                kuisOptionsContainer.innerHTML = '';
+                const shuffledOptions = shuffleArray([...currentQuestion.options]);
+                shuffledOptions.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.className = "p-4 border-2 border-slate-200 rounded-lg text-left hover:bg-indigo-50 hover:border-indigo-300 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
+                    button.addEventListener('click', () => checkAnswer(option, button));
+                    kuisOptionsContainer.appendChild(button);
+                });
+            }
+
+            function checkAnswer(selectedOption, button) {
+                const allOptions = kuisOptionsContainer.querySelectorAll('button');
+                allOptions.forEach(btn => btn.disabled = true);
+                kuisSkipBtn.disabled = true;
+
+                if (selectedOption === currentCorrectAnswer) {
+                    score += 100;
+                    button.classList.remove('border-slate-200', 'hover:bg-indigo-50', 'hover:border-indigo-300');
+                    button.classList.add('bg-green-500', 'border-green-500', 'text-white');
+                    kuisFeedback.textContent = "Jawaban Benar!";
+                    kuisFeedback.className = "text-center text-lg font-bold my-6 text-green-600";
+                } else {
+                    lives--;
+                    button.classList.remove('border-slate-200', 'hover:bg-indigo-50', 'hover:border-indigo-300');
+                    button.classList.add('bg-red-500', 'border-red-500', 'text-white');
+                     allOptions.forEach(btn => {
+                        if(btn.textContent === currentCorrectAnswer){
+                             btn.classList.add('bg-green-500', 'border-green-500', 'text-white');
+                        }
+                    });
+                    kuisFeedback.textContent = "Jawaban Salah!";
+                    kuisFeedback.className = "text-center text-lg font-bold my-6 text-red-600";
+                }
+
+                updateScoreAndLives();
+                kuisFeedback.classList.remove('hidden');
+                
+                if (lives <= 0) {
+                     setTimeout(gameOver, 2000);
+                } else {
+                    kuisNextBtn.classList.remove('hidden');
+                }
+            }
+            
+            function skipQuestion(){
+                 lives--;
+                 updateScoreAndLives();
+                 kuisFeedback.textContent = "Soal dilewati!";
+                 kuisFeedback.className = "text-center text-lg font-bold my-6 text-orange-600";
+                 kuisFeedback.classList.remove('hidden');
+                 
+                 const allOptions = kuisOptionsContainer.querySelectorAll('button');
+                 allOptions.forEach(btn => btn.disabled = true);
+                 kuisSkipBtn.disabled = true;
+
+
+                 if (lives <= 0) {
+                     setTimeout(gameOver, 1500);
+                 } else {
+                     kuisNextBtn.classList.remove('hidden');
+                     kuisSkipBtn.classList.add('hidden');
+                 }
+            }
+
+            function gameOver(isWin = false) {
+                 if (score > highscore) {
+                    highscore = score;
+                    localStorage.setItem('kriptoHighscore', highscore);
+                    highscoreDisplay.textContent = highscore;
+                }
+                finalScoreDisplay.textContent = score;
+
+                if(isWin){
+                    kuisGameOverScreen.querySelector('h2').textContent = "Selamat, Anda Menang!";
+                    kuisGameOverScreen.querySelector('p').textContent = "Anda berhasil menjawab semua pertanyaan.";
+                } else {
+                    kuisGameOverScreen.querySelector('h2').textContent = "Game Over";
+                    kuisGameOverScreen.querySelector('p').textContent = "Kesempatan Anda telah habis.";
+                }
+
+                closeModal();
+                kuisGameOverScreen.classList.remove('hidden');
+            }
+            
+            function closeModal(){
+                kuisModalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                     kuisModal.classList.add('hidden');
+                }, 300);
+            }
+
+            startKuisBtn.addEventListener('click', startGame);
+            restartKuisBtn.addEventListener('click', () => {
+                kuisGameOverScreen.classList.add('hidden');
+                kuisStartScreen.classList.remove('hidden');
+            });
+            kuisNextBtn.addEventListener('click', generateQuestion);
+            closeKuisBtn.addEventListener('click', () => {
+                closeModal();
+                kuisStartScreen.classList.remove('hidden');
+                kuisGameOverScreen.classList.add('hidden');
+            });
+            kuisSkipBtn.addEventListener('click', skipQuestion);
+
+
+            initGame();
+        });
+    </script>
+</body>
+
+</html>
+
