@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorium Populasi Interaktif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .mode-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        @keyframes highlight-row {
+            0% { background-color: transparent; }
+            50% { background-color: #ecfdf5; transform: scale(1.01); }
+            100% { background-color: transparent; transform: scale(1); }
+        }
+        .highlight-anim {
+            animation: highlight-row 0.8s ease-out;
+        }
+        @keyframes pop-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .new-birth {
+            animation: pop-in 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            display: inline-block;
+        }
+        .sim-ind {
+            font-weight: 600;
+            margin: 0 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6 md:p-8 space-y-6">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-800">Laboratorium Populasi Interaktif</h1>
+            <p class="text-slate-500 mt-1">Belajar pemrograman dinamis dengan kuis dan simulasi.</p>
+        </div>
+
+        <!-- Mode Switcher -->
+        <div class="flex justify-center bg-slate-200 rounded-lg p-1">
+            <button id="mode-quiz-btn" class="mode-btn active w-1/2 py-2 px-4 rounded-md text-sm font-semibold transition-colors">Mode Kuis</button>
+            <button id="mode-sandbox-btn" class="mode-btn w-1/2 py-2 px-4 rounded-md text-sm font-semibold transition-colors">Mode Laboratorium</button>
+        </div>
+
+        <!-- == KUIS CONTAINER == -->
+        <div id="quiz-container">
+            <div id="question-container" class="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <p id="question-text" class="text-slate-700 leading-relaxed"></p>
+            </div>
+            <form id="quiz-form">
+                <p class="text-sm font-medium text-slate-600 my-2">Isi jawaban Anda pada tabel di bawah ini:</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-slate-500">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 rounded-l-lg" id="time-header">Waktu</th>
+                                <th scope="col" class="px-6 py-3 rounded-r-lg">Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody id="answer-table-body"></tbody>
+                    </table>
+                </div>
+                <div id="hint-box" class="mt-4 text-sm text-indigo-700 bg-indigo-50 p-3 rounded-lg hidden"></div>
+                <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                    <button id="check-btn" type="submit" class="w-full sm:w-auto flex-1 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">Cek Jawaban</button>
+                    <button id="hint-btn" type="button" class="w-full sm:w-auto flex-1 bg-yellow-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-yellow-600 transition-colors">Petunjuk</button>
+                    <button id="next-btn" type="button" class="w-full sm:w-auto flex-1 bg-slate-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-slate-700 transition-colors">Soal Berikutnya</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- == SANDBOX CONTAINER == -->
+        <div id="sandbox-container" class="hidden">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 border border-dashed border-slate-300 rounded-lg">
+                <div>
+                    <label for="sb-initial" class="block text-sm font-medium text-slate-700">Jumlah Awal</label>
+                    <input type="number" id="sb-initial" value="1" min="1" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="sb-splittime" class="block text-sm font-medium text-slate-700">Usia Berkembang</label>
+                    <input type="number" id="sb-splittime" value="2" min="1" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="sb-deathtime" class="block text-sm font-medium text-slate-700">Usia Kematian (0=∞)</label>
+                    <input type="number" id="sb-deathtime" value="0" min="0" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+                 <div>
+                    <label for="sb-targettime" class="block text-sm font-medium text-slate-700">Durasi Simulasi</label>
+                    <input type="number" id="sb-targettime" value="10" min="1" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                </div>
+            </div>
+             <button id="sandbox-start-btn" class="mt-4 w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors">Jalankan Simulasi Laboratorium</button>
+        </div>
+        
+        <!-- == SHARED RESULT CONTAINER == -->
+        <div id="result-container" class="hidden space-y-4 pt-4 border-t border-slate-200">
+            <h2 id="result-title" class="text-xl font-bold text-slate-800">Pembahasan</h2>
+            <div id="explanation-text" class="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 space-y-2"></div>
+            <button id="simulate-btn" class="w-full bg-emerald-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-emerald-600 transition-colors">Lihat Simulasi Rinci</button>
+            <div id="simulation-container" class="hidden space-y-4 pt-4">
+                 <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                    <table class="w-full text-sm text-left text-slate-500">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-100">
+                            <tr>
+                                <th scope="col" class="px-4 py-3" id="sim-time-header">Waktu</th>
+                                <th scope="col" class="px-4 py-3">Simulasi Individu (Usia)</th>
+                                <th scope="col" class="px-4 py-3">Jumlah</th>
+                                <th scope="col" class="px-4 py-3">Penjelasan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="simulation-table-body"></tbody>
+                    </table>
+                 </div>
+            </div>
+             <div id="chart-container" class="hidden pt-4">
+                <h3 class="text-lg font-bold text-slate-800 mb-2">Grafik Pertumbuhan Populasi</h3>
+                <canvas id="population-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Feedback -->
+    <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl p-8 text-center max-w-sm w-full">
+            <div id="modal-icon" class="mx-auto mb-4"></div>
+            <h2 id="modal-title" class="text-2xl font-bold"></h2>
+            <p id="modal-message" class="text-slate-600 mt-2 mb-6"></p>
+            <button id="close-modal-btn" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Referensi elemen DOM
+        const modeQuizBtn = document.getElementById('mode-quiz-btn');
+        const modeSandboxBtn = document.getElementById('mode-sandbox-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        const sandboxContainer = document.getElementById('sandbox-container');
+        const sandboxStartBtn = document.getElementById('sandbox-start-btn');
+        const resultContainer = document.getElementById('result-container');
+        const resultTitle = document.getElementById('result-title');
+        const chartContainer = document.getElementById('chart-container');
+        const populationChartCanvas = document.getElementById('population-chart');
+        const hintBtn = document.getElementById('hint-btn');
+        const hintBox = document.getElementById('hint-box');
+        const questionText = document.getElementById('question-text');
+        const timeHeader = document.getElementById('time-header');
+        const answerTableBody = document.getElementById('answer-table-body');
+        const quizForm = document.getElementById('quiz-form');
+        const checkBtn = document.getElementById('check-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const explanationText = document.getElementById('explanation-text');
+        const simulateBtn = document.getElementById('simulate-btn');
+        const feedbackModal = document.getElementById('feedback-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalIcon = document.getElementById('modal-icon');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const simulationContainer = document.getElementById('simulation-container');
+        const simTimeHeader = document.getElementById('sim-time-header');
+        const simulationTableBody = document.getElementById('simulation-table-body');
+
+        // State aplikasi
+        let currentMode = 'quiz';
+        let currentQuestionData = {};
+        let simulationParams = {};
+        let simulationStates = [];
+        let hintLevel = 0;
+        let populationChart = null;
+
+        const colorPalette = ['#ef4444', '#3b82f6', '#10b981', '#f97316', '#8b5cf6', '#ec4899', '#64748b', '#06b6d4', '#ca8a04', '#78350f', '#15803d'];
+        
+        const questionBank = {
+            names: ["Andi", "Budi", "Chandra", "Dina", "Eliza"],
+            creatures: [
+                { name: "Amoeba", single: "Amoeba", plural: "Amoeba", unit: "individu", start: 1, action: "membelah diri" },
+                { name: "Kelinci", single: "pasang Kelinci", plural: "pasang Kelinci", unit: "pasang", start: 1, action: "melahirkan" },
+                { name: "Virus", single: "Virus", plural: "Virus", unit: "virus", start: 5, action: "mereplikasi diri" },
+                { name: "Tanaman X", single: "tunas Tanaman X", plural: "tunas Tanaman X", unit: "tunas", start: 1, action: "bertunas" },
+            ],
+            timeUnits: ["menit", "jam", "hari", "bulan"]
+        };
+
+        function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+        function switchMode(mode) {
+            currentMode = mode;
+            if (mode === 'quiz') {
+                quizContainer.classList.remove('hidden');
+                sandboxContainer.classList.add('hidden');
+                modeQuizBtn.classList.add('active');
+                modeSandboxBtn.classList.remove('active');
+                generateQuestion();
+            } else { // sandbox
+                quizContainer.classList.add('hidden');
+                sandboxContainer.classList.remove('hidden');
+                modeQuizBtn.classList.remove('active');
+                modeSandboxBtn.classList.add('active');
+                resultContainer.classList.add('hidden');
+            }
+        }
+        
+        function resetUI() {
+            resultContainer.classList.add('hidden');
+            simulationContainer.classList.add('hidden');
+            chartContainer.classList.add('hidden');
+            simulationTableBody.innerHTML = '';
+            quizForm.reset();
+            hintBox.classList.add('hidden');
+            hintBox.textContent = '';
+            hintLevel = 0;
+            checkBtn.disabled = false;
+            simulateBtn.disabled = false;
+            const inputs = answerTableBody.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.classList.remove('border-green-500', 'border-red-500', 'bg-green-50');
+                input.disabled = false;
+            });
+            if (populationChart) {
+                populationChart.destroy();
+                populationChart = null;
+            }
+        }
+
+        function generateQuestion() {
+            resetUI();
+            
+            const name = questionBank.names[getRandomInt(0, questionBank.names.length - 1)];
+            const creatureData = questionBank.creatures[getRandomInt(0, questionBank.creatures.length - 1)];
+            const timeUnit = questionBank.timeUnits[getRandomInt(0, questionBank.timeUnits.length - 1)];
+            const initialCount = creatureData.start > 1 ? getRandomInt(creatureData.start, creatureData.start + 5) : 1;
+            const splitTime = getRandomInt(2, 3);
+            const targetTime = getRandomInt(splitTime + 3, splitTime + 6);
+            
+            currentQuestionData = { name, creatureData, timeUnit, initialCount, splitTime, targetTime, deathTime: 0 };
+            const question = `${name} memelihara ${creatureData.name}. Pada awalnya (${timeUnit} ke-0), ia memiliki ${initialCount} ${initialCount > 1 ? creatureData.plural : creatureData.single}. Peliharaan ini akan ${creatureData.action} setiap ${timeUnit} setelah berusia minimal ${splitTime} ${timeUnit}. Jika peliharaan tersebut tidak pernah mati, berapakah jumlah ${creatureData.unit} pada ${timeUnit} ke-${targetTime}?`;
+            
+            renderQuestion(question);
+        }
+
+        function renderQuestion(question) {
+            questionText.textContent = question;
+            timeHeader.textContent = `Waktu (${currentQuestionData.timeUnit})`;
+            answerTableBody.innerHTML = '';
+            for (let i = 0; i <= currentQuestionData.targetTime; i++) {
+                answerTableBody.insertAdjacentHTML('beforeend', `
+                    <tr class="border-b">
+                        <td class="px-6 py-4 font-medium text-slate-900">${i}</td>
+                        <td class="px-6 py-4">
+                            <input type="number" data-time="${i}" class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                        </td>
+                    </tr>
+                `);
+            }
+        }
+
+        function generateSimulationData(params) {
+            const { initialCount, splitTime, targetTime, deathTime } = params;
+            simulationStates = [];
+            let colorIndex = 0;
+
+            let currentState = [];
+            for(let i = 0; i < initialCount; i++) {
+                currentState.push({ age: 0, color: colorPalette[colorIndex++ % colorPalette.length] });
+            }
+            simulationStates.push(currentState);
+
+            for(let t = 1; t <= targetTime; t++) {
+                const prevState = simulationStates[t-1];
+                
+                const survivors = prevState
+                    .map(ind => ({ ...ind, age: ind.age + 1 }))
+                    .filter(ind => !(deathTime > 0 && ind.age >= deathTime));
+                
+                const newborns = prevState
+                    .filter(ind => (ind.age + 1) >= splitTime)
+                    .map(() => ({ age: 0, color: colorPalette[colorIndex++ % colorPalette.length] }));
+
+                const nextState = [...survivors, ...newborns];
+                simulationStates.push(nextState);
+            }
+        }
+        
+        function checkAnswers(e) {
+            e.preventDefault();
+            generateSimulationData(currentQuestionData);
+            const correctAnswers = simulationStates.map(s => s.length);
+
+            const inputs = answerTableBody.querySelectorAll('input');
+            let isCorrect = true;
+            inputs.forEach((input, index) => {
+                const isInputCorrect = parseInt(input.value, 10) === correctAnswers[index];
+                if (!isInputCorrect) {
+                    isCorrect = false;
+                    input.classList.add('border-red-500');
+                    input.classList.remove('border-green-500');
+                } else {
+                    input.classList.add('border-green-500');
+                     input.classList.remove('border-red-500');
+                }
+            });
+
+            showModal(isCorrect ? 'Benar!' : 'Kurang Tepat', isCorrect ? 'Jawaban Anda Tepat Sekali! Kerja bagus!' : 'Masih ada jawaban yang kurang tepat. Coba perhatikan lagi polanya.', isCorrect ? 'success' : 'error');
+            
+            resultTitle.textContent = "Pembahasan";
+            generateExplanation(currentQuestionData);
+            resultContainer.classList.remove('hidden');
+        }
+
+        function startSandbox() {
+            resetUI();
+            const initialCount = parseInt(document.getElementById('sb-initial').value) || 1;
+            const splitTime = parseInt(document.getElementById('sb-splittime').value) || 2;
+            const deathTime = parseInt(document.getElementById('sb-deathtime').value) || 0;
+            const targetTime = parseInt(document.getElementById('sb-targettime').value) || 10;
+            
+            simulationParams = { initialCount, splitTime, deathTime, targetTime, timeUnit: 'Waktu', creatureData: { action: 'berkembang biak' } };
+            
+            generateSimulationData(simulationParams);
+            
+            resultTitle.textContent = "Hasil Simulasi Laboratorium";
+            generateExplanation(simulationParams);
+            resultContainer.classList.remove('hidden');
+            simulateBtn.disabled = false;
+        }
+        
+        function generateExplanation(params) {
+            const { splitTime, deathTime } = params;
+            let formula = `Jumlah(n) = Jumlah Bertahan(n) + Jumlah Lahir(n)`;
+            let text = `Populasi saat ini adalah jumlah dari individu yang bertahan hidup dari waktu sebelumnya, ditambah dengan individu yang baru lahir. Individu akan berkembang biak saat mencapai usia ${splitTime} dan mati setelah mencapai usia ${deathTime > 0 ? deathTime : 'tak terbatas'}.`;
+            explanationText.innerHTML = `<p class="font-semibold">${formula}</p><p>${text}</p>`;
+        }
+
+        function simulateDetailedAnswers() {
+            simulateBtn.disabled = true;
+            simulationContainer.classList.remove('hidden');
+            chartContainer.classList.remove('hidden');
+            simulationTableBody.innerHTML = '';
+
+            const params = currentMode === 'quiz' ? currentQuestionData : simulationParams;
+            simTimeHeader.textContent = `Waktu (${params.timeUnit})`;
+
+            simulationStates.forEach((state, t) => {
+                setTimeout(() => {
+                    const survivors = state.filter(ind => ind.age > 0).length;
+                    const newBirths = state.filter(ind => ind.age === 0 && !simulationStates[0].some(p => p.color === ind.color)).length;
+
+                    const individualsHTML = state.map(ind => {
+                         const isNew = ind.age === 0 && t > 0 && !simulationStates[t-1].some(p => p.color === ind.color);
+                         return `<span class="sim-ind ${isNew ? 'new-birth' : ''}" style="color: ${ind.color};">1<sub>${ind.age}</sub></span>`
+                    }).join('+&nbsp;');
+                    
+                    let explanation = "";
+                    if (t>0) {
+                       const deaths = (t > 0 ? simulationStates[t-1].length : 0) - survivors;
+                       explanation = `${survivors} bertahan, ${newBirths > 0 ? `${newBirths} baru lahir` : 'tidak ada kelahiran baru'}${deaths > 0 ? `, ${deaths} mati` : ''}.`
+                    } else {
+                        explanation = 'Populasi awal.';
+                    }
+
+                    const newRow = document.createElement('tr');
+                    newRow.className = 'border-b';
+                    newRow.innerHTML = `
+                        <td class="px-4 py-3 font-medium text-slate-900">${t}</td>
+                        <td class="px-4 py-3 font-mono text-xs">${individualsHTML || '0'}</td>
+                        <td class="px-4 py-3 font-bold text-slate-800">${state.length}</td>
+                        <td class="px-4 py-3 text-slate-600">${explanation}</td>
+                    `;
+                    simulationTableBody.appendChild(newRow);
+                    newRow.classList.add('highlight-anim');
+                    newRow.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }, t * 800);
+            });
+            
+            setTimeout(() => {
+                renderChart();
+            }, (params.targetTime + 1) * 800);
+        }
+
+        function showHint() {
+            hintLevel++;
+            hintBox.classList.remove('hidden');
+            const { splitTime } = currentQuestionData;
+            
+            if (hintLevel === 1) {
+                hintBox.textContent = `Petunjuk 1: Pola dasarnya adalah Jumlah(n) = Jumlah(n-1) + Jumlah(n-${splitTime}). Jumlah saat ini bergantung pada jumlah di waktu sebelumnya dan jumlah individu yang sudah cukup umur untuk berkembang biak.`;
+            } else if (hintLevel > 1) {
+                generateSimulationData(currentQuestionData);
+                const correctAnswers = simulationStates.map(s => s.length);
+                const inputs = answerTableBody.querySelectorAll('input');
+                let firstUnsolvedIndex = -1;
+                for(let i = 0; i < inputs.length; i++) {
+                    if (parseInt(inputs[i].value) !== correctAnswers[i]) {
+                        firstUnsolvedIndex = i;
+                        break;
+                    }
+                }
+                
+                if (firstUnsolvedIndex !== -1) {
+                    inputs[firstUnsolvedIndex].value = correctAnswers[firstUnsolvedIndex];
+                    inputs[firstUnsolvedIndex].classList.add('border-green-500', 'bg-green-50');
+                    hintBox.textContent = `Petunjuk: Jawaban untuk Waktu ke-${firstUnsolvedIndex} adalah ${correctAnswers[firstUnsolvedIndex]}.`;
+                } else {
+                    hintBox.textContent = 'Semua jawaban sudah benar!';
+                }
+            }
+        }
+
+        function renderChart() {
+            const labels = simulationStates.map((_, index) => `Waktu ${index}`);
+            const data = simulationStates.map(state => state.length);
+            
+            if (populationChart) populationChart.destroy();
+
+            populationChart = new Chart(populationChartCanvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Jumlah Populasi',
+                        data: data,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.2
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } } }
+            });
+        }
+        
+        function showModal(title, message, type) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+
+            if (type === 'success') {
+                modalTitle.className = 'text-2xl font-bold text-green-600';
+                modalIcon.innerHTML = `<svg class="w-16 h-16 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            } else {
+                modalTitle.className = 'text-2xl font-bold text-red-600';
+                modalIcon.innerHTML = `<svg class="w-16 h-16 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            }
+            
+            feedbackModal.classList.remove('hidden');
+        }
+        function hideModal() { feedbackModal.classList.add('hidden'); }
+
+        // Event Listeners
+        modeQuizBtn.addEventListener('click', () => switchMode('quiz'));
+        modeSandboxBtn.addEventListener('click', () => switchMode('sandbox'));
+        quizForm.addEventListener('submit', checkAnswers);
+        nextBtn.addEventListener('click', generateQuestion);
+        simulateBtn.addEventListener('click', simulateDetailedAnswers);
+        sandboxStartBtn.addEventListener('click', startSandbox);
+        hintBtn.addEventListener('click', showHint);
+        closeModalBtn.addEventListener('click', hideModal);
+        feedbackModal.addEventListener('click', (e) => { if(e.target === feedbackModal) { hideModal(); }});
+
+        // Inisialisasi
+        switchMode('quiz');
+    });
+    </script>
+</body>
+</html>
