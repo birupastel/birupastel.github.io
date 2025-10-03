@@ -178,7 +178,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold text-gray-900">Hasil Kreasi</h2>
                         <button id="suggestion-button" class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-semibold py-2 px-4 rounded-lg text-sm transition-all transform hover:scale-105 flex items-center space-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m6.93.024c.253.114.495.26.727.425l.2.162c.235.197.45.43.648.687.218.28.398.59.548.92.144.318.257.658.336.998.04.17.07.345.094.524.025.183.04.37.046.56.006.188.007.377.006.566a8.01 8.01 0 0 0-.01-1.123C11.531 6.3 11 5.37 10.052 4.6l-.2-.162c-.235-.197-.45-.43-.648-.687-.218-.28-.398-.59-.548-.92-.144-.318-.257-.658-.336-.998a1.94 1.94 0 0 1-.094-.524C8.25 1.024 8.125.75 8 .5c-.125-.25-.25-.524-.372-.774a1.94 1.94 0 0 1-.094-.524c-.08-.34-.192-.68-.336-.998-.15-.33-.33-.648-.548-.92-.198-.257-.413-.49-.648-.687l-.2-.162C5.053 1.63 4.5 2.56 4.01 3.784c-.006.188-.007.377-.006.566.005.19.02.377.046.56.024.179.054.354.094.524.08.34.192.68.336.998.15.33.33.648.548.92.198.257.413.49.648.687l.2.162c.232.165.474.31.727.425z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="m6.93.024c.253.114.495.26.727.425l.2.162c.235.197.45.43.648.687.218.28.398.59.548.92.144.318.257.658.336.998.04.17.07.345.094.524.025.183.04.37.046.56.006.188.007.377.006.566a8.01 8.01 0 0 0-.01-1.123C11.531 6.3 11 5.37 10.052 4.6l-.2-.162c-.235-.197-.45-.43-.648-.687-.218-.28-.398-.59-.548-.92-.144-.318-.257.658-.336-.998a1.94 1.94 0 0 1-.094-.524C8.25 1.024 8.125.75 8 .5c-.125-.25-.25-.524-.372-.774a1.94 1.94 0 0 1-.094-.524c-.08-.34-.192-.68-.336-.998-.15-.33-.33-.648-.548-.92-.198-.257-.413-.49-.648-.687l-.2-.162C5.053 1.63 4.5 2.56 4.01 3.784c-.006.188-.007.377-.006.566.005.19.02.377.046.56.024.179.054.354.094.524.08.34.192.68.336.998.15.33.33.648.548.92.198.257.413.49.648.687l.2.162c.232.165.474.31.727.425z"/></svg>
                             <span>Inspirasi Pose</span>
                         </button>
                     </div>
@@ -244,7 +244,8 @@
         let imageCount = 8;
 
         // --- API Config ---
-        const apiKey = "AIzaSyAS45Q-bJwP9roaaIM6t1Rf05HodGWLwQQ";
+        // PENTING: Ganti "" dengan API Key Anda dari Google AI Studio
+        const apiKey = "AIzaSyAS45Q-bJwP9roaaIM6t1Rf05HodGWLwQQ"; // <-- PASTE API KEY ANDA DI SINI
         const imageModel = 'gemini-2.5-flash-image-preview';
         const textModel = 'gemini-2.5-flash-preview-05-20';
         const imageUrl = `https://generativelanguage.googleapis.com/v1beta/models/${imageModel}:generateContent?key=${apiKey}`;
@@ -289,33 +290,37 @@
             return new Blob(byteArrays, {type: contentType});
         }
 
-        async function generateImage(base64Data, prompt, retries = 3, delay = 1000) {
+        async function generateImage(base64Data, prompt) {
             const payload = {
                 contents: [{ parts: [ { text: prompt }, { inlineData: { mimeType: "image/jpeg", data: base64Data } } ] }],
                 generationConfig: { responseModalities: ['IMAGE'] },
             };
             try {
+                // Memberi jeda kecil sebelum setiap request untuk menghindari rate limit
+                await new Promise(resolve => setTimeout(resolve, 250)); 
                 const response = await fetch(imageUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) {
-                    if (response.status === 429 || response.status >= 500) { throw new Error(`Server error: ${response.status}`); }
                     const errorBody = await response.json();
                     console.error("API Error:", errorBody);
-                    showMessage(`Error: ${errorBody.error?.message || 'Unknown API error'}`);
+                    // Tidak menampilkan pesan error 429 ke user, karena akan dicoba lagi
+                    if (response.status !== 429) {
+                        showMessage(`Error: ${errorBody.error?.message || 'Unknown API error'}`);
+                    }
                     return null;
                 }
                 const result = await response.json();
                 return result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data || null;
             } catch (error) {
-                console.error(`Attempt failed: ${error.message}. Retrying...`);
-                if (retries > 0) {
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return generateImage(base64Data, prompt, retries - 1, delay * 2);
-                }
+                console.error(`Fetch error: ${error.message}`);
                 return null;
             }
         }
         
         async function handleGeneration(baseImage = originalImageBase64, isIteration = false) {
+            if (!apiKey || apiKey.includes("PASTE API KEY")) {
+                showMessage('API Key belum dimasukkan. Silakan edit file HTML.');
+                return;
+            }
             if (!baseImage) {
                 showMessage('Silakan unggah gambar terlebih dahulu.');
                 return;
@@ -339,26 +344,26 @@
             if (customBackground) stylePromptPart += `. The background should be: ${customBackground}`;
 
             const prompts = POSE_IDEAS.sort(() => 0.5 - Math.random()).slice(0, imageCount);
-            const generationPromises = prompts.map(idea => {
-                 const fullPrompt = `Recreate the person from the image into a new pose. The new pose is: a ${idea}. Crucially, maintain the exact same facial features, hair, and identity of the person. Only the body pose and background can change. ${stylePromptPart}.`;
-                 return generateImage(baseImage, fullPrompt);
-            });
-            
-            const results = await Promise.all(generationPromises);
-            
-            const newImagesData = [];
-            results.forEach((base64Data) => {
+            const allGeneratedImages = [];
+
+            // **PERUBAHAN UTAMA: Gunakan loop sekuensial (satu per satu) bukan Promise.all**
+            for (const idea of prompts) {
+                const fullPrompt = `Recreate the person from the image into a new pose. The new pose is: a ${idea}. Crucially, maintain the exact same facial features, hair, and identity of the person. Only the body pose and background can change. ${stylePromptPart}.`;
+                const base64Data = await generateImage(baseImage, fullPrompt);
+
                 if (base64Data) {
                     const newImage = {
                         imgSrc: `data:image/png;base64,${base64Data}`,
                         base64ForIterate: base64Data
                     };
-                    newImagesData.push(newImage);
-                    displayImage(newImage);
+                    allGeneratedImages.push(newImage);
+                    displayImage(newImage); // Tampilkan gambar begitu selesai dibuat
                 }
-            });
+            }
             
-            if (newImagesData.length === 0) showMessage('Gagal membuat variasi. Coba lagi dengan gambar/prompt lain.');
+            if (allGeneratedImages.length === 0 && isGenerating) {
+                 showMessage('Gagal membuat variasi. Coba lagi atau periksa console untuk error.');
+            }
             
             isGenerating = false;
             generateButton.disabled = false;
@@ -390,6 +395,10 @@
         }
 
         async function getPoseSuggestions() {
+            if (!apiKey || apiKey.includes("PASTE API KEY")) {
+                showMessage('API Key belum dimasukkan untuk fitur ini.');
+                return;
+            }
             suggestionArea.classList.remove('hidden');
             suggestionContent.innerHTML = '';
             suggestionLoader.style.display = 'flex';
