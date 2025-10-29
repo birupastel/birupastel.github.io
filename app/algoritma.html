@@ -15,259 +15,115 @@
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         
         /* Sidebar */
-        .sidebar-link.active {
-            background-color: #2563EB; /* blue-600 */
-            color: white;
-            font-weight: 600;
-        }
+        .sidebar-link.active { background-color: #2563EB; color: white; font-weight: 600; }
+        .sidebar-link .badge { color: #16A34A; /* green-600 */ }
+        .sidebar-link.active .badge { color: white; }
+        #sidebar { transition: transform 0.3s ease-in-out; }
         #sidebar::-webkit-scrollbar { display: none; }
         #sidebar { -ms-overflow-style: none; scrollbar-width: none; }
         
         /* Area Kode */
-        .code-editor {
-            background-color: #1E293B; /* slate-800 */
-            color: #E2E8F0; /* slate-200 */
-            border: 1px solid #334155; /* slate-700 */
-            border-radius: 8px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            min-height: 250px;
-            width: 100%;
-            outline: none;
-            transition: border-color 0.3s;
-        }
+        .code-editor { background-color: #1E293B; color: #E2E8F0; border: 1px solid #334155; border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6; min-height: 250px; width: 100%; outline: none; transition: border-color 0.3s; }
         .code-editor:focus { border-color: #2563EB; }
-        .code-editor-inline {
-            font-family: 'JetBrains Mono', monospace;
-            background-color: #e2e8f0; /* slate-200 */
-            color: #1e293b; /* slate-800 */
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
+        .code-editor-inline { font-family: 'JetBrains Mono', monospace; background-color: #e2e8f0; color: #1e293b; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
 
         /* Input Isian */
-        .fill-in-input {
-            border: 1px dashed #94A3B8; background-color: #F1F5F9;
-            color: #0F172A; font-family: 'JetBrains Mono', monospace;
-            padding: 2px 6px; border-radius: 4px; margin: 0 4px;
-            width: 250px;
-            transition: all 0.3s;
-        }
+        .fill-in-input { border: 1px dashed #94A3B8; background-color: #F1F5F9; color: #0F172A; font-family: 'JetBrains Mono', monospace; padding: 2px 6px; border-radius: 4px; margin: 0 4px; width: 250px; transition: all 0.3s; }
         .fill-in-input:focus { outline: none; border-style: solid; border-color: #2563EB; background-color: white; }
         .fill-in-input.correct { border-color: #16A34A; background-color: #DCFCE7; color: #15803D; }
         .fill-in-input.incorrect { border-color: #DC2626; background-color: #FEE2E2; color: #B91C1C; }
         
         /* Hasil Tes */
-        .test-case-result {
-            font-family: 'JetBrains Mono', monospace; padding: 12px;
-            border-radius: 8px; margin-top: 12px;
-        }
+        .test-case-result { font-family: 'JetBrains Mono', monospace; padding: 12px; border-radius: 8px; margin-top: 12px; }
         .test-case-result.success { background-color: #DCFCE7; border: 1px solid #16A34A; color: #15803D; }
         .test-case-result.fail { background-color: #FEE2E2; border: 1px solid #DC2626; color: #B91C1C; }
 
         /* Feedback Kuis */
-        .quiz-feedback {
-            display: none; padding: 12px; border-radius: 8px;
-            margin-top: 16px; font-weight: 500;
-        }
+        .quiz-feedback { display: none; padding: 12px; border-radius: 8px; margin-top: 16px; font-weight: 500; }
         .quiz-feedback.correct { display: block; background-color: #DCFCE7; color: #15803D; }
         .quiz-feedback.incorrect { display: block; background-color: #FEE2E2; color: #B91C1C; }
         
         /* Sub-menu Tabs */
-        .submenu-tab {
-            padding: 10px 20px;
-            font-weight: 600;
-            color: #475569; /* slate-600 */
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .submenu-tab:hover {
-            color: #1E293B; /* slate-800 */
-        }
-        .submenu-tab.active {
-            color: #2563EB; /* blue-600 */
-            border-bottom-color: #2563EB;
-        }
+        .submenu-tab { padding: 10px 20px; font-weight: 600; color: #475569; border-bottom: 3px solid transparent; transition: all 0.3s; cursor: pointer; }
+        .submenu-tab:hover { color: #1E293B; }
+        .submenu-tab.active { color: #2563EB; border-bottom-color: #2563EB; }
+        .submenu-content { display: none; padding-top: 24px; }
+        .submenu-content.active { display: block; }
         
-        /* Konten sub-menu */
-        .submenu-content {
-            display: none; /* Sembunyi secara default */
-            padding-top: 24px; /* Jarak dari tab */
-        }
-        .submenu-content.active {
-            display: block; /* Tampil jika aktif */
-        }
+        /* Drag n Drop */
+        #drop-zone { border: 2px dashed #94A3B8; background-color: #F8FAFC; min-height: 200px; }
+        .draggable-item { cursor: grab; background-color: white; border: 1px solid #CBD5E1; }
+        .draggable-item.dragging { opacity: 0.5; }
         
-        /* Drag and Drop */
-        .drag-source {
-            background-color: #E2E8F0; /* slate-200 */
-            border: 1px solid #CBD5E1; /* slate-300 */
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: grab;
-            margin-bottom: 8px;
-            transition: background-color 0.2s;
-        }
-        .drag-source:active { cursor: grabbing; background-color: #CBD5E1; }
-        .drag-target {
-            background-color: #F1F5F9; /* slate-100 */
-            border: 2px dashed #94A3B8; /* slate-400 */
-            min-height: 200px;
-            border-radius: 8px;
-            padding: 16px;
-        }
-        .drag-target.drag-over {
-            background-color: #E0E7FF; /* indigo-100 */
-            border-color: #3B82F6; /* blue-500 */
-        }
-        .drag-target .drag-source { background-color: white; }
+        /* Konsol Interaktif */
+        .interactive-console { background-color: #1E293B; color: #E2E8F0; font-family: 'JetBrains Mono', monospace; height: 150px; overflow-y: auto; padding: 12px; border-radius: 0 0 8px 8px; border: 1px solid #334155; border-top: none; }
+        .interactive-console .console-output { white-space: pre-wrap; }
+        .interactive-console .console-input { background-color: transparent; color: #E2E8F0; border: none; outline: none; width: 100%; }
+        
+        /* Visualisasi Flowchart Rapi */
+        .flowchart-container { background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 24px; display: flex; flex-direction: column; align-items: center; font-family: 'JetBrains Mono', monospace; }
+        .flow-node { border: 2px solid #334155; padding: 10px 20px; border-radius: 8px; background-color: white; font-size: 14px; text-align: center; transition: all 0.2s ease-in-out; }
+        .flow-node.term { border-radius: 999px; background-color: #DBEAFE; border-color: #60A5FA; } /* Oval */
+        .flow-node.proc { border-radius: 8px; } /* Persegi Panjang */
+        .flow-node.io { transform: skew(-20deg); background-color: #FEF3C7; border-color: #FCD34D; } /* Jajar Genjang */
+        .flow-node.dec { transform: rotate(45deg); width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; background-color: #FEE2E2; border-color: #F87171; } /* Belah Ketupat */
+        .flow-node.dec > span { transform: rotate(-45deg); }
+        .flow-node.active { background-color: #2563EB; color: white; border-color: #2563EB; box-shadow: 0 0 15px rgba(37, 99, 235, 0.5); }
+        .flow-arrow { color: #64748B; font-size: 24px; line-height: 1; margin: 8px 0; }
+        .flow-row { display: flex; justify-content: center; width: 100%; }
+        .flow-branch { display: flex; justify-content: space-around; width: 100%; max-width: 400px; position: relative; }
+        .flow-branch .flow-col { display: flex; flex-direction: column; align-items: center; width: 150px; }
+        .flow-label { font-size: 12px; color: #475569; margin-top: 10px; margin-bottom: 5px; }
+        /* Garis-garis */
+        .flow-line-container { width: 100%; max-width: 400px; height: 20px; position: relative; }
+        .flow-line-top { border-top: 2px solid #64748B; border-left: 2px solid #64748B; border-right: 2px solid #64748B; height: 100%; width: 100%; position: absolute; }
+        .flow-line-bottom-container { width: 100%; max-width: 400px; height: 20px; position: relative; display: flex; justify-content: center; }
+        .flow-line-bottom { border-bottom: 2px solid #64748B; border-left: 2px solid #64748B; border-right: 2px solid #64748B; height: 100%; width: 50%; position: absolute; bottom: 0; }
+        /* Flowchart Loop */
+        .flowchart-loop-container { width: 100%; max-width: 500px; position: relative; }
+        .flow-loop-body { display: flex; flex-direction: column; align-items: center; }
+        .flow-loop-arrow-right { position: absolute; right: -60px; top: 50%; height: 120px; width: 60px; border-top: 2px solid #64748B; border-right: 2px solid #64748B; border-bottom: 2px solid #64748B; border-radius: 0 10px 10px 0; }
+        .flow-loop-arrow-left { position: absolute; left: 0; bottom: -20px; width: calc(100% + 120px); transform: translateX(-60px); }
+        .flow-loop-arrow-left span { position: absolute; left: 0; bottom: 0; height: 20px; width: 100%; border-bottom: 2px solid #64748B; border-left: 2px solid #64748B; border-radius: 10px 0 0 10px; }
+        .flow-loop-arrow-left-up { position: absolute; left: -60px; top: 0; height: 100%; width: 60px; }
+        .flow-loop-arrow-left-up span { position: absolute; left: 0; top: 0; height: 100%; width: 100%; border-left: 2px solid #64748B; }
 
-        /* Simulasi Konsol */
-        .console-container {
-            background-color: #1E293B; /* slate-800 */
-            color: #E2E8F0; /* slate-200 */
-            border: 1px solid #334155; /* slate-700 */
-            border-radius: 8px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            min-height: 150px;
-            width: 100%;
-            margin-top: 16px;
-            overflow-y: auto;
-        }
-        .console-container .console-output {
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-        .console-container .console-input {
-            color: #FBBF24; /* amber-400 */
-            display: inline;
-        }
-        .console-container .console-prompt-input {
-            background: none;
-            border: none;
-            outline: none;
-            color: #FBBF24;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            width: calc(100% - 20px); /* Adjust width as needed */
-            display: inline;
-        }
-        
-        /* Visualisasi Flowchart */
-        .flowchart-node {
-            background-color: #fff;
-            border: 2px solid #94A3B8; /* slate-400 */
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            text-align: center;
-            min-width: 150px;
-            transition: all 0.3s;
-        }
-        .flowchart-node.process { border-radius: 8px; }
-        .flowchart-node.io { transform: skew(-20deg); }
-        .flowchart-node.decision { transform: rotate(45deg); min-width: 120px; min-height: 120px; display: flex; align-items: center; justify-content: center; }
-        .flowchart-node.terminator { border-radius: 9999px; }
-        .flowchart-node .text { display: inline-block; }
-        .flowchart-node.io .text { transform: skew(20deg); }
-        .flowchart-node.decision .text { transform: rotate(-45deg); }
-        
-        .flowchart-node.active {
-            background-color: #2563EB; /* blue-600 */
-            color: white;
-            border-color: #1D4ED8; /* blue-800 */
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-            transform: scale(1.05) rotate(0deg); /* Reset transform for active state */
-        }
-        .flowchart-node.decision.active {
-            transform: scale(1.05) rotate(45deg);
-        }
-
-        .flowchart-arrow {
-            position: relative;
-            height: 40px;
-            width: 2px;
-            background-color: #94A3B8; /* slate-400 */
-            margin: 0 auto;
-            transition: all 0.3s;
-        }
-        .flowchart-arrow::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 8px solid #94A3B8; /* slate-400 */
-            transition: all 0.3s;
-        }
-        .flowchart-arrow.active { background-color: #2563EB; }
-        .flowchart-arrow.active::after { border-top-color: #2563EB; }
-        
-        .flowchart-branch {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .flowchart-branch > div {
-            width: 50%;
-            position: relative;
-        }
-        .flowchart-arrow-horizontal {
-            position: absolute;
-            top: 0;
-            height: 2px;
-            background-color: #94A3B8; /* slate-400 */
-            transition: all 0.3s;
-        }
-        .flowchart-arrow-horizontal.left { right: 50%; width: 50%; }
-        .flowchart-arrow-horizontal.right { left: 50%; width: 50%; }
-        .flowchart-arrow-horizontal.active { background-color: #2563EB; }
-        
-        .flowchart-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-            color: #475569; /* slate-600 */
-        }
+        /* Visualisasi Array */
+        .array-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; padding: 10px; background-color: #F1F5F9; border-radius: 8px; min-height: 80px; }
+        .array-cell { width: 60px; height: 60px; background-color: white; border: 2px solid #94A3B8; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; transition: all 0.3s ease; }
+        .array-cell-value { font-size: 1.25rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+        .array-cell-index { font-size: 0.75rem; color: #475569; position: absolute; bottom: -20px; }
+        .array-cell.active { background-color: #DBEAFE; border-color: #2563EB; transform: scale(1.1); }
 
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
 
-    <!-- Header Mobile -->
-    <div class="fixed top-0 left-0 w-full bg-white shadow-md z-30 md:hidden">
-        <div class="flex justify-between items-center">
-            <button id="hamburger-btn" class="p-4 text-slate-700">
-                <i class="fas fa-bars fa-lg"></i>
-            </button>
-            <h1 class="text-lg font-bold text-blue-600">Belajar Algoritma</h1>
-            <div class="w-12"></div> <!-- Spacer -->
-        </div>
-    </div>
+    <!-- Tombol Menu Mobile -->
+    <button id="menu-toggle" class="md:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-md shadow-md">
+        <i class="fas fa-bars"></i>
+    </button>
 
-    <div class="flex h-screen pt-16 md:pt-0"> <!-- Added pt-16 for mobile -->
+    <!-- Overlay Latar Belakang Mobile -->
+    <div id="sidebar-overlay" class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30 hidden" onclick="toggleMenu(false)"></div>
+
+    <div class="flex h-screen">
         <!-- Sidebar Navigasi -->
-        <nav id="sidebar" class="w-64 bg-white shadow-lg overflow-y-auto flex-shrink-0 fixed md:relative h-full z-20 hidden md:block"> <!-- Start hidden on mobile -->
+        <nav id="sidebar" class="w-72 bg-white shadow-lg overflow-y-auto flex-shrink-0 z-40 fixed md:static h-full -translate-x-full md:translate-x-0">
             <div class="p-5 border-b border-slate-200">
-                <h1 class="text-xl font-bold text-blue-600 hidden md:block">Belajar Algoritma</h1>
-                <p class="text-sm text-slate-500 hidden md:block">Dasar Pemrograman C++</p>
-                <div class="mt-4">
-                    <div class="text-sm font-semibold text-slate-500">TOTAL POIN:</div>
-                    <div id="total-points" class="text-2xl font-bold text-blue-600">0</div>
+                <h1 class="text-xl font-bold text-blue-600">Belja Algoritma</h1>
+                <p class="text-sm text-slate-500">Dasar Pemrograman C++</p>
+            </div>
+            <div class="p-4 border-b border-slate-200">
+                <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">Progress</h3>
+                <div class="flex items-center">
+                    <i class="fas fa-star text-yellow-400 mr-2"></i>
+                    <span class="text-lg font-bold text-slate-700" id="total-points">0</span>
+                    <span class="text-sm text-slate-500 ml-1">Poin</span>
                 </div>
             </div>
             <div class="p-3">
-                <ul class="space-y-2">
+                <ul class="space-y-2" id="sidebar-list">
                     <!-- Tautan navigasi akan dibuat oleh JavaScript -->
                 </ul>
             </div>
@@ -276,7 +132,7 @@
         <!-- Konten Utama -->
         <main id="content-area" class="flex-1 p-6 md:p-10 overflow-y-auto">
             <!-- Konten (termasuk tab) akan dimuat di sini -->
-        </main>
+        </maint>
     </div>
 
     <!-- Modal (Kotak Pesan) -->
@@ -295,10 +151,11 @@
 
 
     <script>
-        // === DATABASE POIN & PROGRESS ===
-        let userPoints = 0;
-        let completedTopics = new Set();
-        
+        // === STATE APLIKASI ===
+        let totalPoints = 0;
+        let completedQuizzes = new Set();
+        let internalArray = []; // Untuk visualisasi array
+
         // === DATABASE KONTEN ===
         const topics = [
             { id: 'topic-1', title: 'Konsep Algoritma', icon: 'fa-lightbulb' },
@@ -379,11 +236,11 @@ Selesai</code></pre>
                             <div><p class="font-semibold mb-3">4. Perintah "Aduk adonan hingga kalis" dalam sebuah resep bisa dianggap melanggar sifat algoritma (untuk komputer) karena...</p><div class="space-y-2"><div><label><input type="radio" name="q4" value="A" class="mr-2"> A. Tidak memiliki output</label></div><div><label><input type="radio" name="q4" value="B" class="mr-2"> B. Tidak terbatas (tidak bisa berhenti)</label></div><div><label><input type="radio" name="q4" value="C" class="mr-2"> C. Tidak memiliki input</label></div><div><label><input type="radio" name="q4" value="D" class="mr-2"> D. Tidak pasti/ambigu (ukuran 'kalis' tidak jelas)</label></div></div><div id="feedback-q4" class="quiz-feedback"></div></div>
                             <div><p class="font-semibold mb-3">5. Representasi visual dari alur algoritma yang menggunakan simbol-simbol grafis disebut...</p><div class="space-y-2"><div><label><input type="radio" name="q5" value="A" class="mr-2"> A. Pseudocode</label></div><div><label><input type="radio" name="q5" value="B" class="mr-2"> B. Kode Program</label></div><div><label><input type="radio" name="q5" value="C" class="mr-2"> C. Flowchart</label></div><div><label><input type="radio" name="q5" value="D" class="mr-2"> D. Tipe Data</label></div></div><div id="feedback-q5" class="quiz-feedback"></div></div>
 
-                            <button onclick="checkQuiz('topic-1')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Semua Jawaban</button>
+                            <button onclick="checkQuiz('topic-1', 10)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Semua Jawaban</button>
                         </div>
                     </div>
                 `,
-                quizData: { type: 'mcq', points: 10, answers: { q1: 'B', q2: 'A', q3: 'C', q4: 'D', q5: 'C' } }
+                quizData: { q1: 'B', q2: 'A', q3: 'C', q4: 'D', q5: 'C' }
             },
             'topic-2': {
                 title: '2. Intro Bahasa C++',
@@ -402,7 +259,6 @@ Selesai</code></pre>
                         <p class="mb-4">Setiap program C++ memiliki struktur dasar yang mirip. Mari kita bedah program "Hello, World!" paling sederhana:</p>
                         <pre class="code-editor !min-h-0 !bg-slate-800"><code>// 1. Header
 #include &lt;iostream&gt;
-#include &lt;string&gt; // Diperlukan untuk tipe data string
 
 // 2. Namespace
 using namespace std;
@@ -429,34 +285,33 @@ int main() {
                     </div>
                 `,
                 kuis: `
-                    <h3 class="text-2xl font-semibold mb-4">Latihan: Seret-dan-Lepas</h3>
-                    <p class="mb-4">Susunlah potongan kode di bawah ini menjadi program "Hello, World!" yang benar. Seret potongan dari "Bank Kode" ke "Area Susun".</p>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <div class="flex flex-col md:flex-row gap-6">
-                            <!-- Bank Kode -->
-                            <div class="w-full md:w-1/3">
-                                <h4 class="font-semibold mb-3">Bank Kode</h4>
-                                <div id="drag-source-container" class="space-y-2">
-                                    <div class="drag-source" draggable="true" data-id="line-4"><code>    cout << "Hello, World!";</code></div>
-                                    <div class="drag-source" draggable="true" data-id="line-1"><code>#include &lt;iostream&gt;</code></div>
-                                    <div class="drag-source" draggable="true" data-id="line-6"><code>}</code></div>
-                                    <div class="drag-source" draggable="true" data-id="line-5"><code>    return 0;</code></div>
-                                    <div class="drag-source" draggable="true" data-id="line-2"><code>using namespace std;</code></div>
-                                    <div class="drag-source" draggable="true" data-id="line-3"><code>int main() {</code></div>
-                                </div>
-                            </div>
-                            <!-- Area Susun -->
-                            <div class="w-full md:w-2/3">
-                                <h4 class="font-semibold mb-3">Area Susun</h4>
-                                <div id="drag-target-container" class="drag-target font-mono">
-                                    <!-- Potongan kode akan ditaruh di sini -->
-                                D</div>
+                    <h3 class="text-2xl font-semibold mb-4">Latihan: Seret dan Lepas (Drag & Drop)</h3>
+                    <p class="mb-4">Susunlah potongan kode di bawah ini menjadi program "Hello, World!" yang benar.</p>
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <!-- Drop Zone -->
+                        <div class="flex-1">
+                            <h4 class="font-semibold mb-2">Area Menyusun Kode</h4>
+                            <div id="drop-zone" class="p-4 rounded-lg min-h-[300px]">
+                                <!-- Item yang di-drop akan muncul di sini -->
                             </div>
                         </div>
-                        <button onclick="checkDragDrop('topic-2')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Susunan</button>
+                        <!-- Draggable Items -->
+                        <div class="flex-1 md:max-w-xs">
+                            <h4 class="font-semibold mb-2">Potongan Kode</h4>
+                            <div id="drag-source" class="space-y-3 p-4 bg-slate-100 rounded-lg">
+                                <div class="draggable-item p-3 rounded-md shadow font-mono" draggable="true" data-id="3">int main() {</div>
+                                <div class="draggable-item p-3 rounded-md shadow font-mono" draggable="true" data-id="1">#include &lt;iostream&gt;</div>
+                                <div class="draggable-item p-3 rounded-md shadow font-mono" draggable="true" data-id="5">    return 0;</div>
+                                <div class="draggable-item p-3 rounded-md shadow font-mono" draggable="true" data-id="6">}</div>
+                                <div class="draggable-item p-3 rounded-md shadow font-mono" draggable="true" data-id="2">using namespace std;</div>
+                                <div class="draggable-item p-3 rounded-md shadow font-mono" draggable="true" data-id="4">&nbsp;&nbsp;&nbsp;&nbsp;cout << "Hello, World!";</div>
+                            </div>
+                        </div>
                     </div>
+                    <button onclick="checkDragDrop('topic-2', 50)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Susunan</button>
+                    <div id="feedback-drag-drop" class="quiz-feedback"></div>
                 `,
-                quizData: { type: 'dragdrop', points: 50, order: ['line-1', 'line-2', 'line-3', 'line-4', 'line-5', 'line-6'] }
+                quizData: {}
             },
             'topic-3': {
                 title: '3. Menampilkan Output',
@@ -508,7 +363,7 @@ cout << "Baris dua.";
                                 <pre><code>#include &lt;iostream&gt;
 using namespace std;
 int main() {
-    <input type="text" class="fill-in-input" data-answer="cout << &quot;Selamat Datang&quot;;" placeholder="ketik di sini...">
+    <input type="text" class="fill-in-input" data-answer="cout << &quot;Selamat Datang&quot;;">
     return 0;
 }</code></pre>
                             </div>
@@ -522,7 +377,7 @@ int main() {
 using namespace std;
 int main() {
     cout << "Baris Satu";
-    <input type="text" class="fill-in-input" data-answer="cout << endl;" placeholder="pindah baris di sini...">
+    <input type="text" class="fill-in-input" data-answer="cout << endl;">
     cout << "Baris Dua";
     return 0;
 }</code></pre>
@@ -536,7 +391,7 @@ int main() {
                                 <pre><code>#include &lt;iostream&gt;
 using namespace std;
 int main() {
-    <input type="text" class="fill-in-input" data-answer="cout << &quot;Halo\nDunia&quot;;" placeholder="gunakan '\\n'...">
+    <input type="text" class="fill-in-input" data-answer="cout << &quot;Halo\nDunia&quot;;">
     return 0;
 }</code></pre>
                             </div>
@@ -549,7 +404,7 @@ int main() {
                                 <pre><code>#include &lt;iostream&gt;
 using namespace std;
 int main() {
-    cout << "Belajar C++" << <input type="text" class="fill-in-input !w-32" data-answer="endl;" placeholder="...;">;
+    cout << "Belajar C++" << <input type="text" class="fill-in-input !w-32" data-answer="endl;">;
     return 0;
 }</code></pre>
                             </div>
@@ -562,15 +417,15 @@ int main() {
                                 <pre><code>#include &lt;iostream&gt;
 using namespace std;
 int main() {
-    cout << <input type="text" class="fill-in-input" data-answer="&quot;Baris 1\nBaris 2\nBaris 3&quot;" placeholder="&quot;...&quot;">;
+    cout << <input type="text" class="fill-in-input" data-answer="&quot;Baris 1\nBaris 2\nBaris 3&quot;">;
     return 0;
 }</code></pre>
                             </div>
                         </div>
-                        <button onclick="checkFillIn('quiz-fill-in-topic-3', 'topic-3')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Semua Jawaban</button>
+                        <button onclick="checkFillIn('quiz-fill-in-topic-3', 10)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Semua Jawaban</button>
                     </div>
                 `,
-                quizData: { type: 'fill-in', points: 15 } // Poin per soal
+                quizData: {}
             },
             'topic-4': {
                 title: '4. Tipe Data & Variabel',
@@ -596,8 +451,8 @@ string nama;</code></pre>
                             <thead><tr class="bg-slate-100"><th class="border p-3 text-left">Tipe Data</th><th class="border p-3 text-left">Kegunaan</th><th class="border p-3 text-left">Contoh Kode</th></tr></thead>
                             <tbody>
                                 <tr><td class="border p-3"><code class="code-editor-inline">int</code></td><td class="border p-3">Menyimpan bilangan bulat (tanpa desimal).</td><td class="border p-3"><code class="font-mono">int jumlahSiswa = 30;</code></td></tr>
-                                <tr><td class="border p-3"><code class="code-editor-inline">float</code></td><td class="border p-3">Menyimpan bilangan desimal (presisi tunggal).</td><td class="border p-3"><code class="font-mono">float nilai = 85.5f;</code></td></tr>
-                                <tr><td class="border p-3"><code class="code-editor-inline">double</code></td><td class="border p-3">Menyimpan bilangan desimal (presisi ganda).</td><td class="border p-3"><code class="font-mono">double pi = 3.1415926535;</code></td></tr>
+                                <tr><td class="border p-3"><code class="code-editor-inline">float</code></td><td class="border p-3">Menyimpan bilangan desimal (presisi rendah).</td><td class="border p-3"><code class="font-mono">float pi = 3.14f;</code></td></tr>
+                                <tr><td class="border p-3"><code class="code-editor-inline">double</code></td><td class="border p-3">Menyimpan bilangan desimal (presisi tinggi).</td><td class="border p-3"><code class="font-mono">double nilaiUjian = 85.5;</code></td></tr>
                                 <tr><td class="border p-3"><code class="code-editor-inline">string</code></td><td class="border p-3">Menyimpan teks (kumpulan karakter). Wajib pakai <code class="code-editor-inline">""</code>.</td><td class="border p-3"><code class="font-mono">string nama = "Budi";</code></td></tr>
                                 <tr><td class="border p-3"><code class="code-editor-inline">char</code></td><td class="border p-3">Menyimpan SATU karakter saja. Wajib pakai <code class="code-editor-inline">''</code>.</td><td class="border p-3"><code class="font-mono">char grade = 'A';</code></td></tr>
                                 <tr><td class="border p-3"><code class="code-editor-inline">bool</code></td><td class="border p-3">Menyimpan nilai logika: <code class="font-mono">true</code> atau <code class="font-mono">false</code>.</td><td class="border p-3"><code class="font-mono">bool sudahLulus = true;</code></td></tr>
@@ -660,10 +515,9 @@ int tinggiBadan = 170;</code></pre>
                                 </div>
                                 <div id="feedback-q3" class="quiz-feedback"></div>
                             </div>
-                            <button onclick="checkQuiz('topic-4')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Pilihan Ganda</button>
+                            <button onclick="checkQuiz('topic-4', 5)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Pilihan Ganda</button>
                         </div>
                     </div>
-                    
                     <h3 class="text-2xl font-semibold mt-8 mb-4">Bagian 2: Melengkapi Kode</h3>
                     <p class="mb-4">Tuliskan sintaks C++ yang tepat untuk instruksi berikut.</p>
                     <div id="quiz-fill-in-topic-4">
@@ -672,7 +526,7 @@ int tinggiBadan = 170;</code></pre>
                             <p class="font-semibold mb-3">Latihan 1: Deklarasi</p>
                             <p class="mb-4">Deklarasikan sebuah variabel bernama <code class="code-editor-inline">umur</code> untuk menyimpan data bilangan bulat.</p>
                             <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-7">
-                                <pre><code><input type="text" class="fill-in-input" data-answer="int umur;" placeholder="TipeData NamaVariabel;">
+                                <pre><code><input type="text" class="fill-in-input" data-answer="int umur;">
     
 // Variabel 'umur' siap digunakan
 </code></pre>
@@ -683,7 +537,7 @@ int tinggiBadan = 170;</code></pre>
                             <p class="font-semibold mb-3">Latihan 2: Deklarasi</p>
                             <p class="mb-4">Deklarasikan sebuah variabel bernama <code class="code-editor-inline">hurufDepan</code> untuk menyimpan satu karakter.</p>
                             <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-8">
-                                <pre><code><input type="text" class="fill-in-input" data-answer="char hurufDepan;" placeholder="TipeData NamaVariabel;">
+                                <pre><code><input type="text" class="fill-in-input" data-answer="char hurufDepan;">
     
 // Variabel 'hurufDepan' siap digunakan
 </code></pre>
@@ -695,21 +549,15 @@ int tinggiBadan = 170;</code></pre>
                             <p class="mb-4">Deklarasikan DAN inisialisasikan (isi langsung) variabel <code class="code-editor-inline">namaSekolah</code> dengan nilai teks "SMAN 1".</p>
                             <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-9">
                                 <pre><code>// Gunakan tanda kutip "" untuk string
-<input type="text" class="fill-in-input" data-answer="string namaSekolah = &quot;SMAN 1&quot;;" placeholder="TipeData NamaVariabel = Nilai;">
+<input type="text" class="fill-in-input" data-answer="string namaSekolah = &quot;SMAN 1&quot;;">
     
 cout << namaSekolah; // Akan menampilkan "SMAN 1"</code></pre>
                             </div>
                         </div>
-                        <button onclick="checkFillIn('quiz-fill-in-topic-4', 'topic-4')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Melengkapi Kode</button>
+                        <button onclick="checkFillIn('quiz-fill-in-topic-4', 5)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Melengkapi Kode</button>
                     </div>
                 `,
-                quizData: { 
-                    type: 'multi-part',
-                    parts: [
-                        { id: 'quiz-topic-4', type: 'mcq', points: 10, answers: { q1: 'C', q2: 'A', q3: 'B' } },
-                        { id: 'quiz-fill-in-topic-4', type: 'fill-in', points: 15 }
-                    ]
-                }
+                quizData: { q1: 'C', q2: 'A', q3: 'B' }
             },
             'topic-5': {
                 title: '5. Menerima Input',
@@ -791,7 +639,7 @@ cout << "Halo, " << nama << "! Umur Anda " << umur << " tahun." << endl;</code><
                                 </div>
                                 <div id="feedback-q3" class="quiz-feedback"></div>
                             </div>
-                            <button onclick="checkQuiz('topic-5')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Pilihan Ganda</button>
+                            <button onclick="checkQuiz('topic-5', 5)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Pilihan Ganda</button>
                         </div>
                     </div>
 
@@ -809,7 +657,7 @@ int main() {
     cout << "Masukkan sebuah bilangan: ";
     
     // Terima input ke variabel 'bilangan'
-    <input type="text" class="fill-in-input" data-answer="cin >> bilangan;" placeholder="ketik di sini...">
+    <input type="text" class="fill-in-input" data-answer="cin >> bilangan;">
 
     cout << "Anda memasukkan: " << bilangan << endl;
     return 0;
@@ -829,722 +677,760 @@ int main() {
     string namaDepan;
     cout << "Masukkan nama depan Anda: ";
     
-    <input type="text" class="fill-in-input" data-answer="cin >> namaDepan;" placeholder="terima input di sini...">
+    <input type="text" class="fill-in-input" data-answer="cin >> namaDepan;">
 
     cout << "Halo, " << namaDepan << "!" << endl;
     return 0;
 }</code></pre>
                             </div>
                         </div>
-                        <button onclick="checkFillIn('quiz-fill-in-topic-5', 'topic-5')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Melengkapi Kode</button>
+                        <button onclick="checkFillIn('quiz-fill-in-topic-5', 5)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Melengkapi Kode</button>
                     </div>
                 `,
-                quizData: { 
-                    type: 'multi-part',
-                    parts: [
-                        { id: 'quiz-topic-5', type: 'mcq', points: 10, answers: { q1: 'B', q2: 'B', q3: 'B' } },
-                        { id: 'quiz-fill-in-topic-5', type: 'fill-in', points: 20 }
-                    ]
-                }
+                quizData: { q1: 'B', q2: 'B', q3: 'B' }
             },
             'topic-6': {
                 title: '6. Operator Aritmatika',
                 materi: `
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-3">Operator Aritmatika Dasar</h3>
-                        <p class="mb-4">Ini adalah operator matematika dasar yang digunakan untuk melakukan perhitungan:</p>
-                        <ul class="list-disc list-inside space-y-2 bg-slate-50 p-4 rounded-md">
-                            <li><code class="code-editor-inline">+</code> (Penjumlahan)</li>
-                            <li><code class="code-editor-inline">-</code> (Pengurangan)</li>
-                            <li><code class="code-editor-inline">*</code> (Perkalian)</li>
-                            <li><code class="code-editor-inline">/</code> (Pembagian)</li>
-                            <li><code class="code-editor-inline">%</code> (Modulus / Sisa Bagi)</li>
-                        </ul>
+                        <h3 class="text-xl font-semibold mb-3">Operator Aritmatika</h3>
+                        <p class="mb-4">Ini adalah operator matematika dasar yang digunakan untuk melakukan perhitungan.</p>
+                        <table class="w-full border-collapse">
+                            <thead><tr class="bg-slate-100"><th class="border p-3 text-left">Operator</th><th class="border p-3 text-left">Kegunaan</th><th class="border p-3 text-left">Contoh</th><th class="border p-3 text-left">Hasil</th></tr></thead>
+                            <tbody>
+                                <tr><td class="border p-3"><code class="code-editor-inline">+</code></td><td class="border p-3">Penjumlahan</td><td class="border p-3"><code class="font-mono">5 + 3</code></td><td class="border p-3"><code class="font-mono">8</code></td></tr>
+                                <tr><td class="border p-3"><code class="code-editor-inline">-</code></td><td class="border p-3">Pengurangan</td><td class="border p-3"><code class="font-mono">5 - 3</code></td><td class="border p-3"><code class="font-mono">2</code></td></tr>
+                                <tr><td class="border p-3"><code class="code-editor-inline">*</code></td><td class="border p-3">Perkalian</td><td class="border p-3"><code class="font-mono">5 * 3</code></td><td class="border p-3"><code class="font-mono">15</code></td></tr>
+                                <tr><td class="border p-3"><code class="code-editor-inline">/</code></td><td class="border p-3">Pembagian</td><td class="border p-3"><code class="font-mono">5.0 / 2.0</code></td><td class="border p-3"><code class="font-mono">2.5</code></td></tr>
+                                <tr><td class="border p-3"><code class="code-editor-inline">%</code></td><td class="border p-3">Modulus (Sisa Bagi)</td><td class="border p-3"><code class="font-mono">5 % 3</code></td><td class="border p-3"><code class="font-mono">2</code></td></tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-3">Pembagian Integer vs Desimal</h3>
-                        <p class="mb-4">Ini adalah konsep penting di C++. Hasil pembagian tergantung pada tipe data yang terlibat.</p>
-                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>// 1. Integer dibagi Integer = Integer
-// Hasil desimal akan dibulatkan ke bawah (dipotong).
-int hasil_int = 5 / 2;
-// hasil_int akan bernilai 2, bukan 2.5
+                        <h3 class="text-xl font-semibold mb-3">Penting: Pembagian Integer vs Desimal</h3>
+                        <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+                            <p>Jika Anda membagi dua bilangan <code class="code-editor-inline">int</code>, hasilnya akan selalu <code class="code-editor-inline">int</code> (dibulatkan ke bawah).</p>
+                        </div>
+                        <pre class="code-editor !min-h-0 !bg-slate-800 mt-4"><code>int a = 5;
+int b = 2;
+cout << a / b; // Output: 2 (bukan 2.5)
 
-// 2. Desimal dibagi Integer (atau sebaliknya) = Desimal
-// Cukup salah satu saja yang desimal.
-double hasil_double = 5.0 / 2;
-// hasil_double akan bernilai 2.5</code></pre>
+double c = 5.0;
+double d = 2.0;
+cout << c / d; // Output: 2.5</code></pre>
                     </div>
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-3">Operator Modulus (%)</h3>
-                        <p class="mb-4">Modulus hanya bekerja pada bilangan bulat (integer) dan digunakan untuk mencari <strong>sisa</strong> dari suatu pembagian.</p>
-                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>int sisa = 5 % 2;
-// 5 dibagi 2 adalah 2, sisa 1
-// Variabel 'sisa' akan bernilai 1
-
-int genap = 4 % 2;
-// 4 dibagi 2 adalah 2, sisa 0
-// Variabel 'genap' akan bernilai 0</code></pre>
-                        <p class="mt-4">Ini sangat berguna, misalnya, untuk menentukan apakah suatu bilangan ganjil atau genap.</p>
+                        <h3 class="text-xl font-semibold mb-3">Urutan Operasi (Presedensi)</h3>
+                        <p class="mb-2">Sama seperti matematika, C++ mengikuti urutan:</p>
+                        <ol class="list-decimal list-inside space-y-2 bg-slate-50 p-4 rounded-md">
+                            <li><code class="code-editor-inline">()</code> (Tanda kurung)</li>
+                            <li><code class="code-editor-inline">*</code> , <code class="code-editor-inline">/</code> , <code class="code-editor-inline">%</code> (dikerjakan dari kiri ke kanan)</li>
+                            <li><code class="code-editor-inline">+</code> , <code class="code-editor-inline">-</code> (dikerjakan dari kiri ke kanan)</li>
+                        </ol>
+                        <pre class="code-editor !min-h-0 !bg-slate-800 mt-4"><code>cout << 5 + 3 * 2; // Output: 11 (bukan 16)
+cout << (5 + 3) * 2; // Output: 16</code></pre>
                     </div>
                 `,
                 kuis: `
                     <h3 class="text-2xl font-semibold mb-4">Latihan: Isian Singkat (Tracing)</h3>
-                    <p class="mb-4">Tentukan nilai akhir dari variabel yang diminta berdasarkan potongan kode berikut.</p>
+                    <p class="mb-4">Lacak (trace) nilai variabel pada setiap potongan kode dan tuliskan output/nilai akhir yang diminta.</p>
                     <div id="quiz-fill-in-topic-6">
-                        <!-- Latihan 1 -->
+                        <!-- Latihan 1 (Revisi) -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                             <p class="font-semibold mb-3">Latihan 1</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int a = 10;
-int b = 3;
-int c = a / b;
-int d = a % b;</code></pre>
-                            <label class="block mt-4">Berapa nilai <code class="code-editor-inline">c</code> dan <code class="code-editor-inline">d</code>? (Pisahkan dengan koma, cth: 5,10)</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="3,1" placeholder="c,d">
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int x = 10;
+int y = 3;
+x = x % y;
+y = y * x;
+cout << y;</code></pre>
+                            <label class="font-semibold">Berapakah output dari program di atas?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="3">
                         </div>
-                        <!-- Latihan 2 -->
+                        <!-- Latihan 2 (Revisi) -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                             <p class="font-semibold mb-3">Latihan 2</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>double x = 10.0;
-int y = 4;
-double z = x / y;
-z = z + 1;</code></pre>
-                            <label class="block mt-4">Berapa nilai akhir <code class="code-editor-inline">z</code>?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="3.5" placeholder="nilai z">
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int a = 5;
+int b = 2;
+double c = a / b;
+cout << c;</code></pre>
+                            <label class="font-semibold">Berapakah output dari program di atas?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="2">
                         </div>
-                        <!-- Latihan 3 -->
+                        <!-- Latihan 3 (Revisi) -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                             <p class="font-semibold mb-3">Latihan 3</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int p = 5;
-int q = 2;
-p = p + 1;
-int r = p * q;
-q = r % p;</code></pre>
-                            <label class="block mt-4">Berapa nilai akhir <code class="code-editor-inline">r</code> dan <code class="code-editor-inline">q</code>? (Pisahkan dengan koma)</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="12,0" placeholder="r,q">
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int x = 2;
+x = x * (10 / 4);
+cout << x;</code></pre>
+                            <label class="font-semibold">Berapakah output dari program di atas? (Ingat pembagian integer!)</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="4">
                         </div>
-                        <!-- Latihan 4 -->
+                        <!-- Latihan 4 (Revisi) -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 4 (Urutan Operasi)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int hasil = 10 + 4 * 2;
-int hasil2 = (10 + 4) * 2;</code></pre>
-                            <label class="block mt-4">Berapa nilai <code class="code-editor-inline">hasil</code> dan <code class="code-editor-inline">hasil2</code>? (Pisahkan dengan koma)</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="18,28" placeholder="hasil,hasil2">
+                            <p class="font-semibold mb-3">Latihan 4</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int a = 5 + 10 % 3;
+int b = (a * 2) / 4;
+cout << b;</code></pre>
+                            <label class="font-semibold">Berapakah output dari program di atas?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="3">
                         </div>
-                        <!-- Latihan 5 -->
+                        <!-- Latihan 5 (Contoh User) -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 5 (dari contoh Anda)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int x, y;
-x = -16; 
-y = 8; 
-x = x + y; 
+                            <p class="font-semibold mb-3">Latihan 5</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int x, y;
+x = -16;
+y = 8;
+x = x + y;
 x = y - x;</code></pre>
-                            <label class="block mt-4">Berapa nilai akhir <code class="code-editor-inline">x</code> dan <code class="code-editor-inline">y</code>? (Pisahkan dengan koma)</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="16,8" placeholder="x,y">
+                            <label class="font-semibold">Nilai variabel <code class="code-editor-inline">x</code> dan <code class="code-editor-inline">y</code> adalah?</label>
+                            <input type="text" class="fill-in-input" data-answer="x=16, y=8" placeholder="format: x=..., y=...">
                         </div>
-                        <!-- Latihan 6 -->
+                        <!-- Latihan 6 (Contoh User) -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 6 (dari contoh Anda)</p>
-                            <p class="mb-4">Apabila inputnya adalah <code class="code-editor-inline">11 6 7</code> (A=11, B=6, C=7):</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int A, B, C; 
-cin >> A >> B >> C; 
-B = A - B; 
-C = A - C; 
-A = B + C; 
-cout << (A+B)*C << endl;</code></pre>
-                            <label class="block mt-4">Berapakah keluaran (output) dari program di atas?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="56" placeholder="Output">
+                            <p class="font-semibold mb-3">Latihan 6</p>
+                            <p class="mb-4">Apabila inputnya <strong>A=11</strong>, <strong>B=6</strong>, <strong>C=7</strong>:</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int A, B, C;
+cin >> A >> B >> C;
+B = A - B;
+C = A - C;
+A = B + C;
+cout << (A + B) * C;</code></pre>
+                            <label class="font-semibold">Berapakah keluaran dari program di atas?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="56">
                         </div>
-                        <button onclick="checkFillIn('quiz-fill-in-topic-6', 'topic-6')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Semua Jawaban</B>
+                        <button onclick="checkFillIn('quiz-fill-in-topic-6', 10)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Semua Jawaban</button>
                     </div>
                 `,
-                quizData: { type: 'fill-in', points: 20 }
+                quizData: {}
             },
             'topic-7': {
-                title: '7. Percabangan',
+                title: '7. Algoritma Percabangan',
                 materi: `
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-3">Apa Itu Percabangan?</h3>
-                        <p class="mb-4">Percabangan (Conditionals) adalah struktur yang memungkinkan program Anda mengambil keputusan. Program bisa menjalankan blok kode yang berbeda tergantung pada apakah suatu kondisi bernilai <code class="code-editor-inline">true</code> atau <code class="code-editor-inline">false</code>.</p>
-                        
-                        <h4 class="text-lg font-semibold mt-4">1. Struktur <code class="code-editor-inline">if</code></h4>
-                        <p class="mb-2">Struktur <code class="code-editor-inline">if</code> adalah yang paling dasar. Kode di dalamnya HANYA akan berjalan jika kondisi benar.</p>
-                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>if (umur > 17) {
-    cout << "Anda sudah dewasa.";
+                        <h3 class="text-xl font-semibold mb-3">Struktur Dasar <code class="code-editor-inline">if</code></h3>
+                        <p class="mb-4">Digunakan untuk menjalankan kode <strong>jika</strong> sebuah kondisi bernilai benar (true).</p>
+                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>if (kondisi) {
+    // Jalankan kode ini HANYA jika kondisi benar
 }
-// Jika umur 15, tidak terjadi apa-apa.</code></pre>
-                        
-                        <h4 class="text-lg font-semibold mt-6">2. Struktur <code class="code-editor-inline">if-else</code></h4>
-                        <p class="mb-2">Struktur <code class="code-editor-inline">if-else</code> memberikan pilihan alternatif. Jika kondisi salah, blok <code class="code-editor-inline">else</code> yang akan dijalankan.</p>
-                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>if (nilai >= 75) {
-    cout << "Selamat, Anda Lulus!";
-} else {
-    cout << "Maaf, Anda harus mengulang.";
-}</code></pre>
-                        
-                        <h4 class="text-lg font-semibold mt-6">3. Struktur <code class="code-editor-inline">if - else if - else</code></h4>
-                        <p class="mb-2">Digunakan untuk banyak kondisi yang saling eksklusif (hanya satu yang bisa benar).</p>
-                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>if (nilai > 90) {
-    cout << "Grade A";
-} else if (nilai > 80) {
-    cout << "Grade B";
-} else if (nilai > 70) {
-    cout << "Grade C";
-} else {
-    cout << "Grade D";
-}</code></pre>
-                        
-                        <h4 class="text-lg font-semibold mt-6">4. Operator Pembanding</h4>
-                        <p class="mb-2">Kondisi biasanya dibuat menggunakan operator pembanding:</p>
-                        <ul class="list-disc list-inside space-y-2 bg-slate-50 p-4 rounded-md">
-                            <li><code class="code-editor-inline">></code> (Lebih besar dari)</li>
-                            <li><code class="code-editor-inline"><</code> (Lebih kecil dari)</li>
-                            <li><code class="code-editor-inline">>=</code> (Lebih besar atau sama dengan)</li>
-                            <li><code class="code-editor-inline"><=</code> (Lebih kecil atau sama dengan)</li>
-                            <li><code class="code-editor-inline">==</code> (Sama dengan) <- PENTING: Pakai dua tanda sama dengan!</li>
-                            <li><code class="code-editor-inline">!=</code> (Tidak sama dengan)</li>
-                        </ul>
+// Kode di sini akan selalu jalan</code></pre>
                     </div>
                     
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-3">Visualisasi Konsep: <code class="code-editor-inline">if-else</code> (Ganjil/Genap)</h3>
-                        <p class="mb-4">Masukkan sebuah angka dan tekan "Jalankan" untuk melihat alur program menentukan apakah angka itu Ganjil atau Genap.</p>
-                        <div class="flex items-center space-x-3 mb-4">
-                            <label for="viz-if-input" class="font-mono">int x = </label>
-                            <input type="number" id="viz-if-input" class="border border-slate-300 rounded-md p-2 w-24" value="7">
-                            <button onclick="visualizeIf()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                <i class="fas fa-play mr-2"></i>Jalankan Visualisasi
-                            </button>
+                        <h3 class="text-xl font-semibold mb-3">Struktur <code class="code-editor-inline">if-else</code></h3>
+                        <p class="mb-4">Digunakan untuk memilih <strong>satu</strong> dari <strong>dua</strong> kemungkinan blok kode.</p>
+                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>if (kondisi) {
+    // Jalankan ini jika kondisi benar
+} else {
+    // Jalankan ini jika kondisi salah
+}</code></pre>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-xl font-semibold mt-6 mb-3">Visualisasi Konsep: if-else (Ganjil/Genap)</h3>
+                        <p class="mb-4">Masukkan sebuah angka dan tekan "Jalankan" untuk melihat alur logika program.</p>
+                        <div class="flex items-center gap-4 mb-4">
+                            <label class="font-mono">int x = </label>
+                            <input type="number" id="viz-if-input" class="fill-in-input !w-24" value="7">
+                            <button onclick="visualizeIf()" class="bg-blue-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-play mr-2"></i>Jalankan Visualisasi</button>
                         </div>
-                        
-                        <!-- Visualisasi Flowchart -->
-                        <div id="viz-if-container" class="flex flex-col items-center p-4 bg-slate-50 rounded-lg">
-                            <div id="viz-if-start" class="flowchart-node terminator"><span class="text">Mulai</span></div>
-                            <div class="flowchart-arrow"></div>
-                            <div id="viz-if-input" class="flowchart-node io"><span class="text">Baca x</span></div>
-                            <div class="flowchart-arrow"></div>
-                            <div id="viz-if-decision" class="flowchart-node decision"><span class="text">x % 2 == 0</span></div>
-                            <div class="flowchart-arrow"></div>
-                            
-                            <!-- Cabang True / False -->
-                            <div class="flowchart-branch w-full">
-                                <!-- Jalur Kiri (True/Genap) -->
-                                <div class="relative">
-                                    <div class="flowchart-arrow-horizontal left"></div>
-                                    <div class="flowchart-arrow" style="height: 20px;"></div>
-                                    <div class="absolute -top-6 left-1/4 flowchart-label">True</div>
-                                    <div id="viz-if-true" class="flowchart-node process mx-auto"><span class="text">cetak "Genap"</span></div>
+                        <div class="flex gap-4">
+                            <div class="flowchart-container flex-1 !p-6" id="viz-if-container">
+                                <div class="flow-node term" id="viz-if-1">Mulai</div>
+                                <div class="flow-arrow">&darr;</div>
+                                <div class="flow-node io" id="viz-if-2">Baca x</div>
+                                <div class="flow-arrow">&darr;</div>
+                                <div class="flow-node dec" id="viz-if-3"><span>x % 2 == 0 ?</span></div>
+                                
+                                <div class="flow-line-container relative mt-4">
+                                    <div class="absolute left-0 top-0 w-1/2 h-full border-r border-slate-400"></div>
+                                    <div class="absolute left-1/4 top-0 w-0 h-full">
+                                        <div class="flow-arrow absolute top-0 transform -translate-x-1/2">&darr;</div>
+                                        <div class="flow-label absolute top-4 transform -translate-x-1/2">True</div>
+                                    </div>
+                                    <div class="absolute right-1/4 top-0 w-0 h-full">
+                                        <div class="flow-arrow absolute top-0 transform -translate-x-1/2">&darr;</div>
+                                        <div class="flow-label absolute top-4 transform -translate-x-1/2">False</div>
+                                    </div>
+                                    <div class="w-full absolute top-0 h-px bg-slate-400"></div>
                                 </div>
-                                <!-- Jalur Kanan (False/Ganjil) -->
-                                <div class="relative">
-                                    <div class="flowchart-arrow-horizontal right"></div>
-                                    <div class="flowchart-arrow" style="height: 20px;"></div>
-                                    <div class="absolute -top-6 right-1/4 flowchart-label">False</div>
-                                    <div id="viz-if-false" class="flowchart-node process mx-auto"><span class="text">cetak "Ganjil"</span></div>
+
+                                <div class="flow-row w-full max-w-md">
+                                    <div class="flow-col w-1/2 flex flex-col items-center">
+                                        <div class="flow-node proc" id="viz-if-4">cetak "Genap"</div>
+                                    </div>
+                                    <div class="flow-col w-1/2 flex flex-col items-center">
+                                        <div class="flow-node proc" id="viz-if-5">cetak "Ganjil"</div>
+                                    </div>
                                 </div>
+
+                                <div class="flow-line-container relative mb-4">
+                                    <div class="absolute left-0 top-0 w-1/2 h-full border-r border-slate-400"></div>
+                                    <div class="absolute left-1/4 bottom-0 w-0 h-full">
+                                        <div class="flow-arrow absolute bottom-0 transform -translate-x-1/2">&darr;</div>
+                                    </div>
+                                    <div class="absolute right-1/4 bottom-0 w-0 h-full">
+                                        <div class="flow-arrow absolute bottom-0 transform -translate-x-1/2">&darr;</div>
+                                    </div>
+                                    <div class="w-full absolute bottom-0 h-px bg-slate-400"></div>
+                                </div>
+
+                                <div class="flow-node term" id="viz-if-6">Selesai</div>
                             </div>
-                            
-                            <!-- Gabung -->
-                            <div class="flowchart-arrow" style="height: 30px;"></div> <!-- Placeholder arrow -->
-                            <div id="viz-if-end" class="flowchart-node terminator"><span class="text">Selesai</span></div>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 flex-1" id="viz-if-code"><code>// Kode akan disorot di sini
+int x;
+cin >> x;
+if (x % 2 == 0) {
+    cout << "Genap";
+} else {
+    cout << "Ganjil";
+}
+</code></pre>
                         </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-xl font-semibold mb-3">Struktur <code class="code-editor-inline">if-else if-else</code></h3>
+                        <p class="mb-4">Digunakan untuk memilih <strong>satu</strong> dari <strong>banyak</strong> kemungkinan blok kode.</p>
+                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>if (kondisi_1) {
+    // Jalankan ini jika kondisi_1 benar
+} else if (kondisi_2) {
+    // Jalankan ini jika kondisi_1 salah, TAPI kondisi_2 benar
+} else {
+    // Jalankan ini jika SEMUA kondisi di atas salah
+}</code></pre>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-xl font-semibold mb-3"><code class="code-editor-inline">if</code> Bersarang (Nested)</h3>
+                        <p class="mb-4">Anda bisa meletakkan <code class="code-editor-inline">if</code> di dalam <code class="code-editor-inline">if</code> lain.</p>
+                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>int umur = 20;
+int saldo = 50000;
+
+if (umur > 18) {
+    // Kondisi 1 Benar
+    if (saldo > 10000) {
+        // Kondisi 2 juga Benar
+        cout << "Boleh masuk dan boleh jajan.";
+    } else {
+        // Kondisi 2 Salah
+        cout << "Boleh masuk, tapi tidak boleh jajan.";
+    }
+} else {
+    // Kondisi 1 Salah
+    cout << "Tidak boleh masuk.";
+}</code></pre>
                     </div>
                 `,
                 kuis: `
                     <h3 class="text-2xl font-semibold mb-4">Bagian 1: Isian Singkat (Tracing)</h3>
-                    <p class="mb-4">Tentukan output dari potongan kode berikut.</p>
                     <div id="quiz-fill-in-topic-7-1">
-                        <!-- Latihan 1 -->
+                        <!-- Soal 1 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 1 (dari contoh Anda)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int angka=17;
-if (angka % 2 == 0){
+                            <p class="font-semibold mb-3">Latihan 1 (Termudah)</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int angka = 17;
+if (angka % 2 == 0) {
     angka = 0;
-}
-else{
-    angka = -1;
-}
-cout << "angka";</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="angka" placeholder="Output">
-                        </div>
-                        <!-- Latihan 2 -->
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 2 (Perbaikan Latihan 1)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int angka=17;
-if (angka % 2 == 0){
-    angka = 0;
-}
-else{
+} else {
     angka = -1;
 }
 cout << angka;</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="-1" placeholder="Output">
+                            <label class="font-semibold">Apakah output program?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="-1">
                         </div>
-                        <!-- Latihan 3 -->
+                        <!-- Soal 2 -->
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                            <p class="font-semibold mb-3">Latihan 2</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int nilai = 85;
+if (nilai >= 80) {
+    cout << "A";
+} else if (nilai >= 70) {
+    cout << "B";
+}
+cout << "C";</code></pre>
+                            <label class="font-semibold">Apakah output program?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="AC">
+                        </div>
+                        <!-- Soal 3 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                             <p class="font-semibold mb-3">Latihan 3</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int nilai = 85;
-if (nilai >= 80) {
-    cout << "A";
-}
-if (nilai >= 70) {
-    cout << "B";
-}</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="AB" placeholder="Output">
-                        </div>
-                        <!-- Latihan 4 -->
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 4 (else if)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int nilai = 85;
-if (nilai >= 80) {
-    cout << "A";
-}
-else if (nilai >= 70) {
-    cout << "B";
-}</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="A" placeholder="Output">
-                        </div>
-                        <!-- Latihan 5 -->
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 5</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int x = 10, y = 10;
-if (x >= y) {
-    cout << "Satu";
-}
-if (x == y) {
-    cout << "Dua";
-}
-if (x > y) {
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int x = 10, y = 10;
+if (x > 5) {
+    if (y > 10) {
+        cout << "Satu";
+    } else {
+        cout << "Dua";
+    }
+} else {
     cout << "Tiga";
 }</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="SatuDua" placeholder="Output">
+                            <label class="font-semibold">Apakah output program?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="Dua">
                         </div>
-                        <!-- Latihan 6 -->
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 6 (dari contoh Anda)</p>
-                            <p class="mb-4">Apabila <code class="code-editor-inline">x=3, y=5, z=8</code>:</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int x=3, y=5, z=8, t;
-if (x > y){
-    if (z > x){ t = z; }
-    else{ t = x; } 
+                        <!-- Soal 4 s/d 6... -->
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-6"><p class="font-semibold mb-3">Latihan 4</p><pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int a = 5, b = 5, c = 10;
+if (a == b && c > 10) {
+    cout << "Satu";
+} else if (a == b || c > 10) {
+    cout << "Dua";
+} else {
+    cout << "Tiga";
+}</code></pre><label class="font-semibold">Apakah output program?</label><input type="text" class="fill-in-input !w-32" data-answer="Dua"></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-6"><p class="font-semibold mb-3">Latihan 5</p><pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int x = 50;
+if (x > 100) {
+    x = 100;
 }
-else{
-    if (z > y){ t = z; }
-    else{ t = y; } 
+if (x > 70) {
+    x = 70;
 }
-cout << t;</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="8" placeholder="Output">
-                        </div>
-                        <button onclick="checkFillIn('quiz-fill-in-topic-7-1', 'topic-7', 'part1')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Isian Singkat</button>
+if (x > 40) {
+    x = 40;
+}
+cout << x;</code></pre><label class="font-semibold">Apakah output program? (Hati-hati, ini bukan if-else!)</label><input type="text" class="fill-in-input !w-32" data-answer="40"></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-6"><p class="font-semibold mb-3">Latihan 6 (Tersulit)</p><p class="mb-4">Apabila diberikan nilai <code class="code-editor-inline">x=3, y=5, z=8</code>:</p><pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int t;
+if (x > y) {
+    if (z > x) {
+        t = z;
+    } else {
+        t = x;
+    }
+} else {
+    if (z > y) {
+        t = z;
+    } else {
+        t = y;
+    }
+}
+cout << t;</code></pre><label class="font-semibold">Apakah output program?</label><input type="text" class="fill-in-input !w-32" data-answer="8"></div>
+                        <button onclick="checkFillIn('quiz-fill-in-topic-7-1', 10)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Isian Singkat</button>
                     </div>
-
+                    
                     <h3 class="text-2xl font-semibold mt-8 mb-4">Bagian 2: Melengkapi Kode</h3>
-                    <p class="mb-4">Lengkapi bagian rumpang agar program berjalan sesuai instruksi.</p>
                     <div id="quiz-fill-in-topic-7-2">
                         <!-- Latihan 1 (Tukar) -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 1: Kondisi Lulus</p>
-                            <p class="mb-4">Lengkapi kondisi <code class="code-editor-inline">if</code> agar program mencetak "Lulus" jika <code class="code-editor-inline">nilai</code> lebih besar atau sama dengan 75.</p>
-                            <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-12">
-                                <pre><code>int nilai = 80;
-if ( <input type="text" class="fill-in-input !w-48" data-answer="nilai >= 75" placeholder="kondisi di sini..."> ) {
-    cout << "Lulus";
-} else {
-    cout << "Gagal";
+                            <p class="font-semibold mb-3">Latihan 1: Cek Bilangan Positif</p>
+                            <p class="mb-4">Lengkapi kondisi <code class="code-editor-inline">if</code> untuk mengecek apakah <code class="code-editor-inline">x</code> adalah bilangan positif.</p>
+                            <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-11">
+                                <pre><code>int x;
+cin >> x;
+if ( <input type="text" class="fill-in-input" data-answer="x > 0"> ) {
+    cout << "Positif";
 }</code></pre>
                             </div>
                         </div>
                         <!-- Latihan 2 (Tukar) -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 2: Cek Sama Dengan</p>
-                            <p class="mb-4">Lengkapi kondisi <code class="code-editor-inline">if</code> untuk mengecek apakah <code class="code-editor-inline">x</code> <strong>sama dengan</strong> 10. Ingat, gunakan dua tanda sama dengan!</p>
-                            <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-11">
-                                <pre><code>int x = 10;
-if ( <input type="text" class="fill-in-input !w-48" data-answer="x == 10" placeholder="x ... 10"> ) {
-    cout << "x adalah 10";
+                            <p class="font-semibold mb-3">Latihan 2: Cek Ganjil atau Genap</p>
+                            <p class="mb-4">Lengkapi kode untuk menentukan ganjil/genap. Gunakan modulus <code class="code-editor-inline">%</code>.</p>
+                            <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-12">
+                                <pre><code>int x;
+cin >> x;
+if ( <input type="text" class="fill-in-input" data-answer="x % 2 == 0"> ) {
+    cout << "Genap";
+} else {
+    cout << "Ganjil";
 }</code></pre>
                             </div>
                         </div>
                         <!-- Latihan 3 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 3: Grade Nilai</p>
-                            <p class="mb-4">Lengkapi bagian <code class="code-editor-inline">else if</code> untuk mengecek apakah nilai di atas 80.</p>
+                            <p class="font-semibold mb-3">Latihan 3: Cek Nilai 75</p>
+                            <p class="mb-4">Lengkapi <code class="code-editor-inline">else if</code> untuk mengecek apakah <code class="code-editor-inline">nilai</code> lebih besar ATAU SAMA DENGAN 75.</p>
                             <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-13">
-                                <pre><code>int nilai = 85;
+                                <pre><code>int nilai;
+cin >> nilai;
 if (nilai > 90) {
     cout << "A";
-} <input type="text" class="fill-in-input" data-answer="else if (nilai > 80)" placeholder="else if ..."> {
+} <input type="text" class="fill-in-input" data-answer="else if (nilai >= 75)"> {
     cout << "B";
 } else {
     cout << "C";
 }</code></pre>
                             </div>
                         </div>
-                        <button onclick="checkFillIn('quiz-fill-in-topic-7-2', 'topic-7', 'part2')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Melengkapi Kode</button>
+                        <button onclick="checkFillIn('quiz-fill-in-topic-7-2', 15)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Melengkapi Kode</button>
                     </div>
-                    
+
                     <h3 class="text-2xl font-semibold mt-8 mb-4">Bagian 3: Full Kode Program (Konsol Interaktif)</h3>
-                    <p class="mb-4">Tulis program C++ lengkap di editor. Klik "Jalankan Kode", lalu masukkan input pada konsol simulasi untuk menguji program Anda.</p>
-                    
-                    <!-- Latihan Full Kode 1 -->
+                    <!-- Latihan 1 -->
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <p class="font-semibold mb-3">Latihan 1: Ganjil atau Genap</p>
-                        <p class="mb-4">Buat program yang menerima 1 input bilangan bulat, lalu cetak "Ganjil" atau "Genap".</p>
+                        <p class="font-semibold mb-2">Latihan 1: Ganjil atau Genap</p>
+                        <p class="mb-4">Buat program C++ lengkap yang menerima satu input bilangan bulat (<code class="code-editor-inline">int x</code>) dan mencetak "Genap" atau "Ganjil".</p>
                         <textarea id="code-exercise-ganjil-genap" class="code-editor" placeholder="Tulis kode C++ lengkap Anda di sini..."></textarea>
-                        <button onclick="runCode('ganjil-genap')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-play mr-2"></i>Jalankan Kode
-                        </button>
-                        <div id="console-ganjil-genap" class="console-container hidden"></div>
-                        <div id="result-ganjil-genap" class="mt-4"></div>
+                        <div class="flex items-center justify-between bg-slate-700 p-2 rounded-t-lg mt-4">
+                            <span class="text-sm font-semibold text-slate-300 px-2">Konsol Simulasi</span>
+                            <button onclick="runCode('ganjil-genap')" class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition">
+                                <i class="fas fa-play mr-1"></i>Jalankan Kode
+                            </button>
+                        </div>
+                        <div id="console-ganjil-genap" class="interactive-console"></div>
                     </div>
-                    
-                    <!-- Latihan Full Kode 2 -->
+                    <!-- Latihan 2 -->
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <p class="font-semibold mb-3">Latihan 2: Positif, Negatif, atau Nol</p>
-                        <p class="mb-4">Buat program yang menerima 1 input bilangan bulat, lalu cetak "Positif", "Negatif", atau "Nol".</p>
-                        <textarea id="code-exercise-pos-neg" class="code-editor" placeholder="Tulis kode C++ lengkap Anda di sini..."></textarea>
-                        <button onclick="runCode('pos-neg')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-play mr-2"></i>Jalankan Kode
-                        </button>
-                        <div id="console-pos-neg" class="console-container hidden"></div>
-                        <div id="result-pos-neg" class="mt-4"></div>
+                        <p class="font-semibold mb-2">Latihan 2: Positif, Negatif, atau Nol</p>
+                        <p class="mb-4">Buat program C++ lengkap yang menerima satu input bilangan bulat (<code class="code-editor-inline">int x</code>) dan mencetak "Positif", "Negatif", atau "Nol".</p>
+                        <textarea id="code-exercise-pos-neg-nol" class="code-editor" placeholder="Tulis kode C++ lengkap Anda di sini..."></textarea>
+                        <div class="flex items-center justify-between bg-slate-700 p-2 rounded-t-lg mt-4">
+                            <span class="text-sm font-semibold text-slate-300 px-2">Konsol Simulasi</span>
+                            <button onclick="runCode('pos-neg-nol')" class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition">
+                                <i class="fas fa-play mr-1"></i>Jalankan Kode
+                            </button>
+                        </div>
+                        <div id="console-pos-neg-nol" class="interactive-console"></div>
                     </div>
-                    
-                    <!-- Latihan Full Kode 3 -->
+                    <!-- Latihan 3 -->
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <p class="font-semibold mb-3">Latihan 3: pH Asam, Basa, Netral</p>
-                        <p class="mb-4">Buat program yang menerima 1 input angka (bisa desimal, gunakan <code class="code-editor-inline">double</code>), lalu cetak:<br>
-                            - "Asam" jika pH < 7<br>
-                            - "Basa" jika pH > 7<br>
-                            - "Netral" jika pH == 7
-                        </p>
+                        <p class="font-semibold mb-2">Latihan 3: Asam, Basa, atau Netral</p>
+                        <p class="mb-4">Buat program C++ lengkap yang menerima satu input pH (<code class="code-editor-inline">int ph</code>):<br>
+                        - Jika <code class="code-editor-inline">ph < 7</code>, cetak "Asam"<br>
+                        - Jika <code class="code-editor-inline">ph > 7</code>, cetak "Basa"<br>
+                        - Jika <code class="code-editor-inline">ph == 7</code>, cetak "Netral"</p>
                         <textarea id="code-exercise-ph" class="code-editor" placeholder="Tulis kode C++ lengkap Anda di sini..."></textarea>
-                        <button onclick="runCode('ph')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-play mr-2"></i>Jalankan Kode
-                        </button>
-                        <div id="console-ph" class="console-container hidden"></div>
-                        <div id="result-ph" class="mt-4"></div>
+                        <div class="flex items-center justify-between bg-slate-700 p-2 rounded-t-lg mt-4">
+                            <span class="text-sm font-semibold text-slate-300 px-2">Konsol Simulasi</span>
+                            <button onclick="runCode('ph')" class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition">
+                                <i class="fas fa-play mr-1"></i>Jalankan Kode
+                            </button>
+                        </div>
+                        <div id="console-ph" class="interactive-console"></div>
                     </div>
                 `,
-                quizData: { 
-                    type: 'multi-part',
-                    parts: [
-                        { id: 'quiz-fill-in-topic-7-1', type: 'fill-in', points: 15 },
-                        { id: 'quiz-fill-in-topic-7-2', type: 'fill-in', points: 15 },
-                        { id: 'code-exercise-ganjil-genap', type: 'full-code', points: 25 },
-                        { id: 'code-exercise-pos-neg', type: 'full-code', points: 25 },
-                        { id: 'code-exercise-ph', type: 'full-code', points: 25 }
-                    ]
-                }
+                quizData: {}
             },
             'topic-8': {
-                title: '8. Perulangan',
+                title: '8. Algoritma Perulangan',
                 materi: `
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-3">Apa Itu Perulangan?</h3>
-                        <p class="mb-4">Perulangan (Loops) adalah struktur yang memungkinkan Anda menjalankan blok kode yang sama berulang kali, selama kondisi tertentu terpenuhi. Ini sangat efisien!</p>
-                        
-                        <h4 class="text-lg font-semibold mt-4">1. Struktur <code class="code-editor-inline">for</code></h4>
-                        <p class="mb-2">Ini adalah loop yang paling umum. Loop <code class="code-editor-inline">for</code> sangat baik digunakan ketika Anda tahu persis berapa kali Anda ingin mengulang.</p>
-                        <p class="mb-2">Strukturnya memiliki 3 bagian di dalam kurung:</p>
+                        <h3 class="text-xl font-semibold mb-3">Perulangan (Looping)</h3>
+                        <p class="mb-4">Perulangan digunakan untuk menjalankan blok kode yang sama berulang kali, selama kondisi tertentu terpenuhi.</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-xl font-semibold mb-3">Struktur <code class="code-editor-inline">for</code></h3>
+                        <p class="mb-4">Paling umum digunakan jika kita tahu pasti berapa kali kita ingin mengulang. Strukturnya terdiri dari 3 bagian:</p>
                         <ol class="list-decimal list-inside space-y-2 bg-slate-50 p-4 rounded-md">
-                            <li><strong>Inisialisasi:</strong> Membuat variabel pencacah (cth: <code class="code-editor-inline">int i = 0</code>). Dijalankan <strong>satu kali</strong> di awal.</li>
-                            <li><strong>Kondisi:</strong> Diperiksa <strong>setiap</strong> awal perulangan (cth: <code class="code-editor-inline">i < 5</code>). Jika benar, loop berjalan. Jika salah, loop berhenti.</li>
-                            <li><strong>Update:</strong> Mengubah variabel pencacah (cth: <code class="code-editor-inline">i++</code>). Dijalankan <strong>setiap</strong> akhir perulangan.</li>
+                            <li><strong>Inisialisasi:</strong> Dijalankan sekali di awal (misal: <code class="font-mono">int i = 0</code>).</li>
+                            <li><strong>Kondisi:</strong> Dicek setiap kali sebelum loop berjalan (misal: <code class="font-mono">i < 5</code>).</li>
+                            <li><strong>Iterasi:</strong> Dijalankan setiap kali setelah loop selesai (misal: <code class="font-mono">i++</code>).</li>
                         </ol>
-                        <pre class="code-editor !min-h-0 !bg-slate-800 mt-4"><code>// Loop ini akan berjalan 5 kali (i=0, 1, 2, 3, 4)
+                        <pre class="code-editor !min-h-0 !bg-slate-800 mt-4"><code>// Loop ini akan berjalan 5 kali (i = 0, 1, 2, 3, 4)
 for (int i = 0; i < 5; i++) {
     cout << "Perulangan ke-" << i << endl;
 }</code></pre>
-                        
-                        <h4 class="text-lg font-semibold mt-6">2. Struktur <code class="code-editor-inline">while</code></h4>
-                        <p class="mb-2">Loop <code class="code-editor-inline">while</code> (selama) lebih sederhana. Ia hanya memiliki kondisi. Loop akan terus berjalan *selama* kondisi bernilai benar.</p>
-                        <p class="mb-2">PENTING: Anda harus mengelola variabel kondisi secara manual di dalam loop. Jika tidak, Anda bisa terjebak dalam *infinite loop* (perulangan tak terbatas)!</p>
-                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>int i = 0; // 1. Inisialisasi di luar
-while (i < 5) { // 2. Kondisi di dalam while
-    cout << "Perulangan ke-" << i << endl;
-    i++; // 3. Update di dalam loop
-}</code></pre>
                     </div>
                     
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-3">Visualisasi Konsep: <code class="code-editor-inline">for loop</code></h3>
-                        <p class="mb-4">Tekan "Jalankan" untuk melihat bagaimana <code class="code-editor-inline">for</code> loop mengeksekusi 3 langkahnya (Inisialisasi, Kondisi, Update) secara berulang.</p>
-                        <div class="flex items-center space-x-3 mb-4">
-                            <button onclick="visualizeFor()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                <i class="fas fa-play mr-2"></i>Jalankan Visualisasi (for i = 0; i < 3; i++)
-                            </button>
+                        <h3 class="text-xl font-semibold mt-6 mb-3">Visualisasi Konsep: for loop</h3>
+                        <p class="mb-4">Tekan "Jalankan" untuk melihat alur eksekusi <code class="code-editor-inline">for</code> loop yang mencetak "Halo" 3 kali.</p>
+                        <div class="flex items-center gap-4 mb-4">
+                            <button onclick="visualizeFor()" class="bg-blue-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-play mr-2"></i>Jalankan Visualisasi</button>
                         </div>
-                        
-                        <!-- Visualisasi Flowchart -->
-                        <div id="viz-for-container" class="flex flex-col items-center p-4 bg-slate-50 rounded-lg">
-                            <div id="viz-for-start" class="flowchart-node terminator"><span class="text">Mulai</span></div>
-                            <div class="flowchart-arrow"></div>
-                            <div id="viz-for-init" class="flowchart-node process"><span class="text">int i = 0</span></div>
-                            <div class="flowchart-arrow"></div>
-                            <div id="viz-for-decision" class="flowchart-node decision"><span class="text">i < 3</span></div>
-                            <div class="flowchart-arrow"></div>
-                            
-                            <!-- Cabang True (Loop Body) -->
-                            <div class="flowchart-branch w-full">
-                                <!-- Jalur Kiri (True/Loop) -->
-                                <div class="relative">
-                                    <div class="flowchart-arrow-horizontal left"></div>
-                                    <div class="flowchart-arrow" style="height: 20px;"></div>
-                                    <div class="absolute -top-6 left-1/4 flowchart-label">True</div>
-                                    <div id="viz-for-body" class="flowchart-node process mx-auto"><span class="text">cout << i;</span></div>
-                                    <div class="flowchart-arrow"></div>
-                                    <div id="viz-for-update" class="flowchart-node process mx-auto"><span class="text">i++</span></div>
-                                    <div class="flowchart-arrow"></div>
-                                    <!-- Panah kembali ke atas -->
+                        <div class="flex gap-4">
+                            <div class="flowchart-container flex-1 !p-6" id="viz-for-container">
+                                <div class="flow-node term" id="viz-for-1">Mulai</div>
+                                <div class="flow-arrow">&darr;</div>
+                                <div class="flow-node proc" id="viz-for-2">i = 0</div>
+                                <div class="flow-arrow">&darr;</div>
+                                <div class="flow-node dec" id="viz-for-3"><span>i < 3 ?</span></div>
+                                
+                                <div class="flow-line-container relative mt-4">
+                                    <div class="absolute left-0 top-0 w-1/2 h-full border-r border-slate-400"></div>
+                                    <div class="absolute left-1/4 top-0 w-0 h-full">
+                                        <div class="flow-arrow absolute top-0 transform -translate-x-1/2">&darr;</div>
+                                        <div class="flow-label absolute top-4 transform -translate-x-1/2">True</div>
+                                    </div>
+                                    <div class="absolute right-1/4 top-0 w-0 h-full">
+                                        <div class="flow-arrow absolute top-0 transform -translate-x-1/2" style="transform: translateX(-50%) rotate(90deg); top: 10px;">&rarr;</div>
+                                        <div class="flow-label absolute top-4 transform -translate-x-1/2">False</div>
+                                    </div>
+                                    <div class="w-1/4 absolute right-0 top-0 h-px bg-slate-400" style="width: calc(50% - 25px); right: 25px;"></div>
+                                    <div class="w-1/4 absolute right-0 top-0 h-full border-r border-slate-400" style="right: 25px; height: 180px;"></div>
                                 </div>
-                                <!-- Jalur Kanan (False/End) -->
-                                <div class="relative">
-                                    <div class="flowchart-arrow-horizontal right"></div>
-                                    <div class="flowchart-arrow" style="height: 20px;"></div>
-                                    <div class="absolute -top-6 right-1/4 flowchart-label">False</div>
-                                </div>
-                            </div>
-                            
-                            <!-- Panah kembali dari update ke decision -->
-                            <div class="w-full relative" style="height: 40px;">
-                                <div id="viz-for-loopback" class="absolute top-0 left-0 w-3/4 h-full border-l-2 border-b-2 border-r-2 border-slate-400" style="border-radius: 0 0 20px 20px;"></div>
-                            </div>
 
-                            <div id="viz-for-end" class="flowchart-node terminator"><span class="text">Selesai</span></div>
+                                <div class="flow-row w-full max-w-md">
+                                    <div class="flow-col w-1/2 flex flex-col items-center">
+                                        <div class="flow-node proc" id="viz-for-4">cetak "Halo"</div>
+                                        <div class="flow-arrow">&darr;</div>
+                                        <div class="flow-node proc" id="viz-for-5">i++</div>
+                                    </div>
+                                    <div class="flow-col w-1/2 flex flex-col items-center justify-end" style="height: 180px;">
+                                        <div class="flow-node term" id="viz-for-6">Selesai</div>
+                                    </div>
+                                </div>
+
+                                <div class="flow-line-container relative mb-4 h-20">
+                                    <div class="absolute left-0 top-0 w-1/2 h-full border-r border-slate-400"></div>
+                                    <div class="absolute left-1/4 top-0 w-0 h-full">
+                                        <div class="flow-arrow absolute top-0 transform -translate-x-1/2 rotate-180">&darr;</div>
+                                    </div>
+                                    <div class="w-full absolute top-0 h-px bg-slate-400"></div>
+                                    <div class="w-1/4 absolute left-0 top-0 h-full border-l border-slate-400" style="left: 25px; height: 100%;"></div>
+                                    <div class="w-1/4 absolute left-0 top-full h-px bg-slate-400" style="width: calc(50% - 25px); left: 25px;"></div>
+                                </div>
+
+                            </div>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 flex-1" id="viz-for-code"><code>// Kode akan disorot
+for(int i = 0; i < 3; i++) {
+    cout << "Halo";
+}
+cout << "Selesai";</code></pre>
                         </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-xl font-semibold mb-3">Struktur <code class="code-editor-inline">while</code></h3>
+                        <p class="mb-4">Digunakan jika kita ingin mengulang selama kondisi bernilai benar, tapi kita tidak tahu pasti berapa kali (misal: mengulang program "Coba lagi? Y/N").</p>
+                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>int i = 0; // Inisialisasi di luar
+while (i < 5) { // Hanya ada kondisi
+    cout << "Perulangan ke-" << i << endl;
+    i++; // Iterasi di dalam
+}</code></pre>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-xl font-semibold mb-3">Struktur <code class="code-editor-inline">do-while</code></h3>
+                        <p class="mb-4">Sama seperti <code class="code-editor-inline">while</code>, tapi dijamin berjalan <strong>minimal satu kali</strong>, karena pengecekan kondisi ada di akhir.</p>
+                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>int i = 100; // Walaupun i tidak < 5
+do {
+    cout << "Program ini pasti jalan sekali." << endl;
+    i++;
+} while (i < 5); // Kondisi dicek di sini</code></pre>
                     </div>
                 `,
                 kuis: `
                     <h3 class="text-2xl font-semibold mb-4">Bagian 1: Isian Singkat (Tracing)</h3>
-                    <p class="mb-4">Tentukan output dari potongan kode berikut. (Tuliskan semua output, pisahkan dengan spasi jika perlu. Cth: 0 1 2)</p>
                     <div id="quiz-fill-in-topic-8-1">
-                        <!-- Latihan 1 -->
+                        <!-- Soal 1 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                             <p class="font-semibold mb-3">Latihan 1</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>for (int i = 0; i < 3; i++) {
-    cout << i << " ";
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>for (int i = 0; i < 3; i++) {
+    cout << "a";
 }</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="0 1 2" placeholder="Output">
+                            <label class="font-semibold">Apakah output program?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="aaa">
                         </div>
-                        <!-- Latihan 2 -->
+                        <!-- Soal 2 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                             <p class="font-semibold mb-3">Latihan 2</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>for (int i = 1; i <= 3; i++) {
-    cout << "Ho ";
-}</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="Ho Ho Ho" placeholder="Output">
-                        </div>
-                        <!-- Latihan 3 -->
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 3 (Menurun)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>for (int i = 3; i > 0; i--) {
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>for (int i = 1; i <= 3; i++) {
     cout << i;
 }</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="321" placeholder="Output">
+                            <label class="font-semibold">Apakah output program?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="123">
                         </div>
-                        <!-- Latihan 4 -->
+                        <!-- Soal 3 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 4 (While)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int i = 0;
-while (i < 2) {
-    cout << "X";
+                            <p class="font-semibold mb-3">Latihan 3</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int x = 0;
+for (int i = 0; i < 4; i++) {
+    x = x + 1;
+}
+cout << x;</code></pre>
+                            <label class="font-semibold">Apakah output program?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="4">
+                        </div>
+                        <!-- Soal 4 -->
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                            <p class="font-semibold mb-3">Latihan 4</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int i = 0;
+while (i < 3) {
+    cout << "x";
     i++;
 }</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="XX" placeholder="Output">
+                            <label class="font-semibold">Apakah output program?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="xxx">
                         </div>
-                        <!-- Latihan 5 -->
+                        <!-- Soal 5 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 5 (Akumulator)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int total = 0;
+                            <p class="font-semibold mb-3">Latihan 5</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int x = 10;
+do {
+    cout << "o";
+    x++;
+} while (x < 5);</code></pre>
+                            <label class="font-semibold">Apakah output program?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="o">
+                        </div>
+                        <!-- Soal 6 -->
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                            <p class="font-semibold mb-3">Latihan 6</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int total = 0;
 for (int i = 1; i <= 3; i++) {
     total = total + i;
 }
 cout << total;</code></pre>
-                            <label class="block mt-4">Apa output program? (Hasil dari 1+2+3)</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="6" placeholder="Output">
+                            <label class="font-semibold">Apakah output program? (1 + 2 + 3)</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="6">
                         </div>
-                        <!-- Latihan 6 -->
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 6 (Loop di dalam if)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int x = 5;
-if (x < 10) {
-    for (int i = 0; i < 2; i++) {
-        cout << "OK";
-    }
-} else {
-    cout << "NO";
-}</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="OKOK" placeholder="Output">
-                        </div>
-                        <button onclick="checkFillIn('quiz-fill-in-topic-8-1', 'topic-8', 'part1')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Isian Singkat</button>
+                        <button onclick="checkFillIn('quiz-fill-in-topic-8-1', 10)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Isian Singkat</button>
                     </div>
-
+                    
                     <h3 class="text-2xl font-semibold mt-8 mb-4">Bagian 2: Melengkapi Kode</h3>
-                    <p class="mb-4">Lengkapi bagian rumpang agar program berjalan sesuai instruksi.</p>
                     <div id="quiz-fill-in-topic-8-2">
                         <!-- Latihan 1 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 1: Loop 0 sampai 4</p>
-                            <p class="mb-4">Lengkapi kondisi <code class="code-editor-inline">for</code> agar loop berjalan 5 kali (i=0, 1, 2, 3, 4).</p>
+                            <p class="font-semibold mb-3">Latihan 1: Loop 5 Kali</p>
+                            <p class="mb-4">Lengkapi <code class="code-editor-inline">for</code> loop agar berjalan 5 kali (0 sampai 4).</p>
                             <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-14">
-                                <pre><code>for (int i = 0; <input type="text" class="fill-in-input !w-32" data-answer="i < 5" placeholder="i < ...">; i++) {
+                                <pre><code>for (int i = 0; <input type="text" class="fill-in-input" data-answer="i < 5">; i++) {
     cout << i;
-}</code></pre>
+}
+// Output: 01234</code></pre>
                             </div>
                         </div>
                         <!-- Latihan 2 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 2: Update Manual (While)</p>
-                            <p class="mb-4">Lengkapi bagian yang rumpang di dalam <code class="code-editor-inline">while</code> agar loop tidak menjadi *infinite*!</p>
+                            <p class="font-semibold mb-3">Latihan 2: Mundur</p>
+                            <p class="mb-4">Lengkapi <code class="code-editor-inline">for</code> loop agar menghitung mundur dari 3 ke 1.</p>
                             <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-15">
-                                <pre><code>int i = 0;
-while (i < 3) {
-    cout << "A";
-    <input type="text" class="fill-in-input !w-32" data-answer="i++;" placeholder="... ;">
-}</code></pre>
+                                <pre><code>for (int i = 3; i > 0; <input type="text" class="fill-in-input" data-answer="i--">) {
+    cout << i;
+}
+// Output: 321</code></pre>
                             </div>
                         </div>
                         <!-- Latihan 3 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 3: Inisialisasi</p>
-                            <p class="mb-4">Lengkapi bagian inisialisasi agar loop dimulai dari angka 1.</p>
+                            <p class="font-semibold mb-3">Latihan 3: While Loop</p>
+                            <p class="mb-4">Lengkapi bagian iterasi <code class="code-editor-inline">while</code> agar loop tidak tak terbatas.</p>
                             <div class="code-editor !bg-slate-100 !text-slate-900" id="exercise-fill-in-16">
-                                <pre><code>for (<input type="text" class="fill-in-input !w-48" data-answer="int i = 1" placeholder="int i = ...">; i <= 3; i++) {
-    cout << i;
+                                <pre><code>int i = 0;
+while (i < 3) {
+    cout << "A";
+    <input type="text" class="fill-in-input" data-answer="i++;">
 }
-// Output: 123</code></pre>
+// Output: AAA</code></pre>
                             </div>
                         </div>
-                        <button onclick="checkFillIn('quiz-fill-in-topic-8-2', 'topic-8', 'part2')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Melengkapi Kode</button>
+                        <button onclick="checkFillIn('quiz-fill-in-topic-8-2', 15)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Melengkapi Kode</button>
                     </div>
-                    
+
                     <h3 class="text-2xl font-semibold mt-8 mb-4">Bagian 3: Full Kode Program (Konsol Interaktif)</h3>
-                    <p class="mb-4">Tulis program C++ lengkap di editor. Klik "Jalankan Kode", lalu masukkan input pada konsol simulasi untuk menguji program Anda.</p>
-                    
-                    <!-- Latihan Full Kode 1 -->
+                    <!-- Latihan 1 -->
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <p class="font-semibold mb-3">Latihan 1: Deret 1 sampai X</p>
-                        <p class="mb-4">Buat program yang menerima 1 input bilangan bulat <code class="code-editor-inline">x</code>, lalu cetak deret angka dari 1 sampai <code class="code-editor-inline">x</code>. (Pisahkan dengan spasi).</p>
-                        <textarea id="code-exercise-deret-naik" class="code-editor" placeholder="Contoh: input=5, output=1 2 3 4 5"></textarea>
-                        <button onclick="runCode('deret-naik')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-play mr-2"></i>Jalankan Kode
-                        </button>
-                        <div id="console-deret-naik" class="console-container hidden"></div>
-                        <div id="result-deret-naik" class="mt-4"></div>
+                        <p class="font-semibold mb-2">Latihan 1: Deret 1 sampai X</p>
+                        <p class="mb-4">Buat program yang menerima input <code class="code-editor-inline">int x</code>, lalu mencetak deret angka dari 1 sampai x, dipisah spasi.</p>
+                        <textarea id="code-exercise-deret-1-x" class="code-editor" placeholder="Contoh: Input 4 -> Output: 1 2 3 4 "></textarea>
+                        <div class="flex items-center justify-between bg-slate-700 p-2 rounded-t-lg mt-4">
+                            <span class="text-sm font-semibold text-slate-300 px-2">Konsol Simulasi</span>
+                            <button onclick="runCode('deret-1-x')" class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition">
+                                <i class="fas fa-play mr-1"></i>Jalankan Kode
+                            </button>
+                        </div>
+                        <div id="console-deret-1-x" class="interactive-console"></div>
                     </div>
-                    
-                    <!-- Latihan Full Kode 2 -->
+                    <!-- Latihan 2 -->
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <p class="font-semibold mb-3">Latihan 2: Deret X sampai 1</p>
-                        <p class="mb-4">Buat program yang menerima 1 input bilangan bulat <code class="code-editor-inline">x</code>, lalu cetak deret angka dari <code class="code-editor-inline">x</code> sampai 1. (Pisahkan dengan spasi).</p>
-                        <textarea id="code-exercise-deret-turun" class="code-editor" placeholder="Contoh: input=5, output=5 4 3 2 1"></textarea>
-                        <button onclick="runCode('deret-turun')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-play mr-2"></i>Jalankan Kode
-                        </button>
-                        <div id="console-deret-turun" class="console-container hidden"></div>
-                        <div id="result-deret-turun" class="mt-4"></div>
+                        <p class="font-semibold mb-2">Latihan 2: Deret X sampai 1</p>
+                        <p class="mb-4">Buat program yang menerima input <code class="code-editor-inline">int x</code>, lalu mencetak deret angka dari x sampai 1 (mundur), dipisah spasi.</p>
+                        <textarea id="code-exercise-deret-x-1" class="code-editor" placeholder="Contoh: Input 4 -> Output: 4 3 2 1 "></textarea>
+                        <div class="flex items-center justify-between bg-slate-700 p-2 rounded-t-lg mt-4">
+                            <span class="text-sm font-semibold text-slate-300 px-2">Konsol Simulasi</span>
+                            <button onclick="runCode('deret-x-1')" class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition">
+                                <i class="fas fa-play mr-1"></i>Jalankan Kode
+                            </button>
+                        </div>
+                        <div id="console-deret-x-1" class="interactive-console"></div>
                     </div>
-                    
-                    <!-- Latihan Full Kode 3 -->
+                    <!-- Latihan 3 -->
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <p class="font-semibold mb-3">Latihan 3: Hitung Jumlah (Sum)</p>
-                        <p class="mb-4">Buat program yang menerima 1 input bilangan bulat <code class="code-editor-inline">x</code>, lalu hitung dan cetak <strong>total jumlah</strong> dari 1 sampai <code class="code-editor-inline">x</code>.</p>
-                        <textarea id="code-exercise-sum" class="code-editor" placeholder="Contoh: input=4, output=10 (karena 1+2+3+4=10)"></textarea>
-                        <button onclick="runCode('sum')" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-play mr-2"></i>Jalankan Kode
-                        </button>
-                        <div id="console-sum" class="console-container hidden"></div>
-                        <div id="result-sum" class="mt-4"></div>
+                        <p class="font-semibold mb-2">Latihan 3: Hitung Jumlah (Sum)</p>
+                        <p class="mb-4">Buat program yang menerima input <code class="code-editor-inline">int x</code>, lalu menghitung dan mencetak *total* dari 1 + 2 + ... + x.</p>
+                        <textarea id="code-exercise-sum" class="code-editor" placeholder="Contoh: Input 4 -> Output: 10 (karena 1+2+3+4=10)"></textarea>
+                        <div class="flex items-center justify-between bg-slate-700 p-2 rounded-t-lg mt-4">
+                            <span class="text-sm font-semibold text-slate-300 px-2">Konsol Simulasi</span>
+                            <button onclick="runCode('sum')" class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition">
+                                <i class="fas fa-play mr-1"></i>Jalankan Kode
+                            </button>
+                        </div>
+                        <div id="console-sum" class="interactive-console"></div>
                     </div>
                 `,
-                quizData: { 
-                    type: 'multi-part',
-                    parts: [
-                        { id: 'quiz-fill-in-topic-8-1', type: 'fill-in', points: 15 },
-                        { id: 'quiz-fill-in-topic-8-2', type: 'fill-in', points: 15 },
-                        { id: 'code-exercise-deret-naik', type: 'full-code', points: 25 },
-                        { id: 'code-exercise-deret-turun', type: 'full-code', points: 25 },
-                        { id: 'code-exercise-sum', type: 'full-code', points: 25 }
-                    ]
-                }
+                quizData: {}
             },
             'topic-9': {
                 title: '9. Array',
                 materi: `
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                         <h3 class="text-xl font-semibold mb-3">Apa Itu Array?</h3>
-                        <p class="mb-4">Bayangkan <strong>Array</strong> sebagai "lemari" dengan banyak laci yang bernomor. Ini adalah variabel spesial yang bisa menyimpan <strong>banyak nilai</strong> sekaligus, asalkan semua nilainya <strong>bertipe data sama</strong>.</p>
-                        <p class="mb-4">Jika variabel biasa (<code class="code-editor-inline">int nilai = 100;</code>) adalah 1 kotak, maka array (<code class="code-editor-inline">int nilai[5];</code>) adalah 5 kotak yang berderet.</p>
-                        
-                        <h4 class="text-lg font-semibold mt-4">Kapan Menggunakan Array?</h4>
-                        <p class="mb-2">Gunakan variabel biasa jika Anda hanya perlu menyimpan satu data (cth: umur pengguna). Gunakan array jika Anda perlu menyimpan sekumpulan data sejenis (cth: 5 nilai ujian, 10 nama siswa, dll).</p>
+                        <p class="mb-4">Bayangkan Anda perlu menyimpan 100 nilai integer. Apakah Anda akan membuat 100 variabel terpisah? ( <code class="code-editor-inline">nilai1, nilai2, ...</code> ). Tentu tidak!</p>
+                        <p class="mb-4"><strong>Array</strong> adalah sebuah variabel "super" yang bisa menyimpan <strong>sekumpulan data</strong> (banyak nilai) dengan <strong>tipe data yang sama</strong>, yang diatur dalam urutan yang runut.</p>
+                        <p>Setiap elemen (isi) di dalam array diakses menggunakan <strong>indeks</strong>, yang selalu dimulai dari <strong>0</strong>.</p>
                     </div>
                     
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-3">Deklarasi dan Akses Array</h3>
-                        <p class="mb-4">Untuk mengakses "laci" di dalam array, kita menggunakan <strong>indeks</strong>. PENTING: Indeks array di C++ <strong>dimulai dari 0</strong>, bukan 1.</p>
+                        <h3 class="text-xl font-semibold mt-6 mb-3">Visualisasi Konsep Array</h3>
+                        <p class="mb-4">Ini adalah simulasi bagaimana array bekerja di memori. Data disimpan di "kotak-kotak" bersebelahan yang memiliki nomor indeks.</p>
                         
-                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>// 1. Deklarasi array integer dengan 5 elemen (laci)
-int nilai[5];
-
-// 2. Mengisi nilai ke setiap elemen
-nilai[0] = 80; // Elemen pertama (indeks 0)
-nilai[1] = 90; // Elemen kedua (indeks 1)
-nilai[2] = 75;
-nilai[3] = 100;
-nilai[4] = 85; // Elemen kelima (indeks 4)
-
-// 3. Mengakses nilai
-cout << "Nilai pertama: " << nilai[0]; // Output: 80
-cout << "Nilai ketiga: " << nilai[2]; // Output: 75
-
-// 4. Deklarasi sekaligus inisialisasi (cara cepat)
-int angka[] = {10, 20, 30, 40};
-// Compiler otomatis tahu ukurannya 4</code></pre>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                        <h3 class="text-xl font-semibold mb-3">Visualisasi Konsep: Indeks Array</h3>
-                        <p class="mb-4">Array <code class="font-mono">int angka[] = {10, 20, 30, 40};</code> disimpan di memori seperti ini. Perhatikan bagaimana indeks 0 menunjuk ke elemen pertama.</p>
-                        
-                        <div class="flex justify-center space-x-1 mt-4">
-                            <!-- Elemen Array -->
-                            <div class="text-center">
-                                <div id="viz-arr-val-0" class="w-16 h-16 bg-blue-100 border-2 border-blue-500 flex items-center justify-center text-2xl font-bold font-mono rounded">10</div>
-                                <div class="mt-2 font-mono font-semibold">indeks [0]</div>
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <div class="mb-4" id="array-viz-setup">
+                                <label class="font-semibold">Deklarasikan array, ukuran (3-10):</label>
+                                <input type="number" id="array-viz-size" class="fill-in-input !w-24" min="3" max="10" value="5">
+                                <button onclick="createArrayViz()" class="bg-blue-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-hammer mr-2"></i>Buat Array</button>
                             </div>
-                            <div class="text-center">
-                                <div id="viz-arr-val-1" class="w-16 h-16 bg-blue-100 border-2 border-blue-500 flex items-center justify-center text-2xl font-bold font-mono rounded">20</div>
-                                <div class="mt-2 font-mono font-semibold">indeks [1]</div>
+
+                            <div id="array-viz-container" class="array-container mb-6">
+                                <!-- Sel array akan dibuat oleh JS -->
                             </div>
-                            <div class="text-center">
-                                <div id="viz-arr-val-2" class="w-16 h-16 bg-blue-100 border-2 border-blue-500 flex items-center justify-center text-2xl font-bold font-mono rounded">30</div>
-                                <div class="mt-2 font-mono font-semibold">indeks [2]</div>
-                            </div>
-                            <div class="text-center">
-                                <div id="viz-arr-val-3" class="w-16 h-16 bg-blue-100 border-2 border-blue-500 flex items-center justify-center text-2xl font-bold font-mono rounded">40</div>
-                                <div class="mt-2 font-mono font-semibold">indeks [3]</div>
+
+                            <div id="array-viz-controls" class="hidden">
+                                <div class="flex gap-4">
+                                    <button class="flex-1 bg-green-600 text-white p-3 rounded-lg font-semibold" onclick="showArrayVizUI('set')"><i class="fas fa-edit mr-2"></i>Set Nilai</button>
+                                    <button class="flex-1 bg-cyan-600 text-white p-3 rounded-lg font-semibold" onclick="showArrayVizUI('get')"><i class="fas fa-search mr-2"></i>Get Nilai</button>
+                                </div>
+
+                                <div id="array-viz-set-ui" class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg hidden">
+                                    <h4 class="font-semibold text-green-800 mb-2">Set Nilai Array</h4>
+                                    <div class="flex items-center gap-2">
+                                        <label class="font-mono">array[</label>
+                                        <input type="number" id="array-viz-set-index" class="fill-in-input !w-20" placeholder="indeks">
+                                        <label class="font-mono">] =</label>
+                                        <input type="text" id="array-viz-set-value" class="fill-in-input !w-24" placeholder="nilai">
+                                        <label class="font-mono">;</label>
+                                        <button onclick="setArrayVizValue()" class="bg-green-600 text-white px-4 py-2 rounded-lg">Simpan</button>
+                                    </div>
+                                </div>
+
+                                <div id="array-viz-get-ui" class="mt-4 p-4 bg-cyan-50 border border-cyan-200 rounded-lg hidden">
+                                    <h4 class="font-semibold text-cyan-800 mb-2">Get Nilai Array (Ekspresi)</h4>
+                                    <div class="flex items-center gap-2">
+                                        <code class="code-editor-inline">cout << </code>
+                                        <input type="text" id="array-viz-get-expr" class="fill-in-input !w-48" placeholder="array[0] + array[1]">
+                                        <code class="code-editor-inline">;</code>
+                                        <button onclick="getArrayVizValue()" class="bg-cyan-600 text-white px-4 py-2 rounded-lg">Go!</button>
+                                    </div>
+                                    <div id="array-viz-get-result" class="mt-4 font-mono text-lg p-3 bg-slate-200 rounded hidden"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-xl font-semibold mb-3">Deklarasi & Inisialisasi Array</h3>
+                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>// 1. Deklarasi (Hanya memesan tempat)
+// Membuat array 'nilai' tipe int dengan ukuran 5 (indeks 0-4)
+// Isinya masih acak (sampah memori).
+int nilai[5];
+
+// 2. Mengisi nilai satu per satu
+nilai[0] = 80;
+nilai[1] = 90;
+// ...
+
+// 3. Inisialisasi (Memesan tempat dan langsung mengisi)
+// Ukuran array akan otomatis jadi 4.
+int angka[] = { 10, 20, 30, 40 };
+
+// Mengakses dan menampilkan nilai
+cout << angka[0]; // Output: 10
+cout << angka[3]; // Output: 40</code></pre>
+                    </div>
+
                     <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                         <h3 class="text-xl font-semibold mb-3">Alokasi Memori Array</h3>
-                        <p class="mb-4">Ukuran total memori yang digunakan oleh array adalah <strong>(Ukuran Tipe Data) x (Jumlah Elemen)</strong>.</p>
-                        
+                        <p class="mb-4">Ukuran total memori yang digunakan array adalah <strong>(Ukuran Tipe Data) x (Jumlah Elemen)</strong>.</p>
                         <table class="w-full border-collapse mb-4">
-                            <thead><tr class="bg-slate-100"><th class="border p-3 text-left">Tipe Data</th><th class="border p-3 text-left">Ukuran Umum di Memori</th></tr></thead>
+                            <thead><tr class="bg-slate-100"><th class="border p-3 text-left">Tipe Data</th><th class="border p-3 text-left">Ukuran Umum</th></tr></thead>
                             <tbody>
                                 <tr><td class="border p-3"><code class="code-editor-inline">int</code></td><td class="border p-3">4 bytes</td></tr>
                                 <tr><td class="border p-3"><code class="code-editor-inline">float</code></td><td class="border p-3">4 bytes</td></tr>
@@ -1553,13 +1439,9 @@ int angka[] = {10, 20, 30, 40};
                                 <tr><td class="border p-3"><code class="code-editor-inline">bool</code></td><td class="border p-3">1 byte</td></tr>
                             </tbody>
                         </table>
-                        
-                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>// Deklarasi:
-int nilai[10];
-
-// Alokasi memori:
-// (Ukuran int) x (Jumlah elemen)
-// 4 bytes x 10 = 40 bytes</code></pre>
+                        <pre class="code-editor !min-h-0 !bg-slate-800"><code>// Contoh Alokasi Memori
+int nilai[10]; // 10 elemen * 4 bytes/int = 40 bytes
+double harga[20]; // 20 elemen * 8 bytes/double = 160 bytes</code></pre>
                     </div>
                 `,
                 kuis: `
@@ -1568,74 +1450,76 @@ int nilai[10];
                         <div id="quiz-topic-9" class="space-y-6">
                             <!-- Soal 1 -->
                             <div>
-                                <p class="font-semibold mb-3">1. Jika Anda memiliki array <code class="code-editor-inline">int nilai[5];</code>, apa indeks untuk mengakses elemen <strong>pertama</strong>?</p>
+                                <p class="font-semibold mb-3">1. Manakah pernyataan yang paling tepat tentang Array?</p>
                                 <div class="space-y-2">
-                                    <div><label><input type="radio" name="q1" value="A" class="mr-2"> A. <code class="code-editor-inline">nilai[1]</code></label></div>
-                                    <div><label><input type="radio" name="q1" value="B" class="mr-2"> B. <code class="code-editor-inline">nilai[0]</code></label></div>
-                                    <div><label><input type="radio" name="q1" value="C" class="mr-2"> C. <code class="code-editor-inline">nilai[5]</code></label></div>
-                                    <div><label><input type="radio" name="q1" value="D" class="mr-2"> D. <code class="code-editor-inline">nilai.pertama</code></label></div>
+                                    <div><label><input type="radio" name="q1" value="A" class="mr-2"> A. Array bisa menyimpan berbagai tipe data (int, string, bool) dalam satu array yang sama.</label></div>
+                                    <div><label><input type="radio" name="q1" value="B" class="mr-2"> B. Array menyimpan sekumpulan data dengan tipe yang sama dan diakses melalui indeks.</label></div>
+                                    <div><label><input type="radio" name="q1" value="C" class="mr-2"> C. Indeks array di C++ selalu dimulai dari 1.</label></div>
+                                    <div><label><input type="radio" name="q1" value="D" class="mr-2"> D. Array adalah operator untuk melakukan perhitungan.</label></div>
                                 </div>
                                 <div id="feedback-q1" class="quiz-feedback"></div>
                             </div>
-                            <button onclick="checkQuiz('topic-9')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Pilihan Ganda</button>
+                            <button onclick="checkQuiz('topic-9', 5)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Pilihan Ganda</button>
                         </div>
                     </div>
-                    
+
                     <h3 class="text-2xl font-semibold mt-8 mb-4">Bagian 2: Isian Singkat</h3>
-                    <p class="mb-4">Tentukan jawaban yang tepat untuk soal-soal berikut.</p>
                     <div id="quiz-fill-in-topic-9">
-                        <!-- Latihan 1 (Soal 2 asli) -->
+                        <!-- Soal 2 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
                             <p class="font-semibold mb-3">Latihan 1: Alokasi Memori</p>
-                            <p class="mb-4">Jika <code class="code-editor-inline">double</code> berukuran 8 bytes, berapa total memori yang dialokasikan oleh <code class="code-editor-inline">double harga[20];</code>? (Sertakan satuan, cth: 100 bytes)</p>
-                            <label class="block mt-4">Total memori:</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="160 bytes" placeholder="... bytes">
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>double harga[20];</code></pre>
+                            <label class="font-semibold">Berapa total memori (dalam bytes) yang dialokasikan? (Lihat tabel di materi)</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="160">
                         </div>
-                        <!-- Latihan 2 (Soal 3 asli) -->
+                        <!-- Soal 3 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 2: Deklarasi</p>
-                            <p class="mb-4">Tuliskan kode untuk mendeklarasikan array <code class="code-editor-inline">char</code> bernama <code class="code-editor-inline">huruf</code> yang bisa menampung 10 elemen.</p>
-                            <label class="block mt-4">Deklarasi:</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="char huruf[10];" placeholder="TipeData nama[...];">
+                            <p class="font-semibold mb-3">Latihan 2: Indeks</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int nilai[] = { 10, 20, 30 };</code></pre>
+                            <label class="font-semibold">Perintah apa untuk mengakses nilai 30?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="nilai[2]">
                         </div>
-                        <!-- Latihan 3 (Soal 4 asli) -->
+                        <!-- Soal 4 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 3: Akses Indeks</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int nilai[] = {100, 200, 300};
-cout << nilai[2];</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="300" placeholder="Output">
-                        </div>
-                        <!-- Latihan 4 (Soal 5 asli) -->
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 4 (dari contoh Anda)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int angka[] = {0,2,1,4,3,5,7,6,9,8};
+                            <p class="font-semibold mb-3">Latihan 3: Tracing Output</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int angka[] = { 0, 2, 1, 4, 3 };
 cout << angka[1] + angka[4];</code></pre>
-                            <label class="block mt-4">Apa output program?</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="5" placeholder="Output (2 + 3)">
+                            <label class="font-semibold">Apakah output yang dihasilkan?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="5">
                         </div>
-                        <!-- Latihan 5 (Soal 6 asli) -->
+                        <!-- Soal 5 -->
                         <div class="bg-white p-6 rounded-lg shadow-md mb-6">
-                            <p class="font-semibold mb-3">Latihan 5 (dari contoh Anda)</p>
-                            <pre class="code-editor !bg-slate-100 !text-slate-900 !min-h-0"><code>int angka[] = {0,2,1,4,3,5,7,6,9,8};
-cout << angka[7];</code></pre>
-                            <label class="block mt-4">Apa output program? (Saya menyederhanakan <code class="code-editor-inline">[[[7]]]</code> menjadi <code class="code-editor-inline">[7]</code>)</label>
-                            <input type="text" class="fill-in-input !w-48 mt-2" data-answer="6" placeholder="Output">
+                            <p class="font-semibold mb-3">Latihan 4: Tracing Output (Nested)</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int angka[] = { 0, 2, 1, 4, 3 };
+cout << angka[angka[1]];</code></pre>
+                            <label class="font-semibold">Apakah output yang dihasilkan?</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="1">
                         </div>
-                        <button onclick="checkFillIn('quiz-fill-in-topic-9', 'topic-9', 'part2')" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Isian Singkat</button>
+                        <!-- Soal 6 -->
+                        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                            <p class="font-semibold mb-3">Latihan 5: Tracing Output (Loop)</p>
+                            <pre class="code-editor !min-h-0 !bg-slate-800 mb-4"><code>int angka[] = { 5, 10, 15 };
+int total = 0;
+for (int i = 0; i < 3; i++) {
+    total = total + angka[i];
+}
+cout << total;</code></pre>
+                            <label class="font-semibold">Apakah output yang dihasilkan? (5 + 10 + 15)</label>
+                            <input type="text" class="fill-in-input !w-32" data-answer="30">
+                        </div>
+                        <button onclick="checkFillIn('quiz-fill-in-topic-9', 10)" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Cek Isian Singkat</button>
                     </div>
                 `,
-                quizData: { 
-                    type: 'multi-part',
-                    parts: [
-                        { id: 'quiz-topic-9', type: 'mcq', points: 10, answers: { q1: 'B' } },
-                        { id: 'quiz-fill-in-topic-9', type: 'fill-in', points: 15 }
-                    ]
-                }
+                quizData: { q1: 'B' }
             }
         };
 
         // === FUNGSI UTAMA ===
+
+        // Fungsi sleep helper
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
         function showModal(title, message) {
             document.getElementById('modal-title').innerText = title;
@@ -1645,6 +1529,40 @@ cout << angka[7];</code></pre>
 
         function closeModal() {
             document.getElementById('message-modal').classList.add('hidden');
+        }
+
+        function toggleMenu(forceOpen = null) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isOpen = sidebar.classList.contains('translate-x-0');
+            
+            let newState = !isOpen;
+            if (forceOpen !== null) newState = forceOpen;
+
+            if (newState) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function updatePoints(amount) {
+            totalPoints += amount;
+            document.getElementById('total-points').innerText = totalPoints;
+        }
+
+        function addBadgeToSidebar(topicId) {
+            const sidebarLink = document.querySelector(`.sidebar-link[data-topic-id="${topicId}"]`);
+            if (sidebarLink && !sidebarLink.querySelector('.badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'badge ml-auto';
+                badge.innerHTML = '<i class="fas fa-check-circle"></i>';
+                sidebarLink.appendChild(badge);
+            }
         }
 
         function showSubMenu(topicId, subMenu) {
@@ -1664,7 +1582,7 @@ cout << angka[7];</code></pre>
                 title: 'Segera Hadir', 
                 materi: '<div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg shadow-md"><i class="fas fa-hammer mr-2"></i> Konten untuk materi ini sedang dalam pengembangan.</div>',
                 kuis: '<div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg shadow-md"><i class="fas fa-hammer mr-2"></i> Kuis untuk materi ini sedang dalam pengembangan.</div>',
-                quizData: { type: 'none' }
+                quizData: {}
             };
             
             contentArea.innerHTML = `
@@ -1696,96 +1614,31 @@ cout << angka[7];</code></pre>
                 }
             });
 
+            // Otomatis tutup sidebar di mobile setelah klik
+            if (window.innerWidth < 768) {
+                toggleMenu(false);
+            }
+
             // Inisialisasi fitur interaktif jika ada
             if (topicId === 'topic-2') {
                 initDragDrop();
             }
-            
-            // Sembunyikan sidebar di mobile setelah klik
-            if (window.innerWidth < 768) {
-                document.getElementById('sidebar').classList.add('hidden');
+            if (topicId === 'topic-9') {
+                createArrayViz(false); // Buat visualisasi awal
             }
         }
-        
-        function addPoints(points) {
-            userPoints += points;
-            updateTotalPoints();
-        }
-        
-        function updateTotalPoints() {
-            document.getElementById('total-points').innerText = userPoints;
-        }
-        
-        function completeTopic(topicId) {
-            if (completedTopics.has(topicId)) return; // Jangan tambah poin/lencana berulang kali
-            
+
+        function checkQuiz(topicId, pointsPerQuiz) {
             const quizData = topicData[topicId].quizData;
-            let pointsToAdd = 0;
-            
-            if (quizData.type === 'mcq') {
-                pointsToAdd = quizData.answers ? Object.keys(quizData.answers).length * quizData.points : 0;
-            } else if (quizData.type === 'dragdrop') {
-                pointsToAdd = quizData.points;
-            } else if (quizData.type === 'fill-in') {
-                pointsToAdd = quizData.points; // Ini poin per soal, jadi perlu dihitung
-                // ... logika untuk menghitung total poin fill-in ...
-            } else if (quizData.type === 'multi-part') {
-                quizData.parts.forEach(part => {
-                    if (part.type === 'mcq') {
-                        pointsToAdd += Object.keys(part.answers).length * part.points;
-                    } else if (part.type === 'fill-in') {
-                        // Asumsi poin adalah total untuk bagian itu
-                        pointsToAdd += part.points * document.querySelectorAll(`#${part.id} .fill-in-input`).length;
-                    } else if (part.type === 'full-code') {
-                        pointsToAdd += part.points;
-                    }
-                });
-            }
-            
-            // Untuk sementara, kita berikan poin total jika semua kuis di-check (bukan per-bagian)
-            // Logika poin yang lebih detail perlu diimplementasikan
-            
-            // Tandai topik selesai dan tambahkan lencana
-            completedTopics.add(topicId);
-            const link = document.querySelector(`.sidebar-link[data-topic-id="${topicId}"]`);
-            if (link && !link.querySelector('.fa-check-circle')) {
-                link.querySelector('.ml-3').insertAdjacentHTML(
-                    'afterend',
-                    ' <i class="fas fa-check-circle text-green-500 ml-auto"></i>'
-                );
-            }
-        }
-
-        // === FUNGSI KUIS ===
-
-        function checkQuiz(topicId) {
-            const data = topicData[topicId].quizData;
-            let quizId, quizAnswers, pointsPerAnswer;
-
-            if (data.type === 'mcq') {
-                quizId = `quiz-${topicId}`;
-                quizAnswers = data.answers;
-                pointsPerAnswer = data.points;
-            } else if (data.type === 'multi-part') {
-                const mcqPart = data.parts.find(p => p.type === 'mcq');
-                if (!mcqPart) return;
-                quizId = mcqPart.id;
-                quizAnswers = mcqPart.answers;
-                pointsPerAnswer = mcqPart.points;
-            } else {
-                return;
-            }
-            
             let allCorrect = true;
             let answeredCount = 0;
-            let pointsEarned = 0;
-            const totalQuestions = Object.keys(quizAnswers).length;
+            const totalQuestions = Object.keys(quizData).length;
 
             if (totalQuestions === 0) return;
 
-            for (const qId in quizAnswers) {
-                const correctAnswer = quizAnswers[qId];
-                const selectedAnswer = document.querySelector(`#${quizId} input[name="${qId}"]:checked`);
+            for (const qId in quizData) {
+                const correctAnswer = quizData[qId];
+                const selectedAnswer = document.querySelector(`input[name="${qId}"]:checked`);
                 const feedbackEl = document.getElementById(`feedback-${qId}`);
                 
                 if (selectedAnswer) {
@@ -1793,7 +1646,6 @@ cout << angka[7];</code></pre>
                     if (selectedAnswer.value === correctAnswer) {
                         feedbackEl.textContent = 'Jawaban Anda Benar!';
                         feedbackEl.className = 'quiz-feedback correct';
-                        pointsEarned += pointsPerAnswer;
                     } else {
                         feedbackEl.textContent = `Jawaban kurang tepat. Jawaban yang benar adalah ${correctAnswer}.`;
                         feedbackEl.className = 'quiz-feedback incorrect';
@@ -1807,44 +1659,37 @@ cout << angka[7];</code></pre>
             if (answeredCount < totalQuestions) {
                 showModal('Info', 'Anda harus menjawab semua pertanyaan terlebih dahulu.');
             } else if (allCorrect) {
-                 showModal('Luar Biasa!', `Semua jawaban Anda benar. Anda mendapatkan ${pointsEarned} poin!`);
-                 addPoints(pointsEarned);
-                 completeTopic(topicId); // Tandai selesai
+                showModal('Luar Biasa!', 'Semua jawaban Anda benar. Anda sudah paham materi ini!');
+                if (!completedQuizzes.has(topicId)) {
+                    updatePoints(totalQuestions * pointsPerQuiz);
+                    completedQuizzes.add(topicId);
+                    addBadgeToSidebar(topicId);
+                }
             } else {
                 showModal('Coba Lagi', 'Masih ada jawaban yang kurang tepat. Silakan periksa kembali.');
             }
         }
 
-        function checkFillIn(containerId, topicId, partId = null) {
-            const exerciseContainer = document.getElementById(containerId);
+        function checkFillIn(quizContainerId, pointsPerSection) {
+            const exerciseContainer = document.getElementById(quizContainerId);
             if (!exerciseContainer) return;
-            
-            let data = topicData[topicId].quizData;
-            let pointsPerAnswer = 0;
-            
-            if(data.type === 'fill-in') {
-                pointsPerAnswer = data.points;
-            } else if (data.type === 'multi-part' && partId) {
-                const part = data.parts.find(p => p.id === containerId);
-                if (part) pointsPerAnswer = part.points;
-            }
 
             const inputs = exerciseContainer.querySelectorAll('.fill-in-input');
             let allCorrect = true;
-            let pointsEarned = 0;
 
             inputs.forEach(input => {
-                const expectedAnswer = input.dataset.answer.replace(/&quot;/g, '"');
-                // Normalisasi: hapus spasi berlebih, trim, dan samakan \n
-                const userAnswer = input.value.replace(/\s+/g, ' ').trim().replace(/\\n/g, '\n');
-                const normalizedExpectedAnswer = expectedAnswer.replace(/\s+/g, ' ').trim().replace(/\\n/g, '\n');
+                let expectedAnswer = input.dataset.answer.replace(/&quot;/g, '"');
+                let userAnswer = input.value;
                 
-                const isAnswerCorrect = (userAnswer === normalizedExpectedAnswer);
+                // Normalisasi spasi dan sensitivitas
+                expectedAnswer = expectedAnswer.replace(/\s+/g, ' ').trim();
+                userAnswer = userAnswer.replace(/\s+/g, ' ').trim();
+                
+                const isAnswerCorrect = (userAnswer.replace(/\\n/g, '\n') === expectedAnswer.replace(/\\n/g, '\n'));
                 
                 if (isAnswerCorrect) {
                     input.classList.remove('incorrect');
                     input.classList.add('correct');
-                    pointsEarned += pointsPerAnswer;
                 } else {
                     input.classList.remove('correct');
                     input.classList.add('incorrect');
@@ -1853,390 +1698,458 @@ cout << angka[7];</code></pre>
             });
 
             if (allCorrect) {
-                showModal('Berhasil!', `Semua jawaban benar! Anda mendapatkan ${pointsEarned} poin.`);
-                addPoints(pointsEarned);
-                completeTopic(topicId); // Seharusnya mengecek semua bagian, tapi ini sementara
+                showModal('Berhasil!', 'Semua bagian yang kosong telah diisi dengan benar.');
+                const topicId = `topic-${quizContainerId.match(/-(\d+)/)[1]}`;
+                const quizId = `${topicId}-${quizContainerId}`;
+                if (!completedQuizzes.has(quizId)) {
+                    updatePoints(pointsPerSection);
+                    completedQuizzes.add(quizId);
+                    // Cek jika semua kuis di topik ini selesai
+                    // (Logika ini bisa diperumit, untuk sekarang anggap 1 kuis = 1 badge)
+                    addBadgeToSidebar(topicId);
+                }
             } else {
                 showModal('Coba Lagi', 'Beberapa bagian masih belum tepat. Perhatikan kembali sintaksnya.');
             }
         }
-        
+
         // === FUNGSI DRAG & DROP (Topik 2) ===
-        let draggedItem = null;
         function initDragDrop() {
-            const sources = document.querySelectorAll('#drag-source-container .drag-source');
-            const target = document.getElementById('drag-target-container');
+            const draggables = document.querySelectorAll('#drag-source .draggable-item');
+            const dropZone = document.getElementById('drop-zone');
+            const sourceZone = document.getElementById('drag-source');
 
-            sources.forEach(source => {
-                source.addEventListener('dragstart', (e) => {
-                    draggedItem = e.target;
-                    setTimeout(() => e.target.style.display = 'none', 0);
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggable.classList.add('dragging');
                 });
-                source.addEventListener('dragend', () => {
-                    setTimeout(() => {
-                        draggedItem.style.display = 'block';
-                        draggedItem = null;
-                    }, 0);
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
                 });
             });
 
-            if(!target) return;
-            
-            target.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                target.classList.add('drag-over');
-            });
-            target.addEventListener('dragleave', () => {
-                target.classList.remove('drag-over');
-            });
-            target.addEventListener('drop', (e) => {
-                e.preventDefault();
-                target.classList.remove('drag-over');
-                if (draggedItem) {
-                    target.appendChild(draggedItem);
-                }
-            });
-            
-            // Memungkinkan pengembalian ke bank kode
-            const sourceContainer = document.getElementById('drag-source-container');
-            sourceContainer.addEventListener('dragover', (e) => e.preventDefault());
-            sourceContainer.addEventListener('drop', (e) => {
-                e.preventDefault();
-                if (draggedItem) {
-                    sourceContainer.appendChild(draggedItem);
-                }
+            [dropZone, sourceZone].forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    const afterElement = getDragAfterElement(zone, e.clientY);
+                    const draggable = document.querySelector('.dragging');
+                    if (afterElement == null) {
+                        zone.appendChild(draggable);
+                    } else {
+                        zone.insertBefore(draggable, afterElement);
+                    }
+                });
             });
         }
-        
-        function checkDragDrop(topicId) {
-            const targetContainer = document.getElementById('drag-target-container');
-            const items = targetContainer.querySelectorAll('.drag-source');
-            const correctOrder = topicData[topicId].quizData.order;
-            let points = topicData[topicId].quizData.points;
-            
-            if (items.length !== correctOrder.length) {
-                showModal('Coba Lagi', 'Jumlah baris kode belum lengkap. Pastikan semua potongan ada di "Area Susun".');
-                return;
-            }
-            
-            let isCorrect = true;
-            for(let i = 0; i < items.length; i++) {
-                if (items[i].dataset.id !== correctOrder[i]) {
-                    isCorrect = false;
-                    break;
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.draggable-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
                 }
-            }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function checkDragDrop(topicId, points) {
+            const dropZone = document.getElementById('drop-zone');
+            const items = dropZone.querySelectorAll('.draggable-item');
+            const feedbackEl = document.getElementById('feedback-drag-drop');
             
-            if (isCorrect) {
-                showModal('Luar Biasa!', `Susunan kode Anda benar! Anda mendapatkan ${points} poin.`);
-                addPoints(points);
-                completeTopic(topicId);
+            const correctOrder = ['1', '2', '3', '4', '5', '6'];
+            const userOrder = Array.from(items).map(item => item.dataset.id);
+
+            if (JSON.stringify(correctOrder) === JSON.stringify(userOrder)) {
+                feedbackEl.textContent = 'Susunan Anda Benar! Program ini sudah bisa dijalankan.';
+                feedbackEl.className = 'quiz-feedback correct';
+                if (!completedQuizzes.has(topicId)) {
+                    updatePoints(points);
+                    completedQuizzes.add(topicId);
+                    addBadgeToSidebar(topicId);
+                }
             } else {
-                showModal('Coba Lagi', 'Urutan kode masih belum tepat. Perhatikan kembali alur program C++!');
+                feedbackEl.textContent = 'Susunan masih kurang tepat. Coba perhatikan lagi urutan eksekusinya.';
+                feedbackEl.className = 'quiz-feedback incorrect';
             }
         }
-        
-        // === FUNGSI KONSOL INTERAKTIF (Topik 7 & 8) ===
-        let currentConsole = null;
-        let cinQueue = [];
-        let consoleOutputEl = null;
 
+        // === FUNGSI KONSOL INTERAKTIF (Topik 7 & 8) ===
         async function runCode(exerciseId) {
             const code = document.getElementById(`code-exercise-${exerciseId}`).value;
             const consoleEl = document.getElementById(`console-${exerciseId}`);
-            const resultEl = document.getElementById(`result-${exerciseId}`);
-            
-            consoleEl.innerHTML = '<div class="console-output"></div>'; // Clear console
-            consoleEl.classList.remove('hidden');
-            resultEl.innerHTML = ''; // Clear result
-            
-            consoleOutputEl = consoleEl.querySelector('.console-output');
-            cinQueue = [];
-            currentConsole = consoleEl;
+            consoleEl.innerHTML = ''; // Bersihkan konsol
 
-            // 1. Validasi Kode Sederhana
-            if (!code.includes('#include <iostream>')) {
-                printToConsole('Error: Lupa `#include <iostream>`.\n'); return;
-            }
-            if (!code.includes('int main()')) {
-                printToConsole('Error: Lupa `int main()`.\n'); return;
-            }
-            
-            // 2. Ekstraksi Logika
-            const cinMatch = code.match(/cin\s*>>\s*(\w+)/g);
-            const coutMatch = code.match(/cout\s*<<(.*?;)/g);
-            
-            // 3. Simulasi Eksekusi
-            try {
-                // Versi simulasi yang sangat disederhanakan
-                // Ini BUKAN interpreter C++, hanya parser regex sederhana
-                
-                let variables = {};
-                let outputBuffer = "";
-                
-                const lines = code.split('\n');
-                let inMain = false;
-                
-                for (const line of lines) {
-                    if (line.includes('int main()')) inMain = true;
-                    if (!inMain) continue;
-                    
-                    // Deklarasi (sederhana)
-                    const intMatch = line.match(/int\s+(\w+);/);
-                    if (intMatch) variables[intMatch[1]] = 0;
-                    const doubleMatch = line.match(/double\s+(\w+);/);
-                    if (doubleMatch) variables[doubleMatch[1]] = 0.0;
-                    const stringMatch = line.match(/string\s+(\w+);/);
-                    if (stringMatch) variables[stringMatch[1]] = "";
+            // 1. Ekstrak 'cout' (output)
+            const coutRegex = /cout\s*<<\s*([^;]+);/g;
+            const coutMatches = [...code.matchAll(coutRegex)];
 
-                    // cout
-                    const coutLineMatch = line.match(/cout\s*<<(.*?);/);
-                    if (coutLineMatch) {
-                        let segment = coutLineMatch[1].trim();
-                        // Sangat sederhana, hanya menangani string literal dan endl
-                        if (segment.includes('endl')) {
-                            segment = segment.replace(/<<\s*endl/g, '\\n').replace(/endl/g, '\\n');
+            // 2. Ekstrak 'cin' (input)
+            const cinRegex = /cin\s*>>\s*(\w+);/g;
+            const cinMatches = [...code.matchAll(cinRegex)];
+            
+            let variables = {};
+            let output = "";
+            let inputNeeded = false;
+            let inputVar = null;
+
+            // Fungsi helper untuk konsol
+            const printToConsole = (text) => {
+                consoleEl.innerHTML += `<span class="console-output">${text}</span>`;
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            };
+            
+            const requestInput = (varName) => {
+                return new Promise((resolve) => {
+                    printToConsole(`\nSilakan masukkan nilai untuk ${varName}: \n> `);
+                    const inputEl = document.createElement('input');
+                    inputEl.type = 'text';
+                    inputEl.className = 'console-input';
+                    inputEl.onkeydown = (e) => {
+                        if (e.key === 'Enter') {
+                            const value = inputEl.value;
+                            inputEl.disabled = true;
+                            printToConsole(`${value}\n`);
+                            variables[varName] = value;
+                            resolve(value);
                         }
-                        segment = segment.replace(/"(.*?)"/g, '$1'); // Hapus kutip
-                        segment = segment.replace(/\\n/g, '\n'); // Ganti \n
-                        outputBuffer += segment;
-                    }
-                    
-                    // cin
-                    const cinLineMatch = line.match(/cin\s*>>\s*(\w+)/);
-                    if (cinLineMatch) {
-                        const varName = cinLineMatch[1];
-                        printToConsole(outputBuffer); // Cetak apa pun di buffer sebelum minta input
-                        outputBuffer = "";
-                        
-                        const userInput = await promptInput();
-                        
-                        // Coba konversi tipe data
-                        if (code.includes(`int ${varName}`)) {
-                            variables[varName] = parseInt(userInput, 10);
-                        } else if (code.includes(`double ${varName}`)) {
-                            variables[varName] = parseFloat(userInput);
-                        } else {
-                            variables[varName] = userInput;
-                        }
-                    }
-                }
-                
-                printToConsole(outputBuffer); // Cetak sisa buffer
-                printToConsole('\nProgram selesai.');
-                
-                // 4. Pengecekan Hasil (Sesuai Soal)
-                checkExerciseResult(exerciseId, code, variables, consoleOutputEl.innerText);
-
-            } catch (error) {
-                printToConsole(`\nError Simulasi: ${error.message}`);
-            }
-        }
-        
-        function printToConsole(text) {
-            if (consoleOutputEl) {
-                consoleOutputEl.innerText += text;
-                currentConsole.scrollTop = currentConsole.scrollHeight; // Auto-scroll
-            }
-        }
-        
-        function promptInput() {
-            return new Promise((resolve) => {
-                const inputEl = document.createElement('input');
-                inputEl.type = 'text';
-                inputEl.className = 'console-prompt-input';
-                
-                printToConsole('> ');
-                consoleOutputEl.appendChild(inputEl);
-                inputEl.focus();
-                
-                inputEl.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        const value = inputEl.value;
-                        inputEl.disabled = true;
-                        printToConsole(value + '\n'); // Echo input
-                        resolve(value);
-                    }
+                    };
+                    consoleEl.appendChild(inputEl);
+                    inputEl.focus();
                 });
-            });
+            };
+            
+            // --- Logika Simulasi Spesifik ---
+            try {
+                if (exerciseId === 'ganjil-genap') {
+                    const x = await requestInput('x');
+                    const numX = parseInt(x);
+                    if (isNaN(numX)) throw new Error("Input harus angka");
+                    if (numX % 2 === 0) printToConsole("Genap");
+                    else printToConsole("Ganjil");
+                    
+                } else if (exerciseId === 'pos-neg-nol') {
+                    const x = await requestInput('x');
+                    const numX = parseInt(x);
+                    if (isNaN(numX)) throw new Error("Input harus angka");
+                    if (numX > 0) printToConsole("Positif");
+                    else if (numX < 0) printToConsole("Negatif");
+                    else printToConsole("Nol");
+
+                } else if (exerciseId === 'ph') {
+                    const ph = await requestInput('ph');
+                    const numPh = parseInt(ph);
+                    if (isNaN(numPh)) throw new Error("Input harus angka");
+                    if (numPh < 7) printToConsole("Asam");
+                    else if (numPh > 7) printToConsole("Basa");
+                    else printToConsole("Netral");
+                    
+                } else if (exerciseId === 'deret-1-x') {
+                    const x = await requestInput('x');
+                    const numX = parseInt(x);
+                    if (isNaN(numX)) throw new Error("Input harus angka");
+                    let result = "";
+                    for (let i = 1; i <= numX; i++) {
+                        result += i + " ";
+                    }
+                    printToConsole(result.trim());
+                    
+                } else if (exerciseId === 'deret-x-1') {
+                    const x = await requestInput('x');
+                    const numX = parseInt(x);
+                    if (isNaN(numX)) throw new Error("Input harus angka");
+                    let result = "";
+                    for (let i = numX; i >= 1; i--) {
+                        result += i + " ";
+                    }
+                    printToConsole(result.trim());
+
+                } else if (exerciseId === 'sum') {
+                    const x = await requestInput('x');
+                    const numX = parseInt(x);
+                    if (isNaN(numX)) throw new Error("Input harus angka");
+                    let total = 0;
+                    for (let i = 1; i <= numX; i++) {
+                        total += i;
+                    }
+                    printToConsole(total.toString());
+                }
+                
+                // Jika berhasil, beri poin
+                const quizId = `topic-code-${exerciseId}`;
+                if (!completedQuizzes.has(quizId)) {
+                    updatePoints(25); // Poin untuk full kode
+                    completedQuizzes.add(quizId);
+                    const topicId = (exerciseId.includes('deret') || exerciseId.includes('sum')) ? 'topic-8' : 'topic-7';
+                    addBadgeToSidebar(topicId);
+                }
+
+            } catch (e) {
+                printToConsole(`\nError: ${e.message}\n`);
+            }
+        }
+
+        // === FUNGSI VISUALISASI (Topik 7, 8, 9) ===
+
+        async function resetViz(containerId) {
+            document.querySelectorAll(`#${containerId} .flow-node`).forEach(n => n.classList.remove('active'));
+            document.querySelectorAll(`#${containerId} pre code span`).forEach(s => s.classList.remove('active-line'));
+        }
+
+        async function highlightNode(id, duration = 500) {
+            const node = document.getElementById(id);
+            if(node) node.classList.add('active');
+            await sleep(duration);
         }
         
-        function checkExerciseResult(exerciseId, code, variables, fullOutput) {
-            let resultEl = document.getElementById(`result-${exerciseId}`);
-            let passed = false;
-            let message = "";
-            let points = 0;
+        async function highlightCode(containerId, lineIndex, duration = 500) {
+            const codeEl = document.getElementById(containerId);
+            const lines = codeEl.innerHTML.split('\n');
+            const nodes = codeEl.querySelectorAll('span');
+            
+            // Hapus semua highlight dulu
+            nodes.forEach(n => n.classList.remove('active-line'));
 
-            const part = topicData[exerciseId.startsWith('code-exercise-') ? 'topic-' + exerciseId.split('-')[2] : 'topic-7']
-                           .quizData.parts.find(p => p.id === `code-exercise-${exerciseId}`);
-            if (part) points = part.points;
-
-            // Logika pengecekan spesifik per soal
-            if (exerciseId === 'ganjil-genap') {
-                if (fullOutput.toLowerCase().includes('genap') && fullOutput.toLowerCase().includes('ganjil')) {
-                    passed = true; message = "Logika `if-else` untuk Ganjil/Genap terdeteksi!";
-                } else {
-                    message = "Gagal: Program Anda harus bisa mencetak 'Ganjil' dan 'Genap'.";
-                }
-            } else if (exerciseId === 'pos-neg') {
-                if (fullOutput.toLowerCase().includes('positif') && fullOutput.toLowerCase().includes('negatif') && fullOutput.toLowerCase().includes('nol')) {
-                    passed = true; message = "Logika `if-else if-else` terdeteksi!";
-                } else {
-                    message = "Gagal: Program harus bisa mencetak 'Positif', 'Negatif', dan 'Nol'.";
-                }
-            } else if (exerciseId === 'ph') {
-                if (fullOutput.toLowerCase().includes('asam') && fullOutput.toLowerCase().includes('basa') && fullOutput.toLowerCase().includes('netral')) {
-                    passed = true; message = "Logika `if-else if-else` untuk pH terdeteksi!";
-                } else {
-                    message = "Gagal: Program harus bisa mencetak 'Asam', 'Basa', dan 'Netral'.";
-                }
-            } else if (exerciseId === 'deret-naik') {
-                if (code.includes('for') || code.includes('while')) {
-                    passed = true; message = "Logika perulangan (loop) terdeteksi!";
-                } else {
-                    message = "Gagal: Anda harus menggunakan `for` atau `while` untuk soal ini.";
-                }
-            } else if (exerciseId === 'deret-turun') {
-                 if ((code.includes('for') || code.includes('while')) && (code.includes('--') || code.includes('-='))) {
-                    passed = true; message = "Logika perulangan menurun (decrement) terdeteksi!";
-                } else {
-                    message = "Gagal: Gunakan loop dengan decrement (cth: `i--`).";
-                }
-            } else if (exerciseId === 'sum') {
-                if ((code.includes('for') || code.includes('while')) && (code.includes('+=') || code.includes('total = total +'))) {
-                    passed = true; message = "Logika akumulator (penjumlahan) terdeteksi!";
-                } else {
-                    message = "Gagal: Gunakan loop dan variabel untuk menjumlahkan nilai.";
-                }
+            // Highlight line baru
+            if (nodes[lineIndex]) {
+                nodes[lineIndex].classList.add('active-line');
             }
-
-            if (passed) {
-                resultEl.innerHTML = `<div class="test-case-result success"><p class="font-semibold">${message}</p>Anda mendapatkan ${points} poin!</div>`;
-                addPoints(points);
-                completeTopic(`topic-${exerciseId.split('-')[2]}`); // Tandai selesai
-            } else {
-                resultEl.innerHTML = `<div class="test-case-result fail"><p class="font-semibold">${message}</p>Coba perbaiki kode Anda.</div>`;
-            }
+            await sleep(duration);
         }
         
-        // === FUNGSI VISUALISASI (Topik 7 & 8) ===
-        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-        function resetViz(containerId) {
-            document.querySelectorAll(`#${containerId} .flowchart-node, #${containerId} .flowchart-arrow, #${containerId} .flowchart-arrow-horizontal`).forEach(el => {
-                el.classList.remove('active');
-            });
-            // Reset panah loopback
-            const loopback = document.getElementById('viz-for-loopback');
-            if (loopback) loopback.style.borderColor = '#94A3B8';
-        }
-
+        // Visualisasi IF (Topik 7)
         async function visualizeIf() {
             const containerId = 'viz-if-container';
-            resetViz(containerId);
-            const input = document.getElementById('viz-if-input').value;
-            const x = parseInt(input) || 0;
+            const codeId = 'viz-if-code';
+            const x = parseInt(document.getElementById('viz-if-input').value) || 0;
             
-            const activate = (id, ms = 500) => {
-                document.getElementById(id).classList.add('active');
-                return sleep(ms);
+            const highlight = async (id, line, duration = 500) => {
+                document.querySelectorAll(`#${containerId} .flow-node`).forEach(n => n.classList.remove('active'));
+                document.querySelectorAll(`#${codeId} span`).forEach(s => s.classList.remove('active-line'));
+                if (id) document.getElementById(id).classList.add('active');
+                if (line !== null) document.querySelectorAll(`#${codeId} span`)[line].classList.add('active-line');
+                await sleep(duration);
             };
+            
+            // Wrap line kode di span agar bisa di-highlight
+            const codeEl = document.getElementById(codeId);
+            codeEl.innerHTML = codeEl.innerText.split('\n').map(line => `<span class="transition duration-300">${line}</span>`).join('\n');
 
-            await activate('viz-if-start');
-            await activate('viz-if-input');
-            await activate('viz-if-decision');
+            await highlight('viz-if-1', 0, 300); // Mulai
+            await highlight('viz-if-2', 2, 500); // Baca x
+            await highlight('viz-if-3', 3, 800); // if (x % 2 == 0)
             
             if (x % 2 === 0) {
-                // Jalur True (Genap)
-                await activate('viz-if-decision-arrow-true', 200); // Ganti ID jika ada panah spesifik
-                await activate('viz-if-true');
+                await highlight('viz-if-4', 4, 800); // cout << "Genap"
             } else {
-                // Jalur False (Ganjil)
-                await activate('viz-if-decision-arrow-false', 200); // Ganti ID jika ada panah spesifik
-                await activate('viz-if-false');
+                await highlight('viz-if-5', 6, 800); // cout << "Ganjil"
             }
             
-            await activate('viz-if-end');
+            await highlight('viz-if-6', null, 500); // Selesai
             await sleep(1000);
-            resetViz(containerId);
+            await highlight(null, null, 0); // Clear
         }
-        
+
+        // Visualisasi FOR (Topik 8)
         async function visualizeFor() {
             const containerId = 'viz-for-container';
-            resetViz(containerId);
-            const loopback = document.getElementById('viz-for-loopback');
-
-            const activate = (id, ms = 500) => {
-                document.getElementById(id).classList.add('active');
-                return sleep(ms);
-            };
-            const deactivate = (id) => {
-                document.getElementById(id).classList.remove('active');
+            const codeId = 'viz-for-code';
+            
+            const highlight = async (id, line, duration = 500) => {
+                document.querySelectorAll(`#${containerId} .flow-node`).forEach(n => n.classList.remove('active'));
+                document.querySelectorAll(`#${codeId} span`).forEach(s => s.classList.remove('active-line'));
+                if (id) document.getElementById(id).classList.add('active');
+                if (line !== null) document.querySelectorAll(`#${codeId} span`)[line].classList.add('active-line');
+                await sleep(duration);
             };
             
-            await activate('viz-for-start');
-            await activate('viz-for-init'); // int i = 0
-            deactivate('viz-for-start');
+            const codeEl = document.getElementById(codeId);
+            codeEl.innerHTML = codeEl.innerText.split('\n').map(line => `<span class="transition duration-300">${line}</span>`).join('\n');
 
+            await highlight('viz-for-1', 0, 300); // Mulai
+            await highlight('viz-for-2', 1, 500); // i = 0
+            
             for (let i = 0; i < 3; i++) {
-                await activate('viz-for-decision'); // i < 3
-                deactivate('viz-for-init');
-                deactivate('viz-for-update');
-                if (loopback) loopback.style.borderColor = '#94A3B8';
-                
-                await sleep(500); // Tahan di decision
-                
-                // (True)
-                await activate('viz-for-body'); // cout
-                deactivate('viz-for-decision');
-                
-                await activate('viz-for-update'); // i++
-                deactivate('viz-for-body');
-
-                // Loop back
-                if (loopback) loopback.style.borderColor = '#2563EB';
-                await sleep(500);
+                await highlight('viz-for-3', 1, 800); // i < 3 ? (True)
+                await highlight('viz-for-4', 2, 800); // cout << "Halo"
+                await highlight('viz-for-5', 1, 500); // i++
             }
             
-            // Loop selesai (False)
-            await activate('viz-for-decision');
-            deactivate('viz-for-update');
-            if (loopback) loopback.style.borderColor = '#94A3B8';
-            await sleep(500);
-            
-            await activate('viz-for-end');
-            deactivate('viz-for-decision');
+            await highlight('viz-for-3', 1, 800); // i < 3 ? (False)
+            await highlight('viz-for-6', 4, 500); // Selesai
             
             await sleep(1000);
-            resetViz(containerId);
+            await highlight(null, null, 0); // Clear
         }
 
-        // === INISIALISASI ===
-        // Langsung jalankan inisialisasi
-        const sidebarList = document.querySelector('#sidebar ul');
-        
-        topics.forEach(topic => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <a href="#" 
-                   class="sidebar-link flex items-center px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition"
-                   data-topic-id="${topic.id}"
-                   onclick="event.preventDefault(); showTopic('${topic.id}');">
-                    <i class="fas ${topic.icon} w-6 text-center text-slate-500"></i>
-                    <span class="ml-3">${topic.title}</span>
-                </a>
-            `;
-            sidebarList.appendChild(li);
-        });
+        // Visualisasi Array (Topik 9)
+        function createArrayViz(showError = true) {
+            const sizeInput = document.getElementById('array-viz-size');
+            const container = document.getElementById('array-viz-container');
+            const controls = document.getElementById('array-viz-controls');
+            
+            const size = parseInt(sizeInput.value);
+            if (isNaN(size) || size < 3 || size > 10) {
+                if (showError) showModal("Input Tidak Valid", "Silakan masukkan ukuran array antara 3 dan 10.");
+                return;
+            }
+            
+            container.innerHTML = '';
+            internalArray = new Array(size).fill(null); // Reset internal array
+            
+            for (let i = 0; i < size; i++) {
+                container.innerHTML += `
+                    <div class="array-cell" id="array-cell-${i}">
+                        <span class="array-cell-value"></span>
+                        <span class="array-cell-index">${i}</span>
+                    </div>
+                `;
+            }
+            controls.classList.remove('hidden');
+        }
 
-        // Memuat topik pertama (Konsep Algoritma)
-        showTopic('topic-1');
-        updateTotalPoints();
+        function showArrayVizUI(mode) {
+            document.getElementById('array-viz-set-ui').classList.add('hidden');
+            document.getElementById('array-viz-get-ui').classList.add('hidden');
+            if (mode === 'set') {
+                document.getElementById('array-viz-set-ui').classList.remove('hidden');
+            } else if (mode === 'get') {
+                document.getElementById('array-viz-get-ui').classList.remove('hidden');
+            }
+        }
 
-        // Event listener untuk tombol hamburger (mobile)
-        document.getElementById('hamburger-btn').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('hidden');
-        });
+        async function setArrayVizValue() {
+            const indexInput = document.getElementById('array-viz-set-index');
+            const valueInput = document.getElementById('array-viz-set-value');
+            const index = parseInt(indexInput.value);
+            const value = valueInput.value;
+
+            if (isNaN(index) || index < 0 || index >= internalArray.length) {
+                showModal("Indeks Tidak Valid", `Indeks harus angka antara 0 dan ${internalArray.length - 1}.`);
+                return;
+            }
+            
+            // Simpan ke internal array
+            internalArray[index] = value;
+            
+            // Tampilkan animasi
+            const cell = document.getElementById(`array-cell-${index}`);
+            cell.classList.add('active');
+            await sleep(300);
+            cell.querySelector('.array-cell-value').innerText = value;
+            await sleep(300);
+            cell.classList.remove('active');
+
+            // Reset dan fokus
+            indexInput.value = '';
+            valueInput.value = '';
+            indexInput.focus();
+        }
+
+        function evaluateArrayExpression(expr) {
+            // Ini adalah eval() yang "diamankan"
+            // 1. Ganti 'array' dengan 'internalArray'
+            // 2. Hanya izinkan karakter yang aman
+            
+            if (/[^a-zA-Z0-9\s\[\]\+\-\*\/]/.test(expr)) {
+                throw new Error("Ekspresi mengandung karakter tidak valid.");
+            }
+            
+            expr = expr.replace(/array/g, 'internalArray');
+            
+            // Validasi bahwa semua 'internalArray[x]' adalah angka
+            // Ini adalah pengamanan sederhana terhadap eval()
+            const accessRegex = /internalArray\[([^\]]+)\]/g;
+            let finalExpr = expr;
+            let match;
+            
+            // Ganti nested dulu
+            while ((match = accessRegex.exec(expr)) !== null) {
+                let innerExpr = match[1];
+                let innerValue = evaluateArrayExpression(innerExpr); // Rekursif
+                finalExpr = finalExpr.replace(match[0], `internalArray[${innerValue}]`);
+            }
+            
+            // Sekarang ganti semua akses
+            finalExpr = finalExpr.replace(accessRegex, (match, index) => {
+                let val = internalArray[index];
+                if (val === null || val === '') val = 0; // Anggap null/kosong sebagai 0
+                if (isNaN(Number(val))) {
+                    throw new Error(`Nilai di array[${index}] ("${val}") bukan angka.`);
+                }
+                return Number(val);
+            });
+
+            // Setelah semua diganti, eval hasilnya
+            return new Function(`return ${finalExpr}`)();
+        }
+
+
+        async function getArrayVizValue() {
+            const exprInput = document.getElementById('array-viz-get-expr');
+            const resultEl = document.getElementById('array-viz-get-result');
+            const expr = exprInput.value;
+
+            try {
+                // Temukan semua indeks yang diakses
+                const indexRegex = /array\[(\d+)\]/g;
+                const indices = [...expr.matchAll(indexRegex)].map(m => parseInt(m[1]));
+
+                // Animasikan semua sel yang diakses
+                for (const index of indices) {
+                    if (index >= 0 && index < internalArray.length) {
+                        document.getElementById(`array-cell-${index}`).classList.add('active');
+                    }
+                }
+                await sleep(500);
+
+                // Hitung hasil
+                // const result = eval(expr.replace(/array/g, 'internalArray')); // Versi tidak aman
+                const result = evaluateArrayExpression(expr);
+                
+                resultEl.innerText = `Output: ${result}`;
+                resultEl.classList.remove('hidden');
+
+                document.querySelectorAll('.array-cell.active').forEach(cell => cell.classList.remove('active'));
+
+            } catch (e) {
+                resultEl.innerText = `Error: ${e.message}`;
+                resultEl.classList.remove('hidden');
+                document.querySelectorAll('.array-cell.active').forEach(cell => cell.classList.remove('active'));
+            }
+        }
+
+        // === INISIALISASI APLIKASI ===
+        function initApp() {
+            const sidebarList = document.getElementById('sidebar-list');
+            
+            topics.forEach(topic => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a href="#" 
+                       class="sidebar-link flex items-center px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-lg transition"
+                       data-topic-id="${topic.id}"
+                       onclick="event.preventDefault(); showTopic('${topic.id}');">
+                        <i class="fas ${topic.icon} w-6 text-center text-slate-500"></i>
+                        <span class="ml-3">${topic.title}</span>
+                    </a>
+                `;
+                sidebarList.appendChild(li);
+            });
+
+            // Setup menu mobile
+            document.getElementById('menu-toggle').addEventListener('click', () => toggleMenu());
+
+            // Memuat topik pertama (Konsep Algoritma)
+            showTopic('topic-1');
+        }
+
+        // Langsung panggil initApp karena script sudah di akhir body
+        initApp();
+
     </script>
 </body>
 </html>
