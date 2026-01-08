@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Explorer - Simulator Interaktif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FDFBF7;
+        }
+        .server-card {
+            transition: all 0.3s ease;
+        }
+        .server-active {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border-width: 3px !important;
+        }
+        .packet {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-color: #F87171;
+            border-radius: 50%;
+            z-index: 50;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(248, 113, 113, 0.6);
+        }
+        .line-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .anim-pulse {
+            animation: pulse-soft 2s infinite;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 mb-2">🔍 DNS Explorer</h1>
+            <p class="text-slate-600">Pelajari bagaimana internet menemukan alamat rumah sebuah website.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Simulasi Utama -->
+            <div class="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-slate-100 relative overflow-hidden min-h-[650px]">
+                
+                <!-- Browser Bar -->
+                <div class="bg-slate-100 rounded-full p-2 flex items-center gap-3 mb-12 shadow-inner border border-slate-200">
+                    <div class="flex gap-1.5 ml-2">
+                        <div class="w-3 h-3 rounded-full bg-red-300"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-300"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-300"></div>
+                    </div>
+                    <input id="domainInput" type="text" placeholder="Ketik domain (misal: belajar.sch.id atau google.com)" 
+                           class="flex-1 bg-white px-4 py-2 rounded-full text-sm outline-none border border-transparent focus:border-blue-300 transition-all">
+                    <button id="searchBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-semibold transition-colors">
+                        Cari Alamat
+                    </button>
+                </div>
+
+                <!-- Canvas Simulasi -->
+                <div id="simulationCanvas" class="relative h-[450px]">
+                    <svg id="connectionLines" class="line-svg"></svg>
+                    
+                    <!-- Packet -->
+                    <div id="packet" class="packet hidden"></div>
+
+                    <!-- Client / Resolver -->
+                    <div id="node-client" class="server-card absolute bottom-0 left-1/2 -translate-x-1/2 w-48 bg-blue-50 border-2 border-blue-200 p-4 rounded-2xl text-center z-10">
+                        <div class="text-3xl mb-1">💻</div>
+                        <h3 class="font-bold text-blue-800 text-sm">Recursive Resolver</h3>
+                        <p class="text-[10px] text-blue-600">Perangkat Kamu / ISP</p>
+                        <div id="cacheIndicator" class="mt-2 text-[10px] font-bold py-1 px-2 rounded-full bg-slate-200 text-slate-500 uppercase">
+                            Cache: Empty
+                        </div>
+                    </div>
+
+                    <!-- Root Server -->
+                    <div id="node-root" class="server-card absolute top-0 left-0 w-40 bg-green-50 border-2 border-green-200 p-3 rounded-2xl text-center z-10">
+                        <div class="text-3xl mb-1">🏰</div>
+                        <h3 class="font-bold text-green-800 text-sm">Root Server</h3>
+                        <p class="text-[10px] text-green-600">Pintu Gerbang Utama</p>
+                    </div>
+
+                    <!-- TLD Server -->
+                    <div id="node-tld" class="server-card absolute top-0 left-1/2 -translate-x-1/2 w-40 bg-yellow-50 border-2 border-yellow-200 p-3 rounded-2xl text-center z-10">
+                        <div class="text-3xl mb-1">📂</div>
+                        <h3 class="font-bold text-yellow-800 text-sm">TLD Server</h3>
+                        <p class="text-[10px] text-yellow-600">(.com, .id, .org)</p>
+                    </div>
+
+                    <!-- Authoritative Server -->
+                    <div id="node-auth" class="server-card absolute top-0 right-0 w-40 bg-pink-50 border-2 border-pink-200 p-3 rounded-2xl text-center z-10">
+                        <div class="text-3xl mb-1">📝</div>
+                        <h3 class="font-bold text-pink-800 text-sm">Authoritative</h3>
+                        <p class="text-[10px] text-pink-600">Pemilik Data Asli</p>
+                    </div>
+                </div>
+
+                <!-- Log & Result -->
+                <div class="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 min-h-[80px]">
+                    <div id="statusLabel" class="text-xs font-bold text-blue-500 uppercase mb-1">Siap melakukan pencarian...</div>
+                    <div id="statusMessage" class="text-sm text-slate-700 italic">Masukkan nama domain untuk memulai simulasi alur kerja DNS.</div>
+                    <div id="finalIp" class="hidden mt-2 text-lg font-bold text-green-600 animate-bounce">
+                        IP Ditemukan: <span id="ipValue">103.22.110.1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Edukasi -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 h-fit">
+                <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span>📚</span> Lab Memori
+                </h2>
+                
+                <div class="space-y-4">
+                    <div class="p-3 rounded-xl bg-blue-50 border-l-4 border-blue-400">
+                        <h4 class="font-bold text-blue-800 text-sm">Recursive Resolver</h4>
+                        <p class="text-xs text-slate-600 mt-1">Seperti asisten pribadi. Dia yang berkeliling ke server lain untuk mencari jawaban buat kamu.</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-green-50 border-l-4 border-green-400">
+                        <h4 class="font-bold text-green-800 text-sm">Root Server</h4>
+                        <p class="text-xs text-slate-600 mt-1">Dia tidak tahu IP-nya, tapi dia tahu siapa pengelola akhiran domain (TLD) seperti .id atau .com.</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-yellow-50 border-l-4 border-yellow-400">
+                        <h4 class="font-bold text-yellow-800 text-sm">TLD (Top Level Domain)</h4>
+                        <p class="text-xs text-slate-600 mt-1">Server yang mengelola kelompok domain besar. .id dikelola oleh server khusus Indonesia.</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-pink-50 border-l-4 border-pink-400">
+                        <h4 class="font-bold text-pink-800 text-sm">Authoritative Server</h4>
+                        <p class="text-xs text-slate-600 mt-1">Server terakhir yang memegang data asli IP Address yang didaftarkan pemilik website.</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-slate-100 border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <span>🧠</span> Apa itu DNS Cache?
+                        </h4>
+                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                            Jika kamu mencari domain yang sama lagi, Resolver akan mengingatnya (TTL - Time To Live). 
+                            Pencarian jadi instan tanpa harus keliling dunia lagi!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-8 text-center text-slate-400 text-xs">
+            &copy; 2025 DNS Simulator
+        </footer>
+    </div>
+
+    <script>
+        const dnsCache = new Map();
+        const nodes = {
+            client: document.getElementById('node-client'),
+            root: document.getElementById('node-root'),
+            tld: document.getElementById('node-tld'),
+            auth: document.getElementById('node-auth')
+        };
+        const packet = document.getElementById('packet');
+        const statusLabel = document.getElementById('statusLabel');
+        const statusMessage = document.getElementById('statusMessage');
+        const finalIpDisplay = document.getElementById('finalIp');
+        const ipValue = document.getElementById('ipValue');
+        const cacheIndicator = document.getElementById('cacheIndicator');
+        const searchBtn = document.getElementById('searchBtn');
+        const domainInput = document.getElementById('domainInput');
+        const svg = document.getElementById('connectionLines');
+
+        let isAnimating = false;
+
+        // Inisialisasi garis koneksi
+        function drawLines() {
+            svg.innerHTML = '';
+            const createLine = (id1, id2) => {
+                const el1 = nodes[id1];
+                const el2 = nodes[id2];
+                const rect1 = el1.getBoundingClientRect();
+                const rect2 = el2.getBoundingClientRect();
+                const canvasRect = document.getElementById('simulationCanvas').getBoundingClientRect();
+
+                const x1 = (rect1.left + rect1.width / 2) - canvasRect.left;
+                const y1 = (rect1.top + rect1.height / 2) - canvasRect.top;
+                const x2 = (rect2.left + rect2.width / 2) - canvasRect.left;
+                const y2 = (rect2.top + rect2.height / 2) - canvasRect.top;
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('stroke', '#E2E8F0');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('stroke-dasharray', '5,5');
+                svg.appendChild(line);
+            };
+
+            createLine('client', 'root');
+            createLine('client', 'tld');
+            createLine('client', 'auth');
+        }
+
+        window.addEventListener('resize', drawLines);
+        setTimeout(drawLines, 500);
+
+        function getCenter(nodeId) {
+            const el = nodes[nodeId];
+            const rect = el.getBoundingClientRect();
+            const canvasRect = document.getElementById('simulationCanvas').getBoundingClientRect();
+            return {
+                x: (rect.left + rect.width / 2) - canvasRect.left - 7,
+                y: (rect.top + rect.height / 2) - canvasRect.top - 7
+            };
+        }
+
+        async function movePacket(fromId, toId) {
+            const start = getCenter(fromId);
+            const end = getCenter(toId);
+            
+            packet.classList.remove('hidden');
+            packet.style.left = `${start.x}px`;
+            packet.style.top = `${start.y}px`;
+            
+            // Highlight node
+            Object.values(nodes).forEach(n => n.classList.remove('server-active'));
+            nodes[toId].classList.add('server-active');
+
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    packet.style.left = `${end.x}px`;
+                    packet.style.top = `${end.y}px`;
+                    setTimeout(resolve, 800);
+                }, 50);
+            });
+        }
+
+        function generateFakeIP() {
+            return `103.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}`;
+        }
+
+        async function startSimulation() {
+            const domain = domainInput.value.trim().toLowerCase();
+            if (!domain || isAnimating) return;
+
+            // Reset UI
+            isAnimating = true;
+            searchBtn.disabled = true;
+            finalIpDisplay.classList.add('hidden');
+            statusLabel.textContent = "Memulai Pencarian...";
+            statusLabel.className = "text-xs font-bold text-blue-500 uppercase mb-1";
+            
+            if (dnsCache.has(domain)) {
+                // CACHE HIT PATH
+                statusMessage.textContent = `Mengecek cache untuk ${domain}...`;
+                await movePacket('client', 'client');
+                
+                setTimeout(() => {
+                    cacheIndicator.textContent = "Cache: HIT ⚡";
+                    cacheIndicator.className = "mt-2 text-[10px] font-bold py-1 px-2 rounded-full bg-green-200 text-green-700 uppercase";
+                    statusLabel.textContent = "Data Ditemukan di Cache!";
+                    statusMessage.textContent = "Resolver sudah menyimpan alamat ini sebelumnya. Sangat cepat!";
+                    ipValue.textContent = dnsCache.get(domain);
+                    finalIpDisplay.classList.remove('hidden');
+                    isAnimating = false;
+                    searchBtn.disabled = false;
+                }, 1000);
+                return;
+            }
+
+            // CACHE MISS PATH - FULL HIERARCHY
+            cacheIndicator.textContent = "Cache: MISS 🔍";
+            cacheIndicator.className = "mt-2 text-[10px] font-bold py-1 px-2 rounded-full bg-red-100 text-red-600 uppercase";
+
+            // 1. To Root
+            statusMessage.textContent = `Resolver bertanya ke Root Server tentang ${domain}...`;
+            await movePacket('client', 'root');
+            statusMessage.textContent = "Root: 'Saya tidak tahu IP-nya, tapi coba tanya ke server TLD yang mengelola domain tersebut.'";
+            await new Promise(r => setTimeout(r, 1500));
+
+            // 2. To TLD
+            statusMessage.textContent = "Resolver bergerak menuju TLD Server...";
+            await movePacket('root', 'client'); // Balik dulu ke resolver (logika recursive)
+            await movePacket('client', 'tld');
+            statusMessage.textContent = "TLD: 'Saya tahu pengelola domain ini. Silakan hubungi Authoritative Server-nya.'";
+            await new Promise(r => setTimeout(r, 1500));
+
+            // 3. To Auth
+            statusMessage.textContent = "Resolver menuju tujuan akhir: Authoritative Server...";
+            await movePacket('tld', 'client');
+            await movePacket('client', 'auth');
+            const newIp = generateFakeIP();
+            statusMessage.textContent = `Authoritative: 'Benar, IP Address untuk ${domain} adalah ${newIp}'`;
+            await new Promise(r => setTimeout(r, 1500));
+
+            // 4. Back to Client with Result
+            await movePacket('auth', 'client');
+            
+            // Simpan di cache
+            dnsCache.set(domain, newIp);
+            
+            statusLabel.textContent = "Pencarian Berhasil!";
+            statusLabel.className = "text-xs font-bold text-green-500 uppercase mb-1";
+            statusMessage.textContent = "IP Address berhasil didapatkan dan sekarang disimpan di Cache untuk pencarian berikutnya.";
+            ipValue.textContent = newIp;
+            finalIpDisplay.classList.remove('hidden');
+            
+            packet.classList.add('hidden');
+            isAnimating = false;
+            searchBtn.disabled = false;
+        }
+
+        searchBtn.addEventListener('click', startSimulation);
+        domainInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') startSimulation();
+        });
+    </script>
+</body>
+</html>

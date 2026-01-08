@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Jaringan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        @keyframes trans-vertical {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+        .animate-trans-vertical {
+            position: absolute;
+            width: 100%;
+            height: 30%;
+            background: #3b82f6;
+            animation: trans-vertical 1.5s infinite linear;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+            border-radius: 999px;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        .animate-shake {
+            animation: shake 0.3s ease-in-out infinite;
+        }
+
+        .layer-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .packet-piece {
+            transition: all 0.3s ease-out;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-white p-5 rounded-[2rem] shadow-sm border border-slate-200">
+            <div class="flex items-center gap-4">
+                <div class="bg-blue-600 p-3 rounded-2xl text-white shadow-lg shadow-blue-200">
+                    <i data-lucide="network" size="28"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-extrabold tracking-tight leading-none uppercase">Simulasi Model Jaringan</h1>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">OSI Layer dan TCP/IP</p>
+                </div>
+            </div>
+            
+            <div class="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                <button id="btn-tcpip" onclick="switchModel('tcpip')" class="px-6 py-2 rounded-xl text-[11px] font-black transition-all bg-white shadow-md text-blue-600">TCP/IP</button>
+                <button id="btn-osi" onclick="switchModel('osi')" class="px-6 py-2 rounded-xl text-[11px] font-black transition-all text-slate-500">OSI MODEL</button>
+            </div>
+        </header>
+
+        <!-- Status & Controls -->
+        <div class="mb-6 bg-slate-900 text-white p-5 rounded-3xl shadow-xl border border-slate-800 flex items-center gap-4">
+            <div class="bg-blue-500/20 p-2 rounded-xl text-blue-400 hidden sm:block">
+                <i data-lucide="info" size="20"></i>
+            </div>
+            <div class="flex-1">
+                <p id="status-msg" class="text-[12px] font-bold leading-snug">Input data dan klik tombol '>' untuk memulai simulasi.</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="prevStep()" id="btn-prev" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white disabled:opacity-20 transition-all border border-white/5">
+                    <i data-lucide="chevron-left" size="20"></i>
+                </button>
+                <button onclick="nextStep()" id="btn-next" class="p-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl text-white disabled:opacity-20 transition-all shadow-lg border border-blue-500/50">
+                    <i data-lucide="chevron-right" size="20"></i>
+                </button>
+                <button onclick="resetSim()" class="p-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all border border-white/5">
+                    <i data-lucide="rotate-ccw" size="20"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            
+            <!-- SENDER -->
+            <div class="lg:col-span-5 bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-8 flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">PENGIRIM</span>
+                    <i data-lucide="send" class="text-blue-500" size="18"></i>
+                </div>
+
+                <!-- Sender Top Area (Inputs) -->
+                <div class="min-h-[160px]">
+                    <div class="grid grid-cols-4 gap-3 mb-4 bg-slate-50 p-4 rounded-3xl border border-slate-100">
+                        <div class="col-span-4">
+                            <label class="text-[9px] font-black text-slate-400 uppercase mb-1 block">Payload (Pesan)</label>
+                            <input id="in-msg" type="text" value="Halo Dunia" class="w-full bg-white border-2 border-slate-100 rounded-xl p-2 text-xs font-bold outline-none focus:border-blue-500 transition-all">
+                        </div>
+                        <div class="col-span-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase mb-1 block">Port</label>
+                            <input id="in-port" type="text" value="80" class="w-full bg-white border-2 border-slate-100 rounded-xl p-2 text-xs font-bold text-center outline-none">
+                        </div>
+                        <div class="col-span-3">
+                            <label class="text-[9px] font-black text-slate-400 uppercase mb-1 block">Dest IP</label>
+                            <input id="in-ip" type="text" value="192.168.1.10" class="w-full bg-white border-2 border-slate-100 rounded-xl p-2 text-xs font-bold font-mono text-center outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sender Stack -->
+                <div id="sender-stack" class="space-y-1.5">
+                    <!-- Dynamic Layers -->
+                </div>
+            </div>
+
+            <!-- TRANSMISSION -->
+            <div class="lg:col-span-2 flex flex-col items-center">
+                <div class="h-[184px] w-full hidden lg:block"></div>
+                <div class="flex-1 flex flex-col items-center py-4">
+                    <div class="h-full w-1.5 bg-slate-200 rounded-full relative overflow-hidden">
+                        <div id="trans-line" class="animate-trans-vertical hidden"></div>
+                    </div>
+                    <div class="text-[9px] font-black text-slate-300 uppercase mt-4 tracking-[0.3em] flex flex-col items-center">
+                        <i data-lucide="zap" size="16" class="mb-1 text-slate-300"></i>
+                        Physical Link
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECEIVER -->
+            <div class="lg:col-span-5 bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-8 flex flex-col">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="bg-emerald-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest">PENERIMA</span>
+                    <i data-lucide="shield-check" class="text-emerald-500" size="18"></i>
+                </div>
+
+                <!-- Receiver Top Area (Config & Output) -->
+                <div class="min-h-[160px] flex flex-col gap-3">
+                    <div class="bg-slate-900 rounded-3xl p-4 text-[10px] font-mono text-slate-400 border border-white/5">
+                        <p class="text-[8px] text-slate-600 font-bold uppercase mb-2 tracking-widest">Target Configuration</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex justify-between"><span>IP:</span><span class="text-emerald-400 font-bold">192.168.1.10</span></div>
+                            <div class="flex justify-between"><span>PORT:</span><span class="text-emerald-400 font-bold">80</span></div>
+                        </div>
+                    </div>
+
+                    <div id="receiver-output" class="flex-1 flex items-center justify-center">
+                        <p class="text-[10px] text-slate-300 font-bold italic">Menunggu transmisi...</p>
+                    </div>
+                </div>
+
+                <!-- Receiver Stack -->
+                <div id="receiver-stack" class="space-y-1.5">
+                    <!-- Dynamic Layers -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 border-t border-slate-200 pt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <h4 class="text-[9px] font-black text-blue-600 uppercase mb-2">Encapsulation</h4>
+                <p class="text-[10px] text-slate-500 leading-snug">Proses pembungkusan data dengan header di sisi pengirim (Top to Bottom).</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <h4 class="text-[9px] font-black text-emerald-600 uppercase mb-2">Decapsulation</h4>
+                <p class="text-[10px] text-slate-500 leading-snug">Proses pembukaan header dan verifikasi alamat di sisi penerima (Bottom to Top).</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <h4 class="text-[9px] font-black text-amber-600 uppercase mb-2">PCI Info</h4>
+                <p class="text-[10px] text-slate-500 leading-snug">Protocol Control Information (Header) yang berisi alamat tujuan seperti IP dan Port.</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-center flex items-center justify-center">
+                <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest"></p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const TCPIP_LAYERS = [
+            { id: 'app', name: 'Application', pdu: 'Data', hName: 'HTTP', color: 'emerald', icon: 'cpu' },
+            { id: 'trans', name: 'Transport', pdu: 'Segment', hName: 'TCP', color: 'blue', icon: 'send' },
+            { id: 'net', name: 'Network', pdu: 'Packet', hName: 'IP', color: 'amber', icon: 'globe' },
+            { id: 'dl', name: 'Data Link', pdu: 'Frame', hName: 'Ethernet', color: 'purple', icon: 'network' },
+            { id: 'phys', name: 'Physical', pdu: 'Bits', hName: 'Signal', color: 'slate', icon: 'zap' }
+        ];
+
+        const OSI_LAYERS = [
+            { id: 'app', name: 'Application', pdu: 'Data', hName: 'L7-App', color: 'emerald', icon: 'cpu' },
+            { id: 'pres', name: 'Presentation', pdu: 'Data', hName: 'L6-Pres', color: 'teal', icon: 'file-code' },
+            { id: 'sess', name: 'Session', pdu: 'Data', hName: 'L5-Sess', color: 'indigo', icon: 'clock' },
+            { id: 'trans', name: 'Transport', pdu: 'Segment', hName: 'L4-Trans', color: 'blue', icon: 'send' },
+            { id: 'net', name: 'Network', pdu: 'Packet', hName: 'L3-Net', color: 'amber', icon: 'globe' },
+            { id: 'dl', name: 'Data Link', pdu: 'Frame', hName: 'L2-Link', color: 'purple', icon: 'network' },
+            { id: 'phys', name: 'Physical', pdu: 'Bits', hName: 'L1-Phys', color: 'slate', icon: 'zap' }
+        ];
+
+        let currentModel = 'tcpip';
+        let stepIndex = -1;
+        let phase = 'idle';
+        let sessionId = null;
+        let errorLayerId = null;
+
+        const RECEIVER_CONFIG = { ip: "192.168.1.10", port: "80", mac: "AA:BB:CC:DD:EE:FF" };
+
+        function switchModel(model) {
+            currentModel = model;
+            document.getElementById('btn-tcpip').className = model === 'tcpip' ? 'px-6 py-2 rounded-xl text-[11px] font-black transition-all bg-white shadow-md text-blue-600' : 'px-6 py-2 rounded-xl text-[11px] font-black transition-all text-slate-500';
+            document.getElementById('btn-osi').className = model === 'osi' ? 'px-6 py-2 rounded-xl text-[11px] font-black transition-all bg-white shadow-md text-indigo-600' : 'px-6 py-2 rounded-xl text-[11px] font-black transition-all text-slate-500';
+            resetSim();
+        }
+
+        function resetSim() {
+            stepIndex = -1;
+            phase = 'idle';
+            sessionId = null;
+            errorLayerId = null;
+            document.getElementById('in-msg').disabled = false;
+            document.getElementById('in-port').disabled = false;
+            document.getElementById('in-ip').disabled = false;
+            render();
+        }
+
+        function nextStep() {
+            const layers = currentModel === 'tcpip' ? TCPIP_LAYERS : OSI_LAYERS;
+            const totalSteps = (layers.length * 2) + 1;
+
+            if (phase === 'idle') {
+                phase = 'process';
+                sessionId = Math.floor(Math.random() * 9000) + 1000;
+                document.getElementById('in-msg').disabled = true;
+                document.getElementById('in-port').disabled = true;
+                document.getElementById('in-ip').disabled = true;
+            }
+
+            const newIdx = stepIndex + 1;
+            if (newIdx >= totalSteps) return;
+
+            // Validation logic
+            if (newIdx > layers.length) {
+                const decapsIdx = (layers.length * 2) - newIdx;
+                const layer = layers[decapsIdx];
+                const inPort = document.getElementById('in-port').value;
+                const inIp = document.getElementById('in-ip').value;
+
+                if (layer.id === 'net' && inIp !== RECEIVER_CONFIG.ip) {
+                    errorLayerId = 'net'; phase = 'error'; render(); return;
+                }
+                if (layer.id === 'trans' && inPort !== RECEIVER_CONFIG.port) {
+                    errorLayerId = 'trans'; phase = 'error'; render(); return;
+                }
+            }
+
+            stepIndex = newIdx;
+            if (stepIndex === totalSteps - 1) phase = 'success';
+            render();
+        }
+
+        function prevStep() {
+            if (stepIndex <= 0) { resetSim(); return; }
+            stepIndex--;
+            phase = 'process';
+            errorLayerId = null;
+            render();
+        }
+
+        function getHeaderDetail(layerId) {
+            const msg = document.getElementById('in-msg').value;
+            const port = document.getElementById('in-port').value;
+            const ip = document.getElementById('in-ip').value;
+            switch(layerId) {
+                case 'app': return `Payload: "${msg.substring(0,10)}..."`;
+                case 'pres': return `Format: JSON/Encrypted`;
+                case 'sess': return `SessionID: ${sessionId}`;
+                case 'trans': return `Dst Port: ${port}`;
+                case 'net': return `Dst IP: ${ip}`;
+                case 'dl': return `Dst MAC: AA:BB:CC...`;
+                case 'phys': return `1011001... (Voltage)`;
+                default: return "PCI Info";
+            }
+        }
+
+        function render() {
+            const layers = currentModel === 'tcpip' ? TCPIP_LAYERS : OSI_LAYERS;
+            const isEncapsulating = stepIndex >= 0 && stepIndex < layers.length;
+            const isTransmitting = stepIndex === layers.length;
+            const isDecapsulating = stepIndex > layers.length && stepIndex < (layers.length * 2) + 1;
+
+            // Render Status
+            let status = "Input data dan klik tombol '>' untuk memulai.";
+            if (isEncapsulating) status = `[PENGIRIM] Layer ${layers[stepIndex].name} menambahkan ${layers[stepIndex].hName} header. Unit data: ${layers[stepIndex].pdu.toUpperCase()}.`;
+            else if (isTransmitting) status = `[FISIK] Frame diubah menjadi STREAM BITS dan dikirimkan melalui kabel.`;
+            else if (isDecapsulating) {
+                const idx = (layers.length * 2) - stepIndex;
+                status = `[PENERIMA] Memeriksa ${layers[idx].hName}. Jika valid, header dilepas dan diteruskan sebagai ${layers[idx-1] ? layers[idx-1].pdu.toUpperCase() : 'DATA'}.`;
+            }
+            else if (phase === 'success') status = "SUKSES: Data sampai ke tujuan dengan utuh!";
+            else if (phase === 'error') status = "ERROR: Paket dibuang karena alamat tidak sesuai.";
+            document.getElementById('status-msg').innerText = status;
+
+            // Transmission Animation
+            document.getElementById('trans-line').className = isTransmitting ? 'animate-trans-vertical' : 'hidden';
+
+            // Output Area
+            const outArea = document.getElementById('receiver-output');
+            if (phase === 'success') {
+                outArea.innerHTML = `<div class="w-full bg-emerald-500 text-white p-3 rounded-2xl animate-in zoom-in text-center border-2 border-emerald-400 shadow-lg shadow-emerald-100"><p class="text-[8px] font-black uppercase opacity-70 mb-1">Pesan Diterima:</p><p class="text-xs font-black italic">"${document.getElementById('in-msg').value}"</p></div>`;
+            } else if (phase === 'error') {
+                outArea.innerHTML = `<div class="w-full bg-red-600 text-white p-3 rounded-2xl animate-shake text-center shadow-lg shadow-red-100"><i data-lucide="shield-alert" class="mx-auto mb-1" size="16"></i><p class="text-[9px] font-black uppercase leading-none">DROP: INVALID ADDR</p></div>`;
+            } else {
+                outArea.innerHTML = `<p class="text-[10px] text-slate-300 font-bold italic">${isTransmitting ? 'Mengalirkan Bits...' : 'Menunggu transmisi...'}</p>`;
+            }
+
+            // Stack Rendering
+            const renderStack = (nodeType) => {
+                let html = '';
+                layers.forEach((l, idx) => {
+                    const isSender = nodeType === 'sender';
+                    const decapsIdx = (layers.length * 2) - stepIndex;
+                    
+                    let isActive = false;
+                    let isPacked = false;
+                    let isDone = false;
+                    let isError = false;
+
+                    if (isSender) {
+                        isActive = isEncapsulating && stepIndex === idx;
+                        isPacked = (isEncapsulating && idx <= stepIndex) || (stepIndex >= layers.length);
+                        isDone = stepIndex >= layers.length;
+                    } else {
+                        isActive = isDecapsulating && decapsIdx === idx;
+                        isDone = (isDecapsulating && decapsIdx < idx) || phase === 'success';
+                        isPacked = isDecapsulating ? (idx >= decapsIdx) : (phase === 'error' ? idx >= layers.findIndex(la => la.id === errorLayerId) : false);
+                        isError = phase === 'error' && errorLayerId === l.id;
+                    }
+
+                    const bgClass = isActive ? (isSender ? 'bg-blue-50 border-blue-400' : 'bg-emerald-50 border-emerald-400') : (isError ? 'bg-red-50 border-red-500' : 'border-transparent opacity-40');
+                    const iconColor = isError ? 'bg-red-600' : (isDone ? (isSender ? 'bg-blue-600' : 'bg-emerald-600') : `bg-${l.color}-500`);
+
+                    const headerHtml = (isPacked && !isTransmitting) ? `
+                        <div class="w-32 h-full flex flex-col justify-center ${isSender ? '' : 'text-right'}">
+                            <div class="bg-${l.color}-500 text-white p-1 rounded-md shadow-sm border-b-2 border-black/10 animate-in slide-in-from-${isSender ? 'left' : 'right'}-2">
+                                <p class="text-[7px] font-black uppercase opacity-60 leading-none mb-0.5">${l.hName} ${isSender ? 'Header' : 'Check'}</p>
+                                <p class="text-[8px] font-bold truncate leading-none">${getHeaderDetail(l.id)}</p>
+                            </div>
+                        </div>
+                    ` : '<div class="w-32 h-full"></div>';
+
+                    html += `
+                        <div class="flex gap-2 items-center h-12">
+                            ${isSender ? '' : headerHtml}
+                            <div class="flex-1 flex items-center gap-2 p-2 rounded-xl border-2 transition-all layer-transition ${bgClass} ${isActive ? 'scale-105 shadow-md' : ''}">
+                                <div class="w-7 h-7 rounded-lg flex items-center justify-center text-white shadow-sm ${iconColor}">
+                                    <i data-lucide="${isError ? 'shield-alert' : (isDone ? 'shield-check' : l.icon)}" size="14"></i>
+                                </div>
+                                <div class="flex-1 overflow-hidden">
+                                    <p class="text-[9px] font-black uppercase leading-tight truncate">${l.name}</p>
+                                    <p class="text-[8px] text-slate-400 font-bold truncate">${isActive ? 'Processing...' : l.pdu}</p>
+                                </div>
+                            </div>
+                            ${isSender ? headerHtml : ''}
+                        </div>
+                    `;
+                });
+                document.getElementById(`${nodeType}-stack`).innerHTML = html;
+            };
+
+            renderStack('sender');
+            renderStack('receiver');
+            lucide.createIcons();
+        }
+
+        // Initialize
+        window.onload = () => {
+            render();
+        };
+    </script>
+</body>
+</html>
