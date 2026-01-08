@@ -1,178 +1,530 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informatics Game</title>
+    <title>Informatika Mudah</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Plus Jakarta Sans (Modern & Geometric) -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 2rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F3F4F6; /* Light Gray Background */
         }
-        .header {
-            margin-bottom: 2rem;
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        .header-title {
-            font-size: 3rem;
-            font-weight: 700;
-            color: #1a202c;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
-        .header-subtitle {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #666;
-            margin-top: 0.5rem;
-            font-style: italic;
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
         }
-        .category-section {
-            margin-bottom: 2rem;
-            width: 100%;
-            max-width: 800px;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
-        .category-title {
-            font-size: 2rem;
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 1rem;
-        }
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
-            justify-content: center;
-        }
-        @media (min-width: 640px) {
-            .button-grid {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-        }
-        .game-button {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            background-color: #ffffff;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: all 0.2s ease-in-out;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #4299e1;
-            text-decoration: none;
-            border: 2px solid transparent;
-        }
-        .game-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            border-color: #4299e1;
-        }
-        .game-button::after {
-            content: attr(data-title);
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #333;
-            color: #fff;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.5rem;
-            font-size: 0.8rem;
-            font-weight: 400;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s, visibility 0.2s;
-        }
-        .game-button:hover::after {
+
+        /* Card Animation */
+        .card-item {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 1;
-            visibility: visible;
+            transform: scale(1);
+        }
+        /* Class khusus untuk menyembunyikan item (filtered out atau beda page) */
+        .card-item.hidden-item {
+            display: none; 
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        /* Filter Button Active State */
+        .filter-btn.active {
+            background-color: #1e293b; /* Slate-800 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
     </style>
 </head>
-<body>
+<body class="text-slate-600 antialiased flex flex-col min-h-screen">
 
-    <div class="header">
-        <h1 class="header-title">INFORMATICS GAME</h1>
-        <p class="header-subtitle">- Craft with love, and you'll find a love for Informatics, too. -</p>
-    </div>
-
-    <div class="category-section">
-        <h2 class="category-title">Sorting</h2>
-        <div class="button-grid">
-            <a href="simulasi/0.1_Kuis_Sorting.html" class="game-button" data-title="Kuis Sorting">1</a>
+    <!-- Top Navigation (Minimalist) -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 bg-opacity-80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+                    IF
+                </div>
+                <span class="font-bold text-slate-800 tracking-tight">Informatika<span class="text-indigo-500">Lab</span></span>
+            </div>
         </div>
-    </div>
-    
-    <hr class="my-6 border-t-2 border-gray-300 w-full max-w-lg mx-auto" />
+    </nav>
 
-    <div class="category-section">
-        <h2 class="category-title">Greedy dan Brute Force</h2>
-        <div class="button-grid">
-            <a href="simulasi/1.1_Buka_Gembok.html" class="game-button" data-title="Buka Gembok">1</a>
-            <a href="simulasi/1.2_Optimasi_Muatan.html" class="game-button" data-title="Optimasi Muatan">2</a>
-            <a href="simulasi/1.3_Bajak_Laut.html" class="game-button" data-title="Bajak Laut">3</a>
-            <a href="simulasi/1.4_Penjadwalan_Atraksi.html" class="game-button" data-title="Penjadwalan Atraksi">4</a>
-            <a href="simulasi/1.5_Peta.html" class="game-button" data-title="Peta">5</a>
+    <!-- Header / Hero Section -->
+    <header class="bg-white pt-16 pb-12 px-4 sm:px-6 lg:px-8 border-b border-slate-100">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
+                Media Pembelajaran Interaktif
+            </h1>
+            <p class="text-lg text-slate-500 mb-8 max-w-2xl mx-auto">
+                Pilih topik di bawah ini untuk memulai simulasi. Belajar konsep kompleks menjadi lebih visual dan mudah dipahami.
+            </p>
+
+            <!-- Search Bar (Clean) -->
+            <div class="relative max-w-md mx-auto mb-10 group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <input type="text" id="searchInput" 
+                    class="block w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition shadow-sm"
+                    placeholder="Cari materi (misal: Biner, RSA, Router)...">
+            </div>
+
+            <!-- Filter Tabs (The "Modern" Part) -->
+            <div class="flex flex-wrap justify-center gap-2" id="filterContainer">
+                <button class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="all">
+                    Semua
+                </button>
+                <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="jaringan">
+                    <i class="fa-solid fa-network-wired mr-1.5 text-blue-500"></i> Jaringan
+                </button>
+                <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="kriptografi">
+                    <i class="fa-solid fa-key mr-1.5 text-emerald-500"></i> Kriptografi
+                </button>
+                <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="dp">
+                    <i class="fa-solid fa-layer-group mr-1.5 text-purple-500"></i> Dynamic Prog.
+                </button>
+                <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="binary">
+                    <i class="fa-solid fa-microchip mr-1.5 text-orange-500"></i> Binary War
+                </button>
+            </div>
         </div>
-    </div>
-    
-    <hr class="my-6 border-t-2 border-gray-300 w-full max-w-lg mx-auto" />
+    </header>
 
-    <div class="category-section">
-        <h2 class="category-title">Kriptografi</h2>
-        <div class="button-grid">
-            <a href="simulasi/2.0.1_Kriptografi.html" class="game-button" data-title="Konsep Kriptografi">1</a>
-            <a href="simulasi/2.0.2_Caesar_Chipper.html" class="game-button" data-title="Caesar Chiper">2</a>
-            <a href="simulasi/2.0.3_Polyalphabetic_Chiper.html" class="game-button" data-title="Polyalphabetic Chiper">3</a>
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow">
+        
+        <!-- Grid Container -->
+        <div id="learningGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            <!--
-            <a href="simulasi/2.1_Caesar_Chipper_1.html" class="game-button" data-title="Caesar Chiper : Enkripsi Dekripsi">1</a>
-            <a href="simulasi/2.2_Caesar_Chipper_2.html" class="game-button" data-title="Caesar Chiper : Pola">2</a>
-            <a href="simulasi/2.3_Polyalphabetic_Chiper_1.html" class="game-button" data-title="Polyalphabetic Chiper : Enkripsi Dekripsi">3</a>
-            <a href="simulasi/2.4_Polyalphabetic_Chiper_2.html" class="game-button" data-title="Polyalphabetic Chiper : Kunci">4</a>
-            -->
+            <!-- ================= JARINGAN ================= -->
+            <a href="simulasi/5.2_Topologi_Jaringan.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-sitemap"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Topologi & Packet Switching</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi interaktif mengenal topologi (star, bus, mesh, dan ring serta cara kerjanya) dan pergerakan paket data antar router dalam sebuah jaringan luas.</p>
+                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/5.3_Model_Jaringan.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Model Jaringan</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi interaktif proses enkapsulasi dan dekapsulasi data melalui lapisan header (Port, IP, dan MAC) untuk memahami alur komunikasi antar perangkat.</p>
+                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/5.4_Deteksi_Error.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Deteksi Error</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Eksperimen perhitungan Checksum dan CRC untuk memverifikasi integritas data serta simulasi deteksi kerusakan bit selama proses transmisi.</p>
+                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/5.5_Sinyal.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-wave-square"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Pensinyalan</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Visualisasi konversi data biner ke sinyal analog dan digital menggunakan teknik encoding (Unipolar, Polar, Bipolar) serta uji ketahanan terhadap noise.</p>
+                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/5.6_Simulasi_Firewall.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Simulasi Firewall</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi konfigurasi aturan keamanan jaringan (Allow/Deny) berbasis IP dan Port untuk menyaring lalu lintas data secara real-time.</p>
+                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/5.7_Simulator_Jaringan Dasar.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Simulator Jaringan Dasar</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Rancang bangun topologi jaringan, manajemen pengalamatan IP (Network & Host ID), dan uji konektivitas antar perangkat menggunakan perintah Ping.</p>
+                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/5.8_DNS_Simulator.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-globe"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">DNS Lookup Simulator</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi alur penerjemahan nama domain ke IP Address melalui hirarki DNS Server (Root, TLD, Authoritative) dan fungsi mekanisme caching.</p>
+                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <!-- ================= KRIPTOGRAFI ================= -->
+            <a href="simulasi/2.0.1_Kriptografi.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="kriptografi">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Crypto</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition">Konsep Dasar</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Pengenalan enkripsi, dekripsi, plaintext, dan ciphertext secara visual.</p>
+                <div class="flex items-center text-emerald-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/2.0.2_Caesar_Chipper.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="kriptografi">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-rotate"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Crypto</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition">Caesar Cipher</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Algoritma klasik menggeser huruf alfabet. Cobalah memecahkan kodenya.</p>
+                <div class="flex items-center text-emerald-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/2.0.3_Polyalphabetic_Chiper.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="kriptografi">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-table-cells"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Crypto</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition">Polyalphabetic</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Enkripsi yang lebih kompleks menggunakan Vigenère square.</p>
+                <div class="flex items-center text-emerald-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <!-- ================= DYNAMICS PROGRAMMING ================= -->
+            <a href="simulasi/4.1_Jalan_Pulang.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="dp">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-route"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Algorithm</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition">Jalan Pulang</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Menentukan banyaknya rute terpendek dalam sebuah grid.</p>
+                <div class="flex items-center text-purple-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/4.2_Kodok_Lompat.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="dp">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-frog"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Algorithm</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition">Kodok Lompat</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Optimasi biaya lompatan menggunakan Dynamic Programming.</p>
+                <div class="flex items-center text-purple-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/4.3_Populasi.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="dp">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Algorithm</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition">Populasi</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi pertumbuhan populasi dengan konsep rekursif/iteratif.</p>
+                <div class="flex items-center text-purple-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/4.4_Rampok_Rumah.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="dp">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-house-chimney-crack"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Algorithm</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition">Perampok Rumah</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">House Robber Problem: Memaksimalkan hasil curian tanpa alarm berbunyi.</p>
+                <div class="flex items-center text-purple-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <!-- ================= BINARY WAR ================= -->
+            <a href="simulasi/3.1_Latihan_Biner.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="binary">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-brands fa-watchman-monitoring"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Binary</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition">Latihan Biner</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Belajar konversi bilangan desimal ke biner step-by-step.</p>
+                <div class="flex items-center text-orange-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <a href="simulasi/5.1_Binary_Board.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="binary">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Binary</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition">Binary Board</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Tantangan kecepatan berhitung biner dalam format boardgame</p>
+                <div class="flex items-center text-orange-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+            
+            <a href="simulasi/3.2_Kuis_Biner.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="binary">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Binary</span>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition">Kuis & Game</h3>
+                <p class="text-sm text-slate-500 leading-relaxed mb-4">Tantangan kecepatan berhitung biner dalam format gamifikasi.</p>
+                <div class="flex items-center text-orange-600 text-sm font-semibold mt-auto">
+                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+            </a>
+
+            <!-- Empty State (Hidden by default) -->
+            <div id="noResults" class="hidden col-span-full py-12 text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
+                    <i class="fa-solid fa-folder-open text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-700">Tidak ditemukan</h3>
+                <p class="text-slate-500">Coba kata kunci lain atau ubah filter.</p>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="paginationControls" class="hidden col-span-full flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 pt-8 border-t border-slate-200">
+                <button id="prevBtn" class="px-5 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-slate-600 transition shadow-sm">
+                    <i class="fa-solid fa-chevron-left mr-2"></i> Sebelumnya
+                </button>
+                
+                <span id="pageIndicator" class="text-sm text-slate-600 font-medium bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
+                    Halaman <span id="currentPageSpan" class="font-bold text-indigo-600">1</span> dari <span id="totalPagesSpan" class="font-bold">1</span>
+                </span>
+                
+                <button id="nextBtn" class="px-5 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-slate-600 transition shadow-sm">
+                    Selanjutnya <i class="fa-solid fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+
         </div>
-    </div>
+    </main>
 
-    <hr class="my-6 border-t-2 border-gray-300 w-full max-w-lg mx-auto" />
-    <div class="category-section">
-        <h2 class="category-title">Dynamics Programming</h2>
-        <div class="button-grid">
-            <a href="simulasi/4.1_Jalan_Pulang.html" class="game-button" data-title="Jalan Pulang">1</a>
-            <a href="simulasi/4.2_Kodok_Lompat.html" class="game-button" data-title="Kodok Lompat">2</a>
-            <a href="simulasi/4.3_Populasi.html" class="game-button" data-title="Populasi">3</a>
-            <a href="simulasi/4.4_Rampok_Rumah.html" class="game-button" data-title="Perampok Rumah">4</a>
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-sm text-slate-500">
+                &copy; 2025
+            </p>
+            <div class="flex gap-4 text-slate-400">
+                <a href="#" class="hover:text-slate-600 transition"><i class="fa-brands fa-github text-lg"></i></a>
+                <a href="#" class="hover:text-slate-600 transition"><i class="fa-brands fa-instagram text-lg"></i></a>
+            </div>
         </div>
-    </div>
-    
-    <hr class="my-6 border-t-2 border-gray-300 w-full max-w-lg mx-auto" />
-    
-    <div class="category-section">
-        <h2 class="category-title">Binary War</h2>
-        <div class="button-grid">
-            <a href="simulasi/3.1_Latihan_Biner.html" class="game-button" data-title="Biner : Latihan Konversi">1</a>
-            <a href="simulasi/3.2_Kuis_Biner.html" class="game-button" data-title="Biner : Kuis">2</a>
-        </div>
-    </div>
+    </footer>
 
+    <!-- Logic Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const cards = Array.from(document.querySelectorAll('.card-item')); // Convert NodeList to Array for easier handling
+            const searchInput = document.getElementById('searchInput');
+            const noResults = document.getElementById('noResults');
+            
+            // Pagination Elements
+            const paginationControls = document.getElementById('paginationControls');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const currentPageSpan = document.getElementById('currentPageSpan');
+            const totalPagesSpan = document.getElementById('totalPagesSpan');
+
+            // Config
+            const ITEMS_PER_PAGE = 6;
+            let currentFilter = 'all';
+            let currentSearch = '';
+            let currentPage = 1;
+            let visibleCards = []; // Store currently matching cards
+
+            // Initialize
+            applyFilters();
+
+            // Filter Click Event
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active', 'bg-slate-800', 'text-white'));
+                    filterBtns.forEach(b => b.classList.add('bg-white', 'text-slate-600'));
+                    
+                    btn.classList.add('active');
+                    btn.classList.remove('bg-white', 'text-slate-600');
+
+                    currentFilter = btn.getAttribute('data-filter');
+                    currentPage = 1; // Reset to page 1 on filter change
+                    applyFilters();
+                });
+            });
+
+            // Search Input Event
+            searchInput.addEventListener('input', (e) => {
+                currentSearch = e.target.value.toLowerCase();
+                currentPage = 1; // Reset to page 1 on search
+                applyFilters();
+            });
+
+            // Pagination Click Events
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderPagination();
+                    // Scroll to top of grid slightly for better UX
+                    document.getElementById('learningGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                const totalPages = Math.ceil(visibleCards.length / ITEMS_PER_PAGE);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderPagination();
+                    document.getElementById('learningGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+
+            function applyFilters() {
+                // 1. Filter Logic: Determine which cards match criteria
+                visibleCards = cards.filter(card => {
+                    const category = card.getAttribute('data-category');
+                    const title = card.querySelector('h3').innerText.toLowerCase();
+                    const desc = card.querySelector('p').innerText.toLowerCase();
+                    
+                    const matchesFilter = currentFilter === 'all' || category === currentFilter;
+                    const matchesSearch = title.includes(currentSearch) || desc.includes(currentSearch);
+
+                    return matchesFilter && matchesSearch;
+                });
+
+                // 2. Hide all cards initially
+                cards.forEach(card => card.classList.add('hidden-item'));
+
+                // 3. Handle No Results
+                if (visibleCards.length === 0) {
+                    noResults.classList.remove('hidden');
+                    paginationControls.classList.add('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                    // 4. Render Pagination View
+                    renderPagination();
+                }
+            }
+
+            function renderPagination() {
+                const totalPages = Math.ceil(visibleCards.length / ITEMS_PER_PAGE);
+                
+                // Ensure currentPage is valid
+                if (currentPage > totalPages) currentPage = 1;
+                
+                // Calculate slice indices
+                const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+                const endIndex = startIndex + ITEMS_PER_PAGE;
+
+                // Show cards for current page only
+                // First hide all matching cards (to reset view from previous page)
+                visibleCards.forEach(card => card.classList.add('hidden-item'));
+                
+                // Then show the specific slice
+                const pageCards = visibleCards.slice(startIndex, endIndex);
+                pageCards.forEach(card => card.classList.remove('hidden-item'));
+
+                // Update UI Controls
+                if (totalPages > 1) {
+                    paginationControls.classList.remove('hidden');
+                    currentPageSpan.textContent = currentPage;
+                    totalPagesSpan.textContent = totalPages;
+
+                    // Button States
+                    prevBtn.disabled = currentPage === 1;
+                    nextBtn.disabled = currentPage === totalPages;
+                } else {
+                    // Hide pagination if only 1 page
+                    paginationControls.classList.add('hidden');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
