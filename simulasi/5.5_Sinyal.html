@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulasi Sinyal</title>
+    <title>Digital & Analog Signal Lab - Edisi Belajar Kelas XI</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-pastel: #f8f9fa;
+            --bg-pastel: #f0f4f8;
             --blue-pastel: #e3f2fd;
             --green-pastel: #e8f5e9;
             --lavender-pastel: #f3e5f5;
-            --cream-pastel: #fff9c4;
+            --orange-pastel: #fff3e0;
             --primary: #5c6bc0;
+            --secondary: #43a047;
             --text-dark: #2c3e50;
-            --card-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
 
         * {
@@ -32,26 +33,27 @@
         }
 
         header {
-            background-color: white;
-            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary), #7986cb);
+            color: white;
+            padding: 2.5rem 1rem;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
 
         header h1 {
-            color: var(--primary);
             font-weight: 600;
-            font-size: 1.8rem;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
         }
 
         header p {
-            font-size: 0.9rem;
-            opacity: 0.7;
+            font-size: 1rem;
+            opacity: 0.9;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 0 1rem;
         }
@@ -60,241 +62,324 @@
         .tabs {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
 
         .tab-btn {
-            padding: 12px 24px;
+            padding: 12px 20px;
             border: none;
             background: white;
-            border-radius: 12px;
+            border-radius: 15px;
             cursor: pointer;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: var(--card-shadow);
-            display: flex;
-            align-items: center;
-            gap: 8px;
             color: var(--text-dark);
+            font-size: 0.85rem;
+            border: 2px solid transparent;
         }
 
         .tab-btn.active {
-            background: var(--primary);
-            color: white;
+            background: white;
+            color: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.05);
         }
 
         .tab-btn:hover:not(.active) {
-            transform: translateY(-2px);
             background: var(--blue-pastel);
         }
 
         /* Content Sections */
         .tab-content {
             display: none;
-            animation: fadeIn 0.4s ease;
+            animation: slideUp 0.5s ease;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         /* Cards and Layout */
         .card {
             background: white;
-            border-radius: 20px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            border-radius: 25px;
+            padding: 2rem;
+            margin-bottom: 2rem;
             box-shadow: var(--card-shadow);
         }
 
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 850px) {
             .grid-2 { grid-template-columns: 1fr; }
         }
 
         /* Controls */
         .control-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 15px;
         }
 
         label {
             display: block;
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .label-desc {
+            font-size: 0.75rem;
+            font-weight: 400;
             color: #666;
+            margin-bottom: 0.5rem;
+            display: block;
         }
 
         input[type="range"] {
             width: 100%;
             accent-color: var(--primary);
+            cursor: pointer;
         }
 
         input[type="text"] {
             width: 100%;
-            padding: 10px 15px;
-            border: 2px solid #eee;
-            border-radius: 10px;
+            padding: 12px 18px;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
             font-size: 1rem;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
+            background: #fff;
         }
 
         input[type="text"]:focus {
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.1);
         }
 
         button.btn-primary {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 12px 24px;
+            border-radius: 12px;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             width: 100%;
-            transition: opacity 0.3s;
+            transition: all 0.3s;
         }
 
         button.btn-primary:hover {
-            opacity: 0.9;
+            filter: brightness(1.1);
+            box-shadow: 0 5px 15px rgba(92, 107, 192, 0.3);
         }
 
         /* Canvas Style */
         canvas {
             width: 100%;
-            height: 200px;
-            background: #fafafa;
-            border-radius: 12px;
-            border: 1px solid #eee;
+            height: 160px;
+            background: #ffffff;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
             margin-top: 10px;
         }
 
-        .encoding-label {
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding: 0 5px;
+        }
+
+        .signal-title {
+            font-size: 0.85rem;
             font-weight: 600;
-            margin-top: 1rem;
-            display: block;
             color: var(--primary);
         }
 
-        .encoding-desc {
-            font-size: 0.8rem;
-            color: #777;
-            margin-top: 4px;
-            background: #fdfdfd;
-            padding: 8px;
-            border-radius: 6px;
-        }
-
-        /* Noise Lab Specifics */
-        .noise-status {
-            text-align: center;
-            padding: 1rem;
-            border-radius: 12px;
-            margin-top: 1rem;
-            font-weight: 600;
-        }
-
-        .status-ok { background: var(--green-pastel); color: #2e7d32; }
-        .status-error { background: #ffebee; color: #c62828; }
-
-        .accuracy-pill {
-            display: inline-block;
-            padding: 4px 12px;
-            background: var(--lavender-pastel);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-top: 5px;
-        }
-
-        .mode-selector {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .radio-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
+        .signal-tag {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            background: var(--blue-pastel);
+            border-radius: 5px;
+            color: var(--primary);
         }
 
         /* Education Box */
         .edu-box {
             margin-top: 1.5rem;
-            padding: 1rem;
-            border-left: 4px solid var(--primary);
-            background: var(--blue-pastel);
-            border-radius: 0 12px 12px 0;
-            font-size: 0.9rem;
+            padding: 1.5rem;
+            border-left: 5px solid var(--primary);
+            background: white;
+            border-radius: 0 20px 20px 0;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.02);
         }
 
         .edu-box h4 {
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .edu-box p {
+            font-size: 0.9rem;
+            color: #4a5568;
+            margin-bottom: 0.8rem;
+        }
+
+        .edu-box ul {
+            padding-left: 1.2rem;
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+
+        .edu-box li {
+            margin-bottom: 0.4rem;
+        }
+
+        .tip-badge {
+            display: inline-block;
+            background: var(--orange-pastel);
+            color: #e65100;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
             margin-bottom: 0.5rem;
+        }
+
+        /* Mode Selectors */
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-btn {
+            flex: 1;
+            min-width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            background: #fff;
+            padding: 10px;
+            border: 2px solid #edf2f7;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .radio-btn:hover {
+            border-color: var(--blue-pastel);
+        }
+
+        .radio-btn input {
+            display: none;
+        }
+
+        .radio-btn:has(input:checked) {
+            background: var(--blue-pastel);
+            border-color: var(--primary);
             color: var(--primary);
         }
+
+        /* Noise Status */
+        .noise-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .noise-status {
+            width: 100%;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .status-ok { background: var(--green-pastel); color: #2e7d32; }
+        .status-error { background: #ffebee; color: #c62828; }
 
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Simulasi Sinyal</h1>
-        <p>Eksplorasi Interaktif Sinyal dan Transmisi Data</p>
+        <h1>Digital & Analog Signal Lab</h1>
+        <p>Media Pembelajaran Interaktif untuk Siswa Kelas XI SMA/SMK</p>
     </header>
 
     <div class="container">
         <!-- Tab Navigation -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="openTab('mode1')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                Dasar Sinyal
-            </button>
-            <button class="tab-btn" onclick="openTab('mode2')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
-                Encoding Data
-            </button>
-            <button class="tab-btn" onclick="openTab('mode3')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10s3-3 3-8"/><path d="M22 10s-3-3-3-8"/><path d="M10 2c1 2 2.5 4 3 7 1 3 0 6-5 9-3 3-3 6 0 6s7-1 10-5c2-3 3-6 1-10"/><circle cx="12" cy="12" r="10"/></svg>
-                Ketahanan Sinyal
-            </button>
+            <button class="tab-btn active" onclick="openTab('mode1')">1. Dasar Sinyal</button>
+            <button class="tab-btn" onclick="openTab('mode2')">2. Encoding Biner</button>
+            <button class="tab-btn" onclick="openTab('mode4')">3. Modulasi Digital</button>
+            <button class="tab-btn" onclick="openTab('mode5')">4. Modulasi Analog</button>
+            <button class="tab-btn" onclick="openTab('mode3')">5. Uji Gangguan (Noise)</button>
         </div>
 
         <!-- Mode 1: Dasar Sinyal -->
         <div id="mode1" class="tab-content active">
+            <div class="edu-box" style="margin-bottom: 2rem; border-left-color: var(--secondary);">
+                <span class="tip-badge">Konsep Dasar</span>
+                <h4>Apa itu Sinyal?</h4>
+                <p>Sinyal adalah tegangan listrik yang berubah terhadap waktu untuk membawa data. Bayangkan seperti kode Morse yang dikirim lewat kabel.</p>
+                <ul>
+                    <li><strong>Analog:</strong> Berubah secara mulus (kontinu). Contoh: Suara manusia.</li>
+                    <li><strong>Digital:</strong> Berubah secara patah-patah (diskrit). Contoh: Data komputer (0 dan 1).</li>
+                </ul>
+            </div>
+            
             <div class="grid-2">
                 <div class="card">
-                    <h3>Sinyal Analog (Sinus)</h3>
+                    <h3>Sinyal Analog (Gelombang Sinus)</h3>
                     <div class="control-group">
-                        <label>Amplitudo: <span id="amp-val">5</span></label>
+                        <label>Amplitudo (Tinggi Gelombang): <span id="amp-val">5</span></label>
+                        <span class="label-desc">Menentukan kekuatan atau volume sinyal.</span>
                         <input type="range" id="input-amp" min="1" max="10" step="0.5" value="5">
                     </div>
                     <div class="control-group">
-                        <label>Frekuensi: <span id="freq-val">1.0</span> Hz</label>
+                        <label>Frekuensi (Kerapatan): <span id="freq-val">1.0</span> Hz</label>
+                        <span class="label-desc">Jumlah gelombang per detik. Semakin tinggi, semakin rapat.</span>
                         <input type="range" id="input-freq" min="0.1" max="5" step="0.1" value="1">
                     </div>
                     <canvas id="canvas-analog"></canvas>
                 </div>
                 <div class="card">
-                    <h3>Sinyal Digital (Square)</h3>
+                    <h3>Sinyal Digital (Gelombang Kotak)</h3>
                     <div class="control-group">
-                        <label>Input Biner (8-16 bit)</label>
+                        <label>Input Biner (Data Komputer)</label>
+                        <span class="label-desc">Masukkan urutan angka 0 dan 1 (Contoh: 101100).</span>
                         <input type="text" id="binary-input-basic" value="10101101" maxlength="16">
                     </div>
-                    <button class="btn-primary" onclick="generateBasicDigital()">Generate Wave</button>
+                    <button class="btn-primary" onclick="generateBasicDigital()">Gambarkan Sinyal</button>
                     <canvas id="canvas-digital"></canvas>
                 </div>
             </div>
@@ -303,137 +388,197 @@
         <!-- Mode 2: Encoding Lab -->
         <div id="mode2" class="tab-content">
             <div class="card">
-                <h3>Encoding & Data Representation</h3>
-                <div class="control-group" style="max-width: 400px;">
-                    <label>Input Biner Sentral</label>
+                <h3>Teknik Encoding (Data Digital ke Sinyal Digital)</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">Bagaimana komputer mengirim angka 0 dan 1 melalui kabel tembaga (seperti kabel LAN)? Kita mengubahnya menjadi variasi tegangan listrik.</p>
+                
+                <div class="control-group" style="max-width: 500px; margin: 0 auto 2rem auto;">
+                    <label>Masukkan Deretan Bit</label>
                     <div style="display: flex; gap: 10px;">
-                        <input type="text" id="binary-input-encode" value="10110010" maxlength="16">
-                        <button class="btn-primary" style="width: auto;" onclick="runEncoding()">Encode</button>
+                        <input type="text" id="binary-input-encode" value="10110010" maxlength="12">
+                        <button class="btn-primary" style="width: auto;" onclick="runEncoding()">Proses</button>
                     </div>
                 </div>
 
-                <div>
-                    <span class="encoding-label">Unipolar Encoding</span>
-                    <canvas id="canvas-unipolar"></canvas>
-                    <p class="encoding-desc"><strong>Unipolar:</strong> Tegangan hanya satu polaritas (biasanya positif). Rentan terhadap akumulasi komponen DC.</p>
+                <div class="grid-2">
+                    <div>
+                        <div class="signal-header">
+                            <span class="signal-title">Unipolar</span>
+                            <span class="signal-tag">Sederhana</span>
+                        </div>
+                        <canvas id="canvas-unipolar"></canvas>
+                        <div class="edu-box">
+                            <p>Hanya menggunakan satu arah tegangan. <strong>1</strong> = Ada listrik, <strong>0</strong> = Tidak ada listrik.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="signal-header">
+                            <span class="signal-title">Polar (NRZ-L)</span>
+                            <span class="signal-tag">Efisien</span>
+                        </div>
+                        <canvas id="canvas-polar"></canvas>
+                        <div class="edu-box">
+                            <p>Menggunakan tegangan Positif (<strong>1</strong>) dan Negatif (<strong>0</strong>). Lebih tahan gangguan.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <span class="encoding-label">Polar (NRZ-L) Encoding</span>
-                    <canvas id="canvas-polar"></canvas>
-                    <p class="encoding-desc"><strong>Polar:</strong> Menggunakan dua level tegangan (positif dan negatif). Mengurangi masalah komponen DC dibanding unipolar.</p>
+                <div style="margin-top: 2rem;">
+                    <div class="signal-header">
+                        <span class="signal-title">Bipolar (AMI)</span>
+                        <span class="signal-tag">Standar Industri</span>
+                    </div>
+                    <canvas id="canvas-bipolar" style="height: 120px;"></canvas>
+                    <div class="edu-box">
+                        <p><strong>0</strong> selalu di tengah (0V). Sedangkan <strong>1</strong> bergantian naik ke atas dan turun ke bawah. Ini membantu perangkat tetap sinkron!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode 4: Modulasi Digital -->
+        <div id="mode4" class="tab-content">
+            <div class="card">
+                <h3>Modulasi Digital (Data Digital ke Sinyal Analog)</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">Ini adalah cara kerja <strong>Modem</strong> dan <strong>Wi-Fi</strong>. Data komputer (digital) diubah menjadi gelombang radio (analog) agar bisa terbang di udara.</p>
+                
+                <div class="grid-2">
+                    <div class="control-group">
+                        <label>Data yang Dikirim</label>
+                        <input type="text" id="binary-input-mod" value="10110101" maxlength="8">
+                        
+                        <label style="margin-top: 1.5rem;">Pilih Cara "Menumpangkan" Data:</label>
+                        <div class="mode-selector">
+                            <label class="radio-btn"><input type="radio" name="dig-mod" value="ask" checked onchange="updateDigitalMod()"> 💡 ASK</label>
+                            <label class="radio-btn"><input type="radio" name="dig-mod" value="fsk" onchange="updateDigitalMod()"> 📻 FSK</label>
+                            <label class="radio-btn"><input type="radio" name="dig-mod" value="psk" onchange="updateDigitalMod()"> 🔄 PSK</label>
+                        </div>
+                    </div>
+                    <div class="edu-box" style="margin-top: 0;">
+                        <h4 id="dig-mod-title">ASK</h4>
+                        <p id="dig-mod-text">...</p>
+                        <span class="tip-badge">Analogi Wi-Fi</span>
+                    </div>
+                </div>
+                <canvas id="canvas-dig-mod" style="height: 220px;"></canvas>
+            </div>
+        </div>
+
+        <!-- Mode 5: Modulasi Analog -->
+        <div id="mode5" class="tab-content">
+            <div class="card">
+                <h3>Modulasi Analog (Data Analog ke Sinyal Analog)</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">Digunakan pada <strong>Siaran Radio</strong>. Suara kita (pesan) ditumpangkan pada gelombang pembawa yang sangat kuat.</p>
+                
+                <div class="grid-2">
+                    <div>
+                        <div class="control-group">
+                            <label>Kekuatan Suara (Am): <span id="am-val">4</span></label>
+                            <input type="range" id="input-am-mod" min="1" max="10" step="1" value="4" oninput="updateAnalogMod()">
+                        </div>
+                        <div class="control-group">
+                            <label>Frekuensi Radio (Fc): <span id="fc-val">15</span> Hz</label>
+                            <input type="range" id="input-fc-mod" min="5" max="40" step="1" value="15" oninput="updateAnalogMod()">
+                        </div>
+                        <div class="mode-selector">
+                            <label class="radio-btn"><input type="radio" name="ana-mod" value="am" checked onchange="updateAnalogMod()"> Radio AM</label>
+                            <label class="radio-btn"><input type="radio" name="ana-mod" value="fm" onchange="updateAnalogMod()"> Radio FM</label>
+                            <label class="radio-btn"><input type="radio" name="ana-mod" value="pm" onchange="updateAnalogMod()"> Radio PM</label>
+                        </div>
+                    </div>
+                    <div class="edu-box" style="margin-top: 0;">
+                        <h4 id="ana-mod-title">Radio AM</h4>
+                        <p id="ana-mod-text">...</p>
+                    </div>
                 </div>
 
-                <div>
-                    <span class="encoding-label">Bipolar (AMI) Encoding</span>
-                    <canvas id="canvas-bipolar"></canvas>
-                    <p class="encoding-desc"><strong>Bipolar (AMI):</strong> Angka '0' pada tegangan nol, '1' bergantian antara positif dan negatif. Membantu sinkronisasi.</p>
+                <div class="signal-header">
+                    <span class="signal-title">1. Sinyal Pesan (Suara Kita)</span>
                 </div>
+                <canvas id="canvas-ana-msg" style="height: 80px;"></canvas>
+
+                <div class="signal-header">
+                    <span class="signal-title">2. Sinyal Pembawa (Carrier Radio)</span>
+                </div>
+                <canvas id="canvas-ana-car" style="height: 80px;"></canvas>
+
+                <div class="signal-header">
+                    <span class="signal-title">3. Hasil Akhir (Sinyal yang Dikirim)</span>
+                </div>
+                <canvas id="canvas-ana-mod" style="height: 180px;"></canvas>
             </div>
         </div>
 
         <!-- Mode 3: Noise Lab -->
         <div id="mode3" class="tab-content">
             <div class="card">
-                <h3>Uji Ketahanan Terhadap Noise</h3>
+                <h3>Simulasi Gangguan (Noise) di Perjalanan</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">Di dunia nyata, sinyal sering terganggu oleh petir, mesin motor, atau kabel listrik lain. Mari lihat siapa yang lebih tahan banting!</p>
+                
                 <div class="grid-2">
                     <div>
-                        <label>Pilihan Transmisi</label>
-                        <div class="mode-selector">
-                            <label class="radio-btn">
-                                <input type="radio" name="trans-type" value="analog" checked onchange="updateNoiseLab()"> Analog
-                            </label>
-                            <label class="radio-btn">
-                                <input type="radio" name="trans-type" value="digital" onchange="updateNoiseLab()"> Digital (Polar)
-                            </label>
-                        </div>
                         <div class="control-group">
-                            <label>Tingkat Noise: <span id="noise-val">0</span>%</label>
+                            <label>Tarik Slider Gangguan: <span id="noise-val">0</span>%</label>
                             <input type="range" id="input-noise" min="0" max="100" value="0" oninput="updateNoiseLab()">
                         </div>
-                    </div>
-                    <div style="text-align: center; border-left: 1px solid #eee; padding-left: 1rem;">
-                        <label>Indikator Penerimaan</label>
-                        <div id="noise-indicator" class="noise-status status-ok">
-                            Data Diterima Akurat!
+                        <div class="mode-selector">
+                            <label class="radio-btn"><input type="radio" name="trans-type" value="analog" checked onchange="updateNoiseLab()"> Sinyal Analog</label>
+                            <label class="radio-btn"><input type="radio" name="trans-type" value="digital" onchange="updateNoiseLab()"> Sinyal Digital</label>
                         </div>
-                        <div class="accuracy-pill">Akurasi: <span id="accuracy-text">100</span>%</div>
+                    </div>
+                    <div class="noise-container">
+                        <div id="noise-indicator" class="noise-status status-ok">Aman & Jernih</div>
+                        <div class="accuracy-pill">Persentase Akurasi: <span id="accuracy-text">100</span>%</div>
                     </div>
                 </div>
                 
-                <div style="display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.75rem; color: #999;">
-                    <span>PENGIRIM</span>
-                    <span>AREA GANGGUAN</span>
-                    <span>PENERIMA</span>
-                </div>
-                <canvas id="canvas-noise" style="height: 300px;"></canvas>
-
-                <!-- Penjelasan Edukatif -->
+                <canvas id="canvas-noise" style="height: 250px;"></canvas>
+                
                 <div id="noise-explanation" class="edu-box">
-                    <h4 id="edu-title">Karakteristik Sinyal Analog</h4>
-                    <p id="edu-text">Sinyal analog mengalami degradasi secara bertahap. Semakin tinggi noise, semakin buruk kualitas informasi yang diterima (misal: suara semakin berdesis), namun sinyal tidak langsung hilang sepenuhnya.</p>
+                    <h4 id="edu-title">Analisis Hasil</h4>
+                    <p id="edu-text">Geser slider noise untuk memulai eksperimen.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Global State ---
-        let currentTab = 'mode1';
+        // --- Global Logic ---
         let analogAmp = 5;
         let analogFreq = 1;
-        let basicBinary = "10101101";
-        let encodeBinary = "10110010";
-        let noiseLevel = 0;
 
-        // --- Initialization ---
         window.onload = () => {
-            initAnalogMode();
+            drawAnalogWave();
+            generateBasicDigital();
             runEncoding();
+            updateDigitalMod();
+            updateAnalogMod();
             updateNoiseLab();
             
-            // Listeners for sliders
-            document.getElementById('input-amp').addEventListener('input', (e) => {
-                analogAmp = e.target.value;
+            document.getElementById('input-amp').oninput = (e) => {
+                analogAmp = parseFloat(e.target.value);
                 document.getElementById('amp-val').innerText = analogAmp;
                 drawAnalogWave();
-            });
-
-            document.getElementById('input-freq').addEventListener('input', (e) => {
-                analogFreq = e.target.value;
+            };
+            document.getElementById('input-freq').oninput = (e) => {
+                analogFreq = parseFloat(e.target.value);
                 document.getElementById('freq-val').innerText = analogFreq;
                 drawAnalogWave();
-            });
+            };
+            document.getElementById('binary-input-mod').oninput = updateDigitalMod;
         };
 
-        // --- Tab Logic ---
         function openTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
             
-            if(tabId === 'mode1') {
-                drawAnalogWave();
-                generateBasicDigital();
-            }
+            // Refresh logic for specific tabs
+            if(tabId === 'mode1') { drawAnalogWave(); generateBasicDigital(); }
             if(tabId === 'mode2') runEncoding();
+            if(tabId === 'mode4') updateDigitalMod();
+            if(tabId === 'mode5') updateAnalogMod();
             if(tabId === 'mode3') updateNoiseLab();
-        }
-
-        // --- Drawing Helpers ---
-        function clearCanvas(canvas) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw baseline
-            ctx.beginPath();
-            ctx.strokeStyle = '#eee';
-            ctx.lineWidth = 1;
-            ctx.moveTo(0, canvas.height / 2);
-            ctx.lineTo(canvas.width, canvas.height / 2);
-            ctx.stroke();
         }
 
         function setupCanvas(id) {
@@ -444,160 +589,195 @@
             canvas.height = rect.height * dpr;
             const ctx = canvas.getContext('2d');
             ctx.scale(dpr, dpr);
-            return { canvas, ctx, width: rect.width, height: rect.height };
+            ctx.clearRect(0, 0, rect.width, rect.height);
+            ctx.beginPath();
+            ctx.strokeStyle = '#f1f5f9';
+            ctx.moveTo(0, rect.height / 2);
+            ctx.lineTo(rect.width, rect.height / 2);
+            ctx.stroke();
+            return { ctx, width: rect.width, height: rect.height };
         }
 
         function drawBitLabel(ctx, bit, x, y) {
-            ctx.font = 'bold 12px Poppins';
-            ctx.fillStyle = '#999';
+            ctx.font = 'bold 11px Poppins';
+            ctx.fillStyle = '#cbd5e0';
             ctx.textAlign = 'center';
             ctx.fillText(bit, x, y);
         }
 
-        // --- Mode 1 Logic ---
-        function initAnalogMode() {
-            drawAnalogWave();
-            generateBasicDigital();
-        }
-
+        // --- Tab 1 Drawing ---
         function drawAnalogWave() {
             const { ctx, width, height } = setupCanvas('canvas-analog');
-            clearCanvas(document.getElementById('canvas-analog'));
-            
             ctx.beginPath();
             ctx.strokeStyle = '#5c6bc0';
-            ctx.lineWidth = 2;
-
+            ctx.lineWidth = 3;
             for (let x = 0; x < width; x++) {
-                const y = (height / 2) + (analogAmp * 8) * Math.sin((x / width) * Math.PI * 2 * analogFreq * 5);
-                if (x === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
+                const y = (height / 2) + (analogAmp * 6) * Math.sin((x / width) * Math.PI * 2 * analogFreq * 5);
+                if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
             }
             ctx.stroke();
         }
 
         function generateBasicDigital() {
-            const input = document.getElementById('binary-input-basic').value;
-            if (!/^[01]+$/.test(input)) {
-                alert("Masukkan hanya angka 0 dan 1");
-                return;
-            }
-            drawDigitalWave('canvas-digital', input);
-        }
-
-        function drawDigitalWave(canvasId, bits) {
-            const { ctx, width, height } = setupCanvas(canvasId);
-            clearCanvas(document.getElementById(canvasId));
-
+            const bits = document.getElementById('binary-input-basic').value;
+            if (!/^[01]+$/.test(bits)) { alert("Hanya angka 0 dan 1!"); return; }
+            const { ctx, width, height } = setupCanvas('canvas-digital');
             const step = width / bits.length;
-            const high = height * 0.25;
-            const low = height * 0.75;
-
             ctx.beginPath();
-            ctx.strokeStyle = '#66bb6a';
+            ctx.strokeStyle = '#43a047';
             ctx.lineWidth = 3;
-
-            let currentX = 0;
             bits.split('').forEach((bit, i) => {
-                const targetY = (bit === '1') ? high : low;
-                
-                // Indikator teks 1/0
-                drawBitLabel(ctx, bit, currentX + step/2, height * 0.15);
-
-                // Vertical line
-                if (i > 0) ctx.lineTo(currentX, targetY);
-                else ctx.moveTo(currentX, targetY);
-                
-                // Horizontal line
-                currentX += step;
-                ctx.lineTo(currentX, targetY);
+                const y = bit === '1' ? height * 0.3 : height * 0.7;
+                drawBitLabel(ctx, bit, (i * step) + step/2, height * 0.15);
+                if (i === 0) ctx.moveTo(0, y); else ctx.lineTo(i * step, y);
+                ctx.lineTo((i + 1) * step, y);
             });
             ctx.stroke();
         }
 
-        // --- Mode 2 Logic ---
+        // --- Tab 2 Drawing (Encoding) ---
         function runEncoding() {
             const bits = document.getElementById('binary-input-encode').value;
             if (!/^[01]+$/.test(bits)) return;
-
-            drawUnipolar(bits);
-            drawPolar(bits);
-            drawBipolar(bits);
+            
+            // Unipolar
+            const uni = setupCanvas('canvas-unipolar');
+            drawSimpleEnc(uni.ctx, bits, uni.width, uni.height, b => b==='1'?0.3:0.5, '#42a5f5');
+            
+            // Polar
+            const pol = setupCanvas('canvas-polar');
+            drawSimpleEnc(pol.ctx, bits, pol.width, pol.height, b => b==='1'?0.3:0.7, '#ab47bc');
+            
+            // Bipolar
+            const bip = setupCanvas('canvas-bipolar');
+            let lastP = 1;
+            drawSimpleEnc(bip.ctx, bits, bip.width, bip.height, b => {
+                if(b==='0') return 0.5;
+                const r = lastP === 1 ? 0.3 : 0.7;
+                lastP *= -1; return r;
+            }, '#ffa726');
         }
 
-        function drawUnipolar(bits) {
-            const { ctx, width, height } = setupCanvas('canvas-unipolar');
-            clearCanvas(document.getElementById('canvas-unipolar'));
-            const step = width / bits.length;
+        function drawSimpleEnc(ctx, bits, w, h, yFn, color) {
+            const step = w / bits.length;
             ctx.beginPath();
-            ctx.strokeStyle = '#42a5f5';
-            ctx.lineWidth = 2;
-            let cx = 0;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2.5;
             bits.split('').forEach((bit, i) => {
-                const y = bit === '1' ? height*0.3 : height*0.5;
-                drawBitLabel(ctx, bit, cx + step/2, height * 0.15);
-                if(i>0) ctx.lineTo(cx, y); else ctx.moveTo(cx, y);
-                cx += step;
-                ctx.lineTo(cx, y);
+                const y = h * yFn(bit);
+                drawBitLabel(ctx, bit, (i * step) + step/2, 12);
+                if (i === 0) ctx.moveTo(0, y); else ctx.lineTo(i * step, y);
+                ctx.lineTo((i + 1) * step, y);
             });
             ctx.stroke();
         }
 
-        function drawPolar(bits) {
-            const { ctx, width, height } = setupCanvas('canvas-polar');
-            clearCanvas(document.getElementById('canvas-polar'));
+        // --- Tab 4 (Digital Mod) ---
+        function updateDigitalMod() {
+            const bits = document.getElementById('binary-input-mod').value;
+            const mode = document.querySelector('input[name="dig-mod"]:checked').value;
+            if (!/^[01]+$/.test(bits)) return;
+            const { ctx, width, height } = setupCanvas('canvas-dig-mod');
             const step = width / bits.length;
-            ctx.beginPath();
-            ctx.strokeStyle = '#ab47bc';
-            ctx.lineWidth = 2;
-            let cx = 0;
-            bits.split('').forEach((bit, i) => {
-                const y = bit === '1' ? height*0.3 : height*0.7;
-                drawBitLabel(ctx, bit, cx + step/2, height * 0.15);
-                if(i>0) ctx.lineTo(cx, y); else ctx.moveTo(cx, y);
-                cx += step;
-                ctx.lineTo(cx, y);
-            });
-            ctx.stroke();
-        }
+            const amp = 40;
+            
+            const title = document.getElementById('dig-mod-title');
+            const text = document.getElementById('dig-mod-text');
 
-        function drawBipolar(bits) {
-            const { ctx, width, height } = setupCanvas('canvas-bipolar');
-            clearCanvas(document.getElementById('canvas-bipolar'));
-            const step = width / bits.length;
+            if(mode === 'ask') {
+                title.innerText = "ASK (Amplitude Shift Keying)";
+                text.innerText = "Mengubah Tinggi (Amplitudo). Bit '1' = Gelombang tinggi, Bit '0' = Mati/Datar. Paling mudah dibuat tapi paling lemah terhadap petir.";
+            } else if(mode === 'fsk') {
+                title.innerText = "FSK (Frequency Shift Keying)";
+                text.innerText = "Mengubah Kerapatan (Frekuensi). Bit '1' = Rapat, Bit '0' = Renggang. Digunakan pada transmisi data jarak jauh.";
+            } else {
+                title.innerText = "PSK (Phase Shift Keying)";
+                text.innerText = "Mengubah Arah (Fasa). Gelombang berbalik arah 180° setiap bit berubah. Ini teknik paling canggih yang dipakai Wi-Fi dan 4G/5G!";
+            }
+
             ctx.beginPath();
-            ctx.strokeStyle = '#ffa726';
+            ctx.strokeStyle = '#5c6bc0';
             ctx.lineWidth = 2;
-            let cx = 0;
-            let lastPolarity = 1; 
             bits.split('').forEach((bit, i) => {
-                let y;
-                drawBitLabel(ctx, bit, cx + step/2, height * 0.15);
-                if (bit === '0') {
-                    y = height * 0.5;
-                } else {
-                    y = lastPolarity === 1 ? height * 0.3 : height * 0.7;
-                    lastPolarity *= -1;
+                const startX = i * step;
+                drawBitLabel(ctx, bit, startX + step/2, 30);
+                for (let x = 0; x < step; x++) {
+                    const t = x / step;
+                    let y;
+                    if (mode === 'ask') y = (height/2) + (bit==='1' ? amp : 5) * Math.sin(t * Math.PI * 12);
+                    else if (mode === 'fsk') y = (height/2) + amp * Math.sin(t * Math.PI * (bit==='1' ? 18 : 6));
+                    else y = (height/2) + amp * Math.sin(t * Math.PI * 12 + (bit==='1' ? 0 : Math.PI));
+                    
+                    if (x===0 && i===0) ctx.moveTo(startX, y); else ctx.lineTo(startX + x, y);
                 }
-                if(i>0) ctx.lineTo(cx, y); else ctx.moveTo(cx, y);
-                cx += step;
-                ctx.lineTo(cx, y);
             });
             ctx.stroke();
         }
 
-        // --- Mode 3 Logic ---
+        // --- Tab 5 (Analog Mod) ---
+        function updateAnalogMod() {
+            const mode = document.querySelector('input[name="ana-mod"]:checked').value;
+            const am = parseFloat(document.getElementById('input-am-mod').value);
+            const fc = parseFloat(document.getElementById('input-fc-mod').value);
+            document.getElementById('am-val').innerText = am;
+            document.getElementById('fc-val').innerText = fc;
+
+            const title = document.getElementById('ana-mod-title');
+            const text = document.getElementById('ana-mod-text');
+
+            // Message
+            const m = setupCanvas('canvas-ana-msg');
+            m.ctx.beginPath(); m.ctx.strokeStyle='#43a047'; m.ctx.lineWidth=2;
+            for(let x=0; x<m.width; x++){
+                const y = (m.height/2) + (am*3) * Math.sin((x/m.width)*Math.PI*4);
+                if(x===0) m.ctx.moveTo(x,y); else m.ctx.lineTo(x,y);
+            }
+            m.ctx.stroke();
+
+            // Carrier
+            const c = setupCanvas('canvas-ana-car');
+            c.ctx.beginPath(); c.ctx.strokeStyle='#ffa726';
+            for(let x=0; x<c.width; x++){
+                const y = (c.height/2) + 25 * Math.sin((x/c.width)*Math.PI*2*fc);
+                if(x===0) c.ctx.moveTo(x,y); else c.ctx.lineTo(x,y);
+            }
+            c.ctx.stroke();
+
+            // Result
+            const r = setupCanvas('canvas-ana-mod');
+            r.ctx.beginPath(); r.ctx.strokeStyle='#5c6bc0'; r.ctx.lineWidth=1.5;
+            
+            if(mode === 'am') {
+                title.innerText = "AM (Amplitude Modulation)";
+                text.innerText = "Tinggi gelombang pembawa dibentuk mirip seperti suara kita. Kelebihannya: Jarak jangkauan sangat jauh. Kekurangannya: Suara kresek-kresek jika ada petir.";
+            } else if(mode === 'fm') {
+                title.innerText = "FM (Frequency Modulation)";
+                text.innerText = "Kerapatan gelombang berubah sesuai suara kita. Suara jernih (stereo), tapi jangkauan tidak sejauh AM.";
+            } else {
+                title.innerText = "PM (Phase Modulation)";
+                text.innerText = "Fasa (sudut) gelombang bergeser. Dasar dari sistem navigasi dan satelit.";
+            }
+
+            for(let x=0; x<r.width; x++) {
+                const t = x / r.width;
+                const message = Math.sin(t * Math.PI * 4);
+                let y;
+                if(mode === 'am') y = (r.height/2) + (35 + (am*3)*message) * Math.sin(t * Math.PI * 2 * fc);
+                else if(mode === 'fm') y = (r.height/2) + 40 * Math.sin(t * Math.PI * 2 * fc + (am/1.5) * Math.cos(t * Math.PI * 4));
+                else y = (r.height/2) + 40 * Math.sin(t * Math.PI * 2 * fc + (am/2) * Math.PI * message);
+                if(x===0) r.ctx.moveTo(x,y); else r.ctx.lineTo(x,y);
+            }
+            r.ctx.stroke();
+        }
+
+        // --- Tab 3 (Noise) ---
         function updateNoiseLab() {
             const type = document.querySelector('input[name="trans-type"]:checked').value;
-            noiseLevel = document.getElementById('input-noise').value;
-            document.getElementById('noise-val').innerText = noiseLevel;
-
+            const noise = parseFloat(document.getElementById('input-noise').value);
+            document.getElementById('noise-val').innerText = noise;
             const { ctx, width, height } = setupCanvas('canvas-noise');
-            clearCanvas(document.getElementById('canvas-noise'));
-
-            const noiseIntensity = noiseLevel / 5;
-            const indicator = document.getElementById('noise-indicator');
-            const accuracyText = document.getElementById('accuracy-text');
+            const ind = document.getElementById('noise-indicator');
+            const acc = document.getElementById('accuracy-text');
             const eduTitle = document.getElementById('edu-title');
             const eduText = document.getElementById('edu-text');
 
@@ -605,59 +785,39 @@
             ctx.strokeStyle = type === 'analog' ? '#5c6bc0' : '#ab47bc';
             ctx.lineWidth = 2;
 
-            if (type === 'analog') {
-                eduTitle.innerText = "Karakteristik Sinyal Analog";
-                eduText.innerText = "Sinyal analog mengalami degradasi secara bertahap. Semakin tinggi noise, semakin buruk kualitas informasi yang diterima (misal: suara semakin berdesis), namun sinyal tidak langsung hilang sepenuhnya.";
-                
-                for (let x = 0; x < width; x++) {
-                    const baseWave = (height / 2) + 40 * Math.sin((x / width) * Math.PI * 10);
-                    const localNoise = (x > width*0.3) ? (Math.random() - 0.5) * noiseIntensity * ((x - width*0.3)/(width*0.7)) * 10 : 0;
-                    const y = baseWave + localNoise;
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
+            if(type === 'analog') {
+                eduTitle.innerText = "Hasil Eksperimen Analog";
+                eduText.innerText = "Sinyal analog sangat rapuh. Sedikit saja ada gangguan (noise), bentuk gelombang langsung rusak. Suara radio AM akan mulai berisik (kresek) seiring bertambahnya noise.";
+                for(let x=0; x<width; x++) {
+                    const base = (height/2) + 45 * Math.sin((x/width) * Math.PI * 10);
+                    const n = (x > width*0.2) ? (Math.random()-0.5) * noise * 1.2 : 0;
+                    if(x===0) ctx.moveTo(x, base+n); else ctx.lineTo(x, base+n);
                 }
-                ctx.stroke();
-                
-                let accuracy = Math.max(0, 100 - noiseLevel);
-                accuracyText.innerText = accuracy.toFixed(0);
-                indicator.innerText = accuracy > 70 ? "Sinyal Audio Jernih" : (accuracy > 30 ? "Sinyal Terdistorsi (Noise)" : "Sinyal Rusak Parah!");
-                indicator.className = accuracy > 40 ? "noise-status status-ok" : "noise-status status-error";
-            } 
-            else {
-                eduTitle.innerText = "Karakteristik Sinyal Digital";
-                eduText.innerText = "Sinyal digital memiliki sifat 'all-or-nothing'. Karena menggunakan ambang batas (threshold), data tetap bisa dipulihkan sempurna (100% akurasi) selama noise tidak terlalu ekstrem. Namun, jika noise melewati batas tertentu, data akan hancur total.";
-
-                const bits = "10110100";
+                const score = Math.max(0, 100-noise);
+                acc.innerText = score.toFixed(0);
+                ind.innerText = score > 60 ? "Cukup Jernih" : (score > 30 ? "Sangat Berisik" : "Sinyal Hilang!");
+                ind.className = score > 50 ? "noise-status status-ok" : "noise-status status-error";
+            } else {
+                eduTitle.innerText = "Hasil Eksperimen Digital";
+                eduText.innerText = "Sinyal digital punya 'kekuatan ajaib' bernama Threshold. Selama gangguan tidak ekstrem, komputer masih bisa membedakan mana 1 dan 0. Hasilnya tetap 100% akurat sampai batas tertentu!";
+                const bits = "101100101";
                 const step = width / bits.length;
-                let cx = 0;
-                
                 bits.split('').forEach((bit, i) => {
-                    const baseY = bit === '1' ? height * 0.3 : height * 0.7;
-                    drawBitLabel(ctx, bit, cx + step/2, height * 0.15);
-                    
-                    for(let sx = 0; sx < step; sx++) {
-                        const x = cx + sx;
-                        const localNoise = (x > width*0.3) ? (Math.random() - 0.5) * noiseIntensity * 15 : 0;
-                        const y = baseY + localNoise;
-                        if (x === 0) ctx.moveTo(x, y);
-                        else ctx.lineTo(x, y);
+                    const base = bit === '1' ? height*0.3 : height*0.7;
+                    drawBitLabel(ctx, bit, i*step + step/2, height*0.15);
+                    for(let sx=0; sx<step; sx++) {
+                        const x = i*step + sx;
+                        const n = (x > width*0.2) ? (Math.random()-0.5) * noise * 1.8 : 0;
+                        if(x===0) ctx.moveTo(x, base+n); else ctx.lineTo(x, base+n);
                     }
-                    cx += step;
                 });
-                ctx.stroke();
-
-                if (noiseLevel < 65) {
-                    indicator.innerText = "Data Diterima Akurat!";
-                    indicator.className = "noise-status status-ok";
-                    accuracyText.innerText = "100";
-                } else {
-                    indicator.innerText = "Data Rusak! Gagal Dekode.";
-                    indicator.className = "noise-status status-error";
-                    accuracyText.innerText = "0";
-                }
+                const isAccurate = noise < 65;
+                acc.innerText = isAccurate ? "100" : "0";
+                ind.innerText = isAccurate ? "Data 100% Utuh" : "Data Rusak Total";
+                ind.className = isAccurate ? "noise-status status-ok" : "noise-status status-error";
             }
+            ctx.stroke();
         }
-
     </script>
 </body>
 </html>
