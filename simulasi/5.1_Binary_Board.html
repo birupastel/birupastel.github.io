@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Binary Board</title>
+    <title>Circuit Runner - Pastel Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -40,7 +40,7 @@
         }
 
         .sidebar {
-            width: 320px;
+            width: 300px;
             flex-shrink: 0;
             background-color: white;
             border-right: 1px solid #e2e8f0;
@@ -58,7 +58,7 @@
             align-items: center;
             justify-content: center;
             background-color: #f1f5f9;
-            padding: 2rem;
+            padding: 1rem;
             position: relative;
         }
 
@@ -71,8 +71,8 @@
             padding: 8px;
             border-radius: 16px;
             box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.15);
-            width: 90vh; 
-            height: 90vh;
+            width: 92vh; 
+            height: 92vh;
             max-width: 100%;
             max-height: 100%;
         }
@@ -86,7 +86,6 @@
             position: relative;
             font-size: 0.7rem;
             font-weight: 700;
-            transition: transform 0.2s;
         }
 
         .player-token {
@@ -152,21 +151,20 @@
 </head>
 <body class="main-layout">
 
-    <!-- SIDEBAR (KIRI) -->
+    <!-- SIDEBAR -->
     <div class="sidebar">
         <div>
-            <!-- Header Permainan -->
             <div class="flex items-center gap-3 mb-6">
                 <div class="p-2 bg-blue-100 rounded-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>
                 </div>
                 <div>
-                    <h1 class="text-xl font-black tracking-tight text-slate-800 uppercase leading-none">Binary</h1>
-                    <h1 class="text-xl font-black tracking-tight text-slate-400 uppercase leading-none">Board</h1>
+                    <h1 class="text-xl font-black tracking-tight text-slate-800 uppercase leading-none">Circuit</h1>
+                    <h1 class="text-xl font-black tracking-tight text-slate-400 uppercase leading-none">Runner</h1>
                 </div>
             </div>
 
-            <!-- Kartu Pemain -->
+            <!-- Skor Pemain -->
             <div class="space-y-3 mb-4">
                 <div id="p1-card" class="score-card p-4 rounded-2xl">
                     <div class="flex justify-between items-center mb-1">
@@ -190,23 +188,24 @@
                 </div>
             </div>
 
-            <!-- Keterangan Ubin -->
+            <!-- Legend Ubin -->
             <div class="bg-white p-3 rounded-xl border border-slate-100 mb-4 flex flex-col gap-2 text-[8px] font-bold">
+                <p class="text-[7px] text-slate-400 uppercase mb-1">Legend Sirkuit</p>
                 <div class="grid grid-cols-2 gap-2 text-[7px]">
-                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-[#e9d5ff]"></div> 6-BIT (40)</div>
-                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-[#bbf7d0]"></div> 7-BIT (25)</div>
-                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-[#fecaca]"></div> 8-BIT (15)</div>
-                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-[#475569]"></div> VOID (10)</div>
-                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-white border"></div> AMAN (10)</div>
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-[#e9d5ff]"></div> 6-BIT (DASAR)</div>
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-[#bbf7d0]"></div> 7-BIT (BONUS)</div>
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-[#fecaca]"></div> 8-BIT (JEBAKAN)</div>
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-[#475569]"></div> VOID (-2 POS)</div>
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-sm bg-white border border-slate-200"></div> AMAN</div>
                 </div>
             </div>
 
-            <div class="bg-slate-50 p-3 rounded-xl text-center border border-slate-100">
-                <p id="game-message" class="text-[9px] font-bold text-slate-500 uppercase tracking-tight">Siap?</p>
+            <div class="bg-slate-50 p-3 rounded-xl text-center border border-slate-100 min-h-[50px] flex items-center justify-center">
+                <p id="game-message" class="text-[9px] font-bold text-slate-500 uppercase tracking-tight leading-tight">Siap mentransmisi data?</p>
             </div>
         </div>
 
-        <!-- Bagian Dadu dan Tombol -->
+        <!-- Bagian Dadu -->
         <div class="mt-4 space-y-4">
             <div class="flex items-center justify-center gap-4 bg-slate-50 p-4 rounded-[1.5rem] border border-slate-100 shadow-inner">
                 <div id="dice-visual" class="dice-visual">
@@ -214,8 +213,7 @@
                 </div>
                 <div class="text-left">
                     <p class="text-[9px] font-black text-slate-300 uppercase">Input</p>
-                    <p class="text-lg font-black text-slate-800 leading-none">DATA</p>
-                    <p class="text-lg font-black text-slate-800 leading-none">STREAM</p>
+                    <p class="text-lg font-black text-slate-800 leading-none tracking-tighter uppercase">Signal Stream</p>
                 </div>
             </div>
             <button id="roll-btn" onclick="startRoll()" class="w-full py-5 bg-slate-800 text-white rounded-[1.2rem] font-black uppercase tracking-[0.2em] text-xs shadow-lg hover:bg-slate-900 transition-all disabled:opacity-50">
@@ -224,7 +222,7 @@
         </div>
     </div>
 
-    <!-- ARENA (KANAN) -->
+    <!-- ARENA -->
     <div class="game-area">
         <div id="board" class="board-container">
             <!-- Tiles generated by JS -->
@@ -236,25 +234,28 @@
         <div class="bg-white rounded-[3rem] p-10 w-full max-w-2xl shadow-2xl flex flex-col">
             <div class="flex justify-between items-center mb-8">
                 <span id="challenge-bit-label" class="text-xs font-black text-slate-400 uppercase tracking-widest">FIREWALL</span>
-                <div id="timer-box" class="px-6 py-3 bg-red-50 text-red-600 rounded-2xl border border-red-100 font-black text-2xl">
+                <div id="timer-box" class="px-6 py-3 bg-red-50 text-red-600 rounded-2xl border border-red-100 font-black text-2xl flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                     <span id="timer-val">20</span>s
                 </div>
             </div>
 
             <div class="text-center mb-8">
-                <p id="challenge-type-label" class="text-xs font-black text-slate-400 uppercase mb-3">Tantangan:</p>
+                <p id="challenge-type-label" class="text-xs font-black text-slate-400 uppercase mb-3 tracking-[0.1em]">Tantangan:</p>
                 <h2 id="target-value" class="text-7xl font-black text-slate-800 digital-font leading-none">255</h2>
             </div>
 
+            <!-- Biner Input (Segaris) -->
             <div id="binary-input-container" class="flex flex-nowrap justify-between gap-1 mb-10 h-16">
-                <!-- Bits in single row -->
+                <!-- Bits generated by JS -->
             </div>
 
+            <!-- Desimal Input -->
             <div id="decimal-input-container" class="mb-10 hidden">
                 <input type="number" id="dec-input" placeholder="0" class="w-full bg-slate-50 border-b-8 border-slate-200 text-7xl text-center focus:outline-none py-6 font-black text-slate-800 rounded-t-2xl">
             </div>
 
-            <button onclick="submitChallenge()" class="w-full py-6 bg-slate-800 text-white rounded-[2rem] font-black uppercase tracking-[0.4em] text-md hover:bg-slate-900 shadow-xl transition-all">
+            <button onclick="submitChallenge()" class="w-full py-6 bg-slate-800 text-white rounded-[2rem] font-black uppercase tracking-[0.4em] text-md hover:bg-slate-900 shadow-xl transition-all active:scale-95">
                 Verifikasi Sinyal
             </button>
         </div>
@@ -266,9 +267,9 @@
             <div class="w-24 h-24 bg-blue-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-inner">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
             </div>
-            <h2 id="intro-title" class="text-4xl font-black text-slate-800 mb-6 tracking-tighter uppercase">Binary Board</h2>
-            <p id="intro-desc" class="text-slate-500 font-bold text-xs mb-10 uppercase tracking-[0.2em] leading-relaxed">Penyelarasan Data Biner 100-Node<br>6-Bit (Awal) ➔ 7-Bit (Tengah) ➔ 8-Bit (Akhir)</p>
-            <button onclick="closeStartModal()" class="px-16 py-6 bg-slate-800 text-white rounded-full font-black uppercase tracking-widest text-xs shadow-2xl hover:bg-slate-900 transition-all">
+            <h2 id="intro-title" class="text-4xl font-black text-slate-800 mb-6 tracking-tighter uppercase leading-none">Circuit Runner<br><span class="text-blue-400">Pastel Edition</span></h2>
+            <p id="intro-desc" class="text-slate-500 font-bold text-xs mb-10 uppercase tracking-[0.2em] leading-relaxed">Balapan Konversi Biner 100-Node<br>6-Bit (Awal) ➔ 7-Bit (Tengah) ➔ 8-Bit (Akhir)</p>
+            <button onclick="closeStartModal()" class="px-16 py-6 bg-slate-800 text-white rounded-full font-black uppercase tracking-widest text-xs shadow-2xl hover:bg-slate-900 transition-all active:scale-95">
                 Buka Jalur
             </button>
         </div>
@@ -322,7 +323,7 @@
             board[0] = { id: 0, type: 'start' };
             board[99] = { id: 99, type: 'finish' };
 
-            // Place 1 black (void) and 1 white (normal) per row (scattered)
+            // 1 hitam (void) dan 1 putih (normal) per baris (acak)
             for (let r = 0; r < 10; r++) {
                 let rowIndices = [];
                 for (let c = 0; c < 10; c++) {
@@ -331,19 +332,17 @@
                 }
                 shuffle(rowIndices);
                 
-                // Pick void (hitam)
                 if (rowIndices.length > 0) {
                     let vIdx = rowIndices.pop();
                     board[vIdx] = { id: vIdx, type: 'void' };
                 }
-                // Pick normal (putih)
                 if (rowIndices.length > 0) {
                     let nIdx = rowIndices.pop();
                     board[nIdx] = { id: nIdx, type: 'normal' };
                 }
             }
 
-            // Distribute remaining challenges by zones
+            // Distribusi progresif sisa ubin
             const zones = [
                 { start: 1, end: 33, ungu: 20, hijau: 4, merah: 2 },
                 { start: 34, end: 66, ungu: 13, hijau: 10, merah: 3 },
@@ -363,12 +362,11 @@
                 }
             });
 
-            // Handle any stragglers
             for(let i=0; i<TOTAL_TILES; i++) {
                 if(board[i] === null) board[i] = { id: i, type: 'binary' };
             }
 
-            // Visual Generation
+            // Render papan (Snake path)
             for (let r = GRID_SIZE - 1; r >= 0; r--) {
                 for (let c = 0; c < GRID_SIZE; c++) {
                     const idx = r % 2 === 0 ? (r * GRID_SIZE + c) : (r * GRID_SIZE + (GRID_SIZE - 1 - c));
@@ -423,7 +421,7 @@
         function closeStartModal() {
             document.getElementById('modal-start').classList.add('hidden');
             initBoard();
-            setMessage(`P1: Silakan kocok sinyal!`);
+            setMessage(`Pemain 1: Silakan kocok sinyal!`);
         }
 
         function setMessage(msg) {
@@ -445,7 +443,7 @@
 
             const targetPos = players[turn].pos + d;
             if (targetPos > TOTAL_TILES - 1) {
-                setMessage(`Dadu ${d}! Terlalu besar.`);
+                setMessage(`Dadu ${d}! Terlalu besar untuk Finish.`);
                 playSound(200, 'square', 0.3);
                 setTimeout(nextTurn, 1000);
             } else {
@@ -493,9 +491,23 @@
             
             let bits = 8;
             let time = 20;
-            if (tileType === 'binary') bits = 6;
-            else if (tileType === 'shortcut') bits = 7;
-            else if (tileType === 'trap') { bits = 8; time = 35; }
+
+            // Dasar durasi berdasarkan tipe kotak
+            if (tileType === 'binary') {
+                bits = 6;
+                time = 20;
+            } else if (tileType === 'shortcut') {
+                bits = 7;
+                time = 20;
+            } else if (tileType === 'trap') {
+                bits = 8;
+                time = 35;
+            }
+
+            // REVISI: Jika mode Desimal ke Biner (D2B), waktu selalu 45 detik
+            if (isD2B) {
+                time = 45;
+            }
 
             const val = Math.floor(Math.random() * (Math.pow(2, bits) - 1)) + 1;
             currentChallenge = { type: isD2B ? 'D2B' : 'B2D', target: val, tileType, bits };
@@ -504,7 +516,7 @@
             userBits = Array(bits).fill(0);
             document.getElementById('dec-input').value = '';
             document.getElementById('timer-val').textContent = timeLeft;
-            document.getElementById('challenge-bit-label').textContent = `FIREWALL ${bits}-BIT`;
+            document.getElementById('challenge-bit-label').textContent = `FIREWALL ${bits}-BIT (${isD2B ? 'D2B' : 'B2D'})`;
             document.getElementById('target-value').textContent = isD2B ? val : val.toString(2).padStart(bits, '0');
             document.getElementById('challenge-type-label').textContent = isD2B ? "Konversi ke Biner:" : "Konversi ke Desimal:";
             
@@ -555,9 +567,11 @@
             
             if (!isTimeout) {
                 if (currentChallenge.type === 'D2B') {
+                    // Kalkulasi nilai biner dari input tombol
                     const sum = userBits.reduce((acc, b, i) => acc + (b * Math.pow(2, currentChallenge.bits - 1 - i)), 0);
                     correct = sum === currentChallenge.target;
                 } else {
+                    // Kalkulasi nilai desimal dari input angka
                     correct = parseInt(document.getElementById('dec-input').value) === currentChallenge.target;
                 }
             }
@@ -568,10 +582,10 @@
                 playSound(900, 'sine', 0.3);
                 players[turn].score += 50;
                 if (currentChallenge.tileType === 'shortcut') {
-                    setMessage("OVERCLOCK! Maju 1 langkah.");
+                    setMessage("OVERCLOCK BERHASIL! Bonus maju 1 langkah.");
                     setTimeout(() => moveStepByStep(1, true), 800);
                 } else {
-                    setMessage("DATA VALID!");
+                    setMessage("VERIFIKASI BERHASIL! Data aman.");
                     setTimeout(nextTurn, 1000);
                 }
             } else {
@@ -580,7 +594,7 @@
                     setMessage("FIREWALL CRASH! Mundur 3 langkah.");
                     setTimeout(() => moveStepByStep(3, false), 1000);
                 } else {
-                    setMessage("AKSES DITOLAK!");
+                    setMessage("AKSES DITOLAK! Sinyal gagal.");
                     setTimeout(nextTurn, 1000);
                 }
             }
@@ -590,14 +604,14 @@
             turn = (turn + 1) % 2;
             gameState = 'IDLE';
             document.getElementById('roll-btn').disabled = false;
-            setMessage(`Giliran P${turn + 1}!`);
+            setMessage(`Giliran Pemain ${turn + 1}: Silakan kocok sinyal!`);
             updatePlayerVisuals();
         }
 
         function showWin() {
             const intro = document.getElementById('modal-start');
-            document.getElementById('intro-title').textContent = `P${turn + 1} MENANG!`;
-            document.getElementById('intro-desc').textContent = "SINYAL DATA BERHASIL MENGUASAI INTI CPU.";
+            document.getElementById('intro-title').textContent = `PEMAIN ${turn + 1} MENANG!`;
+            document.getElementById('intro-desc').textContent = "SINYAL DATA BERHASIL MENGUASAI INTI CPU SEPENUHNYA.";
             intro.classList.remove('hidden');
             gameState = 'WIN';
             playSound(1100, 'sine', 0.8);
