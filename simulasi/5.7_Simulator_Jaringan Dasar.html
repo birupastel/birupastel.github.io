@@ -3,525 +3,565 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetSim - Simulator Jaringan Interaktif</title>
+    <title>Simulator Jaringan</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #F8FAFC;
-            overflow: hidden;
-        }
-        .canvas-area {
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 30px 30px;
-            position: relative;
-            touch-action: none;
-        }
-        .device {
-            transition: transform 0.1s ease;
-            cursor: grab;
-            user-select: none;
-        }
-        .device:active { cursor: grabbing; }
-        .node-active { filter: drop-shadow(0 0 10px rgba(14, 165, 233, 0.8)); }
-        
-        /* Animasi Nadi (Pulse) */
-        @keyframes pulse-blue {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7); }
-            70% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(14, 165, 233, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
-        }
-        .ping-btn-animate {
-            animation: pulse-blue 1.5s infinite;
-        }
-
+        body { font-family: 'Poppins', sans-serif; overflow: hidden; }
+        .canvas-area { background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 30px 30px; }
+        .device-node { transition: all 0.2s; cursor: grab; user-select: none; }
+        .device-node:active { cursor: grabbing; }
         .packet {
-            pointer-events: none;
-            z-index: 100;
+            width: 14px; height: 14px; background-color: #f59e0b;
+            border: 2px solid white; border-radius: 50%;
+            position: absolute; z-index: 50; 
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
         }
-        .log-entry {
-            animation: fadeIn 0.3s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .connection-line { cursor: pointer; pointer-events: all; }
+        .connection-hitbox { cursor: pointer; pointer-events: all; stroke: transparent; stroke-width: 15px; }
+        .connection-hitbox:hover + .connection-line { stroke: #6366f1; stroke-width: 3px; }
         
-        /* Cursor khusus saat mode ping */
-        .cursor-ping { cursor: crosshair !important; }
-        .target-mode { border: 2px dashed #0ea5e9 !important; border-radius: 12px; }
+        @keyframes pulse-ring { 
+            0% { transform: scale(0.8); opacity: 0.5; } 
+            100% { transform: scale(1.5); opacity: 0; } 
+        }
+        .active-route::before {
+            content: ''; position: absolute; width: 100%; height: 100%;
+            border: 4px solid #10b981; border-radius: inherit;
+            animation: pulse-ring 1.5s infinite;
+        }
     </style>
 </head>
-<body class="h-screen flex flex-col">
+<body class="bg-slate-50 h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200 px-6 py-3 flex justify-between items-center z-50">
-        <div class="flex items-center gap-2">
-            <div class="p-2 bg-sky-100 rounded-lg">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+    <header class="bg-white border-b px-8 py-4 flex justify-between items-center shrink-0 z-50">
+        <div class="flex items-center gap-4">
+            <div class="p-2 bg-indigo-600 rounded-xl">
+                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
             </div>
-            <h1 class="text-xl font-semibold text-slate-800 tracking-tight">NetSim <span class="text-sky-500 text-sm font-normal">v1.2</span></h1>
+            <h1 class="text-xl font-bold text-slate-800">Simulator<span class="text-indigo-600">Jaringan</span></h1>
         </div>
-        <div class="flex gap-3">
-            <button onclick="resetSimulation()" class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">Reset</button>
-            <button onclick="toggleConnectionMode()" id="cableBtn" class="px-4 py-2 text-sm font-medium text-white bg-sky-500 hover:bg-sky-600 rounded-lg shadow-sm transition-all flex items-center gap-2">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5"></path><path d="M10 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5"></path><path d="M6 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v5"></path><path d="M22 11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9h20z"></path></svg>
-                <span>Hubungkan Kabel</span>
-            </button>
+        
+        <div class="flex items-center gap-3 bg-slate-100 p-1 rounded-xl border">
+            <button onclick="setTool('select')" id="tool-select" class="tool-btn px-4 py-1.5 rounded-lg text-sm font-medium bg-white shadow-sm text-indigo-600">Pilih</button>
+            <button onclick="setTool('cable')" id="tool-cable" class="tool-btn px-4 py-1.5 rounded-lg text-sm font-medium text-slate-500">Kabel</button>
+            <button onclick="setTool('ping')" id="tool-ping" class="tool-btn px-4 py-1.5 rounded-lg text-sm font-medium text-slate-500">Uji Ping</button>
         </div>
     </header>
 
-    <main class="flex-1 flex overflow-hidden">
-        <aside class="w-20 md:w-64 bg-white border-r border-slate-200 p-4 flex flex-col gap-6 z-40">
-            <div>
-                <h2 class="hidden md:block text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Toolbar Perangkat</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <button onclick="addDevice('PC')" class="group flex flex-col items-center p-3 rounded-xl hover:bg-sky-50 border border-transparent hover:border-sky-100 transition-all">
-                        <div class="w-10 h-10 flex items-center justify-center bg-sky-50 text-sky-600 rounded-lg group-hover:bg-white shadow-sm">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                        </div>
-                        <span class="text-[10px] md:text-xs mt-2 text-slate-600 font-medium">PC</span>
-                    </button>
-                    <button onclick="addDevice('Router')" class="group flex flex-col items-center p-3 rounded-xl hover:bg-yellow-50 border border-transparent hover:border-yellow-100 transition-all">
-                        <div class="w-10 h-10 flex items-center justify-center bg-yellow-50 text-yellow-600 rounded-lg group-hover:bg-white shadow-sm">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 8 8 12 12 16"></polyline><polyline points="16 12 12 8"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg>
-                        </div>
-                        <span class="text-[10px] md:text-xs mt-2 text-slate-600 font-medium">Router</span>
-                    </button>
-                    <button onclick="addDevice('Switch')" class="group flex flex-col items-center p-3 rounded-xl hover:bg-emerald-50 border border-transparent hover:border-emerald-100 transition-all">
-                        <div class="w-10 h-10 flex items-center justify-center bg-emerald-50 text-emerald-600 rounded-lg group-hover:bg-white shadow-sm">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="6" y1="9" x2="18" y2="15"></line><line x1="18" y1="9" x2="6" y2="15"></line></svg>
-                        </div>
-                        <span class="text-[10px] md:text-xs mt-2 text-slate-600 font-medium">Switch</span>
-                    </button>
-                    <button onclick="addDevice('Hub')" class="group flex flex-col items-center p-3 rounded-xl hover:bg-purple-50 border border-transparent hover:border-purple-100 transition-all">
-                        <div class="w-10 h-10 flex items-center justify-center bg-purple-50 text-purple-600 rounded-lg group-hover:bg-white shadow-sm">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
-                        </div>
-                        <span class="text-[10px] md:text-xs mt-2 text-slate-600 font-medium">Hub</span>
-                    </button>
+    <main class="flex flex-1 overflow-hidden relative">
+        <!-- Sidebar Perangkat -->
+        <aside class="w-24 bg-white border-r flex flex-col items-center py-8 gap-8 z-40">
+            <div onclick="spawnDevice('pc')" class="group cursor-pointer flex flex-col items-center gap-1" title="Tambah PC">
+                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 </div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase">PC</span>
             </div>
-
-            <div class="mt-auto md:block hidden">
-                <div id="info-box" class="bg-yellow-50 border border-yellow-100 p-4 rounded-xl text-xs text-yellow-800 leading-relaxed">
-                    <h3 class="font-bold mb-1 flex items-center gap-1">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        Panduan
-                    </h3>
-                    <p id="info-text">Tarik perangkat ke kanvas, lalu pasang kabel untuk menghubungkan.</p>
+            <div onclick="spawnDevice('router')" class="group cursor-pointer flex flex-col items-center gap-1" title="Tambah Router">
+                <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all shadow-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                 </div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase">Router</span>
+            </div>
+            <div onclick="spawnDevice('switch')" class="group cursor-pointer flex flex-col items-center gap-1" title="Tambah Switch">
+                <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                </div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase">Switch</span>
             </div>
         </aside>
 
-        <section id="canvas" class="flex-1 canvas-area relative overflow-hidden">
-            <svg id="connection-svg" class="absolute inset-0 w-full h-full pointer-events-none"></svg>
+        <!-- Workspace -->
+        <section id="workspace" class="flex-1 relative canvas-area bg-slate-50 overflow-hidden">
+            <!-- Layers -->
+            <svg id="connection-layer" class="absolute inset-0 w-full h-full" style="pointer-events: none;"></svg>
+            
+            <!-- Quick Tip Box -->
+            <div id="quick-tip" class="absolute top-6 left-6 w-72 bg-white/90 backdrop-blur p-4 rounded-2xl border border-slate-200 shadow-xl z-30">
+                <div class="flex items-start gap-3">
+                    <div class="p-1.5 bg-indigo-100 text-indigo-600 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-indigo-600 uppercase mb-1">Tips Edukasi</h4>
+                        <p id="tip-text" class="text-[11px] text-slate-600">Klik dua kali pada perangkat untuk konfigurasi. Klik kanan pada perangkat atau kabel untuk menghapusnya.</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <aside class="w-80 bg-white border-l border-slate-200 flex flex-col z-40 md:flex hidden">
-            <div class="p-4 border-b border-slate-100">
-                <h2 class="text-sm font-semibold text-slate-800">Log Aktivitas</h2>
-            </div>
-            <div id="ping-log" class="flex-1 overflow-y-auto p-4 space-y-2 text-[11px] font-mono">
-                <div class="text-slate-400 italic">Menunggu aktivitas...</div>
-            </div>
-            <div class="p-4 bg-slate-50 border-t border-slate-200">
-                <div class="text-[10px] text-slate-500 flex items-center justify-between uppercase font-bold tracking-widest mb-2">
-                    <span>Statistik Sesi</span>
-                </div>
-                <div class="flex gap-4">
-                    <div class="flex-1">
-                        <div class="text-xl font-semibold text-slate-700" id="stat-devices">0</div>
-                        <div class="text-[9px] text-slate-500 uppercase">Perangkat</div>
-                    </div>
-                    <div class="flex-1">
-                        <div class="text-xl font-semibold text-slate-700" id="stat-pings">0</div>
-                        <div class="text-[9px] text-slate-500 uppercase">Uji Ping</div>
-                    </div>
-                </div>
-            </div>
+        <!-- Sidebar Log -->
+        <aside class="w-72 bg-white border-l flex flex-col z-40">
+            <div class="p-4 border-b font-bold text-xs text-slate-500 uppercase tracking-widest">Aktivitas Jaringan</div>
+            <div id="traffic-log" class="flex-1 overflow-y-auto p-4 space-y-2 font-mono text-[10px]"></div>
         </aside>
     </main>
 
-    <!-- Modal Konfigurasi -->
-    <div id="configModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-            <div class="p-6 border-b border-slate-100">
-                <h3 id="modalTitle" class="text-lg font-semibold text-slate-800">Setting Perangkat</h3>
-                <p class="text-xs text-slate-500">Masukkan IP Address untuk komunikasi.</p>
-            </div>
-            <div class="p-6 space-y-4">
+    <!-- Configuration Modal -->
+    <div id="config-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+        <div class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <!-- Header Modal -->
+            <div id="modal-header" class="p-6 text-white flex justify-between items-center">
                 <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1">IP Address</label>
-                    <input type="text" id="inputIP" placeholder="192.168.1.1" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 outline-none transition-all">
+                    <h3 id="modal-title" class="text-xl font-bold">Konfigurasi Perangkat</h3>
+                    <p id="modal-subtitle" class="text-xs opacity-80">Atur parameter Layer 3 Anda</p>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Subnet Mask</label>
-                    <input type="text" id="inputMask" placeholder="255.255.255.0" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-sky-500/20 outline-none">
+                <button onclick="closeModal()" class="hover:bg-white/20 p-2 rounded-full transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex border-b bg-slate-50">
+                <button onclick="switchTab('ip')" id="tab-ip-btn" class="px-6 py-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600">Konfigurasi IP</button>
+                <button onclick="switchTab('route')" id="tab-route-btn" class="hidden px-6 py-3 text-xs font-bold text-slate-400">Tabel Routing</button>
+            </div>
+
+            <!-- Content: IP Config -->
+            <div id="tab-ip-content" class="p-6 space-y-6">
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Alamat IP (IPv4)</label>
+                        <input type="text" id="input-ip" placeholder="192.168.1.10" class="w-full px-4 py-2.5 bg-slate-100 border border-transparent rounded-xl font-mono focus:bg-white focus:border-indigo-300 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Subnet Mask</label>
+                        <input type="text" id="input-mask" placeholder="255.255.255.0" class="w-full px-4 py-2.5 bg-slate-100 border border-transparent rounded-xl font-mono focus:bg-white focus:border-indigo-300 outline-none transition-all">
+                    </div>
+                    <div id="gw-field">
+                        <label class="text-[10px] font-bold text-orange-500 uppercase block mb-1">Default Gateway</label>
+                        <input type="text" id="input-gw" placeholder="192.168.1.1" class="w-full px-4 py-2.5 bg-orange-50 border border-transparent rounded-xl font-mono focus:bg-white focus:border-orange-300 outline-none transition-all">
+                    </div>
                 </div>
-                <div id="conflictAlert" class="p-3 bg-red-50 text-red-600 rounded-lg text-xs hidden">
-                    Konflik IP! Perangkat lain sudah menggunakan IP ini.
+
+                <!-- Analisis Edukatif -->
+                <div class="p-4 rounded-2xl border border-slate-100 bg-slate-50 space-y-3">
+                    <h4 class="text-[10px] font-bold text-indigo-600 uppercase">Hasil Analisis Subnetting</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                            <span class="block text-[9px] text-slate-400 uppercase font-bold">Network ID</span>
+                            <span id="display-netid" class="text-sm font-mono font-bold text-indigo-600">--</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100">
+                            <span class="block text-[9px] text-slate-400 uppercase font-bold">Host ID</span>
+                            <span id="display-hostid" class="text-sm font-mono font-bold text-emerald-600">--</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="p-4 bg-slate-50 flex gap-2">
-                <button onclick="closeModal()" class="flex-1 py-2 text-sm text-slate-500 hover:bg-slate-200 rounded-lg">Batal</button>
-                <button onclick="saveConfig()" class="flex-1 py-2 text-sm text-white bg-sky-500 hover:bg-sky-600 rounded-lg font-medium">Simpan</button>
+
+            <!-- Content: Routing Table -->
+            <div id="tab-route-content" class="hidden p-6 max-h-80 overflow-y-auto">
+                <div class="mb-4 text-[10px] text-slate-500 italic">Tabel ini terisi secara otomatis berdasarkan interface yang aktif (Directly Connected).</div>
+                <table class="w-full text-left text-[11px] font-mono">
+                    <thead class="bg-slate-100 text-slate-600">
+                        <tr>
+                            <th class="p-2 rounded-l-lg">Network</th>
+                            <th class="p-2">Mask</th>
+                            <th class="p-2 rounded-r-lg">Next Hop</th>
+                        </tr>
+                    </thead>
+                    <tbody id="routing-table-body" class="divide-y"></tbody>
+                </table>
+            </div>
+
+            <div class="p-6 bg-slate-50 flex gap-3">
+                <button onclick="closeModal()" class="flex-1 py-3 text-sm font-bold text-slate-500 hover:bg-slate-200 rounded-xl transition-colors">Batal</button>
+                <button onclick="saveConfig()" class="flex-1 py-3 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-100 transition-all">Simpan Konfigurasi</button>
             </div>
         </div>
     </div>
 
-    <!-- UI Feedback Area -->
-    <div id="pingFeedback" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-xl text-sm hidden z-[200] flex items-center gap-3">
-        <span id="pingFeedbackText"></span>
+    <!-- Context Menu -->
+    <div id="ctx-menu" class="hidden absolute z-[200] bg-white border rounded-xl shadow-xl w-48 overflow-hidden py-1">
+        <div id="ctx-target-info" class="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase border-b bg-slate-50 mb-1">Target</div>
+        <button id="ctx-btn-delete" onclick="handleContextDelete()" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-medium">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            Hapus
+        </button>
     </div>
 
     <script>
-        // State Global
+        // State
         let devices = [];
         let connections = [];
-        let deviceCounter = 0;
-        let selectedDevice = null;
+        let tool = 'select';
+        let idCounter = 0;
+        let cableSrc = null;
+        let pingSrc = null;
         
-        let isConnectingMode = false;
-        let connectionSource = null;
-        
-        let isPingMode = false;
-        let pingSource = null;
+        let contextTarget = { type: null, id: null }; // Tracks what was right-clicked
 
-        let draggingDevice = null;
-        let dragOffset = { x: 0, y: 0 };
-        let stats = { devices: 0, pings: 0 };
+        const workspace = document.getElementById('workspace');
+        const connLayer = document.getElementById('connection-layer');
 
-        const canvas = document.getElementById('canvas');
-        const svgLayer = document.getElementById('connection-svg');
-        const infoText = document.getElementById('info-text');
+        // Core Functions
+        function setTool(t) {
+            tool = t;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('bg-white','shadow-sm','text-indigo-600'));
+            document.getElementById(`tool-${t}`).classList.add('bg-white','shadow-sm','text-indigo-600');
+            cableSrc = null; pingSrc = null;
+            document.querySelectorAll('.device-node').forEach(d => d.classList.remove('ring-4', 'ring-indigo-400', 'ring-orange-400'));
+            updateTip();
+        }
 
-        // Logic Perangkat
-        function addDevice(type) {
-            const id = `dev-${++deviceCounter}`;
-            const device = {
-                id, type, 
-                x: 150 + (Math.random() * 50), 
-                y: 150 + (Math.random() * 50),
-                ip: '', mask: '255.255.255.0'
+        function updateTip() {
+            const tips = {
+                select: "Klik dua kali perangkat untuk konfigurasi. Klik kanan perangkat/kabel untuk hapus.",
+                cable: "Klik perangkat pertama, lalu klik perangkat kedua untuk menghubungkan.",
+                ping: "Klik PC sumber, lalu klik PC tujuan untuk simulasi pengiriman paket."
             };
-            devices.push(device);
-            renderDevice(device);
-            updateStats();
-            updateInfo(`Menambahkan ${type}.`);
+            document.getElementById('tip-text').innerText = tips[tool];
+        }
+
+        function spawnDevice(type) {
+            const id = `dev_${++idCounter}`;
+            const dev = {
+                id, type, name: `${type.toUpperCase()} ${idCounter}`,
+                x: 150 + Math.random()*100, y: 150 + Math.random()*100,
+                ip: '', mask: '255.255.255.0', gw: '',
+                routes: []
+            };
+            devices.push(dev);
+            renderDevice(dev);
+            log(`Perangkat ${dev.name} ditambahkan.`, 'info');
         }
 
         function renderDevice(dev) {
-            const div = document.createElement('div');
-            div.id = dev.id;
-            div.className = `device absolute z-10 p-2 flex flex-col items-center group`;
-            div.style.left = `${dev.x}px`;
-            div.style.top = `${dev.y}px`;
+            const el = document.createElement('div');
+            el.id = dev.id;
+            el.className = `device-node absolute w-16 h-16 bg-white rounded-2xl shadow-md border-2 border-slate-100 flex flex-col items-center justify-center z-10`;
+            el.style.left = `${dev.x}px`; el.style.top = `${dev.y}px`;
+            
+            const color = dev.type === 'pc' ? 'text-blue-500' : (dev.type === 'router' ? 'text-emerald-500' : 'text-purple-500');
+            const icon = {
+                pc: '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>',
+                router: '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>',
+                switch: '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>'
+            }[dev.type];
 
-            let icon = '';
-            let color = 'text-slate-600';
-            if (dev.type === 'PC') {
-                icon = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>';
-                color = 'text-sky-500';
-            } else if (dev.type === 'Router') {
-                icon = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 8 8 12 12 16"></polyline><polyline points="16 12 12 8"></polyline><line x1="12" y1="8" x2="12" y2="16"></line></svg>';
-                color = 'text-yellow-500';
-            } else if (dev.type === 'Switch') {
-                icon = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="6" y1="9" x2="18" y2="15"></line><line x1="18" y1="9" x2="6" y2="15"></line></svg>';
-                color = 'text-emerald-500';
-            } else if (dev.type === 'Hub') {
-                icon = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>';
-                color = 'text-purple-500';
-            }
-
-            div.innerHTML = `
-                <div class="device-body relative">
-                    <div class="device-icon-box ${color} bg-white p-2 rounded-xl shadow-md group-hover:shadow-lg transition-all border-2 border-transparent">
-                        ${icon}
-                    </div>
+            el.innerHTML = `
+                <div class="${color}">${icon}</div>
+                <div class="absolute -bottom-8 text-center w-32">
+                    <div class="text-[10px] font-bold text-slate-800">${dev.name}</div>
+                    <div class="text-[9px] font-mono text-indigo-500 font-bold" id="${dev.id}-lbl-ip">${dev.ip || ''}</div>
                 </div>
-                <span class="text-[10px] font-bold mt-1 bg-white px-2 rounded-full border border-slate-100">${dev.type} ${dev.id.split('-')[1]}</span>
-                <span class="device-ip-display text-[9px] text-slate-400 mt-0.5">${dev.ip || 'no-ip'}</span>
-                <button onclick="removeDevice(event, '${dev.id}')" class="absolute -bottom-6 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-600 transition-opacity">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
             `;
 
-            div.addEventListener('mousedown', (e) => startDrag(e, dev));
-            div.addEventListener('click', (e) => handleInteraction(e, dev));
-            
-            canvas.appendChild(div);
-            if (dev.ip) addPingButton(dev);
-        }
-
-        // --- Interaction Handler (Fix Utama) ---
-        function handleInteraction(e, dev) {
-            e.stopPropagation();
-
-            // Mode 1: Menghubungkan Kabel
-            if (isConnectingMode) {
-                if (!connectionSource) {
-                    connectionSource = dev;
-                    document.getElementById(dev.id).classList.add('node-active');
-                    updateInfo("Pilih perangkat kedua untuk disambungkan.");
-                } else if (connectionSource.id !== dev.id) {
-                    addConnection(connectionSource, dev);
-                    exitModes();
-                }
-                return;
-            }
-
-            // Mode 2: Memilih Target Ping (Solusi Perbaikan)
-            if (isPingMode) {
-                if (dev.id !== pingSource.id) {
-                    executePing(pingSource, dev);
-                    exitModes();
-                }
-                return;
-            }
-
-            // Mode 3: Klik Biasa (Buka Config)
-            openConfig(dev);
-        }
-
-        function exitModes() {
-            isConnectingMode = false;
-            isPingMode = false;
-            connectionSource = null;
-            pingSource = null;
-            
-            document.querySelectorAll('.device').forEach(d => {
-                d.classList.remove('node-active', 'target-mode');
-            });
-            document.body.classList.remove('cursor-ping');
-            document.getElementById('cableBtn').classList.replace('bg-red-500', 'bg-sky-500');
-            updateInfo("Mode normal aktif.");
-        }
-
-        function toggleConnectionMode() {
-            if (isConnectingMode) return exitModes();
-            exitModes();
-            isConnectingMode = true;
-            document.getElementById('cableBtn').classList.replace('bg-sky-500', 'bg-red-500');
-            updateInfo("Mode Kabel: Klik perangkat asal, lalu perangkat tujuan.");
-        }
-
-        function startPingFlow(source) {
-            exitModes();
-            isPingMode = true;
-            pingSource = source;
-            document.body.classList.add('cursor-ping');
-            updateInfo(`Ping: Pilih perangkat tujuan dari ${source.id}.`);
-            
-            // Beri indikasi visual pada calon target
-            document.querySelectorAll('.device').forEach(el => {
-                if (el.id !== source.id) el.classList.add('target-mode');
-            });
-            document.getElementById(source.id).classList.add('node-active');
-        }
-
-        // --- Core Networking ---
-        function addConnection(from, to) {
-            const exists = connections.some(c => (c.from === from.id && c.to === to.id) || (c.from === to.id && c.to === from.id));
-            if (!exists) {
-                connections.push({ from: from.id, to: to.id });
+            let isDrag = false; let off = {x:0, y:0};
+            el.onmousedown = (e) => {
+                if (tool !== 'select' || e.button !== 0) return;
+                isDrag = true; off = { x: e.clientX - dev.x, y: e.clientY - dev.y };
+                e.stopPropagation();
+            };
+            window.addEventListener('mousemove', (e) => {
+                if (!isDrag) return;
+                dev.x = e.clientX - off.x; dev.y = e.clientY - off.y;
+                el.style.left = `${dev.x}px`; el.style.top = `${dev.y}px`;
                 drawConnections();
-                logAction(`Koneksi terbentuk antara ${from.type} dan ${to.type}.`, 'info');
+            });
+            window.addEventListener('mouseup', () => isDrag = false);
+
+            el.onclick = (e) => {
+                e.stopPropagation();
+                if (tool === 'cable') handleCable(dev.id);
+                else if (tool === 'ping') handlePing(dev.id);
+                else openModal(dev.id);
+            };
+
+            el.oncontextmenu = (e) => {
+                e.preventDefault(); e.stopPropagation();
+                showContextMenu(e, 'device', dev.id, dev.name);
+            };
+
+            workspace.appendChild(el);
+        }
+
+        // Logic Kabel
+        function handleCable(id) {
+            if (!cableSrc) { cableSrc = id; document.getElementById(id).classList.add('ring-4', 'ring-indigo-400'); }
+            else if (cableSrc !== id) {
+                if (!connections.some(c => (c.a === cableSrc && c.b === id) || (c.a === id && c.b === cableSrc))) {
+                    connections.push({ id: `conn_${Date.now()}`, a: cableSrc, b: id });
+                    drawConnections();
+                    log(`Kabel terhubung: ${getDev(cableSrc).name} - ${getDev(id).name}`, 'info');
+                    updateAllRoutes();
+                }
+                document.getElementById(cableSrc).classList.remove('ring-4', 'ring-indigo-400');
+                cableSrc = null;
             }
         }
 
         function drawConnections() {
-            svgLayer.innerHTML = '';
-            connections.forEach(conn => {
-                const a = devices.find(d => d.id === conn.from);
-                const b = devices.find(d => d.id === conn.to);
-                if (a && b) {
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", a.x + 30); line.setAttribute("y1", a.y + 30);
-                    line.setAttribute("x2", b.x + 30); line.setAttribute("y2", b.y + 30);
-                    line.setAttribute("stroke", "#94a3b8"); line.setAttribute("stroke-width", "2");
-                    line.setAttribute("stroke-dasharray", "5,5");
-                    svgLayer.appendChild(line);
-                }
+            connLayer.innerHTML = '';
+            connections.forEach((c, index) => {
+                const d1 = getDev(c.a), d2 = getDev(c.b);
+                if (!d1 || !d2) return;
+
+                // Hitbox transparan untuk memudahkan klik kanan pada kabel
+                const hitbox = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                hitbox.setAttribute("x1", d1.x+32); hitbox.setAttribute("y1", d1.y+32);
+                hitbox.setAttribute("x2", d2.x+32); hitbox.setAttribute("y2", d2.y+32);
+                hitbox.setAttribute("class", "connection-hitbox");
+                hitbox.oncontextmenu = (e) => {
+                    e.preventDefault(); e.stopPropagation();
+                    showContextMenu(e, 'cable', c.id, `Kabel ${d1.name}-${d2.name}`);
+                };
+
+                // Garis visual
+                const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                l.setAttribute("x1", d1.x+32); l.setAttribute("y1", d1.y+32);
+                l.setAttribute("x2", d2.x+32); l.setAttribute("y2", d2.y+32);
+                l.setAttribute("stroke", "#cbd5e1"); l.setAttribute("stroke-width", "2");
+                l.setAttribute("class", "connection-line");
+                l.style.pointerEvents = "none";
+
+                connLayer.appendChild(hitbox);
+                connLayer.appendChild(l);
             });
         }
+
+        // Context Menu Management
+        function showContextMenu(e, type, id, label) {
+            contextTarget = { type, id };
+            const m = document.getElementById('ctx-menu');
+            document.getElementById('ctx-target-info').innerText = label;
+            document.getElementById('ctx-btn-delete').innerText = type === 'device' ? 'Hapus Perangkat' : 'Hapus Kabel';
+            
+            m.style.left = `${e.clientX}px`; m.style.top = `${e.clientY}px`;
+            m.classList.remove('hidden');
+        }
+
+        function handleContextDelete() {
+            if (contextTarget.type === 'device') {
+                deleteDevice(contextTarget.id);
+            } else if (contextTarget.type === 'cable') {
+                deleteCable(contextTarget.id);
+            }
+            document.getElementById('ctx-menu').classList.add('hidden');
+        }
+
+        function deleteDevice(id) {
+            const dev = getDev(id);
+            if (!dev) return;
+            devices = devices.filter(d => d.id !== id);
+            connections = connections.filter(c => c.a !== id && c.b !== id);
+            const el = document.getElementById(id);
+            if (el) el.remove();
+            drawConnections();
+            updateAllRoutes();
+            log(`Perangkat ${dev.name} dihapus.`, 'info');
+        }
+
+        function deleteCable(connId) {
+            const conn = connections.find(c => c.id === connId);
+            if (!conn) return;
+            const d1 = getDev(conn.a), d2 = getDev(conn.b);
+            connections = connections.filter(c => c.id !== connId);
+            drawConnections();
+            updateAllRoutes();
+            log(`Kabel ${d1.name}-${d2.name} dilepas.`, 'info');
+        }
+
+        // Modal Config Logic
+        function openModal(id) {
+            contextTarget = { type: 'device', id: id };
+            const dev = getDev(id);
+            document.getElementById('modal-header').className = `p-6 text-white ${dev.type==='pc'?'bg-blue-600':(dev.type==='router'?'bg-emerald-600':'bg-purple-600')}`;
+            document.getElementById('modal-title').innerText = `Konfigurasi ${dev.name}`;
+            document.getElementById('input-ip').value = dev.ip;
+            document.getElementById('input-mask').value = dev.mask;
+            document.getElementById('input-gw').value = dev.gw;
+            document.getElementById('gw-field').style.display = dev.type === 'pc' ? 'block' : 'none';
+            document.getElementById('tab-route-btn').classList.toggle('hidden', dev.type !== 'router');
+            
+            updateAnalysis();
+            switchTab('ip');
+            document.getElementById('config-modal').classList.remove('hidden');
+        }
+
+        function updateAnalysis() {
+            const ip = document.getElementById('input-ip').value;
+            const mask = document.getElementById('input-mask').value;
+            if (isValidIP(ip) && isValidIP(mask)) {
+                document.getElementById('display-netid').innerText = getNetwork(ip, mask);
+                document.getElementById('display-hostid').innerText = getHost(ip, mask);
+            } else {
+                document.getElementById('display-netid').innerText = "--";
+                document.getElementById('display-hostid').innerText = "--";
+            }
+        }
+
+        document.getElementById('input-ip').oninput = updateAnalysis;
+        document.getElementById('input-mask').oninput = updateAnalysis;
 
         function saveConfig() {
-            const ip = document.getElementById('inputIP').value;
-            const mask = document.getElementById('inputMask').value;
-            if (ip && !isValidIP(ip)) return alert("Format IP salah!");
-
-            const conflict = devices.find(d => d.id !== selectedDevice.id && d.ip === ip && ip !== '');
-            if (conflict) {
-                document.getElementById('conflictAlert').classList.remove('hidden');
-                return;
-            }
-
-            selectedDevice.ip = ip;
-            selectedDevice.mask = mask;
-            
-            const el = document.getElementById(selectedDevice.id);
-            el.querySelector('.device-ip-display').innerText = ip || 'no-ip';
-            
-            if (selectedDevice.type === 'PC' && ip) addPingButton(selectedDevice);
+            const dev = getDev(contextTarget.id);
+            dev.ip = document.getElementById('input-ip').value;
+            dev.mask = document.getElementById('input-mask').value;
+            dev.gw = document.getElementById('input-gw').value;
+            document.getElementById(`${dev.id}-lbl-ip`).innerText = dev.ip;
+            updateAllRoutes();
             closeModal();
-            logAction(`${selectedDevice.type} IP diset ke ${ip}`, 'success');
+            log(`Konfigurasi ${dev.name} disimpan.`, 'success');
         }
 
-        function addPingButton(dev) {
-            const el = document.getElementById(dev.id);
-            const body = el.querySelector('.device-body');
-            if (body.querySelector('.ping-btn')) return;
-
-            const btn = document.createElement('button');
-            btn.className = "ping-btn ping-btn-animate absolute -top-3 -right-3 bg-sky-500 text-white rounded-full p-1.5 shadow-lg z-20 border-2 border-white flex items-center justify-center";
-            btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>';
-            btn.title = "Lakukan Ping";
-            btn.onclick = (e) => {
-                e.stopPropagation();
-                startPingFlow(dev);
-            };
-            body.appendChild(btn);
+        function switchTab(t) {
+            const isIp = t === 'ip';
+            document.getElementById('tab-ip-content').classList.toggle('hidden', !isIp);
+            document.getElementById('tab-route-content').classList.toggle('hidden', isIp);
+            document.getElementById('tab-ip-btn').className = isIp ? 'px-6 py-3 text-xs font-bold border-b-2 border-indigo-600 text-indigo-600' : 'px-6 py-3 text-xs font-bold text-slate-400';
+            document.getElementById('tab-route-btn').className = !isIp ? 'px-6 py-3 text-xs font-bold border-b-2 border-emerald-600 text-emerald-600' : 'px-6 py-3 text-xs font-bold text-slate-400';
+            if (t === 'route') renderRoutingTable();
         }
 
-        async function executePing(src, dest) {
-            logAction(`Pinging dari ${src.ip} ke ${dest.ip || 'Unknown'}...`, 'info');
-            stats.pings++;
-            updateStats();
-
-            const path = findPath(src, dest);
-            if (path.length > 1) {
-                // Animasi perjalanan paket
-                for (let i = 0; i < path.length - 1; i++) {
-                    await animatePacket(path[i], path[i+1]);
-                }
-
-                if (!dest.ip) {
-                    showPingResult(false, "Destination Host Unreachable");
-                } else if (isSameNetwork(src.ip, dest.ip, src.mask)) {
-                    showPingResult(true, `Reply from ${dest.ip}: bytes=32 TTL=64`);
-                } else if (path.some(n => n.type === 'Router')) {
-                    showPingResult(true, `Reply from ${dest.ip}: bytes=32 TTL=63`);
-                } else {
-                    showPingResult(false, "Destination Host Unreachable (Beda Network)");
-                }
-            } else {
-                showPingResult(false, "Request Timed Out (Tidak terhubung)");
-            }
+        function renderRoutingTable() {
+            const dev = getDev(contextTarget.id);
+            const body = document.getElementById('routing-table-body');
+            body.innerHTML = dev.routes.map(r => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-2 font-bold text-indigo-600">${r.network}</td>
+                    <td class="p-2 text-slate-500">${r.mask}</td>
+                    <td class="p-2 text-emerald-600 font-bold">${r.nextHop}</td>
+                </tr>
+            `).join('');
+            if (!dev.routes.length) body.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-slate-400 italic">Router belum terhubung ke jaringan manapun.</td></tr>';
         }
 
-        function animatePacket(from, to) {
-            return new Promise(resolve => {
-                const p = document.createElement('div');
-                p.className = "packet absolute w-3 h-3 bg-yellow-400 rounded-full shadow-lg border border-white";
-                p.style.left = `${from.x + 30}px`;
-                p.style.top = `${from.y + 30}px`;
-                canvas.appendChild(p);
-
-                const start = performance.now();
-                const duration = 500;
-
-                function step(time) {
-                    const progress = Math.min((time - start) / duration, 1);
-                    p.style.left = `${from.x + 30 + (to.x - from.x) * progress}px`;
-                    p.style.top = `${from.y + 30 + (to.y - from.y) * progress}px`;
-                    if (progress < 1) requestAnimationFrame(step);
-                    else { p.remove(); resolve(); }
+        function updateAllRoutes() {
+            devices.forEach(d => {
+                if (d.type === 'router') {
+                    d.routes = [];
+                    const neighbors = getNeighbors(d.id);
+                    neighbors.forEach(n => {
+                        if (n.ip && n.mask) {
+                            const net = getNetwork(n.ip, n.mask);
+                            if (!d.routes.some(r => r.network === net)) {
+                                d.routes.push({ network: net, mask: n.mask, nextHop: 'Directly Connected' });
+                            }
+                        }
+                    });
                 }
-                requestAnimationFrame(step);
             });
         }
 
-        // --- Utils ---
+        function getNeighbors(id) {
+            let direct = connections.filter(c => c.a === id || c.b === id).map(c => c.a === id ? c.b : c.a);
+            let results = [], visited = new Set(), queue = [...direct];
+            while(queue.length > 0) {
+                let current = queue.shift();
+                if (visited.has(current)) continue;
+                visited.add(current);
+                let d = getDev(current);
+                if (!d) continue;
+                if (d.type === 'switch') {
+                    let next = connections.filter(c => c.a === current || c.b === current).map(c => c.a === current ? c.b : c.a);
+                    queue.push(...next);
+                } else { results.push(d); }
+            }
+            return results;
+        }
+
+        // Simulasi Ping
+        function handlePing(id) {
+            if (!pingSrc) { pingSrc = id; document.getElementById(id).classList.add('ring-4', 'ring-orange-400'); }
+            else if (pingSrc !== id) {
+                const s = getDev(pingSrc), d = getDev(id);
+                document.getElementById(pingSrc).classList.remove('ring-4', 'ring-orange-400');
+                if (!s.ip || !d.ip) return log("Error: IP belum dikonfigurasi.", 'error');
+                
+                log(`Mencoba Ping dari ${s.name} ke ${d.name}...`, 'info');
+                
+                const sNet = getNetwork(s.ip, s.mask);
+                const dNet = getNetwork(d.ip, d.mask);
+                
+                let validRoute = false;
+                if (sNet === dNet) validRoute = true;
+                else if (s.gw) {
+                    const gwR = devices.find(x => x.ip === s.gw && x.type === 'router');
+                    if (gwR && areConnected(s.id, gwR.id)) {
+                        if (gwR.routes.some(r => r.network === dNet)) validRoute = true;
+                    }
+                }
+
+                const physicalPath = findPath(pingSrc, id);
+                if (physicalPath.length > 0 && validRoute) {
+                    animatePacket(physicalPath, () => log(`Reply from ${d.ip}: success!`, 'success'));
+                } else {
+                    log(`Request Timed Out. ${!validRoute ? '(Masalah Routing/Gateway)' : '(Masalah Fisik/Kabel)'}`, 'error');
+                }
+                pingSrc = null;
+            }
+        }
+
         function findPath(start, end) {
-            let q = [[start]], visited = new Set([start.id]);
-            while (q.length > 0) {
-                let path = q.shift(), node = path[path.length - 1];
-                if (node.id === end.id) return path;
-                connections.filter(c => c.from === node.id || c.to === node.id).forEach(c => {
-                    let next = devices.find(d => d.id === (c.from === node.id ? c.to : c.from));
-                    if (!visited.has(next.id)) { visited.add(next.id); q.push([...path, next]); }
-                });
+            let q = [[start]], v = new Set();
+            while(q.length > 0) {
+                let path = q.shift(), n = path[path.length-1];
+                if (n === end) return path;
+                if (!v.has(n)) {
+                    v.add(n);
+                    connections.forEach(c => {
+                        if (c.a === n) q.push([...path, c.b]);
+                        if (c.b === n) q.push([...path, c.a]);
+                    });
+                }
             }
             return [];
         }
 
-        function isSameNetwork(ip1, ip2, mask) {
-            if (!ip1 || !ip2) return false;
-            const o1 = ip1.split('.'), o2 = ip2.split('.'), m = mask.split('.');
-            return o1.every((v, i) => (parseInt(v) & parseInt(m[i])) === (parseInt(o2[i]) & parseInt(m[i])));
+        function areConnected(a, b) { return findPath(a, b).length > 0; }
+
+        function animatePacket(path, cb) {
+            const p = document.createElement('div'); p.className = 'packet'; workspace.appendChild(p);
+            let i = 0;
+            function move() {
+                if (i >= path.length-1) { p.remove(); cb(); return; }
+                const from = getDev(path[i]), to = getDev(path[i+1]);
+                let prog = 0;
+                const anim = setInterval(() => {
+                    prog += 5;
+                    p.style.left = `${from.x+32 + (to.x-from.x)*(prog/100) - 7}px`;
+                    p.style.top = `${from.y+32 + (to.y-from.y)*(prog/100) - 7}px`;
+                    if (prog >= 100) { clearInterval(anim); i++; move(); }
+                }, 25);
+            }
+            move();
         }
 
-        function startDrag(e, dev) {
-            if (isConnectingMode || isPingMode) return;
-            const rect = canvas.getBoundingClientRect();
-            draggingDevice = dev;
-            dragOffset.x = e.clientX - rect.left - dev.x;
-            dragOffset.y = e.clientY - rect.top - dev.y;
-            document.addEventListener('mousemove', onDrag);
-            document.addEventListener('mouseup', stopDrag);
+        // Helpers
+        function getDev(id) { return devices.find(d => d.id === id); }
+        function isValidIP(ip) { return /^(\d{1,3}\.){3}\d{1,3}$/.test(ip); }
+        function getNetwork(ip, mask) {
+            const i = ip.split('.'), m = mask.split('.');
+            return i.map((v, idx) => v & m[idx]).join('.');
         }
+        function getHost(ip, mask) {
+            const i = ip.split('.'), m = mask.split('.');
+            return i.map((v, idx) => v & (~m[idx] & 255)).join('.');
+        }
+        function log(m, t) {
+            const c = { info: 'text-slate-500', success: 'text-emerald-600 font-bold', error: 'text-red-500' };
+            const l = document.getElementById('traffic-log');
+            const e = document.createElement('div'); e.className = `p-2 border-b border-slate-50 ${c[t]}`;
+            e.innerHTML = `<span class="opacity-40">[${new Date().toLocaleTimeString()}]</span> ${m}`;
+            l.prepend(e);
+        }
+        function closeModal() { document.getElementById('config-modal').classList.add('hidden'); }
+        
+        window.onclick = (e) => {
+            document.getElementById('ctx-menu').classList.add('hidden');
+            if (tool === 'select' && e.target.id === 'workspace') {
+                cableSrc = null; pingSrc = null;
+                document.querySelectorAll('.device-node').forEach(d => d.classList.remove('ring-4', 'ring-indigo-400', 'ring-orange-400'));
+            }
+        };
 
-        function onDrag(e) {
-            if (!draggingDevice) return;
-            const rect = canvas.getBoundingClientRect();
-            draggingDevice.x = e.clientX - rect.left - dragOffset.x;
-            draggingDevice.y = e.clientY - rect.top - dragOffset.y;
-            const el = document.getElementById(draggingDevice.id);
-            el.style.left = `${draggingDevice.x}px`;
-            el.style.top = `${draggingDevice.y}px`;
-            drawConnections();
-        }
-
-        function stopDrag() { draggingDevice = null; document.removeEventListener('mousemove', onDrag); }
-        function openConfig(dev) {
-            selectedDevice = dev;
-            document.getElementById('inputIP').value = dev.ip;
-            document.getElementById('inputMask').value = dev.mask;
-            document.getElementById('configModal').classList.remove('hidden');
-        }
-        function closeModal() { document.getElementById('configModal').classList.add('hidden'); }
-        function logAction(m, t) {
-            const log = document.getElementById('ping-log');
-            if (log.innerText.includes('Menunggu')) log.innerHTML = '';
-            const d = document.createElement('div');
-            d.className = `log-entry ${t==='success'?'text-emerald-600':t==='error'?'text-red-500':'text-slate-500'}`;
-            d.innerText = `> ${m}`;
-            log.prepend(d);
-        }
-        function showPingResult(s, t) {
-            const f = document.getElementById('pingFeedback'), ft = document.getElementById('pingFeedbackText');
-            f.classList.remove('hidden', 'bg-red-500', 'bg-emerald-500');
-            f.classList.add(s ? 'bg-emerald-500' : 'bg-red-500');
-            ft.innerText = t;
-            logAction(t, s ? 'success' : 'error');
-            setTimeout(() => f.classList.add('hidden'), 3000);
-        }
-        function isValidIP(ip) { return /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ip); }
-        function updateInfo(t) { infoText.innerText = t; }
-        function updateStats() {
-            document.getElementById('stat-devices').innerText = devices.length;
-            document.getElementById('stat-pings').innerText = stats.pings;
-        }
-        function removeDevice(e, id) {
-            e.stopPropagation();
-            devices = devices.filter(d => d.id !== id);
-            connections = connections.filter(c => c.from !== id && c.to !== id);
-            document.getElementById(id).remove();
-            drawConnections(); updateStats();
-        }
-        function resetSimulation() {
-            devices = []; connections = []; deviceCounter = 0; stats = {devices:0, pings:0};
-            canvas.querySelectorAll('.device').forEach(d => d.remove());
-            svgLayer.innerHTML = '';
-            document.getElementById('ping-log').innerHTML = '<div class="text-slate-400 italic">Reset...</div>';
-            updateStats();
-        }
-        canvas.addEventListener('click', exitModes);
+        updateTip();
     </script>
 </body>
 </html>
