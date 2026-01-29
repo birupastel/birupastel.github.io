@@ -21,6 +21,13 @@
         .connection-hitbox { cursor: pointer; pointer-events: all; stroke: transparent; stroke-width: 15px; }
         .connection-hitbox:hover + .connection-line { stroke: #6366f1; stroke-width: 3px; }
         
+        @keyframes pulse-red { 
+            0% { border-color: #fca5a5; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 
+            70% { border-color: #ef4444; box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 
+            100% { border-color: #fca5a5; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
+        }
+        .conflict { border-color: #ef4444 !important; animation: pulse-red 2s infinite !important; }
+        
         @keyframes pulse-ring { 
             0% { transform: scale(0.8); opacity: 0.5; } 
             100% { transform: scale(1.5); opacity: 0; } 
@@ -125,12 +132,16 @@
             <div id="tab-ip-content" class="p-6 space-y-6">
                 <div class="grid grid-cols-1 gap-4">
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Alamat IP (IPv4)</label>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase block">Alamat IP (IPv4)</label>
+                            <span id="display-ip-class" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Kelas --</span>
+                        </div>
                         <input type="text" id="input-ip" placeholder="192.168.1.10" class="w-full px-4 py-2.5 bg-slate-100 border border-transparent rounded-xl font-mono focus:bg-white focus:border-indigo-300 outline-none transition-all">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase block mb-1">Subnet Mask</label>
                         <input type="text" id="input-mask" placeholder="255.255.255.0" class="w-full px-4 py-2.5 bg-slate-100 border border-transparent rounded-xl font-mono focus:bg-white focus:border-indigo-300 outline-none transition-all">
+                        <p id="mask-suggestion" class="text-[9px] text-indigo-500 mt-1 italic hidden">Saran: Gunakan 255.255.0.0 untuk Kelas B</p>
                     </div>
                     <div id="gw-field">
                         <label class="text-[10px] font-bold text-orange-500 uppercase block mb-1">Default Gateway</label>
@@ -194,12 +205,11 @@
         let cableSrc = null;
         let pingSrc = null;
         
-        let contextTarget = { type: null, id: null }; // Tracks what was right-clicked
+        let contextTarget = { type: null, id: null }; 
 
         const workspace = document.getElementById('workspace');
         const connLayer = document.getElementById('connection-layer');
 
-        // Core Functions
         function setTool(t) {
             tool = t;
             document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('bg-white','shadow-sm','text-indigo-600'));
@@ -224,7 +234,7 @@
                 id, type, name: `${type.toUpperCase()} ${idCounter}`,
                 x: 150 + Math.random()*100, y: 150 + Math.random()*100,
                 ip: '', mask: '255.255.255.0', gw: '',
-                routes: []
+                routes: [], isConflict: false
             };
             devices.push(dev);
             renderDevice(dev);
@@ -246,7 +256,7 @@
 
             el.innerHTML = `
                 <div class="${color}">${icon}</div>
-                <div class="absolute -bottom-8 text-center w-32">
+                <div class="absolute -bottom-10 text-center w-32">
                     <div class="text-[10px] font-bold text-slate-800">${dev.name}</div>
                     <div class="text-[9px] font-mono text-indigo-500 font-bold" id="${dev.id}-lbl-ip">${dev.ip || ''}</div>
                 </div>
@@ -281,7 +291,6 @@
             workspace.appendChild(el);
         }
 
-        // Logic Kabel
         function handleCable(id) {
             if (!cableSrc) { cableSrc = id; document.getElementById(id).classList.add('ring-4', 'ring-indigo-400'); }
             else if (cableSrc !== id) {
@@ -290,6 +299,7 @@
                     drawConnections();
                     log(`Kabel terhubung: ${getDev(cableSrc).name} - ${getDev(id).name}`, 'info');
                     updateAllRoutes();
+                    checkConflicts(); // Cek konflik saat jaringan baru tersambung
                 }
                 document.getElementById(cableSrc).classList.remove('ring-4', 'ring-indigo-400');
                 cableSrc = null;
@@ -298,11 +308,10 @@
 
         function drawConnections() {
             connLayer.innerHTML = '';
-            connections.forEach((c, index) => {
+            connections.forEach((c) => {
                 const d1 = getDev(c.a), d2 = getDev(c.b);
                 if (!d1 || !d2) return;
 
-                // Hitbox transparan untuk memudahkan klik kanan pada kabel
                 const hitbox = document.createElementNS("http://www.w3.org/2000/svg", "line");
                 hitbox.setAttribute("x1", d1.x+32); hitbox.setAttribute("y1", d1.y+32);
                 hitbox.setAttribute("x2", d2.x+32); hitbox.setAttribute("y2", d2.y+32);
@@ -312,7 +321,6 @@
                     showContextMenu(e, 'cable', c.id, `Kabel ${d1.name}-${d2.name}`);
                 };
 
-                // Garis visual
                 const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
                 l.setAttribute("x1", d1.x+32); l.setAttribute("y1", d1.y+32);
                 l.setAttribute("x2", d2.x+32); l.setAttribute("y2", d2.y+32);
@@ -325,7 +333,6 @@
             });
         }
 
-        // Context Menu Management
         function showContextMenu(e, type, id, label) {
             contextTarget = { type, id };
             const m = document.getElementById('ctx-menu');
@@ -337,11 +344,8 @@
         }
 
         function handleContextDelete() {
-            if (contextTarget.type === 'device') {
-                deleteDevice(contextTarget.id);
-            } else if (contextTarget.type === 'cable') {
-                deleteCable(contextTarget.id);
-            }
+            if (contextTarget.type === 'device') deleteDevice(contextTarget.id);
+            else if (contextTarget.type === 'cable') deleteCable(contextTarget.id);
             document.getElementById('ctx-menu').classList.add('hidden');
         }
 
@@ -354,6 +358,7 @@
             if (el) el.remove();
             drawConnections();
             updateAllRoutes();
+            checkConflicts();
             log(`Perangkat ${dev.name} dihapus.`, 'info');
         }
 
@@ -364,10 +369,10 @@
             connections = connections.filter(c => c.id !== connId);
             drawConnections();
             updateAllRoutes();
+            checkConflicts();
             log(`Kabel ${d1.name}-${d2.name} dilepas.`, 'info');
         }
 
-        // Modal Config Logic
         function openModal(id) {
             contextTarget = { type: 'device', id: id };
             const dev = getDev(id);
@@ -384,9 +389,39 @@
             document.getElementById('config-modal').classList.remove('hidden');
         }
 
+        function getIPClass(ip) {
+            if (!isValidIP(ip)) return null;
+            const firstOctet = parseInt(ip.split('.')[0]);
+            if (firstOctet >= 1 && firstOctet <= 126) return { name: 'Kelas A', mask: '255.0.0.0' };
+            if (firstOctet >= 128 && firstOctet <= 191) return { name: 'Kelas B', mask: '255.255.0.0' };
+            if (firstOctet >= 192 && firstOctet <= 223) return { name: 'Kelas C', mask: '255.255.255.0' };
+            return { name: 'Lainnya', mask: '255.255.255.0' };
+        }
+
         function updateAnalysis() {
             const ip = document.getElementById('input-ip').value;
             const mask = document.getElementById('input-mask').value;
+            const classInfo = getIPClass(ip);
+            
+            const classDisplay = document.getElementById('display-ip-class');
+            const maskSuggestion = document.getElementById('mask-suggestion');
+
+            if (classInfo) {
+                classDisplay.innerText = classInfo.name;
+                classDisplay.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-600";
+                
+                if (mask !== classInfo.mask) {
+                    maskSuggestion.innerText = `Saran: Gunakan ${classInfo.mask} untuk ${classInfo.name}`;
+                    maskSuggestion.classList.remove('hidden');
+                } else {
+                    maskSuggestion.classList.add('hidden');
+                }
+            } else {
+                classDisplay.innerText = "Kelas --";
+                classDisplay.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500";
+                maskSuggestion.classList.add('hidden');
+            }
+
             if (isValidIP(ip) && isValidIP(mask)) {
                 document.getElementById('display-netid').innerText = getNetwork(ip, mask);
                 document.getElementById('display-hostid').innerText = getHost(ip, mask);
@@ -404,10 +439,53 @@
             dev.ip = document.getElementById('input-ip').value;
             dev.mask = document.getElementById('input-mask').value;
             dev.gw = document.getElementById('input-gw').value;
-            document.getElementById(`${dev.id}-lbl-ip`).innerText = dev.ip;
+            
+            updateIPLabel(dev.id);
             updateAllRoutes();
             closeModal();
+            checkConflicts();
             log(`Konfigurasi ${dev.name} disimpan.`, 'success');
+        }
+
+        function updateIPLabel(id) {
+            const dev = getDev(id);
+            const label = document.getElementById(`${dev.id}-lbl-ip`);
+            if (dev.isConflict) {
+                label.className = "text-[9px] font-mono text-red-600 font-bold";
+                label.innerText = `⚠️ ${dev.ip || 'no-ip'}`;
+            } else {
+                label.className = "text-[9px] font-mono text-indigo-500 font-bold";
+                label.innerText = dev.ip || '';
+            }
+        }
+
+        function checkConflicts() {
+            // Reset status konflik
+            devices.forEach(d => d.isConflict = false);
+
+            for (let i = 0; i < devices.length; i++) {
+                for (let j = i + 1; j < devices.length; j++) {
+                    const d1 = devices[i];
+                    const d2 = devices[j];
+
+                    // Jika IP sama dan bukan kosong
+                    if (d1.ip && d1.ip === d2.ip) {
+                        // Cek apakah mereka berada dalam satu broadcast domain (terhubung fisik)
+                        if (areConnected(d1.id, d2.id)) {
+                            d1.isConflict = true;
+                            d2.isConflict = true;
+                            log(`⚠️ Konflik IP terdeteksi: ${d1.ip} digunakan oleh ${d1.name} dan ${d2.name}`, 'error');
+                        }
+                    }
+                }
+            }
+
+            // Update UI
+            devices.forEach(d => {
+                const el = document.getElementById(d.id);
+                if (el) el.classList.toggle('conflict', d.isConflict);
+                updateIPLabel(d.id);
+            });
         }
 
         function switchTab(t) {
@@ -466,16 +544,16 @@
             return results;
         }
 
-        // Simulasi Ping
         function handlePing(id) {
             if (!pingSrc) { pingSrc = id; document.getElementById(id).classList.add('ring-4', 'ring-orange-400'); }
             else if (pingSrc !== id) {
                 const s = getDev(pingSrc), d = getDev(id);
                 document.getElementById(pingSrc).classList.remove('ring-4', 'ring-orange-400');
+                
                 if (!s.ip || !d.ip) return log("Error: IP belum dikonfigurasi.", 'error');
+                if (s.isConflict || d.isConflict) return log("Ping Gagal: Terdeteksi konflik IP pada segmen jaringan!", 'error');
                 
                 log(`Mencoba Ping dari ${s.name} ke ${d.name}...`, 'info');
-                
                 const sNet = getNetwork(s.ip, s.mask);
                 const dNet = getNetwork(d.ip, d.mask);
                 
@@ -533,7 +611,6 @@
             move();
         }
 
-        // Helpers
         function getDev(id) { return devices.find(d => d.id === id); }
         function isValidIP(ip) { return /^(\d{1,3}\.){3}\d{1,3}$/.test(ip); }
         function getNetwork(ip, mask) {
@@ -560,7 +637,6 @@
                 document.querySelectorAll('.device-node').forEach(d => d.classList.remove('ring-4', 'ring-indigo-400', 'ring-orange-400'));
             }
         };
-
         updateTip();
     </script>
 </body>
