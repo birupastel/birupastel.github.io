@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multimedia Pembelajaran Logika Proposisi</title>
+    <title>Logika Proposisi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -17,6 +17,7 @@
         @keyframes flow { to { stroke-dashoffset: -20; } }
         .sidebar-item.active { @apply bg-indigo-600 text-white shadow-lg shadow-indigo-200; }
         .sidebar-item.inactive { @apply text-slate-400 hover:bg-slate-50 hover:text-slate-600; }
+        .progress-indicator { transition: width 0.3s ease-in-out; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen">
@@ -26,15 +27,15 @@
         <aside id="sidebar" class="hidden md:flex w-72 flex-col bg-white border-r border-slate-200 p-8 shrink-0 fixed inset-y-0 left-0 z-50">
             <div class="flex items-center gap-3 mb-12">
                 <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100">L</div>
-                <span class="font-black text-xl tracking-tighter italic uppercase">Logika</span>
+                <span class="font-black text-xl tracking-tighter italic uppercase">Logika Proposisi</span>
             </div>
             <nav class="flex-1 space-y-2" id="nav-container">
                 <!-- Nav items generated via JS -->
             </nav>
             <div class="mt-auto p-5 bg-slate-50 rounded-2xl border border-slate-100">
-                <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Kurikulum Digital</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Progres Belajar</p>
                 <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
-                    <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-500" style="width: 20%"></div>
+                    <div id="progress-bar" class="h-full bg-indigo-500 progress-indicator" style="width: 20%"></div>
                 </div>
             </div>
         </aside>
@@ -49,29 +50,17 @@
 
         <!-- Main Content -->
         <main class="flex-1 md:ml-72 p-6 md:p-12 lg:p-16">
-            <div id="content-area" class="max-w-5xl mx-auto">
-                <!-- Content injected here -->
+            <div id="content-wrapper" class="max-w-5xl mx-auto">
+                <div id="content-area">
+                    <!-- Content injected here -->
+                </div>
             </div>
         </main>
     </div>
 
     <!-- JavaScript -->
     <script>
-        // --- DATA & STATE ---
-        let activeTab = 'pengantar';
-        let currentIntroIdx = 0;
-        let introQuizFinished = false;
-        let introFeedback = null;
-        let userTableAnswers = {};
-        let showTableFeedback = false;
-        let gateQuestionType = 0;
-        let currentCircuit = null;
-        let userInputs = [];
-        let userGates = [];
-        let userOutput = null;
-        let gateFeedback = null;
-        let isFlowing = false;
-
+        // --- DATA DEFINITIONS ---
         const navItems = [
             { id: 'pengantar', label: 'Pengantar', icon: 'book-open' },
             { id: 'operator', label: 'Operator Logika', icon: 'info' },
@@ -87,6 +76,66 @@
             { text: "5 adalah bilangan prima", isProp: true, reason: "Ini pernyataan matematika yang bernilai Benar." }
         ];
 
+        const operatorsContent = [
+            { name: 'Negasi (¬)', symbol: '¬p', concept: 'Membalikkan nilai kebenaran. Jika p benar, maka ¬p salah.', table: [{p:1, r:0}, {p:0, r:1}], examples: ['p: "Hari hujan"', '¬p: "Hari tidak hujan"'] },
+            { name: 'Konjungsi (∧)', symbol: 'p ∧ q', concept: 'Benar hanya jika p dan q keduanya benar.', table: [{p:1, q:1, r:1}, {p:1, q:0, r:0}, {p:0, q:1, r:0}, {p:0, q:0, r:0}], examples: ['p: "Budi rajin"', 'q: "Budi pintar"', 'p ∧ q: "Budi rajin dan pintar"'] },
+            { name: 'Disjungsi (∨)', symbol: 'p ∨ q', concept: 'Salah hanya jika keduanya salah.', table: [{p:1, q:1, r:1}, {p:1, q:0, r:1}, {p:0, q:1, r:1}, {p:0, q:0, r:0}], examples: ['p: "Makan nasi"', 'q: "Makan roti"', 'p ∨ q: "Makan nasi atau roti"'] },
+            { name: 'Implikasi (→)', symbol: 'p → q', concept: 'Salah hanya jika p benar namun q salah.', table: [{p:1, q:1, r:1}, {p:1, q:0, r:0}, {p:0, q:1, r:1}, {p:0, q:0, r:1}], examples: ['p: "Hujan"', 'q: "Jalan basah"', 'p → q: "Jika hujan maka jalan basah"'] },
+            { name: 'Bi-implikasi (↔)', symbol: 'p ↔ q', concept: 'Benar jika p dan q memiliki nilai yang sama.', table: [{p:1, q:1, r:1}, {p:1, q:0, r:0}, {p:0, q:1, r:0}, {p:0, q:0, r:1}], examples: ['p: "Lampu nyala"', 'q: "Saklar ON"', 'p ↔ q: "Lampu nyala jika dan hanya jika saklar ON"'] }
+        ];
+
+        const playgroundChallenges = [
+            { expression: "(p ∧ q) → (p ∨ ¬q)", columns: ["p", "q", "¬q", "p ∧ q", "p ∨ ¬q", "(p ∧ q) → (p ∨ ¬q)"], compute: (p, q) => ({ "¬q": !q, "p ∧ q": p && q, "p ∨ ¬q": p || !q, "(p ∧ q) → (p ∨ ¬q)": !(p && q) || (p || !q) }) },
+            { expression: "¬(p → q) ↔ (p ∧ ¬q)", columns: ["p", "q", "p → q", "¬(p → q)", "¬q", "p ∧ ¬q", "¬(p → q) ↔ (p ∧ ¬q)"], compute: (p, q) => { const ifpq = (!p || q); const nifpq = !ifpq; const nq = !q; const pandnq = p && nq; return { "p → q": ifpq, "¬(p → q)": nifpq, "¬q": nq, "p ∧ ¬q": pandnq, "¬(p → q) ↔ (p ∧ ¬q)": nifpq === pandnq }; } },
+            { expression: "((p ∨ q) ∧ ¬p) → q", columns: ["p", "q", "p ∨ q", "¬p", "(p ∨ q) ∧ ¬p", "((p ∨ q) ∧ ¬p) → q"], compute: (p, q) => { const porq = p || q; const np = !p; const inner = porq && np; return { "p ∨ q": porq, "¬p": np, "(p ∨ q) ∧ ¬p": inner, "((p ∨ q) ∧ ¬p) → q": !inner || q }; } }
+        ];
+
+        const finalQuizData = [
+            { q: 'Manakah yang merupakan proposisi?', a: ['Berapa umurmu?', 'Matematika itu menyenangkan.', '3 + 5 = 10', 'Ambilkan buku itu!'], c: 2, e: '"3 + 5 = 10" adalah proposisi karena nilainya pasti (salah).' },
+            { q: 'Nilai kebenaran dari ¬(T) adalah...', a: ['Benar', 'Salah', 'Bisa dua-duanya', 'Tidak terdefinisi'], c: 1, e: 'Negasi membalikkan nilai: True menjadi False.' },
+            { q: 'p ∧ q bernilai BENAR jika...', a: ['Salah satu benar', 'Keduanya salah', 'Keduanya benar', 'p benar, q salah'], c: 2, e: 'Konjungsi butuh semua komponen benar.' },
+            { q: 'p ∨ q bernilai SALAH jika...', a: ['Keduanya benar', 'Keduanya salah', 'Salah satu benar', 'p salah, q benar'], c: 1, e: 'Disjungsi hanya salah jika tidak ada yang benar.' },
+            { q: 'Jika p=T dan q=F, maka p → q adalah...', a: ['Benar', 'Salah', 'Kosong', '1'], c: 1, e: 'Implikasi salah hanya jika T → F.' },
+            { q: 'Pernyataan "Jika 1+1=2 maka Jakarta di Indonesia" bernilai...', a: ['Benar', 'Salah', 'Bukan Proposisi', 'Kalimat Terbuka'], c: 0, e: 'T → T menghasilkan nilai Benar.' },
+            { q: 'Simbol ↔ melambangkan...', a: ['Implikasi', 'Disjungsi', 'Bi-implikasi', 'Konjungsi'], c: 2, e: '↔ berarti jika dan hanya jika (Bi-implikasi).' },
+            { q: 'Output AND dengan input 1 dan 0?', a: ['1', '0', 'T', 'null'], c: 1, e: 'AND butuh 1 dan 1 agar output 1.' },
+            { q: 'Output OR dengan input 0 dan 1?', a: ['1', '0', 'F', 'null'], c: 0, e: 'OR butuh minimal satu 1 agar output 1.' },
+            { q: 'NOT 1 adalah...', a: ['1', '0', 'T', 'True'], c: 1, e: 'NOT membalikkan digital 1 menjadi 0.' },
+            { q: 'Pernyataan yang selalu benar disebut...', a: ['Tautologi', 'Kontradiksi', 'Silogisme', 'Modus'], c: 0, e: 'Tautologi selalu bernilai Benar.' },
+            { q: 'Pernyataan yang selalu salah disebut...', a: ['Tautologi', 'Kontradiksi', 'Fakta', 'Bukan Proposisi'], c: 1, e: 'Kontradiksi selalu bernilai Salah.' },
+            { q: 'Jika p=F dan q=F, maka p ↔ q adalah...', a: ['T', 'F', '0', 'null'], c: 0, e: 'Bi-implikasi benar jika nilai keduanya sama.' },
+            { q: 'Negasi dari "Saya lapar" adalah...', a: ['Saya haus', 'Saya tidak lapar', 'Mungkin lapar', 'Kenyang'], c: 1, e: 'Negasi standar menggunakan kata "tidak".' },
+            { q: 'Digital 0 melambangkan...', a: ['True', 'False', 'High', '1'], c: 1, e: '0 mewakili False atau Low.' },
+            { q: 'x + 3 = 7 adalah...', a: ['Proposisi', 'Kalimat Terbuka', 'Fakta', 'Perintah'], c: 1, e: 'Nilainya bergantung pada x.' },
+            { q: '¬(p ∧ q) sama dengan...', a: ['¬p ∧ ¬q', '¬p ∨ ¬q', 'p ∨ q', '¬p → q'], c: 1, e: 'Ini adalah Hukum De Morgan.' },
+            { q: 'Hasil (T ∨ F) ∧ F?', a: ['T', 'F', '1', 'Benar'], c: 1, e: '(T ∨ F) = T. T ∧ F = F.' },
+            { q: 'Dua saklar sejajar (paralel) mirip gerbang...', a: ['AND', 'OR', 'NOT', 'IFF'], c: 1, e: 'Arus mengalir jika salah satu saklar on (OR).' },
+            { q: 'Siapa bapak logika modern?', a: ['Einstein', 'George Boole', 'Tesla', 'Newton'], c: 1, e: 'Aljabar Boolean dinamakan dari George Boole.' }
+        ];
+
+        // --- STATE ---
+        let activeTab = 'pengantar';
+        let currentIntroIdx = 0;
+        let introQuizFinished = false;
+        let introFeedback = null;
+        let userTableAnswers = {};
+        let showTableFeedback = false;
+        let activeOperatorIdx = 0;
+        let playgroundChallengeIdx = 0;
+        let finalQuizIdx = 0;
+        let finalQuizScore = 0;
+        let finalQuizFinished = false;
+        let finalQuizFeedback = null;
+
+        // Logic Gate state
+        let gateQuestionType = 0; 
+        let currentCircuit = null;
+        let userInputs = []; 
+        let userGates = []; 
+        let userOutput = null; 
+        let gateFeedback = null;
+        let isFlowing = false;
+
         // --- UTILS ---
         const $ = (id) => document.getElementById(id);
         const iconMap = {
@@ -97,7 +146,7 @@
             'help-circle': '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>'
         };
 
-        // --- CIRCUIT GENERATOR ---
+        // --- CIRCUIT ENGINE ---
         function generateCircuit() {
             const types = ['balanced', 'chain', 'hybrid'];
             const type = types[Math.floor(Math.random() * types.length)];
@@ -115,12 +164,7 @@
                     { id: 'g3', type: 'gate', op: ['AND', 'OR'][Math.round(Math.random())], x: 500, y: 165 },
                     { id: 'out', type: 'output', x: 700, y: 175 }
                 ];
-                conns = [
-                    { from: 'i1', to: 'g1' }, { from: 'i2', to: 'g1' },
-                    { from: 'i3', to: 'g2' }, { from: 'i4', to: 'g2' },
-                    { from: 'g1', to: 'g3' }, { from: 'g2', to: 'g3' },
-                    { from: 'g3', to: 'out' }
-                ];
+                conns = [{ from: 'i1', to: 'g1' }, { from: 'i2', to: 'g1' }, { from: 'i3', to: 'g2' }, { from: 'i4', to: 'g2' }, { from: 'g1', to: 'g3' }, { from: 'g2', to: 'g3' }, { from: 'g3', to: 'out' }];
             } else if (type === 'chain') {
                 nodes = [
                     { id: 'i1', type: 'input', val: Math.round(Math.random()), x: 50, y: 50 },
@@ -130,11 +174,7 @@
                     { id: 'g2', type: 'gate', op: ['AND', 'OR'][Math.round(Math.random())], x: 450, y: 130 },
                     { id: 'out', type: 'output', x: 700, y: 140 }
                 ];
-                conns = [
-                    { from: 'i1', to: 'g1' }, { from: 'i2', to: 'g1' },
-                    { from: 'g1', to: 'g2' }, { from: 'i3', to: 'g2' },
-                    { from: 'g2', to: 'out' }
-                ];
+                conns = [{ from: 'i1', to: 'g1' }, { from: 'i2', to: 'g1' }, { from: 'g1', to: 'g2' }, { from: 'i3', to: 'g2' }, { from: 'g2', to: 'out' }];
             } else {
                 nodes = [
                     { id: 'i1', type: 'input', val: Math.round(Math.random()), x: 50, y: 80 },
@@ -143,19 +183,17 @@
                     { id: 'g1', type: 'gate', op: ['AND', 'OR'][Math.round(Math.random())], x: 450, y: 150 },
                     { id: 'out', type: 'output', x: 700, y: 160 }
                 ];
-                conns = [
-                    { from: 'i1', to: 'n1' }, { from: 'n1', to: 'g1' }, { from: 'i2', to: 'g1' }, { from: 'g1', to: 'out' }
-                ];
+                conns = [{ from: 'i1', to: 'n1' }, { from: 'n1', to: 'g1' }, { from: 'i2', to: 'g1' }, { from: 'g1', to: 'out' }];
             }
 
             currentCircuit = { type, nodes, conns };
             gateQuestionType = qType;
-            userInputs = nodes.filter(n => n.type === 'input').map(n => n.val);
-            userGates = nodes.filter(n => n.type === 'gate').map(n => n.op);
-            userOutput = null;
+            userInputs = nodes.filter(n => n.type === 'input').map(n => qType === 2 ? null : n.val);
+            userGates = nodes.filter(n => n.type === 'gate').map(n => qType === 1 ? null : n.op);
+            userOutput = qType === 0 ? null : calculateCircuit(nodes.filter(n => n.type === 'input').map(n => n.val), nodes.filter(n => n.type === 'gate').map(n => n.op));
             gateFeedback = null;
             isFlowing = false;
-            render();
+            render(false);
         }
 
         function calculateCircuit(inputs, gates) {
@@ -174,21 +212,28 @@
         }
 
         // --- RENDER ENGINE ---
-        function render() {
+        function render(withFade = true) {
             renderSidebar();
             const area = $('content-area');
+            const wrapper = $('content-wrapper');
+            
+            // Only add fade-in class if switching tabs
+            if (withFade) {
+                wrapper.classList.remove('fade-in');
+                void wrapper.offsetWidth; // Trigger reflow
+                wrapper.classList.add('fade-in');
+            }
+
             area.innerHTML = '';
+            const content = document.createElement('div');
 
-            const wrapper = document.createElement('div');
-            wrapper.className = 'fade-in';
+            if (activeTab === 'pengantar') renderPengantar(content);
+            else if (activeTab === 'operator') renderOperator(content);
+            else if (activeTab === 'playground') renderPlayground(content);
+            else if (activeTab === 'gerbang') renderGerbang(content);
+            else if (activeTab === 'kuis') renderKuis(content);
 
-            if (activeTab === 'pengantar') renderPengantar(wrapper);
-            else if (activeTab === 'operator') renderOperator(wrapper);
-            else if (activeTab === 'playground') renderPlayground(wrapper);
-            else if (activeTab === 'gerbang') renderGerbang(wrapper);
-            else if (activeTab === 'kuis') renderKuis(wrapper);
-
-            area.appendChild(wrapper);
+            area.appendChild(content);
             $('progress-bar').style.width = `${(navItems.findIndex(i => i.id === activeTab) + 1) * 20}%`;
         }
 
@@ -199,31 +244,26 @@
                 const btn = document.createElement('button');
                 btn.className = `w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold transition-all ${activeTab === item.id ? 'sidebar-item active' : 'sidebar-item inactive'}`;
                 btn.innerHTML = `${iconMap[item.icon]} <span>${item.label}</span>`;
-                btn.onclick = () => { activeTab = item.id; render(); };
+                btn.onclick = () => { 
+                    if (activeTab !== item.id) {
+                        activeTab = item.id; 
+                        render(true); 
+                    }
+                };
                 container.appendChild(btn);
             });
         }
 
         function renderPengantar(container) {
             container.innerHTML = `
-                <h2 class="text-3xl font-bold text-slate-800 mb-6">Apa itu Logika Proposisi?</h2>
-                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm mb-8 space-y-4 text-slate-600">
-                    <p>Logika proposisi adalah studi tentang pernyataan yang memiliki satu nilai kebenaran mutlak: <strong>Benar (T)</strong> atau <strong>Salah (F)</strong>.</p>
-                    <div class="grid md:grid-cols-2 gap-4 my-6">
-                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 text-sm">
-                            <span class="font-bold text-emerald-800 block mb-1">✓ Proposisi</span>
-                            "Jakarta adalah ibu kota Indonesia." (Benar)
-                        </div>
-                        <div class="bg-rose-50 p-4 rounded-xl border border-rose-100 text-sm">
-                            <span class="font-bold text-rose-800 block mb-1">✗ Bukan Proposisi</span>
-                            "Tutup pintunya!" (Perintah)
-                        </div>
-                    </div>
+                <h2 class="text-3xl font-bold text-slate-800 mb-6">Materi: Logika Proposisi</h2>
+                <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm mb-8 text-slate-600">
+                    <p>Logika proposisi adalah cabang logika yang mempelajari pernyataan (proposisi) yang dapat bernilai <strong>Benar</strong> atau <strong>Salah</strong>.</p>
                 </div>
                 <div class="bg-indigo-50/50 p-8 rounded-3xl border border-indigo-100">
-                    <h3 class="text-xl font-bold mb-6">Cek Pemahaman Cepat</h3>
+                    <h3 class="text-xl font-bold mb-6">Latihan Pengenalan</h3>
                     ${!introQuizFinished ? `
-                        <div class="bg-white p-8 rounded-2xl border border-slate-200">
+                        <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
                             <p class="text-lg font-medium text-slate-700 mb-8 italic">"${introQuestions[currentIntroIdx].text}"</p>
                             ${!introFeedback ? `
                                 <div class="grid grid-cols-2 gap-4">
@@ -232,114 +272,127 @@
                                 </div>
                             ` : `
                                 <div class="p-6 rounded-xl ${introFeedback.isCorrect ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}">
-                                    <p class="font-bold mb-2">${introFeedback.isCorrect ? 'Tepat!' : 'Kurang Tepat'}</p>
+                                    <p class="font-bold mb-2">${introFeedback.isCorrect ? 'Tepat!' : 'Salah'}</p>
                                     <p class="text-sm opacity-80 mb-6">${introQuestions[currentIntroIdx].reason}</p>
                                     <button onclick="nextIntro()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold">Lanjut</button>
                                 </div>
                             `}
                         </div>
-                    ` : `<div class="text-center p-10 font-bold text-indigo-600">Latihan Selesai! Kamu siap lanjut ke operator.</div>`}
+                    ` : `<div class="text-center p-10 font-bold text-indigo-600">Selesai! Lanjut ke materi berikutnya.</div>`}
                 </div>
             `;
         }
 
-        function handleIntro(val) {
-            introFeedback = { isCorrect: val === introQuestions[currentIntroIdx].isProp };
-            render();
-        }
-
-        function nextIntro() {
-            introFeedback = null;
-            if (currentIntroIdx < introQuestions.length - 1) currentIntroIdx++;
-            else introQuizFinished = true;
-            render();
-        }
+        function handleIntro(v) { introFeedback = { isCorrect: v === introQuestions[currentIntroIdx].isProp }; render(false); }
+        function nextIntro() { introFeedback = null; if (currentIntroIdx < 3) currentIntroIdx++; else introQuizFinished = true; render(false); }
 
         function renderOperator(container) {
-            const operators = [
-                { n: 'Negasi (¬)', t: [{p:1,r:0},{p:0,r:1}], c: 'bg-slate-800 text-white' },
-                { n: 'Konjungsi (∧)', t: [{p:1,q:1,r:1},{p:1,q:0,r:0},{p:0,q:1,r:0},{p:0,q:0,r:0}], c: 'bg-emerald-50 text-emerald-600' },
-                { n: 'Disjungsi (∨)', t: [{p:1,q:1,r:1},{p:1,q:0,r:1},{p:0,q:1,r:1},{p:0,q:0,r:0}], c: 'bg-amber-50 text-amber-600' },
-                { n: 'Implikasi (→)', t: [{p:1,q:1,r:1},{p:1,q:0,r:0},{p:0,q:1,r:1},{p:0,q:0,r:1}], c: 'bg-indigo-50 text-indigo-600' },
-                { n: 'Bi-implikasi (↔)', t: [{p:1,q:1,r:1},{p:1,q:0,r:0},{p:0,q:1,r:0},{p:0,q:0,r:1}], c: 'bg-rose-50 text-rose-600' }
-            ];
-            container.innerHTML = `<h2 class="text-3xl font-bold text-slate-800 mb-6">Tabel Operator Logika</h2><div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">` +
-                operators.map(op => `
-                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-                        <h3 class="font-black text-center p-2 rounded-lg mb-4 ${op.c}">${op.n}</h3>
-                        <table class="w-full text-center text-xs">
-                            <thead><tr class="text-slate-400"><th>p</th>${op.t[0].q !== undefined ? '<th>q</th>' : ''}<th>H</th></tr></thead>
-                            <tbody>${op.t.map(r => `<tr class="border-t border-slate-50"><td>${r.p?'T':'F'}</td>${r.q !== undefined ? `<td>${r.q?'T':'F'}</td>` : ''}<td class="font-bold">${r.r?'T':'F'}</td></tr>`).join('')}</tbody>
+            const op = operatorsContent[activeOperatorIdx];
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-slate-800">Operator Logika</h2>
+                    <div class="flex gap-2">
+                        <button onclick="changeOp(-1)" class="p-3 bg-white border border-slate-200 rounded-xl" ${activeOperatorIdx === 0 ? 'disabled' : ''}>←</button>
+                        <button onclick="changeOp(1)" class="p-3 bg-white border border-slate-200 rounded-xl" ${activeOperatorIdx === 4 ? 'disabled' : ''}>→</button>
+                    </div>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm space-y-6">
+                        <h3 class="text-2xl font-bold text-indigo-600">${op.name} (${op.symbol})</h3>
+                        <p class="text-slate-600">${op.concept}</p>
+                        <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-2">
+                            <h4 class="text-xs font-bold uppercase text-slate-400">Contoh:</h4>
+                            ${op.examples.map(ex => `<p class="italic text-slate-700">"${ex}"</p>`).join('')}
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 rounded-[40px] border border-slate-200 shadow-sm overflow-hidden">
+                        <h4 class="text-xs font-bold uppercase text-center mb-4">Tabel Kebenaran</h4>
+                        <table class="w-full text-center border-collapse">
+                            <thead class="bg-slate-50 text-[10px] uppercase font-black">
+                                <tr><th>p</th>${op.table[0].q !== undefined ? '<th>q</th>' : ''}<th class="text-indigo-600">${op.symbol}</th></tr>
+                            </thead>
+                            <tbody>${op.table.map(r => `
+                                <tr class="border-t border-slate-50"><td>${r.p?'T':'F'}</td>${r.q!==undefined?`<td>${r.q?'T':'F'}</td>`:''}<td class="font-black ${r.r?'text-emerald-500':'text-rose-500'}">${r.r?'T':'F'}</td></tr>
+                            `).join('')}</tbody>
                         </table>
                     </div>
-                `).join('') + `</div>`;
-        }
-
-        function renderPlayground(container) {
-            const rows = [
-                {p:true,q:true,nq:false,inner:true,res:true},
-                {p:true,q:false,nq:true,inner:true,res:true},
-                {p:false,q:true,nq:false,inner:false,res:true},
-                {p:false,q:false,nq:true,inner:true,res:false}
-            ];
-            container.innerHTML = `
-                <h2 class="text-2xl font-bold mb-6">Playground Tabel Kebenaran</h2>
-                <div class="bg-slate-900 p-8 rounded-3xl text-white text-center font-mono font-bold mb-8 shadow-xl">
-                    <span class="text-indigo-400 text-xs block mb-2 opacity-60">SOAL:</span> p ↔ (¬q ∨ p)
                 </div>
-                <div class="bg-white rounded-3xl border border-slate-200 overflow-x-auto">
-                    <table class="w-full text-center min-w-[500px]">
-                        <thead class="bg-slate-50 text-[10px] text-slate-400 font-black uppercase">
-                            <tr><th class="p-4">p</th><th class="p-4">q</th><th class="p-4">¬q</th><th class="p-4">¬q ∨ p</th><th class="p-4 bg-indigo-50 text-indigo-600">HASIL</th></tr>
-                        </thead>
-                        <tbody>
-                            ${rows.map((row, rIdx) => `
-                                <tr class="border-t border-slate-100">
-                                    <td class="p-4 text-slate-400 font-bold">${row.p?'T':'F'}</td>
-                                    <td class="p-4 text-slate-400 font-bold">${row.q?'T':'F'}</td>
-                                    ${['nq', 'inner', 'res'].map(col => {
-                                        const key = `${rIdx}-${col}`;
-                                        const val = userTableAnswers[key];
-                                        const correct = row[col];
-                                        return `<td class="p-4">
-                                            <button onclick="toggleTable('${key}')" class="w-10 h-10 rounded-xl font-bold border-2 transition-all ${val === undefined ? 'bg-slate-50 text-slate-200' : val ? 'border-emerald-500 text-emerald-500' : 'border-rose-500 text-rose-500'}">
-                                                ${val === undefined ? '?' : val ? 'T' : 'F'}
-                                            </button>
-                                            ${showTableFeedback && val !== undefined ? `<div class="text-[8px] font-bold ${val === correct ? 'text-emerald-500':'text-rose-500'}">${val === correct ? 'BENAR':'SALAH'}</div>` : ''}
-                                        </td>`;
-                                    }).join('')}
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                <button onclick="checkTable()" class="w-full mt-6 bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-indigo-100">Cek Semua Jawaban</button>
             `;
         }
+        function changeOp(s) { activeOperatorIdx += s; render(false); }
 
-        function toggleTable(key) {
-            const val = userTableAnswers[key];
-            userTableAnswers[key] = val === undefined ? true : val === true ? false : undefined;
-            showTableFeedback = false;
-            render();
+        function renderPlayground(container) {
+            const ch = playgroundChallenges[playgroundChallengeIdx];
+            const baseRows = [{p:true,q:true},{p:true,q:false},{p:false,q:true},{p:false,q:false}];
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Playground Tabel</h2>
+                    <button onclick="nextPlayground()" class="bg-white border p-2 rounded-xl text-xs font-bold transition-all hover:bg-slate-100">Ganti Soal</button>
+                </div>
+                <div class="bg-slate-900 p-8 rounded-[40px] text-white text-center font-mono font-bold mb-8 shadow-xl">
+                    <span class="text-indigo-400 text-[10px] block mb-2 uppercase opacity-60 italic">Lengkapi Tabel untuk Ekspresi:</span>
+                    <h3 class="text-xl md:text-2xl">${ch.expression}</h3>
+                </div>
+                <div class="bg-white rounded-[40px] border border-slate-200 overflow-x-auto shadow-sm">
+                    <table class="w-full text-center min-w-[600px]">
+                        <thead class="bg-slate-50 text-[10px] font-black uppercase">
+                            <tr>${ch.columns.map(col => `<th class="p-5 ${col === ch.expression ? 'bg-indigo-50 text-indigo-600' : ''}">${col}</th>`).join('')}</tr>
+                        </thead>
+                        <tbody>${baseRows.map((row, rIdx) => {
+                            const computed = ch.compute(row.p, row.q);
+                            return `<tr class="border-t border-slate-100">
+                                <td class="p-5 text-slate-400 font-bold bg-slate-50/30">${row.p?'T':'F'}</td>
+                                <td class="p-5 text-slate-400 font-bold bg-slate-50/30">${row.q?'T':'F'}</td>
+                                ${ch.columns.slice(2).map(col => {
+                                    const key = `${rIdx}-${col}`;
+                                    const val = userTableAnswers[key];
+                                    const correct = computed[col];
+                                    return `<td class="p-5">
+                                        <button onclick="toggleTable('${key}')" class="w-10 h-10 rounded-xl font-black border-2 transition-all ${val === undefined ? 'bg-slate-50 text-slate-200' : val ? 'border-emerald-500 text-emerald-500 bg-emerald-50 shadow-sm shadow-emerald-100' : 'border-rose-500 text-rose-600 bg-rose-50 shadow-sm shadow-rose-100'}">
+                                            ${val === undefined ? '?' : val ? 'T' : 'F'}
+                                        </button>
+                                        ${showTableFeedback && val !== undefined ? `<div class="mt-1 text-[8px] font-bold ${val === correct ? 'text-emerald-500':'text-rose-500'} animate-bounce">${val === correct ? 'BENAR':'SALAH'}</div>` : ''}
+                                    </td>`;
+                                }).join('')}
+                            </tr>`;
+                        }).join('')}</tbody>
+                    </table>
+                </div>
+                <div class="mt-6 flex items-center gap-3 p-4 bg-slate-100 rounded-2xl text-slate-500 text-xs italic">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Klik tombol "?" untuk mengisi nilai T atau F. Tekan "Cek Tabel" jika semua kolom sudah terisi.
+                </div>
+                <button onclick="checkTable()" class="w-full mt-6 bg-indigo-600 text-white py-4 rounded-3xl font-black shadow-lg shadow-indigo-100 hover:scale-[1.01] transition-all">Periksa Jawaban</button>
+            `;
         }
-        function checkTable() { showTableFeedback = true; render(); }
+        function toggleTable(k) { const v = userTableAnswers[k]; userTableAnswers[k] = v === undefined ? true : v === true ? false : undefined; showTableFeedback = false; render(false); }
+        function checkTable() { showTableFeedback = true; render(false); }
+        function nextPlayground() { playgroundChallengeIdx = (playgroundChallengeIdx + 1) % playgroundChallenges.length; userTableAnswers = {}; showTableFeedback = false; render(false); }
 
+        // --- GERBANG LOGIKA ---
         function renderGerbang(container) {
             if (!currentCircuit) { generateCircuit(); return; }
+            const instruction = [
+                "Lengkapi OUTPUT akhir (?) yang dihasilkan oleh rangkaian ini.",
+                "Tentukan jenis OPERATOR gerbang yang kosong agar rangkaian sesuai.",
+                "Tentukan nilai INPUT (0 atau 1) yang tepat pada kotak abu-abu."
+            ][gateQuestionType];
+
             container.innerHTML = `
-                <div class="flex justify-between items-center gap-4 mb-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold">Dinamika Gerbang Logika</h2>
-                        <p class="text-slate-500 text-xs">${['Cari Output (?)', 'Cari Operator Gerbang', 'Cari Nilai Input'][gateQuestionType]}</p>
+                        <h2 class="text-2xl font-bold italic uppercase tracking-tighter">Gerbang Logika Dinamis</h2>
+                        <div class="mt-2 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-xl text-sm border border-indigo-100 font-bold">
+                            Misi: ${instruction}
+                        </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="checkGate()" class="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-100 flex items-center gap-2 transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Cek</button>
-                        <button onclick="generateCircuit()" class="bg-white border border-slate-200 text-slate-600 p-3 rounded-2xl font-bold hover:bg-slate-50"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <button onclick="checkGate()" class="flex-1 md:flex-none bg-indigo-600 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:scale-105 transition-all"><svg class="inline-block w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Periksa</button>
+                        <button onclick="generateCircuit()" class="p-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg></button>
                     </div>
                 </div>
-                <div class="bg-white p-4 md:p-12 rounded-[40px] border border-slate-200 shadow-sm relative overflow-hidden">
-                    <svg viewBox="0 0 800 400" class="w-full h-auto">
+                <div class="bg-white p-8 rounded-[50px] border border-slate-200 shadow-xl relative overflow-hidden">
+                    <svg viewBox="0 0 800 400" class="w-full h-auto drop-shadow-2xl">
                         ${currentCircuit.conns.map(conn => {
                             const f = currentCircuit.nodes.find(n => n.id === conn.from);
                             const t = currentCircuit.nodes.find(n => n.id === conn.to);
@@ -349,79 +402,125 @@
                             const ey = t.type === 'output' ? t.y + 30 : t.y + 40;
                             const mx = (sx + ex) / 2;
                             const d = `M ${sx} ${sy} C ${mx} ${sy}, ${mx} ${ey}, ${ex} ${ey}`;
-                            return `<path d="${d}" class="stroke-slate-200 fill-none stroke-[4] transition-all ${isFlowing ? 'stroke-indigo-400 wire-flow stroke-[6]' : ''}" />`;
+                            return `<path d="${d}" class="stroke-slate-100 fill-none stroke-[6] rounded-full"/><path d="${d}" class="stroke-slate-200 fill-none stroke-[3] transition-all ${isFlowing ? 'stroke-indigo-400 wire-flow stroke-[5]' : ''}" />`;
                         }).join('')}
                         ${currentCircuit.nodes.map(node => {
                             if (node.type === 'input') {
                                 const idx = currentCircuit.nodes.filter(n => n.type === 'input').indexOf(node);
                                 const isQ = gateQuestionType === 2;
+                                const val = isQ ? userInputs[idx] : node.val;
                                 return `<g class="cursor-pointer" onclick="toggleGateInput(${idx})">
-                                    <rect x="${node.x}" y="${node.y-20}" width="40" height="40" rx="10" class="${isQ ? (userInputs[idx] ? 'fill-indigo-600' : 'fill-slate-200') : (node.val ? 'fill-indigo-600' : 'fill-slate-800')}" />
-                                    <text x="${node.x+20}" y="${node.y+7}" textAnchor="middle" class="fill-white font-bold text-xl">${isQ ? userInputs[idx] : node.val}</text>
+                                    <rect x="${node.x}" y="${node.y-20}" width="40" height="40" rx="12" class="transition-all duration-300 ${val === null ? 'fill-slate-100 stroke-slate-200 stroke-2' : val ? 'fill-indigo-600' : 'fill-slate-800'}" />
+                                    <text x="${node.x+20}" y="${node.y+7}" textAnchor="middle" class="fill-white font-black text-xl pointer-events-none">${val === null ? '-' : val}</text>
                                 </g>`;
                             }
                             if (node.type === 'gate') {
                                 const idx = currentCircuit.nodes.filter(n => n.type === 'gate').indexOf(node);
-                                const isQ = gateQuestionType === 1 && node.op !== 'NOT';
+                                const isQ = gateQuestionType === 1;
+                                const op = isQ ? userGates[idx] : node.op;
                                 return `<g class="cursor-pointer" onclick="toggleGateOp(${idx})">
-                                    <rect x="${node.x}" y="${node.y}" width="100" height="80" rx="20" class="${node.op === 'NOT' ? 'fill-slate-800' : 'fill-emerald-500'}" />
-                                    <text x="${node.x+50}" y="${node.y+48}" textAnchor="middle" class="fill-white font-black text-lg">${isQ ? userGates[idx] : node.op}</text>
+                                    <rect x="${node.x}" y="${node.y}" width="100" height="80" rx="24" class="transition-all ${op === null ? 'fill-slate-50 stroke-slate-200 stroke-2' : op === 'NOT' ? 'fill-slate-800 shadow-inner' : 'fill-emerald-500 shadow-lg'}" />
+                                    <text x="${node.x+50}" y="${node.y+48}" textAnchor="middle" class="fill-white font-black text-lg uppercase pointer-events-none">${op === null ? '-' : op}</text>
                                 </g>`;
                             }
                             if (node.type === 'output') {
                                 const isQ = gateQuestionType === 0;
+                                const val = isQ ? userOutput : calculateCircuit(currentCircuit.nodes.filter(n => n.type === 'input').map(n => n.val), currentCircuit.nodes.filter(n => n.type === 'gate').map(n => n.op));
                                 return `<g class="cursor-pointer" onclick="toggleGateOut()">
-                                    <rect x="${node.x}" y="${node.y}" width="60" height="60" rx="15" class="${isQ && userOutput === null ? 'fill-slate-100' : 'fill-slate-900'}" />
-                                    <text x="${node.x+30}" y="${node.y+38}" textAnchor="middle" class="fill-white font-black text-2xl">${isQ ? (userOutput === null ? '?' : userOutput) : calculateCircuit(currentCircuit.nodes.filter(n => n.type === 'input').map(n => n.val), currentCircuit.nodes.filter(n => n.type === 'gate').map(n => n.op))}</text>
+                                    <rect x="${node.x}" y="${node.y}" width="60" height="60" rx="18" class="transition-all ${val === null ? 'fill-slate-50 stroke-slate-200 stroke-2' : 'fill-slate-900 shadow-xl'}" />
+                                    <text x="${node.x+30}" y="${node.y+38}" textAnchor="middle" class="fill-white font-black text-2xl pointer-events-none">${val === null ? '-' : val}</text>
                                 </g>`;
                             }
                             return '';
                         }).join('')}
                     </svg>
-                    ${gateFeedback ? `<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-8 py-4 rounded-full font-black text-white shadow-2xl ${gateFeedback === 'correct' ? 'bg-emerald-500' : 'bg-rose-500'}">${gateFeedback === 'correct' ? 'BENAR!' : 'COBA LAGI'}</div>` : ''}
+                    ${gateFeedback ? `<div class="absolute bottom-8 left-1/2 -translate-x-1/2 px-10 py-5 rounded-full font-black text-white shadow-2xl animate-bounce backdrop-blur-md ${gateFeedback === 'correct' ? 'bg-emerald-500/90' : 'bg-rose-500/90'}">${gateFeedback === 'correct' ? 'BENAR! LANJUTKAN' : 'COBA ANALISIS LAGI'}</div>` : ''}
                 </div>
+                <div class="mt-4 text-center text-xs text-slate-400 font-medium">Klik pada bagian sirkuit yang kosong untuk mengganti nilai/gerbang.</div>
             `;
         }
 
-        function toggleGateInput(i) { if (gateQuestionType === 2) { userInputs[i] = userInputs[i] === 1 ? 0 : 1; render(); } }
-        function toggleGateOp(i) { if (gateQuestionType === 1) { userGates[i] = userGates[i] === 'AND' ? 'OR' : 'AND'; render(); } }
-        function toggleGateOut() { if (gateQuestionType === 0) { userOutput = userOutput === 1 ? 0 : 1; render(); } }
+        function toggleGateInput(i) { 
+            if (gateQuestionType === 2) {
+                const cur = userInputs[i];
+                userInputs[i] = (cur === null) ? 1 : (cur === 1) ? 0 : null;
+                render(false);
+            }
+        }
+        function toggleGateOp(i) {
+            if (gateQuestionType === 1) {
+                const ops = [null, 'AND', 'OR', 'NOT'];
+                const idx = ops.indexOf(userGates[i]);
+                userGates[i] = ops[(idx + 1) % ops.length];
+                render(false);
+            }
+        }
+        function toggleGateOut() {
+            if (gateQuestionType === 0) {
+                userOutput = (userOutput === null) ? 1 : (userOutput === 1) ? 0 : null;
+                render(false);
+            }
+        }
+
         function checkGate() {
             const correctVal = calculateCircuit(currentCircuit.nodes.filter(n => n.type === 'input').map(n => n.val), currentCircuit.nodes.filter(n => n.type === 'gate').map(n => n.op));
             let userVal;
             if (gateQuestionType === 0) userVal = userOutput;
-            else if (gateQuestionType === 1) userVal = calculateCircuit(currentCircuit.nodes.filter(n => n.type === 'input').map(n => n.val), userGates);
-            else if (gateQuestionType === 2) userVal = calculateCircuit(userInputs, currentCircuit.nodes.filter(n => n.type === 'gate').map(n => n.op));
+            else if (gateQuestionType === 1) {
+                if (userGates.includes(null)) { gateFeedback = 'wrong'; render(false); return; }
+                userVal = calculateCircuit(currentCircuit.nodes.filter(n => n.type === 'input').map(n => n.val), userGates);
+            } else if (gateQuestionType === 2) {
+                if (userInputs.includes(null)) { gateFeedback = 'wrong'; render(false); return; }
+                userVal = calculateCircuit(userInputs, currentCircuit.nodes.filter(n => n.type === 'gate').map(n => n.op));
+            }
+            
             isFlowing = true;
-            gateFeedback = userVal === correctVal ? 'correct' : 'wrong';
-            render();
-            setTimeout(() => { isFlowing = false; render(); }, 3000);
+            gateFeedback = (userVal === correctVal) ? 'correct' : 'wrong';
+            render(false);
+            setTimeout(() => { isFlowing = false; render(false); }, 3000);
         }
 
+        // --- FINAL EVALUATION ---
         function renderKuis(container) {
-            container.innerHTML = `
-                <div class="animate-fadeIn max-w-xl mx-auto text-center space-y-8">
-                    <h2 class="text-3xl font-bold">Evaluasi Akhir</h2>
-                    <div class="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
-                        <p class="text-lg italic mb-10">"Jika p=1, q=0, berapa hasil dari (p ∧ q) ∨ (¬q ∧ p)?"</p>
-                        <div class="grid grid-cols-2 gap-4">
-                            <button onclick="alert('Luar biasa! Jawabanmu Benar (1)')" class="p-4 rounded-xl border-2 font-bold hover:bg-emerald-50 transition-all">1 (Benar)</button>
-                            <button onclick="alert('Hampir tepat! Ayo tinjau tabel kebenaran lagi.')" class="p-4 rounded-xl border-2 font-bold hover:bg-rose-50 transition-all">0 (Salah)</button>
-                        </div>
-                    </div>
+            if (finalQuizFinished) {
+                container.innerHTML = `<div class="max-w-xl mx-auto text-center py-10 fade-in">
+                    <div class="text-7xl mb-6">🏆</div>
+                    <h2 class="text-4xl font-black text-slate-800 mb-2">Evaluasi Selesai!</h2>
+                    <p class="text-slate-500 mb-10 font-bold">Skor Kamu: ${finalQuizScore} / 20</p>
+                    <button onclick="resetKuis()" class="bg-indigo-600 text-white px-10 py-4 rounded-3xl font-black shadow-lg hover:scale-105 transition-all">Ulangi</button>
+                </div>`;
+                return;
+            }
+            const data = finalQuizData[finalQuizIdx];
+            container.innerHTML = `<div class="max-w-2xl mx-auto">
+                <div class="flex justify-between items-center mb-8 italic uppercase text-xs font-black text-slate-400">
+                    <span>Misi Evaluasi</span><span>Soal ${finalQuizIdx + 1} / 20</span>
                 </div>
-            `;
+                <div class="bg-white p-10 rounded-[40px] border border-slate-200 shadow-sm">
+                    <p class="text-xl font-bold text-slate-700 mb-10 leading-relaxed">${data.q}</p>
+                    ${!finalQuizFeedback ? `<div class="grid gap-3">
+                        ${data.a.map((opt, i) => `<button onclick="handleKuisAnswer(${i})" class="w-full text-left p-5 rounded-2xl border-2 border-slate-50 hover:border-indigo-500 hover:bg-indigo-50 transition-all font-bold text-slate-600 flex gap-4"><span class="text-indigo-300 font-black">${String.fromCharCode(65+i)}.</span> ${opt}</button>`).join('')}
+                    </div>` : `<div class="animate-fadeIn space-y-6">
+                        <div class="p-6 rounded-3xl ${finalQuizFeedback.isCorrect ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}">
+                            <p class="font-black mb-1 uppercase text-sm">${finalQuizFeedback.isCorrect ? 'Tepat Sekali!' : 'Kurang Tepat'}</p>
+                            <p class="text-xs opacity-80">Jawaban benar: <strong>${data.a[data.c]}</strong></p>
+                        </div>
+                        <p class="text-sm text-slate-500 italic bg-slate-50 p-6 rounded-2xl border border-slate-100">${data.e}</p>
+                        <button onclick="nextKuis()" class="w-full bg-slate-800 text-white py-4 rounded-3xl font-black uppercase tracking-widest hover:bg-slate-900 transition-colors">Lanjut →</button>
+                    </div>`}
+                </div>
+            </div>`;
         }
+        function handleKuisAnswer(i) { const correct = i === finalQuizData[finalQuizIdx].c; if (correct) finalQuizScore++; finalQuizFeedback = { isCorrect: correct }; render(false); }
+        function nextKuis() { finalQuizFeedback = null; if (finalQuizIdx < 19) finalQuizIdx++; else finalQuizFinished = true; render(false); }
+        function resetKuis() { finalQuizIdx = 0; finalQuizScore = 0; finalQuizFinished = false; finalQuizFeedback = null; render(false); }
 
         // --- INIT ---
         window.onload = () => {
-            render();
-            $('menu-toggle').onclick = () => {
-                const sidebar = $('sidebar');
-                sidebar.classList.toggle('hidden');
-                sidebar.classList.toggle('flex');
-            };
+            render(true);
+            $('menu-toggle').onclick = () => { $('sidebar').classList.toggle('hidden'); $('sidebar').classList.toggle('flex'); };
         };
     </script>
 </body>
 </html>
+
