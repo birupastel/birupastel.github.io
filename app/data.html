@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belajar Struktur Data - Persiapan OSNK & Bebras</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js Initialization Logic -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('appData', () => ({
+                activeModule: 'array',
+                activeTab: 'materi',
+                
+                // --- Quiz State ---
+                currentQuizIndex: 0,
+                textAnswer: '',
+                quizFeedback: null,
+
+                // --- Array State ---
+                arraySizeInput: 5,
+                arrayItems: [],
+                arrayCommand: '',
+                arrayOutput: '',
+                isArrayCreated: false,
+
+                // --- Stack State ---
+                stackItems: [10, 20, 30],
+                stackCommand: '',
+                stackOutput: '',
+
+                // --- Queue State ---
+                queueItems: [100, 200],
+                queueCommand: '',
+                queueOutput: '',
+
+                // --- UI State ---
+                showToast: false,
+                toastTitle: '',
+                toastMsg: '',
+                toastType: 'success',
+
+                modules: [
+                    { 
+                        id: 'array', 
+                        name: 'Array (Larik)', 
+                        icon: 'grid',
+                        materiHtml: `
+                            <p>Array adalah koleksi elemen bertipe sama yang disusun secara berurutan di memori. Dalam C++, elemen diakses menggunakan <strong>indeks</strong> yang dimulai dari 0.</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>Akses elemen: $O(1)$</li>
+                                <li>Penyimpanan: Kontinu (berdampingan)</li>
+                            </ul>
+                        `,
+                        codeSnippet: `int nilai[5]; // Deklarasi array ukuran 5\nnilai[0] = 85; // Mengisi indeks 0\nnilai[1] = 90;\n\ncout << nilai[0]; // Output: 85\ncout << nilai[0] + nilai[1]; // Operasi aritmatika`,
+                        useCase: "Gunakan array ketika Anda membutuhkan akses acak yang sangat cepat ke data yang ukurannya tetap.",
+                        quizzes: [
+                            { type: 'pg', q: "Jika dideklarasikan 'int A[5];', berapakah rentang indeks yang valid?", options: ["1 sampai 5", "0 sampai 4", "0 sampai 5", "1 sampai 4"], correct: 1 },
+                            { type: 'pg', q: "Manakah karakteristik utama dari Array?", options: ["Ukuran dinamis", "Elemen tipe berbeda", "Alamat memori berurutan", "Data otomatis terurut"], correct: 2 },
+                            { type: 'isian', q_code: "int A[4] = {2, 4, 6, 8};", q: "Berapa hasil dari: cout << A[1] + A[3]; ?", correct: "12" },
+                            { type: 'isian', q_code: "int data[5] = {3, 1, 4, 2, 0};", q: "Apa output dari: cout << data[data[1]]; ?", correct: "1" },
+                            { type: 'isian', q_code: "int m[10]; // 1 int = 4 byte", q: "Jika alamat m[0] adalah 2000, berapakah alamat memori m[5]?", correct: "2020" }
+                        ]
+                    },
+                    { 
+                        id: 'stack', 
+                        name: 'Stack (Tumpukan)', 
+                        icon: 'layers',
+                        materiHtml: `
+                            <p>Stack adalah struktur data linear yang mengikuti prinsip <strong>LIFO (Last In First Out)</strong>. Data yang terakhir masuk akan menjadi yang pertama keluar.</p>
+                            <p class="mt-2">Operasi dasar: <strong>Push</strong> (menambah ke atas) dan <strong>Pop</strong> (mengambil dari atas).</p>
+                        `,
+                        codeSnippet: `#include <stack>\nstack<int> s;\ns.push(5);  // Memasukkan 5\ns.push(10); // Memasukkan 10\n\ncout << s.top(); // Output: 10\ns.pop();         // Menghapus 10\ncout << s.top(); // Output: 5`,
+                        useCase: "Digunakan dalam fitur 'Undo', call stack fungsi, dan pengecekan tanda kurung.",
+                        quizzes: [
+                            { type: 'pg', q: "Prinsip utama Stack adalah?", options: ["FIFO", "LIFO", "FILO", "Random"], correct: 1 },
+                            { type: 'pg', q: "Operasi untuk melihat elemen teratas tanpa menghapusnya adalah...", options: ["pop()", "push()", "top()", "clear()"], correct: 2 },
+                            { type: 'isian', q_code: "s.push(10); s.push(20); s.pop(); s.push(30);", q: "Berapakah nilai s.top() sekarang?", correct: "30" },
+                            { type: 'pg', q: "Kondisi 'Stack Overflow' terjadi saat...", options: ["Stack kosong di-pop", "Memasukkan data ke stack penuh", "Data stack duplikat", "Stack diakses secara acak"], correct: 1 },
+                            { type: 'isian', q_code: "s.push(1); s.push(2); s.push(3); s.pop(); s.pop(); s.push(4); s.pop();", q: "Berapa jumlah elemen s.size() yang tersisa?", correct: "1" }
+                        ]
+                    },
+                    { 
+                        id: 'queue', 
+                        name: 'Queue (Antrean)', 
+                        icon: 'users',
+                        materiHtml: `
+                            <p>Queue adalah struktur data linear dengan prinsip <strong>FIFO (First In First Out)</strong>. Data yang pertama kali masuk akan diproses terlebih dahulu.</p>
+                        `,
+                        codeSnippet: `#include <queue>\nqueue<int> q;\nq.push(10); // Enqueue (belakang)\nq.push(20);\n\ncout << q.front(); // Output: 10 (depan)\nq.pop();           // Dequeue (hapus depan)\ncout << q.front(); // Output: 20`,
+                        useCase: "Digunakan pada antrean printer, manajemen proses CPU, dan sistem simulasi bank.",
+                        quizzes: [
+                            { type: 'pg', q: "Prinsip utama Queue adalah?", options: ["LIFO", "Random", "FIFO", "Sorted"], correct: 2 },
+                            { type: 'pg', q: "Bagian antrean tempat elemen baru dimasukkan disebut...", options: ["Front", "Rear / Back", "Top", "Middle"], correct: 1 },
+                            { type: 'isian', q_code: "q.push(5); q.push(8); q.pop(); q.push(3);", q: "Berapakah nilai q.front() sekarang?", correct: "8" },
+                            { type: 'pg', q: "Manakah contoh implementasi Queue di dunia nyata?", options: ["Tumpukan piring", "Antrean tiket bioskop", "Sejarah browser (back button)", "Folder dalam komputer"], correct: 1 },
+                            { type: 'isian', q_code: "q.push(1); q.push(2); q.pop(); q.push(3); q.pop(); q.pop(); q.push(10);", q: "Berapakah nilai q.front() sekarang?", correct: "10" }
+                        ]
+                    }
+                ],
+
+                // --- Initialization ---
+                init() {
+                    this.$nextTick(() => {
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
+                    });
+                },
+
+                // --- Helper ---
+                getCurrentModule() {
+                    const module = this.modules.find(m => m.id === this.activeModule);
+                    return module || this.modules[0];
+                },
+
+                validateAndClean(cmd) {
+                    cmd = cmd.trim();
+                    if (!cmd.endsWith(';')) throw "Kesalahan: Perintah harus diakhiri dengan tanda titik koma (;)";
+                    return cmd.slice(0, -1).trim();
+                },
+
+                // --- Array Logic ---
+                initArray() {
+                    let size = parseInt(this.arraySizeInput);
+                    if (isNaN(size) || size < 1 || size > 15) {
+                        this.triggerToast("Gagal", "Ukuran array harus angka 1 - 15", "error");
+                        return;
+                    }
+                    this.arrayItems = new Array(size).fill(0);
+                    this.isArrayCreated = true;
+                    this.arrayOutput = "Array berhasil dibuat dengan " + size + " slot memori.";
+                },
+
+                runArrayCommand() {
+                    try {
+                        let cmd = this.validateAndClean(this.arrayCommand);
+                        if (cmd.startsWith("cout << ")) {
+                            let expr = cmd.replace("cout << ", "").trim();
+                            this.arrayOutput = "Output: " + this.evalExpression(expr, 'array');
+                        } else if (cmd.includes("=")) {
+                            let [left, right] = cmd.split("=").map(s => s.trim());
+                            let indexMatch = left.match(/array\[(.*)\]/);
+                            if (!indexMatch) throw "Gunakan format: array[index] = nilai;";
+                            let idx = this.evalExpression(indexMatch[1], 'array');
+                            let val = this.evalExpression(right, 'array');
+                            if (idx < 0 || idx >= this.arrayItems.length) throw "Indeks di luar jangkauan!";
+                            this.arrayItems[idx] = val;
+                            this.arrayOutput = "Berhasil: array[" + idx + "] = " + val;
+                        } else { throw "Sintaks tidak dikenal."; }
+                    } catch (e) { this.arrayOutput = "Error: " + e; }
+                    this.arrayCommand = '';
+                },
+
+                // --- Stack Logic ---
+                runStackCommand() {
+                    try {
+                        let cmd = this.validateAndClean(this.stackCommand);
+                        if (cmd.startsWith("s.push(")) {
+                            let valMatch = cmd.match(/\((.*)\)/);
+                            if (!valMatch) throw "Gunakan s.push(nilai);";
+                            let val = this.evalExpression(valMatch[1], 'none');
+                            this.stackItems.push(val);
+                            this.stackOutput = "Berhasil: Memasukkan " + val + " ke tumpukan.";
+                        } else if (cmd === "s.pop()") {
+                            if (this.stackItems.length === 0) throw "Error: Stack Underflow (Stack Kosong)!";
+                            let val = this.stackItems.pop();
+                            this.stackOutput = "Berhasil: Mengeluarkan " + val + " dari tumpukan.";
+                        } else if (cmd === "cout << s.top()") {
+                            if (this.stackItems.length === 0) throw "Error: Stack Kosong!";
+                            this.stackOutput = "Output: " + this.stackItems[this.stackItems.length - 1];
+                        } else { throw "Gunakan s.push(x);, s.pop();, atau cout << s.top();"; }
+                    } catch (e) { this.stackOutput = "Error: " + e; }
+                    this.stackCommand = '';
+                },
+
+                // --- Queue Logic ---
+                runQueueCommand() {
+                    try {
+                        let cmd = this.validateAndClean(this.queueCommand);
+                        if (cmd.startsWith("q.push(")) {
+                            let valMatch = cmd.match(/\((.*)\)/);
+                            if (!valMatch) throw "Gunakan q.push(nilai);";
+                            let val = this.evalExpression(valMatch[1], 'none');
+                            this.queueItems.push(val);
+                            this.queueOutput = "Berhasil: " + val + " masuk ke antrean.";
+                        } else if (cmd === "q.pop()") {
+                            if (this.queueItems.length === 0) throw "Error: Antrean Kosong!";
+                            let val = this.queueItems.shift();
+                            this.queueOutput = "Berhasil: " + val + " keluar dari depan.";
+                        } else if (cmd === "cout << q.front()") {
+                            if (this.queueItems.length === 0) throw "Error: Antrean Kosong!";
+                            this.queueOutput = "Output: " + this.queueItems[0];
+                        } else { throw "Gunakan q.push(x);, q.pop();, atau cout << q.front();"; }
+                    } catch (e) { this.queueOutput = "Error: " + e; }
+                    this.queueCommand = '';
+                },
+
+                evalExpression(expr, type) {
+                    try {
+                        let safeExpr = expr;
+                        if (type === 'array') {
+                            while (safeExpr.includes('array[')) {
+                                safeExpr = safeExpr.replace(/array\[(\d+)\]/g, (_, i) => this.arrayItems[parseInt(i)]);
+                            }
+                        }
+                        return eval(safeExpr);
+                    } catch (e) { throw "Kesalahan Ekspresi: " + expr; }
+                },
+
+                // --- Quiz Logic ---
+                handleQuizChoice(index) {
+                    const quiz = this.getCurrentModule().quizzes[this.currentQuizIndex];
+                    if (index === quiz.correct) {
+                        this.quizFeedback = { type: 'success', msg: 'Jawaban Benar! Analisis Anda tepat.' };
+                    } else {
+                        this.quizFeedback = { type: 'error', msg: 'Jawaban Salah. Ayo periksa lagi logikanya.' };
+                    }
+                },
+
+                handleIsian() {
+                    const quiz = this.getCurrentModule().quizzes[this.currentQuizIndex];
+                    if (this.textAnswer.trim() === quiz.correct) {
+                        this.quizFeedback = { type: 'success', msg: 'Luar Biasa! Jawaban Anda Tepat.' };
+                    } else {
+                        this.quizFeedback = { type: 'error', msg: 'Belum Tepat. Hitung kembali ya!' };
+                    }
+                },
+
+                resetQuiz() {
+                    this.currentQuizIndex = 0;
+                    this.textAnswer = '';
+                    this.quizFeedback = null;
+                },
+
+                triggerToast(title, msg, type) {
+                    this.toastTitle = title; this.toastMsg = msg; this.toastType = type;
+                    this.showToast = true;
+                    setTimeout(() => { this.showToast = false; }, 3000);
+                }
+            }));
+        });
+    </script>
+
+    <!-- Alpine Library with DEFER -->
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        [x-cloak] { display: none !important; }
+        .console { background: #1e293b; color: #38bdf8; padding: 14px; border-radius: 12px; font-family: 'Fira Code', monospace; min-height: 50px; border-left: 4px solid #3b82f6; }
+        .command-input { transition: all 0.2s; border: 2px solid #e2e8f0; }
+        .command-input:focus { border-color: #2563eb; background: white; }
+        
+        /* Custom Animations */
+        .stack-item {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: slideIn 0.4s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body x-data="appData" class="antialiased text-slate-800">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-white border-r border-slate-200 flex flex-col shrink-0 shadow-xl z-20">
+            <div class="p-6 border-b border-slate-100">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-200">
+                        <i data-lucide="brain-circuit" class="text-white w-6 h-6"></i>
+                    </div>
+                    <h1 class="font-bold text-xl text-slate-900 tracking-tight">Struktur<span class="text-blue-600">Data</span></h1>
+                </div>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Akademi Informatika</p>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto p-4 space-y-1.5">
+                <template x-for="module in modules" :key="module.id">
+                    <button 
+                        @click="activeModule = module.id; activeTab = 'materi'; isArrayCreated = false; resetQuiz(); arrayOutput=''; stackOutput=''; queueOutput='';"
+                        :class="activeModule === module.id ? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' : 'text-slate-500 hover:bg-slate-50'"
+                        class="w-full flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-200 group">
+                        <div class="flex items-center gap-3">
+                            <i :data-lucide="module.icon" class="w-5 h-5" :class="activeModule === module.id ? 'text-blue-600' : 'text-slate-400'"></i>
+                            <span class="font-semibold text-sm" x-text="module.name"></span>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </button>
+                </template>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-slate-50">
+            <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 px-8 py-4 flex justify-between items-center">
+                <h2 class="text-xl font-black text-slate-800 uppercase tracking-tight" x-text="getCurrentModule()?.name"></h2>
+                <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+                    <button @click="activeTab = 'materi'" :class="activeTab === 'materi' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'" class="px-5 py-2 rounded-lg text-xs font-bold transition-all">MATERI & SIMULASI</button>
+                    <button @click="activeTab = 'kuis'" :class="activeTab === 'kuis' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'" class="px-5 py-2 rounded-lg text-xs font-bold transition-all">TANTANGAN KUIS</button>
+                </div>
+            </header>
+
+            <div class="p-8 max-w-5xl mx-auto space-y-10">
+                
+                <!-- TAB MATERI & SIMULASI -->
+                <div x-show="activeTab === 'materi'" x-cloak class="space-y-12">
+                    
+                    <section class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
+                        <h3 class="text-xs font-black text-blue-600 mb-4 uppercase tracking-widest flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-4 h-4"></i> 01. Konsep Dasar
+                        </h3>
+                        <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed" x-html="getCurrentModule()?.materiHtml"></div>
+                    </section>
+
+                    <section class="bg-slate-900 p-8 rounded-3xl shadow-2xl relative">
+                        <div class="flex items-center justify-between mb-4 text-blue-400">
+                            <h3 class="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                <i data-lucide="code" class="w-4 h-4"></i> 02. Sintaks C++
+                            </h3>
+                        </div>
+                        <pre class="font-mono text-sm leading-relaxed text-blue-100 overflow-x-auto" x-text="getCurrentModule()?.codeSnippet"></pre>
+                    </section>
+
+                    <!-- VISUALIZATION SECTION -->
+                    <section class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                            <h3 class="text-xs font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
+                                <i data-lucide="play-circle" class="w-4 h-4"></i> 03. Simulator Interaktif
+                            </h3>
+                        </div>
+
+                        <div class="p-8 space-y-10">
+                            <!-- ARRAY VISUALIZER -->
+                            <div x-show="activeModule === 'array'" class="space-y-8">
+                                <div class="flex items-center gap-3 p-6 bg-blue-50 rounded-2xl border border-blue-100 shadow-inner">
+                                    <span class="font-mono text-blue-800 font-bold">int array[</span>
+                                    <input type="number" x-model="arraySizeInput" class="w-16 px-2 py-1.5 bg-white border-2 border-blue-200 rounded-lg text-center font-bold text-blue-600 outline-none focus:ring-2 ring-blue-400">
+                                    <span class="font-mono text-blue-800 font-bold">];</span>
+                                    <button @click="initArray()" class="ml-4 bg-blue-600 text-white px-6 py-2 rounded-xl text-xs font-black hover:bg-blue-700 transition-all shadow-md uppercase">Buat Array</button>
+                                </div>
+
+                                <div x-show="isArrayCreated" class="flex flex-wrap justify-center gap-3 py-10 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                                    <template x-for="(val, idx) in arrayItems" :key="idx">
+                                        <div class="flex flex-col items-center">
+                                            <div class="w-16 h-16 bg-white border-2 border-blue-400 rounded-2xl flex items-center justify-center text-blue-700 font-black text-2xl shadow-sm" x-text="val"></div>
+                                            <span class="text-[10px] text-slate-400 mt-2 font-mono font-bold" x-text="'['+idx+']'"></span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <div x-show="isArrayCreated" class="space-y-4">
+                                    <div class="flex gap-2">
+                                        <input type="text" x-model="arrayCommand" @keyup.enter="runArrayCommand()" placeholder="array[0] = 10; atau cout << array[0];" class="command-input flex-1 px-5 py-4 bg-slate-50 rounded-2xl font-mono text-sm outline-none">
+                                        <button @click="runArrayCommand()" class="bg-slate-800 text-white px-8 rounded-2xl font-black text-xs uppercase hover:bg-black transition-colors">Run</button>
+                                    </div>
+                                    <div class="console" x-text="arrayOutput"></div>
+                                </div>
+                            </div>
+
+                            <!-- STACK VISUALIZER (Refined) -->
+                            <div x-show="activeModule === 'stack'" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                                <div class="flex flex-col items-center">
+                                    <!-- Container Tumpukan -->
+                                    <div class="relative w-56 pt-10 px-6 pb-6 bg-slate-100/50 rounded-b-[2rem] border-x-4 border-b-4 border-slate-300 min-h-[300px] flex flex-col-reverse gap-3 items-center">
+                                        <!-- Top Pointer Arrow -->
+                                        <div x-show="stackItems.length > 0" class="absolute left-[-60px] flex items-center gap-2 transition-all duration-300" :style="'bottom: ' + (stackItems.length * 52 + 10) + 'px'">
+                                            <span class="text-[10px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-0.5 rounded shadow-sm">TOP</span>
+                                            <i data-lucide="arrow-right" class="text-blue-600 w-5 h-5"></i>
+                                        </div>
+
+                                        <template x-for="(item, index) in stackItems" :key="index">
+                                            <div class="stack-item w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white h-10 flex items-center justify-center rounded-xl font-black shadow-[0_4px_0_rgb(30,58,138)] border border-blue-400" x-text="item"></div>
+                                        </template>
+
+                                        <template x-if="stackItems.length === 0">
+                                            <div class="flex-1 flex items-center justify-center text-slate-300 italic text-sm font-medium">Stack Kosong</div>
+                                        </template>
+                                    </div>
+                                    <div class="mt-8 flex items-center gap-3">
+                                        <div class="px-4 py-1.5 bg-slate-800 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg">LIFO Model</div>
+                                    </div>
+                                </div>
+
+                                <!-- Console Area -->
+                                <div class="space-y-6">
+                                    <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Manipulasi Tumpukan</p>
+                                        <div class="flex flex-col gap-3">
+                                            <input type="text" x-model="stackCommand" @keyup.enter="runStackCommand()" placeholder="s.push(50); s.pop(); cout << s.top();" class="command-input w-full px-5 py-4 bg-slate-50 rounded-2xl font-mono text-sm outline-none">
+                                            <button @click="runStackCommand()" class="bg-blue-600 text-white py-4 rounded-2xl font-black text-xs uppercase hover:bg-blue-700 transition-all shadow-blue-200 shadow-lg active:scale-95">Jalankan Perintah</button>
+                                        </div>
+                                        <div class="console mt-6" x-text="stackOutput || 'Siap menjalankan perintah...'"></div>
+                                    </div>
+                                    <!-- Hint -->
+                                    <div class="p-4 bg-orange-50 border border-orange-100 rounded-2xl">
+                                        <p class="text-[10px] text-orange-700 font-bold uppercase mb-1">Tips OSNK:</p>
+                                        <p class="text-xs text-orange-600">Pop() pada tumpukan kosong akan menyebabkan <strong>Stack Underflow</strong>.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- QUEUE VISUALIZER -->
+                            <div x-show="activeModule === 'queue'" class="space-y-10">
+                                <div class="flex flex-col items-center">
+                                    <div class="flex justify-between w-full max-w-md mb-4 px-4">
+                                        <div class="text-center">
+                                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Pintu Keluar</span>
+                                            <div class="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-full font-black text-[9px]">FRONT</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1">Masuk Belakang</span>
+                                            <div class="px-3 py-1 bg-orange-100 text-orange-600 rounded-full font-black text-[9px]">REAR</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-center gap-4 py-8 px-10 bg-slate-50 rounded-3xl w-full border-2 border-slate-100 min-h-[120px] shadow-inner overflow-x-auto">
+                                        <template x-for="(item, index) in queueItems" :key="index">
+                                            <div class="w-16 h-16 bg-emerald-500 text-white flex items-center justify-center rounded-2xl font-black text-xl shadow-lg shrink-0" x-text="item"></div>
+                                        </template>
+                                        <template x-if="queueItems.length === 0">
+                                            <div class="text-slate-300 italic font-bold">Antrean Kosong.</div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">C++ Queue Commands</p>
+                                    <div class="flex gap-2">
+                                        <input type="text" x-model="queueCommand" @keyup.enter="runQueueCommand()" placeholder="q.push(10); q.pop(); cout << q.front();" class="command-input flex-1 px-5 py-4 bg-slate-50 rounded-2xl font-mono text-sm outline-none">
+                                        <button @click="runQueueCommand()" class="bg-slate-800 text-white px-8 rounded-2xl font-black text-xs uppercase hover:bg-black transition-colors">Run</button>
+                                    </div>
+                                    <div class="console" x-text="queueOutput"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- TAB KUIS -->
+                <div x-show="activeTab === 'kuis'" x-cloak class="space-y-8">
+                     <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden" x-data="{ module: null }" x-effect="module = getCurrentModule()">
+                        <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest">Tantangan Kuis Berjenjang</h3>
+                            <div class="flex gap-2">
+                                <template x-for="(q, idx) in (module?.quizzes || [])" :key="idx">
+                                    <div :class="currentQuizIndex === idx ? 'bg-blue-600' : 'bg-slate-200'" class="w-3 h-3 rounded-full transition-colors"></div>
+                                </template>
+                            </div>
+                        </div>
+                        
+                        <div class="p-10">
+                            <template x-if="module && module.quizzes && module.quizzes[currentQuizIndex]">
+                                <div x-transition>
+                                    <div class="mb-8 flex items-center justify-between">
+                                        <div class="flex items-center gap-4">
+                                            <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-lg font-black text-xs" x-text="'Tantangan #' + (currentQuizIndex + 1)"></span>
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" x-text="currentQuizIndex < 2 ? 'Tingkat: MUDAH' : (currentQuizIndex < 4 ? 'Tingkat: MENENGAH' : 'Tingkat: SULIT')"></span>
+                                        </div>
+                                        <button @click="resetQuiz()" class="text-[10px] font-bold text-slate-400 hover:text-red-500 uppercase">Mulai Ulang</button>
+                                    </div>
+
+                                    <div class="space-y-8">
+                                        <p class="text-lg font-bold text-slate-800 leading-relaxed" x-text="module.quizzes[currentQuizIndex].q"></p>
+
+                                        <template x-if="module.quizzes[currentQuizIndex].q_code">
+                                            <div class="bg-slate-900 rounded-2xl p-6 shadow-inner">
+                                                <code class="text-blue-400 font-mono text-sm block leading-relaxed" x-text="module.quizzes[currentQuizIndex].q_code"></code>
+                                            </div>
+                                        </template>
+
+                                        <template x-if="module.quizzes[currentQuizIndex].type === 'pg'">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <template x-for="(opt, index) in module.quizzes[currentQuizIndex].options" :key="index">
+                                                    <button @click="handleQuizChoice(index)" 
+                                                            class="p-5 text-left bg-white border-2 border-slate-200 rounded-2xl hover:border-blue-500 hover:bg-blue-50 transition-all font-semibold text-slate-600 shadow-sm active:scale-[0.98]"
+                                                            x-text="opt"></button>
+                                                </template>
+                                            </div>
+                                        </template>
+
+                                        <template x-if="module.quizzes[currentQuizIndex].type === 'isian'">
+                                            <div class="flex gap-4">
+                                                <input type="text" x-model="textAnswer" @keyup.enter="handleIsian()" placeholder="Ketik jawaban di sini..." class="flex-1 px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl font-mono outline-none focus:border-blue-500 shadow-inner">
+                                                <button @click="handleIsian()" class="bg-blue-600 text-white px-10 rounded-2xl font-black text-xs uppercase hover:bg-blue-700 transition-colors shadow-md">Periksa</button>
+                                            </div>
+                                        </template>
+
+                                        <template x-if="quizFeedback">
+                                            <div :class="quizFeedback?.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-red-50 border-red-200 text-red-700'"
+                                                 class="p-6 rounded-2xl border-2 flex items-center gap-4 transition-all animate-bounce-in">
+                                                <i :data-lucide="quizFeedback?.type === 'success' ? 'smile' : 'frown'" class="w-8 h-8 shrink-0"></i>
+                                                <div class="flex-1">
+                                                    <p class="font-bold text-sm" x-text="quizFeedback?.msg"></p>
+                                                </div>
+                                                <button x-show="quizFeedback?.type === 'success' && currentQuizIndex < 4" 
+                                                        @click="currentQuizIndex++; textAnswer=''; quizFeedback=null; $nextTick(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); })" 
+                                                        class="bg-white px-5 py-2 rounded-xl text-xs font-black shadow-sm uppercase border border-slate-100 hover:bg-slate-50 transition-all">Soal Selanjutnya</button>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                     </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification -->
+    <div x-show="showToast" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-10"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         class="fixed bottom-8 right-8 z-50 pointer-events-none" x-cloak>
+        <div :class="toastType === 'success' ? 'bg-emerald-600' : 'bg-red-600'" class="text-white px-8 py-5 rounded-3xl shadow-2xl flex items-center gap-4 border-2 border-white/20 backdrop-blur-md">
+            <div class="p-2 bg-white/20 rounded-xl">
+                <i :data-lucide="toastType === 'success' ? 'check-circle' : 'alert-circle'" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <p class="font-black text-sm uppercase tracking-wider" x-text="toastTitle"></p>
+                <p class="text-xs font-medium opacity-90" x-text="toastMsg"></p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
