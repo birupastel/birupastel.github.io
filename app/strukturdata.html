@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belajar Struktur Data - OSNK Specialist</title>
+    
+    <!-- CSS & Icon -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; }
+        [x-cloak] { display: none !important; }
+        .console { background: #0f172a; color: #38bdf8; padding: 12px; border-radius: 12px; font-family: 'Fira Code', monospace; font-size: 13px; min-height: 40px; border-left: 4px solid #3b82f6; }
+        .command-input { width: 100%; padding: 0.8rem 1rem; background: #f1f5f9; border-radius: 0.8rem; border: 2px solid #e2e8f0; outline: none; transition: all 0.2s; }
+        .command-input:focus { border-color: #3b82f6; background: white; }
+        .node-active { background-color: #3b82f6 !important; color: white !important; box-shadow: 0 0 15px rgba(59,130,246,0.6); transform: scale(1.1); border-color: #60a5fa !important; }
+        .stack-box { border-bottom: 6px solid #cbd5e1; border-left: 6px solid #cbd5e1; border-right: 6px solid #cbd5e1; border-bottom-left-radius: 1.5rem; border-bottom-right-radius: 1.5rem; }
+        
+        /* CSS Lines for absolute stability across browsers */
+        .edge-line {
+            position: absolute;
+            background-color: #cbd5e1;
+            height: 2px;
+            transform-origin: 0 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+    </style>
+
+    <!-- Alpine.js Logic -->
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('appData', () => ({
+                activeModule: 'array',
+                activeTab: 'materi',
+                currentQuizIndex: 0,
+                textAnswer: '',
+                quizFeedback: null,
+                cmdInput: '',
+
+                modules: [
+                    { 
+                        id: 'array', name: 'Array (Larik)', icon: 'grid', 
+                        materiHtml: '<p>Array adalah koleksi elemen bertipe sama yang disusun secara berurutan di memori. Elemen diakses menggunakan indeks mulai dari 0.</p>', 
+                        codeSnippet: 'int A[5];\nA[0] = 10;\ncout << A[0];', 
+                        quizzes: [
+                            { type: 'pg', q: "Indeks pertama pada array C++ adalah?", options: ["1", "0", "-1", "100"], correct: 1 },
+                            { type: 'pg', q: "Jika dideklarasikan 'int A[10]', indeks terakhirnya adalah?", options: ["10", "9", "0", "11"], correct: 1 },
+                            { type: 'isian', q_code: "int A[3] = {5, 2, 8};", q: "Berapa hasil dari: cout << A[0] + A[2]; ?", correct: "13" },
+                            { type: 'isian', q_code: "int data[4] = {1, 3, 0, 2};", q: "Apa output dari: cout << data[data[1]]; ?", correct: "2" },
+                            { type: 'isian', q_code: "int m[10];", q: "Jika alamat m[0] adalah 2000, berapakah alamat memori m[5]? (4 byte/int)", correct: "2020" }
+                        ]
+                    },
+                    { 
+                        id: 'vector', name: 'Vector (STL)', icon: 'list-plus', 
+                        materiHtml: '<p>Vector adalah array dinamis dari C++ STL yang ukurannya bisa bertambah secara otomatis.</p>', 
+                        codeSnippet: '#include <vector>\nvector<int> v;\nv.push_back(10);\nv.pop_back();', 
+                        quizzes: [
+                            { type: 'pg', q: "Apa itu Vector?", options: ["Pohon Biner", "Array Statis", "Array Dinamis", "Graf"], correct: 2 },
+                            { type: 'pg', q: "Fungsi untuk menambah elemen di posisi paling belakang adalah?", options: ["push()", "add()", "push_back()", "insert()"], correct: 2 },
+                            { type: 'isian', q_code: "v.push_back(5); v.push_back(3); v.pop_back();", q: "Berapakah nilai v.size() sekarang?", correct: "1" },
+                            { type: 'isian', q_code: "v.push_back(10); v.push_back(20); v[0] = v[1] / 2;", q: "Berapakah nilai v[0]?", correct: "10" },
+                            { type: 'isian', q_code: "v.assign(5, 0);", q: "Berapakah jumlah elemen di dalam v sekarang?", correct: "5" }
+                        ]
+                    },
+                    { 
+                        id: 'stack', name: 'Stack (Tumpukan)', icon: 'layers', 
+                        materiHtml: '<p>Stack adalah struktur data linear LIFO (Last In First Out). Elemen terakhir masuk akan keluar pertama.</p>', 
+                        codeSnippet: 'stack<int> s;\ns.push(10);\ns.pop();', 
+                        quizzes: [
+                            { type: 'pg', q: "Prinsip utama Stack adalah?", options: ["FIFO", "LIFO", "FILO", "Random"], correct: 1 },
+                            { type: 'pg', q: "Operasi untuk mengambil data teratas tanpa menghapusnya?", options: ["pop()", "push()", "top()", "empty()"], correct: 2 },
+                            { type: 'isian', q_code: "s.push(1); s.push(2); s.pop(); s.push(3);", q: "Berapakah nilai s.top()?", correct: "3" },
+                            { type: 'pg', q: "Contoh implementasi Stack adalah?", options: ["Antrean Bank", "Fitur Undo", "Daftar Lagu", "Tiket Pesawat"], correct: 1 },
+                            { type: 'isian', q_code: "s.push(10); s.push(s.top()); s.pop();", q: "Berapa jumlah elemen di stack sekarang?", correct: "1" }
+                        ]
+                    },
+                    { 
+                        id: 'queue', name: 'Queue (Antrean)', icon: 'users', 
+                        materiHtml: '<p>Queue adalah struktur data linear FIFO (First In First Out). Pertama masuk, pertama keluar.</p>', 
+                        codeSnippet: 'queue<int> q;\nq.push(10);\nq.pop();', 
+                        quizzes: [
+                            { type: 'pg', q: "Prinsip utama Queue adalah?", options: ["LIFO", "FIFO", "Sorted", "Random"], correct: 1 },
+                            { type: 'pg', q: "Elemen baru dimasukkan melalui bagian?", options: ["Depan", "Belakang", "Atas", "Bawah"], correct: 1 },
+                            { type: 'isian', q_code: "q.push(10); q.push(20); q.pop();", q: "Berapakah nilai q.front() sekarang?", correct: "20" },
+                            { type: 'pg', q: "Struktur data mana yang digunakan antrean printer?", options: ["Stack", "Array", "Queue", "Tree"], correct: 2 },
+                            { type: 'isian', q_code: "q.push(1); q.push(2); q.push(3); q.pop(); q.pop();", q: "Berapa sisa elemen di queue?", correct: "1" }
+                        ]
+                    },
+                    { 
+                        id: 'tree', name: 'Binary Search Tree', icon: 'git-merge', 
+                        materiHtml: `
+                            <p class="mb-4 text-sm leading-relaxed">BST adalah pohon biner di mana anak kiri < root dan anak kanan > root. Ada dua metode utama penelusuran (traversal):</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                    <h4 class="font-bold text-blue-700 uppercase mb-2">Depth-First Search (DFS)</h4>
+                                    <ul class="list-disc pl-4 space-y-2">
+                                        <li><strong>Pre-order:</strong> Root &rarr; Kiri &rarr; Kanan.</li>
+                                        <li><strong>In-order:</strong> Kiri &rarr; Root &rarr; Kanan. (Hasil Terurut).</li>
+                                        <li><strong>Post-order:</strong> Kiri &rarr; Kanan &rarr; Root.</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+                                    <h4 class="font-bold text-emerald-700 uppercase mb-2">Breadth-First Search (BFS)</h4>
+                                    <p>Mengunjungi node level demi level dari atas ke bawah, kiri ke kanan. Sering disebut <strong>Level-order Traversal</strong>.</p>
+                                </div>
+                            </div>
+                        `, 
+                        codeSnippet: '// Traversal In-order (Rekursif)\nvoid inOrder(Node* root) {\n  if (!root) return;\n  inOrder(root->left);\n  cout << root->data << " ";\n  inOrder(root->right);\n}', 
+                        quizzes: [
+                            { type: 'pg', q: "Traversal mana yang menghasilkan urutan data terurut naik?", options: ["Pre-order", "In-order", "Post-order", "Level-order"], correct: 1 },
+                            { type: 'pg', q: "Kunjungan Root dilakukan paling awal pada...", options: ["In-order", "Post-order", "Pre-order", "Level-order"], correct: 2 },
+                            { type: 'isian', q_code: "Root(15) -> Insert(10) -> Insert(20)", q: "Posisi node 20? (Kiri/Kanan)", correct: "Kanan" },
+                            { type: 'isian', q_code: "BST: 8, 3, 10, 1, 6, 14", q: "Level terdalam? (Root=0)", correct: "2" },
+                            { type: 'isian', q_code: "Tree: Root(5), Left(2), Right(8). Tulis hasil Pre-order traversal!", correct: "5 2 8" }
+                        ]
+                    },
+                    { 
+                        id: 'graph', name: 'Graph (BFS & DFS)', icon: 'share-2', 
+                        materiHtml: '<p>Graph terdiri dari Node dan Edge. BFS menggunakan Queue (melebar), DFS menggunakan Stack (mendalam).</p>', 
+                        codeSnippet: 'g.bfs(); // Jalur terpendek\ng.dfs(); // Penelusuran lengkap', 
+                        quizzes: [
+                            { type: 'pg', q: "Mencari rute terpendek pada graf unweighted?", options: ["DFS", "BFS", "BST", "Binary Search"], correct: 1 },
+                            { type: 'pg', q: "DFS menggunakan struktur data bantu...", options: ["Queue", "Stack", "Map", "Set"], correct: 1 },
+                            { type: 'isian', q_code: "Node A terhubung ke B, C, dan D.", q: "Derajat (degree) node A?", correct: "3" },
+                            { type: 'isian', q_code: "Siklus A-B, B-C, C-A.", q: "Berapa jumlah edge?", correct: "3" },
+                            { type: 'pg', q: "BFS menelusuri node berdasarkan?", options: ["Kedalaman", "Jarak terdekat", "Nilai", "Abjad"], correct: 1 }
+                        ]
+                    },
+                    { 
+                        id: 'pair', name: 'Pair (STL)', icon: 'columns-2', 
+                        materiHtml: '<p>Pair menyimpan dua nilai sekaligus yang bisa berbeda tipe data.</p>', 
+                        codeSnippet: 'pair<int, string> p = {1, "Budi"};', 
+                        quizzes: [
+                            { type: 'pg', q: "Akses elemen pertama pair p?", options: ["p[0]", "p.first", "p.1", "p.head"], correct: 1 },
+                            { type: 'isian', q_code: "pair<int, int> p = {10, 20};", q: "Berapa p.first + p.second?", correct: "30" },
+                            { type: 'isian', q_code: "pair<string, int> p = {'X', 100};", q: "Berapa nilai p.second?", correct: "100" },
+                            { type: 'pg', q: "Library C++ untuk pair?", options: ["vector", "utility", "stack", "algorithm"], correct: 1 },
+                            { type: 'isian', q_code: "p = {5, 5}; p.first *= 2;", q: "Berapa nilai p.first?", correct: "10" }
+                        ]
+                    },
+                    { 
+                        id: 'struct', name: 'Struct', icon: 'box', 
+                        materiHtml: '<p>Struct adalah tipe data custom untuk mengelompokkan variabel berbeda.</p>', 
+                        codeSnippet: 'struct Siswa { int id; };\nSiswa s;\ns.id = 1;', 
+                        quizzes: [
+                            { type: 'pg', q: "Operator akses member struct?", options: [".", "->", "::", ":"], correct: 0 },
+                            { type: 'isian', q_code: "struct P { int x, y; }; P a = {1, 2};", q: "Berapa nilai a.x?", correct: "1" },
+                            { type: 'isian', q_code: "struct D { int v; } arr[5];", q: "Berapa banyak variabel 'v'?", correct: "5" },
+                            { type: 'pg', q: "Akhiran definisi struct?", options: [")", "}", ";", "."], correct: 2 },
+                            { type: 'isian', q_code: "struct S { int n; } b; b.n = 10 * 10;", q: "Berapa b.n?", correct: "100" }
+                        ]
+                    }
+                ],
+
+                arrayItems: [10, 20, 30], vectorItems: [5, 15], stackItems: [10, 20, 30], queueItems: [100, 200],
+                pairData: {f: 10, s: 20}, structData: {id: 1, val: 85},
+                arrayOutput: '', 
+                treeNodes: [{v: 50, x: 50, y: 15, l: null, r: null}],
+                treeLines: [],
+                graphNodes: [
+                    {id: 'A', x: 20, y: 20, neighbors: ['B', 'C']},
+                    {id: 'B', x: 80, y: 20, neighbors: ['A', 'D', 'E']},
+                    {id: 'C', x: 20, y: 80, neighbors: ['A', 'F']},
+                    {id: 'D', x: 80, y: 80, neighbors: ['B']},
+                    {id: 'E', x: 50, y: 50, neighbors: ['B', 'F']},
+                    {id: 'F', x: 50, y: 85, neighbors: ['C', 'E']}
+                ],
+                graphEdges: [],
+                visitedNodes: [], activeTraversing: false,
+
+                initApp() {
+                    this.syncEdges();
+                    this.$nextTick(() => { if (window.lucide) lucide.createIcons(); });
+                },
+
+                syncEdges() {
+                    this.graphEdges = [];
+                    this.graphNodes.forEach(n => {
+                        n.neighbors.forEach(nbId => {
+                            const target = this.graphNodes.find(node => node.id === nbId);
+                            if(target) this.graphEdges.push({x1: n.x, y1: n.y, x2: target.x, y2: target.y});
+                        });
+                    });
+                },
+
+                getLineStyle(ln) {
+                    const dx = ln.x2 - ln.x1;
+                    const dy = ln.y2 - ln.y1;
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    return `left: ${ln.x1}%; top: ${ln.y1}%; width: ${length}%; transform: rotate(${angle}deg);`;
+                },
+
+                getCurrentModule() { return this.modules.find(m => m.id === this.activeModule) || this.modules[0]; },
+
+                handleRun() {
+                    const raw = this.cmdInput.trim();
+                    if (!raw.endsWith(';')) { alert("Error: Gunakan ';' di akhir perintah!"); return; }
+                    const cmd = raw.slice(0, -1).trim();
+                    try {
+                        if (this.activeModule === 'array') {
+                            if(cmd.startsWith("cout << ")) this.arrayOutput = "Output: " + eval(cmd.replace("cout << ", "").replace(/array/g, "this.arrayItems"));
+                            else if(cmd.includes("=")) { eval(cmd.replace(/array/g, "this.arrayItems")); this.arrayOutput = "Update OK."; }
+                        } else if (this.activeModule === 'vector') {
+                            if(cmd.startsWith("v.push_back(")) this.vectorItems.push(parseInt(cmd.match(/\((.*)\)/)[1]));
+                            else if(cmd === "v.pop_back()") this.vectorItems.pop();
+                        } else if (this.activeModule === 'stack') {
+                            if(cmd.startsWith("s.push(")) this.stackItems.push(parseInt(cmd.match(/\((.*)\)/)[1]));
+                            else if(cmd === "s.pop()") this.stackItems.pop();
+                        } else if (this.activeModule === 'queue') {
+                            if(cmd.startsWith("q.push(")) this.queueItems.push(parseInt(cmd.match(/\((.*)\)/)[1]));
+                            else if(cmd === "q.pop()") this.queueItems.shift();
+                        } else if (this.activeModule === 'tree' && cmd.startsWith("t.insert(")) {
+                            this.insertBST(parseInt(cmd.match(/\((.*)\)/)[1]));
+                        } else if (this.activeModule === 'graph') {
+                            if(cmd === "g.bfs()") this.traverse('bfs');
+                            else if(cmd === "g.dfs()") this.traverse('dfs');
+                        } else if (this.activeModule === 'pair') {
+                            if(cmd.includes("p.first =")) this.pairData.f = eval(cmd.split("=")[1]);
+                            else if(cmd.includes("p.second =")) this.pairData.s = eval(cmd.split("=")[1]);
+                        } else if (this.activeModule === 'struct') {
+                            if(cmd.includes("s.id =")) this.structData.id = eval(cmd.split("=")[1]);
+                            else if(cmd.includes("s.val =")) this.structData.val = eval(cmd.split("=")[1]);
+                        }
+                    } catch(e) {}
+                    this.cmdInput = '';
+                },
+
+                insertBST(val) {
+                    let root = this.treeNodes[0], curr = root, depth = 0;
+                    while(true) {
+                        depth++; if(depth > 4) break;
+                        if(val < curr.v) {
+                            if(!curr.l) { 
+                                curr.l = { v: val, x: curr.x - (30/depth), y: curr.y + 18, l: null, r: null };
+                                this.treeNodes.push(curr.l); this.treeLines.push({x1: curr.x, y1: curr.y, x2: curr.l.x, y2: curr.l.y}); break;
+                            }
+                            curr = curr.l;
+                        } else {
+                            if(!curr.r) {
+                                curr.r = { v: val, x: curr.x + (30/depth), y: curr.y + 18, l: null, r: null };
+                                this.treeNodes.push(curr.r); this.treeLines.push({x1: curr.x, y1: curr.y, x2: curr.r.x, y2: curr.r.y}); break;
+                            }
+                            curr = curr.r;
+                        }
+                    }
+                },
+
+                async traverse(type) {
+                    this.visitedNodes = []; this.activeTraversing = true;
+                    let container = ['A'], visited = new Set();
+                    while(container.length > 0) {
+                        let id = type === 'bfs' ? container.shift() : container.pop();
+                        if(!visited.has(id)) {
+                            visited.add(id); this.visitedNodes.push(id);
+                            await new Promise(r => setTimeout(r, 600));
+                            const n = this.graphNodes.find(node => node.id === id);
+                            if(n) n.neighbors.forEach(nb => { if(!visited.has(nb)) container.push(nb); });
+                        }
+                    }
+                    this.activeTraversing = false;
+                },
+
+                handleQuizChoice(idx) {
+                    const q = this.getCurrentModule().quizzes[this.currentQuizIndex];
+                    this.quizFeedback = (idx === q.correct) ? { type: 'success', msg: 'Tepat sekali!' } : { type: 'error', msg: 'Salah. Coba periksa konsepnya.' };
+                },
+                handleIsian() {
+                    const q = this.getCurrentModule().quizzes[this.currentQuizIndex];
+                    if(!q) return;
+                    this.quizFeedback = (this.textAnswer.trim().toLowerCase() === q.correct.toLowerCase()) ? { type: 'success', msg: 'Benar!' } : { type: 'error', msg: 'Masih salah.' };
+                },
+                resetQuiz() { this.currentQuizIndex = 0; this.textAnswer = ''; this.quizFeedback = null; }
+            }));
+        });
+    </script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body x-data="appData" x-init="initApp()" class="antialiased">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-slate-200 flex flex-col shrink-0 shadow-xl z-20">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50 text-center">
+                <div class="flex items-center justify-center gap-2 mb-1">
+                    <div class="p-1.5 bg-blue-600 rounded-lg shadow-lg"><i data-lucide="terminal" class="text-white w-4 h-4"></i></div>
+                    <h1 class="font-black text-lg tracking-tight uppercase tracking-tighter text-slate-800">AlgoVisual</h1>
+                </div>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest text-center">OSNK & Bebras v1.7</p>
+            </div>
+            <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+                <template x-for="mod in modules" :key="mod.id">
+                    <button @click="activeModule = mod.id; activeTab = 'materi'; resetQuiz();"
+                        :class="activeModule === mod.id ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50'"
+                        class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all text-left">
+                        <i :data-lucide="mod.icon" class="w-4 h-4"></i>
+                        <span class="font-bold text-sm" x-text="mod.name"></span>
+                    </button>
+                </template>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto bg-slate-50">
+            <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 px-8 py-3 flex justify-between items-center shadow-sm">
+                <h2 class="text-lg font-black uppercase text-slate-800" x-text="getCurrentModule().name"></h2>
+                <div class="flex bg-slate-100 p-1 rounded-xl">
+                    <button @click="activeTab = 'materi'" :class="activeTab === 'materi' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'" class="px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all">Materi</button>
+                    <button @click="activeTab = 'kuis'" :class="activeTab === 'kuis' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'" class="px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all">Kuis</button>
+                </div>
+            </header>
+
+            <div class="p-6 max-w-4xl mx-auto space-y-8">
+                <!-- Tab Materi -->
+                <div x-show="activeTab === 'materi'" x-cloak class="space-y-8">
+                    <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
+                        <h3 class="text-[10px] font-black text-blue-600 mb-3 uppercase tracking-widest flex items-center gap-2"><i data-lucide="book-open" class="w-3 h-3"></i> 01. Konsep</h3>
+                        <div class="prose prose-sm text-slate-600 leading-relaxed" x-html="getCurrentModule().materiHtml"></div>
+                    </section>
+
+                    <section class="bg-slate-900 p-6 rounded-2xl shadow-xl relative border-l-4 border-blue-500">
+                        <h3 class="text-[10px] font-black text-blue-400 mb-3 uppercase tracking-widest flex items-center gap-2"><i data-lucide="code" class="w-3 h-3"></i> 02. Contoh C++</h3>
+                        <pre class="font-mono text-xs text-blue-100 leading-relaxed" x-text="getCurrentModule().codeSnippet"></pre>
+                    </section>
+
+                    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b border-slate-100 font-black text-[10px] uppercase text-emerald-600">03. Visualisasi Interaktif</div>
+                        <div class="p-8">
+                            <div class="mb-10 min-h-[150px] flex items-center justify-center relative">
+                                <!-- Array -->
+                                <div x-show="activeModule === 'array'" class="flex flex-wrap justify-center gap-3">
+                                    <template x-for="(v_a, i_a) in arrayItems" :key="'ar-'+i_a">
+                                        <div class="flex flex-col items-center">
+                                            <div class="w-12 h-12 bg-white border-2 border-blue-400 rounded-xl flex items-center justify-center text-blue-700 font-black text-lg shadow-sm" x-text="v_a"></div>
+                                            <span class="text-[8px] text-slate-400 font-mono mt-1" x-text="'['+i_a+']'"></span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Stack -->
+                                <div x-show="activeModule === 'stack'" class="w-32 pt-10 px-4 pb-4 bg-white shadow-inner stack-box min-h-[180px] flex flex-col-reverse gap-2">
+                                    <template x-for="(v_s, i_s) in stackItems" :key="'s-'+i_s">
+                                        <div class="w-full h-8 bg-blue-600 text-white flex items-center justify-center font-black rounded-lg shadow-md text-xs" x-text="v_s"></div>
+                                    </template>
+                                </div>
+
+                                <!-- Tree (HTML + CSS Lines) -->
+                                <div x-show="activeModule === 'tree'" class="relative bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl h-[280px] w-full overflow-hidden">
+                                    <template x-for="(line_tree, i_lt) in treeLines" :key="'tl-'+i_lt">
+                                        <div class="edge-line" :style="getLineStyle(line_tree)"></div>
+                                    </template>
+                                    <template x-for="(node_tree, i_nt) in treeNodes" :key="'tn-'+i_nt">
+                                        <div class="absolute w-7 h-7 -ml-3.5 -mt-3.5 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-[10px] shadow-lg border-2 border-blue-300 z-10"
+                                             :style="'left: ' + node_tree.x + '%; top: ' + node_tree.y + '%;'" x-text="node_tree.v"></div>
+                                    </template>
+                                </div>
+
+                                <!-- Graph (HTML + CSS Lines) -->
+                                <div x-show="activeModule === 'graph'" class="relative bg-slate-900 rounded-3xl h-[280px] w-full overflow-hidden border-2 border-slate-800 shadow-inner">
+                                    <template x-for="(edge_graph, i_eg) in graphEdges" :key="'ge-'+i_eg">
+                                        <div class="edge-line" style="background-color: #334155" :style="getLineStyle(edge_graph)"></div>
+                                    </template>
+                                    <template x-for="(gn_it, i_gn) in graphNodes" :key="'gn-'+i_gn">
+                                        <div class="absolute w-8 h-8 -ml-4 -mt-4 bg-slate-700 text-white rounded-full flex items-center justify-center font-black text-xs border-2 border-slate-600 transition-all duration-300 shadow-xl z-10"
+                                             :class="visitedNodes.includes(gn_it.id) ? 'node-active' : ''"
+                                             :style="'left: ' + gn_it.x + '%; top: ' + gn_it.y + '%;'" x-text="gn_it.id"></div>
+                                    </template>
+                                </div>
+
+                                <!-- Vector/Queue/Pair/Struct Generic -->
+                                <div x-show="['vector', 'queue', 'pair', 'struct'].includes(activeModule)" class="flex flex-wrap justify-center gap-2">
+                                    <template x-if="activeModule === 'vector' || activeModule === 'queue'">
+                                        <div class="flex gap-2">
+                                            <template x-for="(it_gen, i_gen) in (activeModule === 'vector' ? vectorItems : queueItems)" :key="'vsq-'+i_gen">
+                                                <div class="w-10 h-10 bg-slate-800 text-white rounded-lg flex items-center justify-center font-black text-xs" x-text="it_gen"></div>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template x-if="activeModule === 'pair'">
+                                        <div class="flex gap-4">
+                                            <div class="bg-white p-4 border-2 border-blue-400 rounded-xl text-center shadow-lg"><div class="text-xl font-black" x-text="pairData.f"></div></div>
+                                            <div class="bg-white p-4 border-2 border-orange-400 rounded-xl text-center shadow-lg"><div class="text-xl font-black" x-text="pairData.s"></div></div>
+                                        </div>
+                                    </template>
+                                    <template x-if="activeModule === 'struct'">
+                                        <div class="bg-white border-2 border-slate-200 rounded-2xl p-4 shadow-lg min-w-[150px]">
+                                            <div class="space-y-2 text-xs">
+                                                <div class="flex justify-between"><span>id:</span> <span class="font-bold text-blue-600" x-text="structData.id"></span></div>
+                                                <div class="flex justify-between"><span>val:</span> <span class="font-bold text-emerald-600" x-text="structData.val"></span></div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="flex gap-2">
+                                    <input type="text" x-model="cmdInput" @keyup.enter="handleRun()" placeholder="Ketik kode (akhiri ;) lalu Run..." class="command-input text-sm">
+                                    <button @click="handleRun()" class="bg-blue-600 text-white px-8 rounded-xl font-black text-[10px] uppercase shadow-md hover:bg-blue-700">Run</button>
+                                </div>
+                                <div x-show="activeModule === 'array'" class="console" x-text="arrayOutput || 'Console Ready.'"></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Tab Kuis -->
+                <div x-show="activeTab === 'kuis'" x-cloak class="space-y-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden p-8">
+                        <template x-if="getCurrentModule().quizzes && getCurrentModule().quizzes[currentQuizIndex]">
+                            <div class="space-y-6">
+                                <p class="text-lg font-bold" x-text="getCurrentModule().quizzes[currentQuizIndex].q"></p>
+                                <template x-if="getCurrentModule().quizzes[currentQuizIndex].q_code">
+                                    <div class="bg-slate-900 p-4 rounded-xl font-mono text-blue-400 text-xs shadow-inner" x-text="getCurrentModule().quizzes[currentQuizIndex].q_code"></div>
+                                </template>
+                                <div class="mt-4">
+                                    <template x-if="getCurrentModule().quizzes[currentQuizIndex].type === 'pg'">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <template x-for="(opt, i) in getCurrentModule().quizzes[currentQuizIndex].options" :key="i">
+                                                <button @click="handleQuizChoice(i)" class="p-4 text-left border-2 rounded-xl hover:border-blue-500 hover:bg-blue-50 font-semibold text-sm transition-all" x-text="opt"></button>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template x-if="getCurrentModule().quizzes[currentQuizIndex].type === 'isian'">
+                                        <div class="flex gap-2">
+                                            <input type="text" x-model="textAnswer" class="command-input flex-1 text-sm" placeholder="Jawaban...">
+                                            <button @click="handleIsian()" class="bg-blue-600 text-white px-8 rounded-xl font-black text-xs uppercase">Cek</button>
+                                        </div>
+                                    </template>
+                                </div>
+                                <template x-if="quizFeedback">
+                                    <div :class="quizFeedback.type === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'" class="p-4 rounded-xl font-bold flex justify-between items-center border">
+                                        <span x-text="quizFeedback.msg" class="text-sm"></span>
+                                        <button x-show="quizFeedback.type === 'success' && currentQuizIndex < 4" @click="currentQuizIndex++; textAnswer=''; quizFeedback=null;" class="bg-white px-4 py-1 rounded-lg border text-[10px] font-black uppercase shadow-sm">Lanjut</button>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
