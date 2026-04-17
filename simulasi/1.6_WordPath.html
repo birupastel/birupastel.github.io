@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulator Multimedia Pembelajaran: Word Path</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .grid-cell {
+            transition: all 0.2s;
+        }
+
+        .grid-cell:focus {
+            outline: 2px solid #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .correct-anim {
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-slate-800">Simulator Word Path Puzzle</h1>
+            <p class="text-slate-600">Buat soal secara otomatis atau tentukan sendiri polanya!</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- Panel Pengaturan -->
+            <div class="lg:col-span-1 space-y-4">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-fit">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                        </svg>
+                        Konfigurasi
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Baris</label>
+                                <input type="number" id="inputRows" value="7" min="1" max="30" class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Kolom</label>
+                                <input type="number" id="inputCols" value="7" min="1" max="30" class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Kata Target</label>
+                            <input type="text" id="inputWord" value="IOAI" class="w-full p-2 border border-slate-300 rounded-lg uppercase font-bold text-blue-600">
+                        </div>
+
+                        <div class="flex items-center gap-3 py-2 border-y border-slate-100">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="allowRevisit" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                            <span class="text-xs font-medium text-slate-700 leading-tight">Boleh balik ke petak yang sama</span>
+                        </div>
+
+                        <div class="space-y-2 pt-2">
+                             <button onclick="updateGridFromSettings()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition text-sm">Update Ukuran Grid</button>
+                             <button onclick="loadInitialTemplate()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 rounded-lg transition text-xs">Muat Template Soal (7x7)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fitur Otomatis Baru -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 h-fit">
+                    <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                        </svg>
+                        Generator Otomatis
+                    </h2>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Jumlah Injeksi Kata</label>
+                            <input type="number" id="injectCount" value="5" min="1" max="50" class="w-full p-2 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <button onclick="generateSmartPuzzle()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 rounded-lg transition text-sm">Injeksi Kata Secara Acak</button>
+                        <button onclick="randomizeGridAZ()" class="w-full border border-slate-300 hover:bg-slate-50 text-slate-600 py-2 rounded-lg transition text-xs">Isi Acak Alfabet (A-Z)</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase mb-2">Input/Edit Massal</label>
+                    <textarea id="bulkInput" rows="4" class="w-full p-2 text-[10px] border border-slate-300 rounded-lg font-mono uppercase focus:ring-1 focus:ring-blue-400" placeholder="Huruf per baris..."></textarea>
+                </div>
+            </div>
+
+            <!-- Area Grid & Jawaban -->
+            <div class="lg:col-span-3 space-y-6">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="overflow-auto max-h-[500px] p-2 bg-slate-50 rounded-lg">
+                        <div id="gridContainer" class="grid gap-1 mx-auto" style="min-width: fit-content;">
+                            <!-- Grid akan dirender di sini -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div class="flex flex-col md:flex-row items-end gap-4">
+                        <div class="flex-1 w-full">
+                            <label class="block text-sm font-medium text-slate-700 mb-2">Berapa banyak kata yang ditemukan?</label>
+                            <input type="number" id="userAnswer" placeholder="Masukkan angka..." class="w-full p-3 border border-slate-300 rounded-xl text-lg font-bold text-center">
+                        </div>
+                        <button onclick="checkAnswer()" class="w-full md:w-auto px-10 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition transform active:scale-95">Cek Jawaban</button>
+                    </div>
+                    <div id="validationResult" class="mt-4 hidden p-4 rounded-xl text-center font-bold"></div>
+                </div>
+
+                <div id="explanationSection" class="hidden bg-emerald-50 p-6 rounded-2xl border border-emerald-200">
+                    <h3 class="text-emerald-800 font-bold text-lg mb-2">Pembahasan:</h3>
+                    <div id="explanationText" class="text-emerald-700 text-sm space-y-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gridData = [];
+        let rows = 7;
+        let cols = 7;
+        let targetWord = "IOAI";
+        let allowRevisit = true;
+
+        const initialPattern = [
+            "IIIIIII", "IOAOOAI", "IOAAAAI", "IOOIAOI", "IOOOOOI", "IOAAAOI", "IIIIIII"
+        ];
+
+        function init() {
+            loadInitialTemplate();
+        }
+
+        function loadInitialTemplate() {
+            document.getElementById('inputRows').value = 7;
+            document.getElementById('inputCols').value = 7;
+            document.getElementById('bulkInput').value = initialPattern.join('\n');
+            updateGridFromSettings();
+        }
+
+        function updateGridFromSettings() {
+            rows = parseInt(document.getElementById('inputRows').value) || 1;
+            cols = parseInt(document.getElementById('inputCols').value) || 1;
+            targetWord = document.getElementById('inputWord').value.toUpperCase().trim() || "IOAI";
+            allowRevisit = document.getElementById('allowRevisit').checked;
+            
+            const bulkText = document.getElementById('bulkInput').value.toUpperCase();
+            const bulkRows = bulkText.split('\n').map(r => r.replace(/\s+/g, ''));
+
+            let newGrid = [];
+            for (let r = 0; r < rows; r++) {
+                let rowData = [];
+                const bulkRow = bulkRows[r] || "";
+                for (let c = 0; c < cols; c++) {
+                    rowData.push(bulkRow[c] || targetWord[0] || 'A');
+                }
+                newGrid.push(rowData);
+            }
+            gridData = newGrid;
+            syncBulkInputFromGrid();
+            hideFeedback();
+            renderGrid();
+        }
+
+        // Generator 1: Isi dengan alfabet acak A-Z
+        function randomizeGridAZ() {
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const randomChar = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    gridData[r][c] = randomChar;
+                }
+            }
+            syncBulkInputFromGrid();
+            hideFeedback();
+            renderGrid();
+        }
+
+        // Generator 2: Injeksi kata target secara cerdas
+        function generateSmartPuzzle() {
+            // 1. Fill dengan karakter acak sebagai noise (dari huruf target)
+            const chars = targetWord.split('');
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    gridData[r][c] = chars[Math.floor(Math.random() * chars.length)];
+                }
+            }
+
+            // 2. Injeksi jalur
+            const count = parseInt(document.getElementById('injectCount').value) || 5;
+            const directions = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+
+            for(let i = 0; i < count; i++) {
+                let curR = Math.floor(Math.random() * rows);
+                let curC = Math.floor(Math.random() * cols);
+                gridData[curR][curC] = targetWord[0];
+
+                for(let j = 1; j < targetWord.length; j++) {
+                    const validDirs = directions.filter(([dr, dc]) => {
+                        const nr = curR + dr;
+                        const nc = curC + dc;
+                        return nr >= 0 && nr < rows && nc >= 0 && nc < cols;
+                    });
+                    if(validDirs.length === 0) break;
+                    const [dr, dc] = validDirs[Math.floor(Math.random() * validDirs.length)];
+                    curR += dr;
+                    curC += dc;
+                    gridData[curR][curC] = targetWord[j];
+                }
+            }
+            syncBulkInputFromGrid();
+            hideFeedback();
+            renderGrid();
+        }
+
+        function syncBulkInputFromGrid() {
+            document.getElementById('bulkInput').value = gridData.map(row => row.join('')).join('\n');
+        }
+
+        function renderGrid() {
+            const container = document.getElementById('gridContainer');
+            container.style.gridTemplateColumns = `repeat(${cols}, minmax(32px, 1fr))`;
+            container.innerHTML = '';
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('input');
+                    cell.className = "grid-cell w-8 h-8 md:w-10 md:h-10 border border-slate-300 rounded text-center font-bold uppercase bg-white focus:bg-blue-50 text-sm";
+                    cell.value = gridData[r][c];
+                    cell.maxLength = 1;
+                    cell.oninput = (e) => {
+                        gridData[r][c] = e.target.value.toUpperCase() || '?';
+                        syncBulkInputFromGrid();
+                        hideFeedback();
+                    };
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        function calculateCorrectPaths() {
+            if (!targetWord) return 0;
+            let count = 0;
+            const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+
+            function find(r, c, idx, visited) {
+                if (idx === targetWord.length) {
+                    count++;
+                    return;
+                }
+                for (let [dr, dc] of dirs) {
+                    const nr = r + dr, nc = c + dc;
+                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && gridData[nr][nc] === targetWord[idx]) {
+                        const key = `${nr},${nc}`;
+                        if (allowRevisit || !visited.has(key)) {
+                            if(!allowRevisit) visited.add(key);
+                            find(nr, nc, idx + 1, visited);
+                            if(!allowRevisit) visited.delete(key);
+                        }
+                    }
+                }
+            }
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (gridData[r][c] === targetWord[0]) {
+                        const visited = new Set([`${r},${c}`]);
+                        find(r, c, 1, visited);
+                    }
+                }
+            }
+            return count;
+        }
+
+        function hideFeedback() {
+            document.getElementById('validationResult').classList.add('hidden');
+            document.getElementById('explanationSection').classList.add('hidden');
+        }
+
+        function checkAnswer() {
+            const userVal = document.getElementById('userAnswer').value;
+            if(userVal === "") return alert("Isi jawaban dulu!");
+            const correct = calculateCorrectPaths();
+            const resultDiv = document.getElementById('validationResult');
+            resultDiv.className = "mt-4 p-4 rounded-xl text-center font-bold";
+            resultDiv.classList.remove('hidden');
+
+            if(parseInt(userVal) === correct) {
+                resultDiv.innerHTML = "✨ TEPAT SEKALI! Jawaban benar.";
+                resultDiv.classList.add('bg-green-100', 'text-green-700', 'correct-anim');
+            } else {
+                resultDiv.innerHTML = `❌ SALAH. Jawaban benar adalah ${correct}.`;
+                resultDiv.classList.add('bg-red-100', 'text-red-700');
+            }
+
+            document.getElementById('explanationSection').classList.remove('hidden');
+            document.getElementById('explanationText').innerHTML = `
+                <p>Grid: ${rows}x${cols} | Kata: "${targetWord}"</p>
+                <p>Status: ${allowRevisit ? 'Boleh' : 'Dilarang'} melewati kotak yang sama dalam satu jalur.</p>
+                <p class="font-bold">Ditemukan total ${correct} jalur yang membentuk kata "${targetWord}".</p>
+            `;
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
