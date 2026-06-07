@@ -193,7 +193,7 @@
             visibility: hidden;
             transition: opacity 0.25s ease, transform 0.25s ease;
             transform: translateY(5px);
-            padding: 16px 20px;
+            padding: 12px 20px;
             display: flex;
             flex-direction: column;
         }
@@ -206,7 +206,7 @@
 
         /* Pane Header */
         .pane-header {
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             flex-shrink: 0;
         }
 
@@ -233,81 +233,88 @@
         .goals-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             overflow-y: auto;
             flex-grow: 1;
             padding-right: 4px;
+            justify-content: flex-start;
+            margin-top: 12px;
         }
 
         .goal-item {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             background: var(--bg-light);
             border: 1px solid #e2e8f0;
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 16px 20px;
+            border-radius: 12px;
             align-items: center;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .goal-item:hover {
+            transform: translateY(-1px);
+            border-color: #cbd5e1;
         }
 
         .goal-number {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: #ffffff;
-            font-size: 11px;
+            font-size: 14px;
             font-weight: 800;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            box-shadow: 0 3px 6px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
         }
 
         .goal-text {
-            font-size: 11.5px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-dark);
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
-        /* TAB 2: MATERI (Explorer Interaktif) */
+        /* TAB 2: MATERI (Explorer Interaktif Menarik) */
         .explorer-layout {
             display: flex;
-            gap: 12px;
+            gap: 14px;
             flex-grow: 1;
-            height: 310px;
+            height: 330px;
         }
 
         /* Kiri: Daftar Komponen */
         .comp-list {
-            width: 155px;
+            width: 54px;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            overflow-y: auto;
-            padding-right: 4px;
+            gap: 6px;
+            overflow: visible;
+            padding-right: 0;
+            align-items: center;
         }
 
         .comp-item {
             background: var(--bg-light);
             border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-dark);
+            border-radius: 10px;
+            width: 36px;
+            height: 36px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
             transition: all 0.2s ease;
+            position: relative;
         }
 
         .comp-item i {
-            font-size: 12px;
+            font-size: 14px;
             color: var(--text-muted);
-            width: 14px;
             text-align: center;
         }
 
@@ -320,6 +327,7 @@
             background-color: var(--primary);
             color: white;
             border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
         }
 
         .comp-item.active i {
@@ -399,6 +407,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-shrink: 0;
         }
 
         .comp-fact-box i {
@@ -705,124 +714,12 @@
             overflow: hidden;
         }
 
-        /* Placeholder Interaktif Sebelum Iframe Dimuat */
-        .assemblr-placeholder {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            text-align: center;
-            z-index: 5;
-            background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .assemblr-placeholder.fade-out {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(1.05);
-        }
-
-        .blueprint-icon {
-            font-size: 54px;
-            color: #3b82f6;
-            margin-bottom: 16px;
-            animation: pulse 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.08); opacity: 1; }
-        }
-
-        .placeholder-text h3 {
-            font-size: 14px;
-            color: #f8fafc;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .placeholder-text p {
-            font-size: 10.5px;
-            color: #94a3b8;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .btn-load-3d {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 11.5px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-load-3d:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 20px -3px rgba(59, 130, 246, 0.5);
-            background: #2563eb;
-        }
-
         /* Iframe Real Code */
         .assemblr-iframe {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
-        }
-
-        /* Loader Spinner */
-        .ar-loader {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #090d16;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 4;
-            color: #94a3b8;
-        }
-
-        .ar-loader.active {
-            display: flex;
-        }
-
-        .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid rgba(59, 130, 246, 0.1);
-            border-radius: 50%;
-            border-top-color: #3b82f6;
-            animation: spin 1s linear infinite;
-            margin-bottom: 12px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .spinner-text {
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.05em;
         }
 
         /* Custom Scrollbar for inner components */
@@ -885,7 +782,7 @@
                 <!-- Tab Contents -->
                 <div class="tab-viewport">
                     
-                    <!-- TAB 1: TUJUAN PEMBELAJARAN (Daftar Nomor Saja) -->
+                    <!-- TAB 1: TUJUAN PEMBELAJARAN -->
                     <div id="tab-tujuan" class="tab-pane active">
                         <div class="pane-header">
                             <span class="pane-badge">Fase D</span>
@@ -895,21 +792,16 @@
                         <div class="goals-container">
                             <div class="goal-item">
                                 <div class="goal-number">1</div>
-                                <div class="goal-text">Mengidentifikasi pengertian laptop dan membedakan bentuk fisiknya dari komputer meja (desktop).</div>
+                                <div class="goal-text">Setelah menggunakan multimedia, siswa dapat menjelaskan konsep laptop dan komponennya dengan benar.</div>
                             </div>
                             <div class="goal-item">
                                 <div class="goal-number">2</div>
-                                <div class="goal-text">Menjelaskan fungsi spesifik dari komponen input utama: Keyboard, Touchpad, dan Webcam.</div>
-                            </div>
-                            
-                            <div class="goal-item">
-                                <div class="goal-number">5</div>
-                                <div class="goal-text">Eksplorasi virtual interaktif komponen internal laptop menggunakan peranti visual 3D/AR.</div>
+                                <div class="goal-text">Setelah kegiatan eksplorasi 3D/AR, siswa dapat mempresentasikan komponen laptop dengan benar.</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TAB 2: MATERI (Explorer Interaktif Menarik) -->
+                    <!-- TAB 2: MATERI -->
                     <div id="tab-materi" class="tab-pane">
                         <div class="pane-header">
                             <span class="pane-badge">Visual Explorer</span>
@@ -917,35 +809,35 @@
                         </div>
 
                         <div class="explorer-layout">
-                            <!-- Kiri: Menu Komponen -->
+                            <!-- Kiri: Menu Komponen (Ikon Saja dengan Tooltip) -->
                             <div class="comp-list">
-                                <div class="comp-item active" onclick="selectComponent(0)" id="comp-0">
-                                    <i class="fa-solid fa-laptop"></i> Laptop
+                                <div class="comp-item active" onclick="selectComponent(0)" id="comp-0" title="Laptop">
+                                    <i class="fa-solid fa-laptop"></i>
                                 </div>
-                                <div class="comp-item" onclick="selectComponent(1)" id="comp-1">
-                                    <i class="fa-solid fa-microchip"></i> Processor
+                                <div class="comp-item" onclick="selectComponent(1)" id="comp-1" title="Processor">
+                                    <i class="fa-solid fa-microchip"></i>
                                 </div>
-                                <div class="comp-item" onclick="selectComponent(2)" id="comp-2">
-                                    <i class="fa-solid fa-memory"></i> RAM Memory
+                                <div class="comp-item" onclick="selectComponent(2)" id="comp-2" title="RAM Memory">
+                                    <i class="fa-solid fa-memory"></i>
                                 </div>
-                                <div class="comp-item" onclick="selectComponent(3)" id="comp-3">
-                                    <i class="fa-solid fa-hard-drive"></i> SSD Storage
+                                <div class="comp-item" onclick="selectComponent(3)" id="comp-3" title="SSD Storage">
+                                    <i class="fa-solid fa-hard-drive"></i>
                                 </div>
-                                <div class="comp-item" onclick="selectComponent(4)" id="comp-4">
-                                    <i class="fa-solid fa-desktop"></i> Monitor
+                                <div class="comp-item" onclick="selectComponent(4)" id="comp-4" title="Monitor">
+                                    <i class="fa-solid fa-desktop"></i>
                                 </div>
-                                <div class="comp-item" onclick="selectComponent(5)" id="comp-5">
-                                    <i class="fa-solid fa-keyboard"></i> Keyboard
+                                <div class="comp-item" onclick="selectComponent(5)" id="comp-5" title="Keyboard">
+                                    <i class="fa-solid fa-keyboard"></i>
                                 </div>
-                                <div class="comp-item" onclick="selectComponent(6)" id="comp-6">
-                                    <i class="fa-solid fa-hand-pointer"></i> Touchpad
+                                <div class="comp-item" onclick="selectComponent(6)" id="comp-6" title="Touchpad">
+                                    <i class="fa-solid fa-hand-pointer"></i>
                                 </div>
-                                <div class="comp-item" onclick="selectComponent(7)" id="comp-7">
-                                    <i class="fa-solid fa-video"></i> Webcam
+                                <div class="comp-item" onclick="selectComponent(7)" id="comp-7" title="Webcam">
+                                    <i class="fa-solid fa-video"></i>
                                 </div>
                             </div>
 
-                            <!-- Kanan: Detail Frame yang Mengikuti Seleksi -->
+                            <!-- Kanan: Detail Display Card -->
                             <div class="comp-display" id="component-display">
                                 <div class="comp-info-top">
                                     <div class="comp-visual-box" id="detail-icon">
@@ -958,7 +850,7 @@
                                 </div>
                                 
                                 <div class="comp-desc-txt" id="detail-desc">
-                                    Laptop adalah komputer portabel ringkas yang mengintegrasikan layar display, keyboard, touchpad kursor, baterai isi ulang, dan komponen pemroses utama di dalam satu kerangka terpadu yang praktis dibawa bepergian.
+                                    Laptop adalah komputer jinjing terpadu berdaya baterai yang dirancang portabel. Di dalamnya menyatukan layar monitor, papan tik, papan sentuh kursor, baterai, sirkuit pemroses, dan penyimpanan file utama ke dalam satu bodi ringkas yang mudah ditutup-buka.
                                 </div>
 
                                 <div class="comp-fact-box">
@@ -969,7 +861,7 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: EVALUASI MANDIRI (5 Soal, Skor Akhir) -->
+                    <!-- TAB 3: EVALUASI MANDIRI -->
                     <div id="tab-evaluasi" class="tab-pane">
                         <div class="quiz-wrapper">
                             
@@ -1039,28 +931,8 @@
                 </div>
 
                 <div class="embed-container">
-                    <!-- Placeholder Interaktif Sebelum Iframe Dimuat -->
-                    <div id="assemblr-placeholder" class="assemblr-placeholder">
-                        <div class="blueprint-icon">
-                            <i class="fa-solid fa-laptop-medical"></i>
-                        </div>
-                        <div class="placeholder-text">
-                            <h3>Model Komponen 3D</h3>
-                            <p>Eksplorasi virtual struktur bagian dalam dan luar laptop interaktif untuk peserta didik Fase D.</p>
-                        </div>
-                        <button class="btn-load-3d" onclick="loadAssemblrModel()">
-                            <i class="fa-solid fa-play"></i> Aktifkan Model 3D
-                        </button>
-                    </div>
-
-                    <!-- Loader saat loading iframe -->
-                    <div id="ar-loader" class="ar-loader">
-                        <div class="spinner"></div>
-                        <div class="spinner-text">MEMUAT DUNIA 3D...</div>
-                    </div>
-
-                    <!-- Iframe Target Area -->
-                    <div id="iframe-target" style="width: 100%; height: 100%;"></div>
+                    <!-- Integrasi Iframe Assemblr Langsung Sesuai Request -->
+                    <iframe class="assemblr-iframe" src='https://viewer.assemblrworld.com/Embed/-GEb8GmHJKif9VxcoaV4' allow="camera; microphone; gyroscope; accelerometer; magnetometer; xr-spatial-tracking; fullscreen" allowFullScreen></iframe>
                 </div>
             </div>
 
@@ -1360,34 +1232,6 @@
             playSound('click');
             document.getElementById('quiz-result-screen').style.display = 'none';
             document.getElementById('quiz-intro-screen').style.display = 'flex';
-        }
-
-        // 3. Load Assemblr Iframe Logic
-        function loadAssemblrModel() {
-            playSound('click');
-            const placeholder = document.getElementById('assemblr-placeholder');
-            const loader = document.getElementById('ar-loader');
-            const target = document.getElementById('iframe-target');
-
-            // Hide placeholder
-            placeholder.classList.add('fade-out');
-            
-            // Show spinning loader
-            loader.classList.add('active');
-
-            // Build Iframe
-            const iframe = document.createElement('iframe');
-            iframe.src = "https://viewer-edu.assemblrworld.com/Viewer/-GEb8GmHJKif9VxcoaV4?sourceDomain=https://app-edu.assemblrworld.com/id/creation/-GEb8GmHJKif9VxcoaV4?fromViewer=true&lang=id";
-            iframe.className = "assemblr-iframe";
-            iframe.setAttribute('allowfullscreen', 'true');
-            iframe.setAttribute('allow', 'xr-spatial-tracking; clipboard-write; gamepad');
-
-            // Remove spinner once loaded
-            iframe.onload = function() {
-                loader.classList.remove('active');
-            };
-
-            target.appendChild(iframe);
         }
     </script>
 </body>
