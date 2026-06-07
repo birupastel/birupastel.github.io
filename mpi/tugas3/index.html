@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop dan Komponennya - Kelas 7 SMP</title>
+    <!-- Font modern Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --primary-dark: #1d4ed8;
+            --slate-main: #0f172a;
+            --slate-panel: #1e293b;
+            --slate-border: #334155;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-light: #f8fafc;
+            --bg-accent: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0b0f19;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Container Utama Sesuai Request (916px x 516px) */
+        .app-canvas {
+            width: 916px;
+            height: 516px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* HEADER (Tinggi: 54px) */
+        header {
+            height: 54px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10;
+        }
+
+        .header-title-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-logo {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--slate-main);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .header-text p {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .author-badge {
+            background-color: var(--bg-light);
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            text-align: right;
+        }
+
+        .author-badge .name {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--slate-main);
+        }
+
+        .author-badge .school {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* MAIN CONTENT AREA (Tinggi: 462px) */
+        .main-container {
+            display: flex;
+            height: 462px;
+            width: 100%;
+        }
+
+        /* KOLOM MATERI - KIRI (Lebar: 530px) */
+        .materi-column {
+            width: 530px;
+            height: 100%;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+        }
+
+        /* Menu Navigasi Tab */
+        .tab-navigation {
+            display: flex;
+            background: var(--bg-light);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 15px;
+            height: 42px;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            color: var(--slate-main);
+            background-color: var(--bg-accent);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        /* Tab Content Area (Tinggi: 420px) */
+        .tab-viewport {
+            flex-grow: 1;
+            position: relative;
+            height: 420px;
+            overflow: hidden;
+        }
+
+        .tab-pane {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            transform: translateY(5px);
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-pane.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Pane Header */
+        .pane-header {
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .pane-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .pane-header h2 {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--slate-main);
+            letter-spacing: -0.01em;
+        }
+
+        /* TAB 1: TUJUAN (Daftar Nomor) */
+        .goals-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 4px;
+        }
+
+        .goal-item {
+            display: flex;
+            gap: 12px;
+            background: var(--bg-light);
+            border: 1px solid #e2e8f0;
+            padding: 10px 14px;
+            border-radius: 10px;
+            align-items: center;
+        }
+
+        .goal-number {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 3px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .goal-text {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        /* TAB 2: MATERI (Explorer Interaktif) */
+        .explorer-layout {
+            display: flex;
+            gap: 12px;
+            flex-grow: 1;
+            height: 310px;
+        }
+
+        /* Kiri: Daftar Komponen */
+        .comp-list {
+            width: 155px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .comp-item {
+            background: var(--bg-light);
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .comp-item i {
+            font-size: 12px;
+            color: var(--text-muted);
+            width: 14px;
+            text-align: center;
+        }
+
+        .comp-item:hover {
+            background-color: var(--bg-accent);
+            border-color: #cbd5e1;
+        }
+
+        .comp-item.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .comp-item.active i {
+            color: white;
+        }
+
+        /* Kanan: Detail Display Card */
+        .comp-display {
+            flex-grow: 1;
+            background: var(--bg-light);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .comp-info-top {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .comp-visual-box {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--primary);
+            flex-shrink: 0;
+            border: 1px solid #bfdbfe;
+        }
+
+        .comp-meta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .comp-type-tag {
+            font-size: 8.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+        }
+
+        .comp-name-txt {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--slate-main);
+        }
+
+        .comp-desc-txt {
+            font-size: 11.5px;
+            color: #475569;
+            line-height: 1.5;
+            margin-top: 10px;
+            overflow-y: auto;
+            flex-grow: 1;
+            padding-right: 4px;
+        }
+
+        .comp-fact-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-left: 3px solid var(--primary);
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comp-fact-box i {
+            color: #f59e0b;
+            font-size: 12px;
+        }
+
+        .comp-fact-text {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* TAB 3: EVALUASI MANDIRI (5 SOAL DENGAN SKOR AKHIR) */
+        .quiz-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Screen 1: Start Screen */
+        .quiz-screen {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .quiz-intro {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        .quiz-intro-icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            animation: bounce 2s infinite ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .quiz-intro h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--slate-main);
+            margin-bottom: 6px;
+        }
+
+        .quiz-intro p {
+            font-size: 11px;
+            color: var(--text-muted);
+            max-width: 320px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .btn-start-quiz {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #ffffff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-start-quiz:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Screen 2: Active Question Grid */
+        .quiz-main-layout {
+            display: flex;
+            flex-direction: column;
+            height: 310px;
+            justify-content: space-between;
+        }
+
+        .quiz-progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 20%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .quiz-q-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .quiz-question-txt {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--slate-main);
+            line-height: 1.4;
+            height: 34px;
+            margin-bottom: 8px;
+        }
+
+        .quiz-options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 5px;
+        }
+
+        .quiz-opt-card {
+            display: flex;
+            align-items: center;
+            background: var(--bg-light);
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 7px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-opt-card:hover {
+            background-color: var(--bg-accent);
+            border-color: #cbd5e1;
+        }
+
+        .quiz-opt-card.selected {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .quiz-opt-badge {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: var(--text-dark);
+            font-size: 10px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .quiz-opt-card.selected .quiz-opt-badge {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .quiz-opt-val {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .quiz-action-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .quiz-next-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .quiz-next-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Screen 3: Result Screen */
+        .quiz-score-board {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex-grow: 1;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .score-radial {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, #ffffff 50%, transparent 51%), 
+                        conic-gradient(var(--primary) 0%, #e2e8f0 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.15);
+            margin-bottom: 12px;
+        }
+
+        .score-inner-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--slate-main);
+        }
+
+        .score-status {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .score-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+            max-width: 250px;
+            margin-bottom: 15px;
+        }
+
+        .btn-restart-quiz {
+            background: none;
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+            padding: 7px 18px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-restart-quiz:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* KOLOM SIMULASI 3D / AR - KANAN (Lebar: 386px) */
+        .simulasi-column {
+            width: 386px;
+            height: 100%;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .simulasi-header {
+            padding: 12px 16px;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .simulasi-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #f1f5f9;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .simulasi-badge {
+            background-color: #f59e0b;
+            color: #0f172a;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Media Container for Iframe */
+        .embed-container {
+            flex-grow: 1;
+            position: relative;
+            background: #090d16;
+            overflow: hidden;
+        }
+
+        /* Placeholder Interaktif Sebelum Iframe Dimuat */
+        .assemblr-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            z-index: 5;
+            background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .assemblr-placeholder.fade-out {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.05);
+        }
+
+        .blueprint-icon {
+            font-size: 54px;
+            color: #3b82f6;
+            margin-bottom: 16px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.08); opacity: 1; }
+        }
+
+        .placeholder-text h3 {
+            font-size: 14px;
+            color: #f8fafc;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .placeholder-text p {
+            font-size: 10.5px;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .btn-load-3d {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 11.5px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-load-3d:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 20px -3px rgba(59, 130, 246, 0.5);
+            background: #2563eb;
+        }
+
+        /* Iframe Real Code */
+        .assemblr-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* Loader Spinner */
+        .ar-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #090d16;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 4;
+            color: #94a3b8;
+        }
+
+        .ar-loader.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s linear infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-text {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        /* Custom Scrollbar for inner components */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .simulasi-column ::webkit-scrollbar-thumb {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-canvas">
+        
+        <!-- HEADER -->
+        <header>
+            <div class="header-title-area">
+                <div class="header-logo">
+                    <i class="fa-solid fa-laptop-code"></i>
+                </div>
+                <div class="header-text">
+                    <h1>Laptop dan Komponennya</h1>
+                    <p>Informatika • Fase D • Kelas VII SMP</p>
+                </div>
+            </div>
+            
+            <div class="author-badge">
+                <div class="name">M. Rizki, S.Pd.</div>
+                <div class="school">SMAN 1 Garut</div>
+            </div>
+        </header>
+
+        <!-- MAIN BODY (DUA KOLOM) -->
+        <div class="main-container">
+            
+            <!-- KOLOM KIRI: MATERI & EVALUASI -->
+            <div class="materi-column">
+                
+                <!-- Tab Menu Navigasi -->
+                <nav class="tab-navigation">
+                    <button class="tab-btn active" onclick="switchTab(event, 'tab-tujuan')">
+                        <i class="fa-solid fa-bullseye"></i> Tujuan
+                    </button>
+                    <button class="tab-btn" onclick="switchTab(event, 'tab-materi')">
+                        <i class="fa-solid fa-book-open"></i> Materi Laptop
+                    </button>
+                    <button class="tab-btn" onclick="switchTab(event, 'tab-evaluasi')">
+                        <i class="fa-solid fa-circle-question"></i> Evaluasi Mandiri
+                    </button>
+                </nav>
+
+                <!-- Tab Contents -->
+                <div class="tab-viewport">
+                    
+                    <!-- TAB 1: TUJUAN PEMBELAJARAN (Daftar Nomor Saja) -->
+                    <div id="tab-tujuan" class="tab-pane active">
+                        <div class="pane-header">
+                            <span class="pane-badge">Fase D</span>
+                            <h2>Tujuan Pembelajaran</h2>
+                        </div>
+                        
+                        <div class="goals-container">
+                            <div class="goal-item">
+                                <div class="goal-number">1</div>
+                                <div class="goal-text">Mengidentifikasi pengertian laptop dan membedakan bentuk fisiknya dari komputer meja (desktop).</div>
+                            </div>
+                            <div class="goal-item">
+                                <div class="goal-number">2</div>
+                                <div class="goal-text">Menjelaskan fungsi spesifik dari komponen input utama: Keyboard, Touchpad, dan Webcam.</div>
+                            </div>
+                            <div class="goal-item">
+                                <div class="goal-number">3</div>
+                                <div class="goal-text">Menguraikan tugas sistem pemrosesan sentral: CPU (Processor) dan RAM (Memory).</div>
+                            </div>
+                            <div class="goal-item">
+                                <div class="goal-number">4</div>
+                                <div class="goal-text">Membandingkan fungsi Monitor sebagai output visual dan SSD sebagai penyimpan berkas permanen.</div>
+                            </div>
+                            <div class="goal-item">
+                                <div class="goal-number">5</div>
+                                <div class="goal-text">Eksplorasi virtual interaktif komponen internal laptop menggunakan peranti visual 3D/AR.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: MATERI (Explorer Interaktif Menarik) -->
+                    <div id="tab-materi" class="tab-pane">
+                        <div class="pane-header">
+                            <span class="pane-badge">Visual Explorer</span>
+                            <h2>Struktur & Peranti Laptop</h2>
+                        </div>
+
+                        <div class="explorer-layout">
+                            <!-- Kiri: Menu Komponen -->
+                            <div class="comp-list">
+                                <div class="comp-item active" onclick="selectComponent(0)" id="comp-0">
+                                    <i class="fa-solid fa-laptop"></i> Laptop
+                                </div>
+                                <div class="comp-item" onclick="selectComponent(1)" id="comp-1">
+                                    <i class="fa-solid fa-microchip"></i> Processor
+                                </div>
+                                <div class="comp-item" onclick="selectComponent(2)" id="comp-2">
+                                    <i class="fa-solid fa-memory"></i> RAM Memory
+                                </div>
+                                <div class="comp-item" onclick="selectComponent(3)" id="comp-3">
+                                    <i class="fa-solid fa-hard-drive"></i> SSD Storage
+                                </div>
+                                <div class="comp-item" onclick="selectComponent(4)" id="comp-4">
+                                    <i class="fa-solid fa-desktop"></i> Monitor
+                                </div>
+                                <div class="comp-item" onclick="selectComponent(5)" id="comp-5">
+                                    <i class="fa-solid fa-keyboard"></i> Keyboard
+                                </div>
+                                <div class="comp-item" onclick="selectComponent(6)" id="comp-6">
+                                    <i class="fa-solid fa-hand-pointer"></i> Touchpad
+                                </div>
+                                <div class="comp-item" onclick="selectComponent(7)" id="comp-7">
+                                    <i class="fa-solid fa-video"></i> Webcam
+                                </div>
+                            </div>
+
+                            <!-- Kanan: Detail Frame yang Mengikuti Seleksi -->
+                            <div class="comp-display" id="component-display">
+                                <div class="comp-info-top">
+                                    <div class="comp-visual-box" id="detail-icon">
+                                        <i class="fa-solid fa-laptop"></i>
+                                    </div>
+                                    <div class="comp-meta">
+                                        <span class="comp-type-tag" id="detail-tag">SISTEM UTAMA</span>
+                                        <span class="comp-name-txt" id="detail-name">Apa itu Laptop?</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="comp-desc-txt" id="detail-desc">
+                                    Laptop adalah komputer portabel ringkas yang mengintegrasikan layar display, keyboard, touchpad kursor, baterai isi ulang, dan komponen pemroses utama di dalam satu kerangka terpadu yang praktis dibawa bepergian.
+                                </div>
+
+                                <div class="comp-fact-box">
+                                    <i class="fa-solid fa-lightbulb"></i>
+                                    <span class="comp-fact-text" id="detail-fact">Dibuat agar manusia bisa bekerja dengan produktif di mana saja secara nirkabel!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: EVALUASI MANDIRI (5 Soal, Skor Akhir) -->
+                    <div id="tab-evaluasi" class="tab-pane">
+                        <div class="quiz-wrapper">
+                            
+                            <!-- SCREEN 1: INTRO -->
+                            <div id="quiz-intro-screen" class="quiz-screen">
+                                <div class="quiz-intro">
+                                    <div class="quiz-intro-icon">
+                                        <i class="fa-solid fa-graduation-cap"></i>
+                                    </div>
+                                    <h3>Evaluasi Pemahaman Mandiri</h3>
+                                    <p>Uji pengetahuanmu mengenai laptop dan perangkat penyusunnya. Jawablah 5 soal pilihan ganda berikut untuk melihat skor kelulusanmu!</p>
+                                    <button class="btn-start-quiz" onclick="startQuiz()">Mulai Tes Sekarang</button>
+                                </div>
+                            </div>
+
+                            <!-- SCREEN 2: ACTIVE QUESTION GRID -->
+                            <div id="quiz-active-screen" class="quiz-screen" style="display: none;">
+                                <div class="quiz-main-layout">
+                                    <div>
+                                        <div class="quiz-q-info">
+                                            <span id="quiz-number-indicator">Soal 1 dari 5</span>
+                                            <span>Materi: Informatika VII</span>
+                                        </div>
+                                        <div class="quiz-progress-bar">
+                                            <div class="progress-fill" id="quiz-progress-fill"></div>
+                                        </div>
+                                        <div class="quiz-question-txt" id="quiz-question-box">
+                                            Pertanyaan dimuat...
+                                        </div>
+                                    </div>
+
+                                    <div class="quiz-options-grid" id="quiz-options-box">
+                                        <!-- Opsi Jawaban A s.d E dimuat dinamis -->
+                                    </div>
+
+                                    <div class="quiz-action-footer">
+                                        <button class="quiz-next-btn" id="quiz-action-btn" onclick="submitAnswer()">Berikutnya <i class="fa-solid fa-chevron-right" style="margin-left: 5px;"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SCREEN 3: RESULT SCOREBOARD -->
+                            <div id="quiz-result-screen" class="quiz-screen" style="display: none;">
+                                <div class="quiz-score-board">
+                                    <div class="score-radial" id="score-radial-visual">
+                                        <div class="score-inner-val" id="score-numeric-text">0</div>
+                                    </div>
+                                    <h4 class="score-status" id="score-status-text">Selamat!</h4>
+                                    <p class="score-sub" id="score-sub-text">Kamu telah menyelesaikan seluruh soal latihan tentang komponen laptop.</p>
+                                    <button class="btn-restart-quiz" onclick="resetQuiz()">Ulangi Ujian</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- KOLOM KANAN: SIMULASI 3D / AR (ASSEMBLR EMBED) -->
+            <div class="simulasi-column">
+                <div class="simulasi-header">
+                    <div class="simulasi-title">
+                        <i class="fa-solid fa-cube"></i> Simulasi 3D / AR
+                    </div>
+                    <span class="simulasi-badge">Assemblr Edu</span>
+                </div>
+
+                <div class="embed-container">
+                    <!-- Placeholder Interaktif Sebelum Iframe Dimuat -->
+                    <div id="assemblr-placeholder" class="assemblr-placeholder">
+                        <div class="blueprint-icon">
+                            <i class="fa-solid fa-laptop-medical"></i>
+                        </div>
+                        <div class="placeholder-text">
+                            <h3>Model Komponen 3D</h3>
+                            <p>Eksplorasi virtual struktur bagian dalam dan luar laptop interaktif untuk peserta didik Fase D.</p>
+                        </div>
+                        <button class="btn-load-3d" onclick="loadAssemblrModel()">
+                            <i class="fa-solid fa-play"></i> Aktifkan Model 3D
+                        </button>
+                    </div>
+
+                    <!-- Loader saat loading iframe -->
+                    <div id="ar-loader" class="ar-loader">
+                        <div class="spinner"></div>
+                        <div class="spinner-text">MEMUAT DUNIA 3D...</div>
+                    </div>
+
+                    <!-- Iframe Target Area -->
+                    <div id="iframe-target" style="width: 100%; height: 100%;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT UTAMA UNTUK INTERAKTIVITAS & AUDIO SYNTH -->
+    <script>
+        // Database Materi Komponen Explorer
+        const komponenData = [
+            {
+                name: "Apa itu Laptop?",
+                tag: "Sistem Utama",
+                icon: "fa-solid fa-laptop",
+                desc: "Laptop adalah komputer jinjing terpadu berdaya baterai yang dirancang portabel. Di dalamnya menyatukan layar monitor, papan tik, papan sentuh kursor, baterai, sirkuit pemroses, dan penyimpanan file utama ke dalam satu bodi ringkas yang mudah ditutup-buka.",
+                fact: "Dibuat agar manusia bisa bekerja dengan produktif di mana saja secara nirkabel!"
+            },
+            {
+                name: "Central Processing Unit",
+                tag: "Peranti Pemroses",
+                icon: "fa-solid fa-microchip",
+                desc: "CPU (Processor) bertugas mengeksekusi instruksi dari program yang berjalan. Dikenal sebagai 'otak utama' komputer, ia mengendalikan seluruh jalannya kalkulasi logika, matematika, grafis, dan sinkronisasi hardware laptop.",
+                fact: "Semakin tinggi frekuensi Ghz processor, makin gesit laptop melakukan instruksi berat."
+            },
+            {
+                name: "Random Access Memory",
+                tag: "Penyimpanan Sementara",
+                icon: "fa-solid fa-memory",
+                desc: "RAM bertindak sebagai meja kerja jangka pendek yang menyimpan data aplikasi yang sedang aktif berjalan agar dapat cepat diakses oleh Processor. Menyimpan secara acak dan isinya akan langsung hilang bersih ketika laptop dimatikan.",
+                fact: "RAM besar mencegah laptop mengalami kemacetan (lag) saat membuka banyak tab sekaligus!"
+            },
+            {
+                name: "Solid State Drive",
+                tag: "Penyimpanan Permanen",
+                icon: "fa-solid fa-hard-drive",
+                desc: "SSD adalah peranti penyimpanan file modern berkecepatan tinggi yang menggantikan Harddisk mekanis lama. Berperan menyimpan data sistem operasi (OS), instalan program, serta berkas tugas pengguna secara permanen dan aman.",
+                fact: "SSD memanfaatkan sirkuit flash memory yang membuatnya 10x lebih cepat dibanding HDD lama!"
+            },
+            {
+                name: "Monitor LCD / LED",
+                tag: "Peranti Keluaran (Output)",
+                icon: "fa-solid fa-desktop",
+                desc: "Monitor adalah peranti keluaran utama yang bertugas memproyeksikan informasi visual berbentuk teks, gambar, video, dan antarmuka interaktif sistem operasi agar dapat dilihat dengan nyaman oleh mata kita.",
+                fact: "Resolusi layar (seperti Full HD) menentukan ketajaman visual gambar yang diproduksi."
+            },
+            {
+                name: "Papan Tik (Keyboard)",
+                tag: "Peranti Masukan (Input)",
+                icon: "fa-solid fa-keyboard",
+                desc: "Keyboard berisi barisan tombol aksara, angka, simbol matematika, dan kombinasi kontrol pintasan untuk menginstruksikan laptop melakukan perintah teks tertentu secara cepat.",
+                fact: "Di laptop modern, sela-sela keyboard sering dilengkapi lampu backlit agar tetap terlihat di ruang gelap."
+            },
+            {
+                name: "Touchpad Navigasi",
+                tag: "Peranti Masukan (Input)",
+                icon: "fa-solid fa-hand-pointer",
+                desc: "Touchpad berfungsi sebagai pengganti mouse eksternal. Dengan mendeteksi gerakan gesekan sidik jari di atas sensor datar logamnya, kita dapat menggerakkan kursor, mengeklik ikon, dan menggulir berkas secara praktis.",
+                fact: "Mendukung gestur multi-touch, contohnya cubit layar untuk memperbesar (zoom) gambar."
+            },
+            {
+                name: "Kamera Web (Webcam)",
+                tag: "Peranti Masukan (Input)",
+                icon: "fa-solid fa-video",
+                desc: "Webcam adalah kamera digital mini yang ditanam tepat di atas bezel layar monitor. Alat ini bertugas menangkap data rekaman visual video dan audio riil untuk dikirimkan secara langsung melalui jaringan komunikasi daring.",
+                fact: "Sangat dibutuhkan siswa di era sekarang untuk kegiatan tatap muka virtual (Zoom / Meet)."
+            }
+        ];
+
+        // Database Soal Evaluasi Mandiri (5 Soal Pilihan Ganda A-E)
+        const quizQuestions = [
+            {
+                q: "Processor atau CPU sering dijuluki sebagai apa di dalam sistem laptop?",
+                opts: ["A. Penampung daya listrik cadangan", "B. Papan sirkuit sela-sela penghubung", "C. Otak utama pemroses instruksi", "D. Media penyimpanan program permanen", "E. Pembuat tampilan warna gambar visual"],
+                ans: "C"
+            },
+            {
+                q: "Komponen manakah yang bertugas menampung data aplikasi secara sementara saat sedang aktif digunakan?",
+                opts: ["A. Solid State Drive (SSD)", "B. Random Access Memory (RAM)", "C. Central Processing Unit (CPU)", "D. Touchpad Navigasi", "E. Baterai Lithium-ion"],
+                ans: "B"
+            },
+            {
+                q: "Keunggulan utama Solid State Drive (SSD) dibanding piringan cakram keras (HDD) lama adalah...",
+                opts: ["A. Bobotnya yang sangat berat", "B. Membuat laptop menghasilkan suara bising", "C. Kecepatan baca-tulis berkas yang jauh lebih cepat", "D. Membakar daya listrik baterai lebih boros", "E. Ukuran fisiknya yang sangat besar"],
+                ans: "C"
+            },
+            {
+                q: "Untuk menggerakkan ikon penunjuk (kursor) tanpa mouse tambahan, kita menggunakan peranti...",
+                opts: ["A. Papan Tik (Keyboard)", "B. Kamera Web (Webcam)", "C. Monitor LCD", "D. Papan Sentuh (Touchpad)", "E. Memory RAM"],
+                ans: "D"
+            },
+            {
+                q: "Manakah kelompok di bawah ini yang semuanya tergolong sebagai peranti masukan (Input Device)?",
+                opts: ["A. Monitor, Speaker, dan Printer", "B. Processor, RAM, dan Motherboard", "C. Keyboard, Touchpad, dan Webcam", "D. SSD, HDD, dan Flashdisk", "E. Monitor, CPU, dan Charger"],
+                ans: "C"
+            }
+        ];
+
+        // Global State variables
+        let activeQuizIndex = 0;
+        let selectedOptionLetter = null;
+        let userQuizScore = 0;
+
+        // Web Audio Synthesizer
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                if (type === 'success') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    osc.start();
+                    setTimeout(() => {
+                        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime); // E5
+                    }, 110);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                    osc.stop(audioCtx.currentTime + 0.35);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(750, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                    osc.stop(audioCtx.currentTime + 0.08);
+                }
+            } catch (e) {
+                console.log('AudioContext blocked or unsupported');
+            }
+        }
+
+        // Tab Switcher
+        function switchTab(event, tabId) {
+            playSound('click');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // 1. Interactive Explorer (Materi) Logic
+        function selectComponent(index) {
+            playSound('click');
+            
+            // Toggle Active class in list
+            document.querySelectorAll('.comp-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(`comp-${index}`).classList.add('active');
+
+            // Get target database
+            const data = komponenData[index];
+
+            // Animate card content transition
+            const displayCard = document.getElementById('component-display');
+            displayCard.style.opacity = '0.3';
+            displayCard.style.transform = 'translateY(3px)';
+
+            setTimeout(() => {
+                document.getElementById('detail-icon').innerHTML = `<i class="${data.icon}"></i>`;
+                document.getElementById('detail-tag').innerText = data.tag;
+                document.getElementById('detail-name').innerText = data.name;
+                document.getElementById('detail-desc').innerText = data.desc;
+                document.getElementById('detail-fact').innerText = data.fact;
+
+                displayCard.style.opacity = '1';
+                displayCard.style.transform = 'translateY(0)';
+            }, 120);
+        }
+
+        // 2. Evaluasi Mandiri (Kuis) Logic
+        function startQuiz() {
+            playSound('click');
+            activeQuizIndex = 0;
+            userQuizScore = 0;
+            selectedOptionLetter = null;
+
+            document.getElementById('quiz-intro-screen').style.display = 'none';
+            document.getElementById('quiz-result-screen').style.display = 'none';
+            document.getElementById('quiz-active-screen').style.display = 'flex';
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            selectedOptionLetter = null;
+            const currentQ = quizQuestions[activeQuizIndex];
+
+            // Update Header & Progress Bar
+            document.getElementById('quiz-number-indicator').innerText = `Soal ${activeQuizIndex + 1} dari 5`;
+            const percentProgress = ((activeQuizIndex + 1) / 5) * 100;
+            document.getElementById('quiz-progress-fill').style.width = `${percentProgress}%`;
+
+            // Update text question
+            document.getElementById('quiz-question-box').innerText = `${activeQuizIndex + 1}. ${currentQ.q}`;
+
+            // Render options
+            let optionsHTML = '';
+            currentQ.opts.forEach((opt, idx) => {
+                const letter = String.fromCharCode(65 + idx); // A, B, C, D, E
+                optionsHTML += `
+                    <div class="quiz-opt-card" onclick="selectQuizOption(this, '${letter}')">
+                        <div class="quiz-opt-badge">${letter}</div>
+                        <div class="quiz-opt-val">${opt.substring(3)}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('quiz-options-box').innerHTML = optionsHTML;
+
+            // Manage CTA Button text
+            const actionBtn = document.getElementById('quiz-action-btn');
+            if (activeQuizIndex === 4) {
+                actionBtn.innerHTML = `Selesai & Cek Skor <i class="fa-solid fa-square-poll-vertical" style="margin-left: 5px;"></i>`;
+            } else {
+                actionBtn.innerHTML = `Berikutnya <i class="fa-solid fa-chevron-right" style="margin-left: 5px;"></i>`;
+            }
+        }
+
+        function selectQuizOption(element, letter) {
+            playSound('click');
+            document.querySelectorAll('.quiz-opt-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedOptionLetter = letter;
+        }
+
+        function submitAnswer() {
+            if (!selectedOptionLetter) {
+                playSound('error');
+                return; // User has not selected any option
+            }
+
+            // Check correctness of answer
+            const correctLetter = quizQuestions[activeQuizIndex].ans;
+            if (selectedOptionLetter === correctLetter) {
+                userQuizScore += 20; // 5 questions, each worth 20 points
+            }
+
+            // Move state forward
+            if (activeQuizIndex < 4) {
+                activeQuizIndex++;
+                renderQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            if (userQuizScore >= 80) {
+                playSound('success');
+            } else {
+                playSound('error');
+            }
+
+            document.getElementById('quiz-active-screen').style.display = 'none';
+            document.getElementById('quiz-result-screen').style.display = 'flex';
+
+            // Show Score visual ring
+            document.getElementById('score-numeric-text').innerText = userQuizScore;
+            
+            // Progress circle conic-gradient representation
+            const radialVisual = document.getElementById('score-radial-visual');
+            radialVisual.style.background = `radial-gradient(circle at center, #ffffff 54%, transparent 55%), conic-gradient(var(--primary) ${userQuizScore}%, #cbd5e1 ${userQuizScore}%)`;
+
+            // Score descriptive text
+            const statusText = document.getElementById('score-status-text');
+            const subText = document.getElementById('score-sub-text');
+
+            if (userQuizScore === 100) {
+                statusText.innerText = "Sempurna! 🌟";
+                statusText.style.color = "#10b981";
+                subText.innerText = "Luar biasa! Kamu menguasai seluruh pemahaman hardware laptop Kelas VII dengan sangat baik.";
+            } else if (userQuizScore >= 60) {
+                statusText.innerText = "Kamu Lulus! 👍";
+                statusText.style.color = "var(--primary)";
+                subText.innerText = `Skormu ${userQuizScore}/100. Pengetahuanmu sudah baik, tinjau simulasi 3D lagi untuk pemahaman mutlak!`;
+            } else {
+                statusText.innerText = "Perlu Belajar Lagi 📚";
+                statusText.style.color = "#ef4444";
+                subText.innerText = `Skormu ${userQuizScore}/100. Silakan tinjau kembali info komponen di tab materi sebelum mencoba lagi.`;
+            }
+        }
+
+        function resetQuiz() {
+            playSound('click');
+            document.getElementById('quiz-result-screen').style.display = 'none';
+            document.getElementById('quiz-intro-screen').style.display = 'flex';
+        }
+
+        // 3. Load Assemblr Iframe Logic
+        function loadAssemblrModel() {
+            playSound('click');
+            const placeholder = document.getElementById('assemblr-placeholder');
+            const loader = document.getElementById('ar-loader');
+            const target = document.getElementById('iframe-target');
+
+            // Hide placeholder
+            placeholder.classList.add('fade-out');
+            
+            // Show spinning loader
+            loader.classList.add('active');
+
+            // Build Iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = "https://viewer-edu.assemblrworld.com/Viewer/-GEb8GmHJKif9VxcoaV4?sourceDomain=https://app-edu.assemblrworld.com/id/creation/-GEb8GmHJKif9VxcoaV4?fromViewer=true&lang=id";
+            iframe.className = "assemblr-iframe";
+            iframe.setAttribute('allowfullscreen', 'true');
+            iframe.setAttribute('allow', 'xr-spatial-tracking; clipboard-write; gamepad');
+
+            // Remove spinner once loaded
+            iframe.onload = function() {
+                loader.classList.remove('active');
+            };
+
+            target.appendChild(iframe);
+        }
+    </script>
+</body>
+</html>
