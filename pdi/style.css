@@ -163,7 +163,7 @@ body {
   color: #64748b;
 }
 
-/* AREA KANAN: MEDIA */
+/* AREA KANAN: MEDIA SECTION */
 .media-section {
   flex: 1;
   position: relative;
@@ -177,21 +177,43 @@ body {
 .media-container {
   width: 100%;
   height: 100%;
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #0f172a;
+  overflow: hidden;
 }
 
-.media-container img {
-  width: 100%;
-  height: 100%;
+/* BACKGROUND SOFT BLUR (Mengisi Sisi Kosong Jika Rasio 4:5 / 1:1) */
+.media-bg-blur {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
   object-fit: cover;
+  filter: blur(28px) brightness(0.65) opacity(0.85);
+  transform: scale(1.1);
+  z-index: 1;
+}
+
+/* GAMBAR UTAMA (Tetap Mempertahankan Rasio Asli) */
+.media-main-img {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  z-index: 2;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
 }
 
 .media-container iframe {
+  position: relative;
   width: 100%;
   height: 100%;
   border: none;
+  z-index: 2;
 }
 
 /* COUNTDOWN CARD */
