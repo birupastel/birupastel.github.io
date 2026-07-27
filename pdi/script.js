@@ -1,9 +1,11 @@
+// LINK WEB APP APPS SCRIPT
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzR9AiCrmh2y6daywe9L1b8ZTIhzQaCSnHp-mXr27_RAdQYJIMv-B3KuTiefNESM2u5/exec";
 
 let mediaData = [];
 let currentMediaIndex = 0;
 let mediaTimer = null;
 
+// 1. JAM & TANGGAL REAL-TIME
 function updateClock() {
   const now = new Date();
   const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
@@ -15,20 +17,34 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-function getProp(obj, possibleKeys, defaultValue = "") {
-  if (!obj) return defaultValue;
-  const keys = Object.keys(obj);
-  for (let key of keys) {
-    const cleanKey = key.trim().toLowerCase();
-    for (let pKey of possibleKeys) {
-      if (cleanKey === pKey.toLowerCase()) {
-        return obj[key] !== undefined && obj[key] !== null ? obj[key] : defaultValue;
+// FORMAT TANGGAL SINGKAT (Contoh: 2026-08-17 -> 17 Ags 2026)
+function formatTanggalSingkat(dateValue) {
+  if (!dateValue) return "";
+  
+  let d;
+  if (typeof dateValue === 'string') {
+    const cleanStr = dateValue.split('T')[0].trim();
+    const parts = cleanStr.split(/[-/.]/);
+    if (parts.length === 3) {
+      if (parts[0].length === 4) {
+        d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      } else if (parts[2].length === 4) {
+        d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
       }
     }
   }
-  return defaultValue;
+
+  if (!d || isNaN(d.getTime())) {
+    d = new Date(dateValue);
+  }
+
+  if (isNaN(d.getTime())) return String(dateValue);
+
+  const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+  return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
 }
 
+// 2. LOAD DATA DARI APPS SCRIPT
 async function loadData() {
   try {
     const response = await fetch(GAS_API_URL);
@@ -38,9 +54,10 @@ async function loadData() {
     renderRunningText(data.runningText || []);
     
     if (data.media && data.media.length > 0) {
+      // Filter Media berdasarkan kolom 'Status'
       mediaData = data.media.filter(item => {
-        const status = String(getProp(item, ["Status Media", "Status", "Status/Aktif"], "Aktif")).toLowerCase();
-        return status === "aktif" || status === "ya" || status === "true" || status === "";
+        const status = String(item["Status"] || "").toLowerCase().trim();
+        return status === "aktif" || status === "ya" || status === "";
       });
 
       if (mediaData.length > 0) {
@@ -52,12 +69,14 @@ async function loadData() {
   }
 }
 
+// 3. RENDER AGENDA (SESUAI KOLOM SHEET AGENDA)
 function renderAgenda(agendaList) {
   const container = document.getElementById('agenda-container');
   container.innerHTML = '';
 
+  // Filter Agenda berdasarkan kolom 'Status'
   const activeAgenda = agendaList.filter(item => {
-    const status = String(getProp(item, ["Status", "Status Agenda"], "Aktif")).toLowerCase();
+    const status = String(item["Status"] || "").toLowerCase().trim();
     return status !== "selesai" && status !== "nonaktif";
   });
 
@@ -73,24 +92,31 @@ function renderAgenda(agendaList) {
   let minDiffDays = Infinity;
 
   activeAgenda.forEach(item => {
-    const nama = getProp(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Agenda", "Nama"], "Agenda Sekolah");
-    const tglMulai = getProp(item, ["Tanggal Mulai", "Tanggal", "Tgl Mulai"], "");
-    const tglSelesai = getProp(item, ["Tanggal Selesai", "Tgl Selesai"], "");
-    const kategori = getProp(item, ["Kategori", "Kategori Agenda", "Jenis"], "Umum");
+    // Membaca Kolom Tepat Sesuai Form Agenda Kamu
+    const nama = item["Nama Kegiatan"] || "Agenda Sekolah";
+    const tglMulaiRaw = item["Tanggal Mulai Agenda"] || "";
+    const tglSelesaiRaw = item["Tanggal Selesai Agenda"] || "";
+    // Note: Menangani typos 'Ketegori' / 'Kategori' secara aman
+    const kategori = item["Kategori"] || item["Ketegori"] || "Umum";
 
+    const tglMulaiFormatted = formatTanggalSingkat(tglMulaiRaw);
+    const tglSelesaiFormatted = formatTanggalSingkat(tglSelesaiRaw);
+
+    // Format Tampilan Teks Tanggal
     let dateStr = "";
-    if (tglMulai && tglSelesai && tglMulai !== tglSelesai) {
-      dateStr = `${formatTanggalSingkat(tglMulai)} - ${formatTanggalSingkat(tglSelesai)}`;
-    } else if (tglMulai) {
-      dateStr = formatTanggalSingkat(tglMulai);
+    if (tglMulaiFormatted && tglSelesaiFormatted && tglMulaiFormatted !== tglSelesaiFormatted) {
+      dateStr = `${tglMulaiFormatted} - ${tglSelesaiFormatted}`;
+    } else if (tglMulaiFormatted) {
+      dateStr = tglMulaiFormatted;
     } else {
       dateStr = "Tanggal belum diatur";
     }
 
-    const katLower = kategori.toLowerCase();
+    // Warna Badge Kategori
+    const katLower = String(kategori).toLowerCase();
     let badgeClass = "badge-umum";
     if (katLower.includes("akademik") || katLower.includes("ujian")) badgeClass = "badge-akademik";
-    else if (katLower.includes("siswa") || katLower.includes("ekstra") || katLower.includes("lomba")) badgeClass = "badge-siswa";
+    else if (katLower.includes("siswa") || katLower.includes("ekstra") || katLower.includes("lomba") || katLower.includes("prestasi")) badgeClass = "badge-siswa";
     else if (katLower.includes("libur")) badgeClass = "badge-libur";
     else if (katLower.includes("rapat") || katLower.includes("dinas")) badgeClass = "badge-rapat";
 
@@ -108,19 +134,23 @@ function renderAgenda(agendaList) {
     `;
     container.appendChild(card);
 
-    if (tglMulai) {
-      const eventDate = new Date(tglMulai);
-      eventDate.setHours(0, 0, 0, 0);
-      const diffTime = eventDate - today;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // Hitung Countdown Agenda Terdekat
+    if (tglMulaiRaw) {
+      const eventDate = new Date(tglMulaiRaw);
+      if (!isNaN(eventDate.getTime())) {
+        eventDate.setHours(0, 0, 0, 0);
+        const diffTime = eventDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      if (diffDays >= 0 && diffDays < minDiffDays) {
-        minDiffDays = diffDays;
-        upcomingEvent = { nama, diffDays };
+        if (diffDays >= 0 && diffDays < minDiffDays) {
+          minDiffDays = diffDays;
+          upcomingEvent = { nama, diffDays };
+        }
       }
     }
   });
 
+  // Floating Countdown Widget
   const countdownCard = document.getElementById('countdown-card');
   if (upcomingEvent) {
     document.getElementById('countdown-title').textContent = upcomingEvent.nama;
@@ -131,16 +161,9 @@ function renderAgenda(agendaList) {
   }
 }
 
-function formatTanggalSingkat(dateString) {
-  if (!dateString) return "";
-  const d = new Date(dateString);
-  if (isNaN(d.getTime())) return dateString;
-  const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-  return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
-}
-
+// 4. PARSE LINK MEDIA
 function parseMediaUrl(url) {
-  if (!url) return '';
+  if (!url) return { type: 'image', url: '' };
   url = url.trim();
 
   // YouTube
@@ -157,7 +180,7 @@ function parseMediaUrl(url) {
     };
   }
 
-  // Google Drive Image
+  // Google Drive
   if (url.includes('drive.google.com')) {
     let fileId = '';
     const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -167,7 +190,6 @@ function parseMediaUrl(url) {
     else if (matchId && matchId[1]) fileId = matchId[1];
 
     if (fileId) {
-      // Menggunakan Thumbnail API Google Drive agar gambar dijamin muncul tanpa terblokir CORS
       return {
         type: 'image',
         url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w1920`
@@ -175,10 +197,10 @@ function parseMediaUrl(url) {
     }
   }
 
-  // Direct Image URL biasa
   return { type: 'image', url: url };
 }
 
+// 5. RENDER MEDIA (SESUAI KOLOM SHEET MEDIA)
 function showMedia(index) {
   if (mediaData.length === 0) return;
 
@@ -187,22 +209,24 @@ function showMedia(index) {
   const captionBox = document.getElementById('media-caption');
   
   const current = mediaData[index];
-  const rawUrl = getProp(current, ["Link URL / Media", "Link URL", "Link Media", "URL", "Link"], "");
-  const title = getProp(current, ["Judul / Deskripsi Media", "Judul", "Deskripsi", "Caption"], "");
-  const category = getProp(current, ["Kategori Media", "Kategori", "Jenis"], "INFORMASI");
-  const duration = parseInt(getProp(current, ["Durasi Tampil (detik)", "Durasi (detik)", "Durasi"], 10)) || 10;
+  
+  // Membaca Kolom Tepat Sesuai Form Media
+  const rawUrl = current["Link URL"] || "";
+  const title = current["Judul / Deskripsi Media"] || "";
+  const category = current["Kategori Media"] || "INFORMASI";
+  const type = String(current["Tipe Media"] || "Gambar").toLowerCase();
 
   const parsed = parseMediaUrl(rawUrl);
 
   container.innerHTML = '';
 
-  if (parsed.type === 'youtube') {
+  if (type.includes('video') || parsed.type === 'youtube') {
     container.innerHTML = `<iframe src="${parsed.url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   } else {
     container.innerHTML = `<img src="${parsed.url}" alt="${title}" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';">`;
   }
 
-  // Overlay Caption
+  // Caption Overlay
   if (title) {
     document.getElementById('media-category').textContent = category;
     document.getElementById('media-title').textContent = title;
@@ -211,22 +235,23 @@ function showMedia(index) {
     captionBox.style.display = 'none';
   }
 
-  // Timer putaran slide selanjutnya
+  // Durasi Pindah Slide (Default 10 Detik)
   mediaTimer = setTimeout(() => {
     currentMediaIndex = (currentMediaIndex + 1) % mediaData.length;
     showMedia(currentMediaIndex);
-  }, duration * 1000);
+  }, 10000);
 }
 
+// 6. RENDER RUNNING TEXT (SESUAI KOLOM SHEET RUNNING TEXT)
 function renderRunningText(textList) {
   const container = document.getElementById('running-text-container');
   
   const activeTexts = textList
     .filter(item => {
-      const status = String(getProp(item, ["Status", "Status Text"], "Aktif")).toLowerCase();
-      return status === "aktif" || status === "ya" || status === "true" || status === "";
+      const status = String(item["Status"] || "").toLowerCase().trim();
+      return status === "aktif" || status === "ya" || status === "";
     })
-    .map(item => getProp(item, ["Teks Pengumuman", "Teks", "Pengumuman", "Isi"], ""))
+    .map(item => item["Teks Pengumuman"] || "")
     .filter(t => t !== "");
 
   if (activeTexts.length > 0) {
@@ -236,4 +261,4 @@ function renderRunningText(textList) {
 
 // Inisialisasi
 loadData();
-setInterval(loadData, 3 * 60 * 1000); // Auto-update data tiap 3 menit
+setInterval(loadData, 3 * 60 * 1000); // Refresh data dari Google Sheet tiap 3 menit
