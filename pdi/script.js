@@ -1,7 +1,7 @@
 // LINK WEB APP APPS SCRIPT
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzR9AiCrmh2y6daywe9L1b8ZTIhzQaCSnHp-mXr27_RAdQYJIMv-B3KuTiefNESM2u5/exec";
 
-let mediaSlides = []; // Gabungan slide Media Gambar/Video + Slide Kalender
+let mediaSlides = [];
 let allAgendaData = [];
 let currentMediaIndex = 0;
 let mediaTimer = null;
@@ -18,9 +18,35 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
+// HELPER MEMBACA VALUE DARI KUNCI APAPUN DALAM OBJECT JSON
+function getValue(obj, possibleKeys, defaultValue = "") {
+  if (!obj) return defaultValue;
+  const objKeys = Object.keys(obj);
+  for (let key of objKeys) {
+    const cleanKey = key.trim().toLowerCase();
+    for (let pKey of possibleKeys) {
+      if (cleanKey === pKey.toLowerCase()) {
+        if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+          return obj[key];
+        }
+      }
+    }
+  }
+  return defaultValue;
+}
+
 // FORMAT TANGGAL SINGKAT
 function formatTanggalSingkat(dateValue) {
   if (!dateValue) return "";
+  let d = parseToDateObj(dateValue);
+  if (!d || isNaN(d.getTime())) return String(dateValue);
+
+  const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+  return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function parseToDateObj(dateValue) {
+  if (!dateValue) return null;
   let d;
   if (typeof dateValue === 'string') {
     const cleanStr = dateValue.split('T')[0].trim();
@@ -34,13 +60,10 @@ function formatTanggalSingkat(dateValue) {
     }
   }
   if (!d || isNaN(d.getTime())) d = new Date(dateValue);
-  if (isNaN(d.getTime())) return String(dateValue);
-
-  const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
-  return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
+  return d;
 }
 
-// 2. LOAD DATA DARI GOOGLE APPS SCRIPT
+// 2. LOAD DATA DARI APPS SCRIPT
 async function loadData() {
   try {
     const response = await fetch(GAS_API_URL + "?nocache=" + new Date().getTime());
@@ -50,19 +73,18 @@ async function loadData() {
     renderAgenda(allAgendaData);
     renderRunningText(data.runningText || []);
     
-    // RAKIT SLIDE MEDIA (GAMBAR/VIDEO + SLIDE KALENDER)
     mediaSlides = [];
 
-    // 1. Masukkan Media Gambar & Video
+    // Filter Media
     if (data.media && data.media.length > 0) {
       const activeMedia = data.media.filter(item => {
-        const status = String(item["Status"] || "").toLowerCase().trim();
+        const status = String(getValue(item, ["status"], "aktif")).toLowerCase().trim();
         return status === "aktif" || status === "ya" || status === "true" || status === "";
       });
       activeMedia.forEach(m => mediaSlides.push({ isCalendar: false, data: m }));
     }
 
-    // 2. Sisipkan Slide Kalender Bulanan
+    // Sisipkan Slide Kalender Bulanan
     mediaSlides.push({ isCalendar: true });
 
     if (mediaSlides.length > 0) {
@@ -79,7 +101,7 @@ function renderAgenda(agendaList) {
   container.innerHTML = '';
 
   const activeAgenda = agendaList.filter(item => {
-    const status = String(item["Status"] || "").toLowerCase().trim();
+    const status = String(getValue(item, ["status"], "aktif")).toLowerCase().trim();
     return status !== "selesai" && status !== "nonaktif";
   });
 
@@ -95,10 +117,10 @@ function renderAgenda(agendaList) {
   let minDiffDays = Infinity;
 
   activeAgenda.forEach(item => {
-    const nama = item["Nama Kegiatan"] || "Agenda Sekolah";
-    const tglMulaiRaw = item["Tanggal Mulai Agenda"] || "";
-    const tglSelesaiRaw = item["Tanggal Selesai Agenda"] || "";
-    const kategori = item["Kategori"] || item["Ketegori"] || "Umum";
+    const nama = getValue(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Nama"], "Agenda Sekolah");
+    const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal", "Tgl Mulai"], "");
+    const tglSelesaiRaw = getValue(item, ["Tanggal Selesai Agenda", "Tanggal Selesai", "Tgl Selesai"], "");
+    const kategori = getValue(item, ["Kategori", "Ketegori"], "Umum");
 
     const tglMulaiFormatted = formatTanggalSingkat(tglMulaiRaw);
     const tglSelesaiFormatted = formatTanggalSingkat(tglSelesaiRaw);
@@ -134,8 +156,8 @@ function renderAgenda(agendaList) {
     container.appendChild(card);
 
     if (tglMulaiRaw) {
-      const eventDate = new Date(tglMulaiRaw);
-      if (!isNaN(eventDate.getTime())) {
+      const eventDate = parseToDateObj(tglMulaiRaw);
+      if (eventDate && !isNaN(eventDate.getTime())) {
         eventDate.setHours(0, 0, 0, 0);
         const diffTime = eventDate - today;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -158,10 +180,10 @@ function renderAgenda(agendaList) {
   }
 }
 
-// 4. PARSER LINK MEDIA DENGAN CDN PROXY (TEMBUS DRIVE 100%)
+// 4. PARSER UNTUK MEDIA (GARANSI HASIL PASTI ADA RESULT)
 function parseMediaUrl(url) {
   if (!url) return { isYoutube: false, fileId: '', directUrl: '' };
-  url = url.trim();
+  url = String(url).trim();
 
   // YOUTUBE
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
@@ -186,20 +208,19 @@ function parseMediaUrl(url) {
   else if (matchId && matchId[1]) fileId = matchId[1];
 
   if (fileId) {
-    // Penggunaan Proxy WSRV.NL menjamin gambar Drive muncul tanpa hambatan CORS
-    const driveThumbnail = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
     return {
       isYoutube: false,
       fileId: fileId,
-      proxyUrl: `https://images.weserv.nl/?url=${encodeURIComponent(driveThumbnail)}`,
-      fallbackUrl: `https://lh3.googleusercontent.com/d/${fileId}`
+      // Gunakan Google Drive Viewer langsung untuk menjamin ketersediaan tampilan
+      previewUrl: `https://drive.google.com/file/d/${fileId}/preview`,
+      directImg: `https://lh3.googleusercontent.com/d/${fileId}`
     };
   }
 
-  return { isYoutube: false, proxyUrl: url, fallbackUrl: url };
+  return { isYoutube: false, directUrl: url };
 }
 
-// 5. GENERATE KALENDER BULANAN SLIDE
+// 5. GENERATE KALENDER GOOGLE CALENDAR STYLE
 function renderCalendarSlide(container) {
   const now = new Date();
   const year = now.getFullYear();
@@ -213,57 +234,67 @@ function renderCalendarSlide(container) {
   let startDayOfWeek = firstDay.getDay() - 1; // Mulai Senin (0)
   if (startDayOfWeek === -1) startDayOfWeek = 6;
 
-  // Warna Kategori Agenda
+  // Warna Pill Kategori Agenda
   const getCategoryColor = (cat) => {
     const c = String(cat).toLowerCase();
     if (c.includes("akademik") || c.includes("ujian")) return "#2563eb"; // Biru
-    if (c.includes("siswa") || c.includes("ekstra") || c.includes("lomba") || c.includes("kesiswaan")) return "#16a34a"; // Hijau
+    if (c.includes("siswa") || c.includes("ekstra") || c.includes("lomba") || c.includes("kesiswaan") || c.includes("prestasi")) return "#059669"; // Hijau
     if (c.includes("libur")) return "#dc2626"; // Merah
     if (c.includes("rapat") || c.includes("dinas")) return "#d97706"; // Oranye
-    return "#64748b"; // Abu-abu
+    return "#475569"; // Slate
   };
 
-  // Map Agenda ke Hari
-  const eventDays = {};
-  const monthEventsLegend = [];
+  // Map Agenda ke Rentang Hari (Date Span)
+  const eventMap = {};
 
   allAgendaData.forEach(item => {
-    const nama = item["Nama Kegiatan"] || "Agenda";
-    const tglMulai = item["Tanggal Mulai Agenda"];
-    const kategori = item["Kategori"] || item["Ketegori"] || "Umum";
+    const nama = getValue(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Nama"], "Agenda");
+    const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal"], "");
+    const tglSelesaiRaw = getValue(item, ["Tanggal Selesai Agenda", "Tanggal Selesai"], tglMulaiRaw);
+    const kategori = getValue(item, ["Kategori", "Ketegori"], "Umum");
     const color = getCategoryColor(kategori);
 
-    if (tglMulai) {
-      const d = new Date(tglMulai);
-      if (d.getMonth() === month && d.getFullYear() === year) {
-        const dateNum = d.getDate();
-        if (!eventDays[dateNum]) eventDays[dateNum] = [];
-        eventDays[dateNum].push(color);
-        
-        monthEventsLegend.push({ nama, dateNum, color });
+    if (tglMulaiRaw) {
+      const dStart = parseToDateObj(tglMulaiRaw);
+      const dEnd = tglSelesaiRaw ? parseToDateObj(tglSelesaiRaw) : dStart;
+
+      if (dStart && !isNaN(dStart.getTime())) {
+        let cur = new Date(dStart);
+        const end = dEnd && !isNaN(dEnd.getTime()) ? dEnd : dStart;
+
+        // Iterasi dari Tanggal Mulai sampai Tanggal Selesai
+        while (cur <= end) {
+          if (cur.getMonth() === month && cur.getFullYear() === year) {
+            const dateNum = cur.getDate();
+            if (!eventMap[dateNum]) eventMap[dateNum] = [];
+            eventMap[dateNum].push({ nama, color });
+          }
+          cur.setDate(cur.getDate() + 1);
+        }
       }
     }
   });
 
   let html = `
-    <div class="calendar-slide-container">
-      <div>
-        <div class="calendar-header-title">
-          <span>📅 Agenda & Kalender Kegiatan - ${monthNames[month]} ${year}</span>
-        </div>
-        <div class="calendar-grid">
-          <div class="cal-day-header">Sen</div>
-          <div class="cal-day-header">Sel</div>
-          <div class="cal-day-header">Rab</div>
-          <div class="cal-day-header">Kam</div>
-          <div class="cal-day-header">Jum</div>
-          <div class="cal-day-header">Sab</div>
-          <div class="cal-day-header">Min</div>
+    <div class="gcal-container">
+      <div class="gcal-header">
+        <span>📅 Agenda Bulan ${monthNames[month]} ${year}</span>
+      </div>
+      <div class="gcal-grid-header">
+        <div class="gcal-day-header">Sen</div>
+        <div class="gcal-day-header">Sel</div>
+        <div class="gcal-day-header">Rab</div>
+        <div class="gcal-day-header">Kam</div>
+        <div class="gcal-day-header">Jum</div>
+        <div class="gcal-day-header">Sab</div>
+        <div class="gcal-day-header">Min</div>
+      </div>
+      <div class="gcal-grid-body">
   `;
 
   // Hari Kosong Bulan Lalu
   for (let i = 0; i < startDayOfWeek; i++) {
-    html += `<div class="cal-day-cell other-month"></div>`;
+    html += `<div class="gcal-cell other-month"></div>`;
   }
 
   // Hari Bulan Ini
@@ -271,43 +302,28 @@ function renderCalendarSlide(container) {
     const isToday = day === now.getDate();
     const todayClass = isToday ? 'today' : '';
     
-    let eventBarHtml = '';
-    if (eventDays[day]) {
-      const barColor = eventDays[day][0];
-      eventBarHtml = `<div class="cal-event-bar" style="background-color: ${barColor};"></div>`;
+    let pillsHtml = '';
+    if (eventMap[day]) {
+      eventMap[day].forEach(ev => {
+        pillsHtml += `<div class="gcal-event-pill" style="background-color: ${ev.color};" title="${ev.nama}">${ev.nama}</div>`;
+      });
     }
 
     html += `
-      <div class="cal-day-cell ${todayClass}">
-        <span>${day}</span>
-        ${eventBarHtml}
+      <div class="gcal-cell ${todayClass}">
+        <div class="gcal-date-num">${day}</div>
+        <div class="gcal-events-list">
+          ${pillsHtml}
+        </div>
       </div>
     `;
   }
 
   html += `</div></div>`;
-
-  // Legenda Keterangan Agenda di Bawah
-  if (monthEventsLegend.length > 0) {
-    html += `<div class="calendar-legend">`;
-    monthEventsLegend.forEach(ev => {
-      html += `
-        <div class="legend-item">
-          <div class="legend-color-dot" style="background-color: ${ev.color};"></div>
-          <span><strong>Tgl ${ev.dateNum}:</strong> ${ev.nama}</span>
-        </div>
-      `;
-    });
-    html += `</div>`;
-  } else {
-    html += `<div class="calendar-legend"><span class="legend-item">Tidak ada agenda khusus bulan ini.</span></div>`;
-  }
-
-  html += `</div>`;
   container.innerHTML = html;
 }
 
-// 6. RENDER MEDIA SLIDE (GABUNGAN MEDIA & KALENDER)
+// 6. RENDER MEDIA SLIDE
 function showMedia(index) {
   if (mediaSlides.length === 0) return;
 
@@ -319,44 +335,30 @@ function showMedia(index) {
 
   container.innerHTML = '';
 
-  // JIKA SLIDE ADALAH KALENDER
+  // JIKA SLIDE KALENDER
   if (currentSlide.isCalendar) {
     captionBox.style.display = 'none';
     renderCalendarSlide(container);
   } 
-  // JIKA SLIDE ADALAH GAMBAR / VIDEO
+  // JIKA SLIDE GAMBAR / VIDEO
   else {
     const current = currentSlide.data;
-    const rawUrl = current["Link URL"] || "";
-    const title = current["Judul / Deskripsi Media"] || "";
-    const category = current["Kategori Media"] || "INFORMASI";
+    const rawUrl = getValue(current, ["Link URL", "Link URL / Media", "URL", "Link Media", "Link"], "");
+    const title = getValue(current, ["Judul / Deskripsi Media", "Judul", "Deskripsi"], "");
+    const category = getValue(current, ["Kategori Media", "Kategori"], "INFORMASI");
 
     const parsed = parseMediaUrl(rawUrl);
 
     if (parsed.isYoutube) {
       container.innerHTML = `<iframe src="${parsed.embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-    } else {
-      const imgBlur = document.createElement('img');
-      imgBlur.className = 'media-bg-blur';
-      imgBlur.src = parsed.proxyUrl;
-
-      const imgMain = document.createElement('img');
-      imgMain.className = 'media-main-img';
-      imgMain.alt = title;
-      imgMain.src = parsed.proxyUrl;
-
-      imgMain.onerror = function() {
-        if (this.src !== parsed.fallbackUrl) {
-          this.src = parsed.fallbackUrl;
-          imgBlur.src = parsed.fallbackUrl;
-        } else {
-          this.onerror = null;
-          this.src = 'https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';
-        }
-      };
-
-      container.appendChild(imgBlur);
-      container.appendChild(imgMain);
+    } else if (parsed.fileId) {
+      // Gunakan iframe preview Google Drive yang paling tahan terhadap CORS
+      container.innerHTML = `<iframe src="${parsed.previewUrl}" allow="autoplay"></iframe>`;
+    } else if (parsed.directUrl) {
+      container.innerHTML = `
+        <img src="${parsed.directUrl}" class="media-bg-blur" alt="bg-blur">
+        <img src="${parsed.directUrl}" class="media-main-img" alt="${title}" onerror="this.src='https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';">
+      `;
     }
 
     if (title) {
@@ -368,7 +370,7 @@ function showMedia(index) {
     }
   }
 
-  // Durasi Pindah Slide (12 Detik per slide)
+  // Durasi Pindah Slide (12 Detik)
   mediaTimer = setTimeout(() => {
     currentMediaIndex = (currentMediaIndex + 1) % mediaSlides.length;
     showMedia(currentMediaIndex);
@@ -381,10 +383,10 @@ function renderRunningText(textList) {
   
   const activeTexts = textList
     .filter(item => {
-      const status = String(item["Status"] || "").toLowerCase().trim();
+      const status = String(getValue(item, ["status"], "aktif")).toLowerCase().trim();
       return status === "aktif" || status === "ya" || status === "true" || status === "";
     })
-    .map(item => item["Teks Pengumuman"] || "")
+    .map(item => getValue(item, ["Teks Pengumuman", "Teks", "Pengumuman"], ""))
     .filter(t => t !== "");
 
   if (activeTexts.length > 0) {
@@ -392,8 +394,6 @@ function renderRunningText(textList) {
   }
 }
 
-// Inisialisasi Pertama
+// Inisialisasi
 loadData();
-
-// Auto Update Data Tiap 1 Menit
 setInterval(loadData, 1 * 60 * 1000);
