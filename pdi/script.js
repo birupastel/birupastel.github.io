@@ -17,10 +17,9 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// FORMAT TANGGAL SINGKAT (Contoh: 2026-08-17 -> 17 Ags 2026)
+// FORMAT TANGGAL SINGKAT
 function formatTanggalSingkat(dateValue) {
   if (!dateValue) return "";
-  
   let d;
   if (typeof dateValue === 'string') {
     const cleanStr = dateValue.split('T')[0].trim();
@@ -33,21 +32,18 @@ function formatTanggalSingkat(dateValue) {
       }
     }
   }
-
-  if (!d || isNaN(d.getTime())) {
-    d = new Date(dateValue);
-  }
-
+  if (!d || isNaN(d.getTime())) d = new Date(dateValue);
   if (isNaN(d.getTime())) return String(dateValue);
 
   const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
   return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-// 2. LOAD DATA DARI GOOGLE APPS SCRIPT
+// 2. LOAD DATA DARI APPS SCRIPT
 async function loadData() {
   try {
-    const response = await fetch(GAS_API_URL);
+    // Tambahkan timestamp anti-cache agar data dari Google Sheet selalu yang paling baru
+    const response = await fetch(GAS_API_URL + "?nocache=" + new Date().getTime());
     const data = await response.json();
 
     renderAgenda(data.agenda || []);
@@ -153,12 +149,12 @@ function renderAgenda(agendaList) {
   }
 }
 
-// 4. PARSING LINK GOOGLE DRIVE & YOUTUBE
+// 4. PARSER LINK CERDAS (AUTO DETECT YOUTUBE / DRIVE)
 function parseMediaUrl(url) {
-  if (!url) return { type: 'image', url: '' };
+  if (!url) return { isYoutube: false, fileId: '', directUrl: '' };
   url = url.trim();
 
-  // YOUTUBE EMBED
+  // CEK JIKA YOUTUBE
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     let videoId = '';
     if (url.includes('youtu.be/')) {
@@ -167,33 +163,27 @@ function parseMediaUrl(url) {
       videoId = url.split('watch?v=')[1].split('&')[0];
     }
     return {
-      type: 'youtube',
-      url: `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}`
+      isYoutube: true,
+      embedUrl: `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}`
     };
   }
 
-  // GOOGLE DRIVE IMAGE
-  if (url.includes('drive.google.com') || url.includes('googleusercontent.com')) {
-    let fileId = '';
-    const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    const matchId = url.match(/id=([a-zA-Z0-9_-]+)/);
+  // CEK JIKA GOOGLE DRIVE
+  let fileId = '';
+  const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  const matchId = url.match(/id=([a-zA-Z0-9_-]+)/);
 
-    if (matchD && matchD[1]) fileId = matchD[1];
-    else if (matchId && matchId[1]) fileId = matchId[1];
+  if (matchD && matchD[1]) fileId = matchD[1];
+  else if (matchId && matchId[1]) fileId = matchId[1];
 
-    if (fileId) {
-      return {
-        type: 'image',
-        fileId: fileId,
-        url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`
-      };
-    }
-  }
-
-  return { type: 'image', url: url };
+  return {
+    isYoutube: false,
+    fileId: fileId,
+    directUrl: url
+  };
 }
 
-// 5. RENDER SLIDE MEDIA (DENGAN BACKGROUND SOFT BLUR)
+// 5. RENDER MEDIA SLIDE
 function showMedia(index) {
   if (mediaData.length === 0) return;
 
@@ -202,28 +192,56 @@ function showMedia(index) {
   const captionBox = document.getElementById('media-caption');
   
   const current = mediaData[index];
-  
   const rawUrl = current["Link URL"] || "";
   const title = current["Judul / Deskripsi Media"] || "";
   const category = current["Kategori Media"] || "INFORMASI";
-  const type = String(current["Tipe Media"] || "Gambar").toLowerCase();
 
   const parsed = parseMediaUrl(rawUrl);
 
   container.innerHTML = '';
 
-  if (type.includes('video') || parsed.type === 'youtube') {
-    container.innerHTML = `<iframe src="${parsed.url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-  } else {
-    const fileId = parsed.fileId || '';
-    const fallbackUrl1 = fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : parsed.url;
-    const fallbackUrl2 = fileId ? `https://docs.google.com/uc?export=view&id=${fileId}` : parsed.url;
+  // JIKA LINK ADALAH YOUTUBE
+  if (parsed.isYoutube) {
+    container.innerHTML = `<iframe src="${parsed.embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  } 
+  // JIKA LINK ADALAH GAMBAR (GOOGLE DRIVE / DIRECT LINK)
+  else {
+    const fileId = parsed.fileId;
+    
+    // Opsi URL Gambar Google Drive dari 3 jalur CDN berbeda
+    const sources = fileId ? [
+      `https://lh3.googleusercontent.com/d/${fileId}`,
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`,
+      `https://docs.google.com/uc?export=view&id=${fileId}`
+    ] : [parsed.directUrl];
 
-    container.innerHTML = `
-      <img src="${parsed.url}" class="media-bg-blur" alt="bg-blur">
-      <img src="${parsed.url}" class="media-main-img" alt="${title}" 
-           onerror="if(this.src !== '${fallbackUrl1}') { this.src='${fallbackUrl1}'; this.previousElementSibling.src='${fallbackUrl1}'; } else if(this.src !== '${fallbackUrl2}') { this.src='${fallbackUrl2}'; this.previousElementSibling.src='${fallbackUrl2}'; }">
-    `;
+    let currentSrcIndex = 0;
+
+    const imgBlur = document.createElement('img');
+    imgBlur.className = 'media-bg-blur';
+
+    const imgMain = document.createElement('img');
+    imgMain.className = 'media-main-img';
+    imgMain.alt = title;
+
+    // Fungsi pemutar otomatis jika salah satu server CDN Google gagal
+    function loadNextSource() {
+      if (currentSrcIndex < sources.length) {
+        const src = sources[currentSrcIndex];
+        currentSrcIndex++;
+        imgBlur.src = src;
+        imgMain.src = src;
+      } else {
+        imgMain.onerror = null;
+        imgMain.src = 'https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';
+      }
+    }
+
+    imgMain.onerror = loadNextSource;
+    loadNextSource(); // Mulai muat gambar jalur pertama
+
+    container.appendChild(imgBlur);
+    container.appendChild(imgMain);
   }
 
   // Caption Overlay
@@ -262,5 +280,5 @@ function renderRunningText(textList) {
 // Inisialisasi Pertama
 loadData();
 
-// Auto Update Data Setiap 1 Menit
+// Auto-Refresh Data Setiap 1 Menit
 setInterval(loadData, 1 * 60 * 1000);
