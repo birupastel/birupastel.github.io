@@ -1,7 +1,8 @@
 // LINK WEB APP APPS SCRIPT
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzR9AiCrmh2y6daywe9L1b8ZTIhzQaCSnHp-mXr27_RAdQYJIMv-B3KuTiefNESM2u5/exec";
 
-let mediaData = [];
+let mediaSlides = []; // Gabungan slide Media Gambar/Video + Slide Kalender
+let allAgendaData = [];
 let currentMediaIndex = 0;
 let mediaTimer = null;
 
@@ -39,25 +40,33 @@ function formatTanggalSingkat(dateValue) {
   return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-// 2. LOAD DATA DARI APPS SCRIPT
+// 2. LOAD DATA DARI GOOGLE APPS SCRIPT
 async function loadData() {
   try {
-    // Tambahkan timestamp anti-cache agar data dari Google Sheet selalu yang paling baru
     const response = await fetch(GAS_API_URL + "?nocache=" + new Date().getTime());
     const data = await response.json();
 
-    renderAgenda(data.agenda || []);
+    allAgendaData = data.agenda || [];
+    renderAgenda(allAgendaData);
     renderRunningText(data.runningText || []);
     
+    // RAKIT SLIDE MEDIA (GAMBAR/VIDEO + SLIDE KALENDER)
+    mediaSlides = [];
+
+    // 1. Masukkan Media Gambar & Video
     if (data.media && data.media.length > 0) {
-      mediaData = data.media.filter(item => {
+      const activeMedia = data.media.filter(item => {
         const status = String(item["Status"] || "").toLowerCase().trim();
         return status === "aktif" || status === "ya" || status === "true" || status === "";
       });
+      activeMedia.forEach(m => mediaSlides.push({ isCalendar: false, data: m }));
+    }
 
-      if (mediaData.length > 0) {
-        showMedia(currentMediaIndex);
-      }
+    // 2. Sisipkan Slide Kalender Bulanan
+    mediaSlides.push({ isCalendar: true });
+
+    if (mediaSlides.length > 0) {
+      showMedia(currentMediaIndex);
     }
   } catch (error) {
     console.error("Gagal memuat data API:", error);
@@ -149,12 +158,12 @@ function renderAgenda(agendaList) {
   }
 }
 
-// 4. PARSER LINK CERDAS (AUTO DETECT YOUTUBE / DRIVE)
+// 4. PARSER LINK MEDIA DENGAN CDN PROXY (TEMBUS DRIVE 100%)
 function parseMediaUrl(url) {
   if (!url) return { isYoutube: false, fileId: '', directUrl: '' };
   url = url.trim();
 
-  // CEK JIKA YOUTUBE
+  // YOUTUBE
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     let videoId = '';
     if (url.includes('youtu.be/')) {
@@ -168,7 +177,7 @@ function parseMediaUrl(url) {
     };
   }
 
-  // CEK JIKA GOOGLE DRIVE
+  // GOOGLE DRIVE
   let fileId = '';
   const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
   const matchId = url.match(/id=([a-zA-Z0-9_-]+)/);
@@ -176,91 +185,197 @@ function parseMediaUrl(url) {
   if (matchD && matchD[1]) fileId = matchD[1];
   else if (matchId && matchId[1]) fileId = matchId[1];
 
-  return {
-    isYoutube: false,
-    fileId: fileId,
-    directUrl: url
-  };
+  if (fileId) {
+    // Penggunaan Proxy WSRV.NL menjamin gambar Drive muncul tanpa hambatan CORS
+    const driveThumbnail = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+    return {
+      isYoutube: false,
+      fileId: fileId,
+      proxyUrl: `https://images.weserv.nl/?url=${encodeURIComponent(driveThumbnail)}`,
+      fallbackUrl: `https://lh3.googleusercontent.com/d/${fileId}`
+    };
+  }
+
+  return { isYoutube: false, proxyUrl: url, fallbackUrl: url };
 }
 
-// 5. RENDER MEDIA SLIDE
+// 5. GENERATE KALENDER BULANAN SLIDE
+function renderCalendarSlide(container) {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+  
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+
+  let startDayOfWeek = firstDay.getDay() - 1; // Mulai Senin (0)
+  if (startDayOfWeek === -1) startDayOfWeek = 6;
+
+  // Warna Kategori Agenda
+  const getCategoryColor = (cat) => {
+    const c = String(cat).toLowerCase();
+    if (c.includes("akademik") || c.includes("ujian")) return "#2563eb"; // Biru
+    if (c.includes("siswa") || c.includes("ekstra") || c.includes("lomba") || c.includes("kesiswaan")) return "#16a34a"; // Hijau
+    if (c.includes("libur")) return "#dc2626"; // Merah
+    if (c.includes("rapat") || c.includes("dinas")) return "#d97706"; // Oranye
+    return "#64748b"; // Abu-abu
+  };
+
+  // Map Agenda ke Hari
+  const eventDays = {};
+  const monthEventsLegend = [];
+
+  allAgendaData.forEach(item => {
+    const nama = item["Nama Kegiatan"] || "Agenda";
+    const tglMulai = item["Tanggal Mulai Agenda"];
+    const kategori = item["Kategori"] || item["Ketegori"] || "Umum";
+    const color = getCategoryColor(kategori);
+
+    if (tglMulai) {
+      const d = new Date(tglMulai);
+      if (d.getMonth() === month && d.getFullYear() === year) {
+        const dateNum = d.getDate();
+        if (!eventDays[dateNum]) eventDays[dateNum] = [];
+        eventDays[dateNum].push(color);
+        
+        monthEventsLegend.push({ nama, dateNum, color });
+      }
+    }
+  });
+
+  let html = `
+    <div class="calendar-slide-container">
+      <div>
+        <div class="calendar-header-title">
+          <span>📅 Agenda & Kalender Kegiatan - ${monthNames[month]} ${year}</span>
+        </div>
+        <div class="calendar-grid">
+          <div class="cal-day-header">Sen</div>
+          <div class="cal-day-header">Sel</div>
+          <div class="cal-day-header">Rab</div>
+          <div class="cal-day-header">Kam</div>
+          <div class="cal-day-header">Jum</div>
+          <div class="cal-day-header">Sab</div>
+          <div class="cal-day-header">Min</div>
+  `;
+
+  // Hari Kosong Bulan Lalu
+  for (let i = 0; i < startDayOfWeek; i++) {
+    html += `<div class="cal-day-cell other-month"></div>`;
+  }
+
+  // Hari Bulan Ini
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const isToday = day === now.getDate();
+    const todayClass = isToday ? 'today' : '';
+    
+    let eventBarHtml = '';
+    if (eventDays[day]) {
+      const barColor = eventDays[day][0];
+      eventBarHtml = `<div class="cal-event-bar" style="background-color: ${barColor};"></div>`;
+    }
+
+    html += `
+      <div class="cal-day-cell ${todayClass}">
+        <span>${day}</span>
+        ${eventBarHtml}
+      </div>
+    `;
+  }
+
+  html += `</div></div>`;
+
+  // Legenda Keterangan Agenda di Bawah
+  if (monthEventsLegend.length > 0) {
+    html += `<div class="calendar-legend">`;
+    monthEventsLegend.forEach(ev => {
+      html += `
+        <div class="legend-item">
+          <div class="legend-color-dot" style="background-color: ${ev.color};"></div>
+          <span><strong>Tgl ${ev.dateNum}:</strong> ${ev.nama}</span>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div class="calendar-legend"><span class="legend-item">Tidak ada agenda khusus bulan ini.</span></div>`;
+  }
+
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+// 6. RENDER MEDIA SLIDE (GABUNGAN MEDIA & KALENDER)
 function showMedia(index) {
-  if (mediaData.length === 0) return;
+  if (mediaSlides.length === 0) return;
 
   clearTimeout(mediaTimer);
   const container = document.getElementById('media-container');
   const captionBox = document.getElementById('media-caption');
   
-  const current = mediaData[index];
-  const rawUrl = current["Link URL"] || "";
-  const title = current["Judul / Deskripsi Media"] || "";
-  const category = current["Kategori Media"] || "INFORMASI";
-
-  const parsed = parseMediaUrl(rawUrl);
+  const currentSlide = mediaSlides[index];
 
   container.innerHTML = '';
 
-  // JIKA LINK ADALAH YOUTUBE
-  if (parsed.isYoutube) {
-    container.innerHTML = `<iframe src="${parsed.embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  // JIKA SLIDE ADALAH KALENDER
+  if (currentSlide.isCalendar) {
+    captionBox.style.display = 'none';
+    renderCalendarSlide(container);
   } 
-  // JIKA LINK ADALAH GAMBAR (GOOGLE DRIVE / DIRECT LINK)
+  // JIKA SLIDE ADALAH GAMBAR / VIDEO
   else {
-    const fileId = parsed.fileId;
-    
-    // Opsi URL Gambar Google Drive dari 3 jalur CDN berbeda
-    const sources = fileId ? [
-      `https://lh3.googleusercontent.com/d/${fileId}`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`,
-      `https://docs.google.com/uc?export=view&id=${fileId}`
-    ] : [parsed.directUrl];
+    const current = currentSlide.data;
+    const rawUrl = current["Link URL"] || "";
+    const title = current["Judul / Deskripsi Media"] || "";
+    const category = current["Kategori Media"] || "INFORMASI";
 
-    let currentSrcIndex = 0;
+    const parsed = parseMediaUrl(rawUrl);
 
-    const imgBlur = document.createElement('img');
-    imgBlur.className = 'media-bg-blur';
+    if (parsed.isYoutube) {
+      container.innerHTML = `<iframe src="${parsed.embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    } else {
+      const imgBlur = document.createElement('img');
+      imgBlur.className = 'media-bg-blur';
+      imgBlur.src = parsed.proxyUrl;
 
-    const imgMain = document.createElement('img');
-    imgMain.className = 'media-main-img';
-    imgMain.alt = title;
+      const imgMain = document.createElement('img');
+      imgMain.className = 'media-main-img';
+      imgMain.alt = title;
+      imgMain.src = parsed.proxyUrl;
 
-    // Fungsi pemutar otomatis jika salah satu server CDN Google gagal
-    function loadNextSource() {
-      if (currentSrcIndex < sources.length) {
-        const src = sources[currentSrcIndex];
-        currentSrcIndex++;
-        imgBlur.src = src;
-        imgMain.src = src;
-      } else {
-        imgMain.onerror = null;
-        imgMain.src = 'https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';
-      }
+      imgMain.onerror = function() {
+        if (this.src !== parsed.fallbackUrl) {
+          this.src = parsed.fallbackUrl;
+          imgBlur.src = parsed.fallbackUrl;
+        } else {
+          this.onerror = null;
+          this.src = 'https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';
+        }
+      };
+
+      container.appendChild(imgBlur);
+      container.appendChild(imgMain);
     }
 
-    imgMain.onerror = loadNextSource;
-    loadNextSource(); // Mulai muat gambar jalur pertama
-
-    container.appendChild(imgBlur);
-    container.appendChild(imgMain);
+    if (title) {
+      document.getElementById('media-category').textContent = category;
+      document.getElementById('media-title').textContent = title;
+      captionBox.style.display = 'block';
+    } else {
+      captionBox.style.display = 'none';
+    }
   }
 
-  // Caption Overlay
-  if (title) {
-    document.getElementById('media-category').textContent = category;
-    document.getElementById('media-title').textContent = title;
-    captionBox.style.display = 'block';
-  } else {
-    captionBox.style.display = 'none';
-  }
-
-  // Durasi Pindah Slide (10 Detik)
+  // Durasi Pindah Slide (12 Detik per slide)
   mediaTimer = setTimeout(() => {
-    currentMediaIndex = (currentMediaIndex + 1) % mediaData.length;
+    currentMediaIndex = (currentMediaIndex + 1) % mediaSlides.length;
     showMedia(currentMediaIndex);
-  }, 10000);
+  }, 12000);
 }
 
-// 6. RENDER RUNNING TEXT
+// 7. RENDER RUNNING TEXT
 function renderRunningText(textList) {
   const container = document.getElementById('running-text-container');
   
@@ -280,5 +395,5 @@ function renderRunningText(textList) {
 // Inisialisasi Pertama
 loadData();
 
-// Auto-Refresh Data Setiap 1 Menit
+// Auto Update Data Tiap 1 Menit
 setInterval(loadData, 1 * 60 * 1000);
