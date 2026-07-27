@@ -18,13 +18,13 @@ body {
 
 /* HEADER */
 .header {
-  height: 85px;
+  height: 80px;
   background: #ffffff;
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 32px;
+  padding: 0 28px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
@@ -35,20 +35,20 @@ body {
 }
 
 .logo {
-  height: 54px;
+  height: 50px;
   width: auto;
   object-fit: contain;
 }
 
 .school-info h1 {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.5px;
 }
 
 .school-info p {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #64748b;
   font-weight: 600;
 }
@@ -58,7 +58,7 @@ body {
 }
 
 #clock-time {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
   color: #2563eb;
   letter-spacing: -0.5px;
@@ -66,7 +66,7 @@ body {
 }
 
 #clock-date {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #64748b;
   font-weight: 600;
   margin-top: 4px;
@@ -77,19 +77,19 @@ body {
   flex: 1;
   display: flex;
   gap: 20px;
-  padding: 20px 32px;
-  height: calc(100vh - 140px);
+  padding: 16px 28px;
+  height: calc(100vh - 135px);
 }
 
 /* SIDEBAR KIRI: AGENDA */
 .sidebar {
-  width: 360px;
+  width: 340px;
   background: #ffffff;
   border-radius: 16px;
   border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 18px;
   box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03);
 }
 
@@ -97,12 +97,12 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #0f172a;
-  padding-bottom: 14px;
+  padding-bottom: 12px;
   border-bottom: 2px solid #f1f5f9;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .agenda-list {
@@ -110,7 +110,7 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   padding-right: 4px;
 }
 
@@ -118,7 +118,7 @@ body {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 12px 14px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
@@ -126,19 +126,17 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .agenda-badge {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
 }
 
-/* WARNA BADGE KATEGORI AGENDA */
 .badge-akademik { background: #dbeafe; color: #1e40af; }
 .badge-siswa { background: #dcfce7; color: #166534; }
 .badge-libur { background: #fee2e2; color: #991b1b; }
@@ -146,18 +144,18 @@ body {
 .badge-umum { background: #f1f5f9; color: #475569; }
 
 .agenda-name {
-  font-size: 0.98rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #1e293b;
-  line-height: 1.35;
-  margin-bottom: 8px;
+  line-height: 1.3;
+  margin-bottom: 6px;
 }
 
 .agenda-date {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #64748b;
 }
@@ -184,7 +182,6 @@ body {
   overflow: hidden;
 }
 
-/* BACKGROUND SOFT BLUR */
 .media-bg-blur {
   position: absolute;
   top: -10%;
@@ -197,7 +194,6 @@ body {
   z-index: 1;
 }
 
-/* GAMBAR UTAMA */
 .media-main-img {
   position: relative;
   max-width: 100%;
@@ -215,113 +211,111 @@ body {
   z-index: 2;
 }
 
-/* STYLING SLIDE KALENDER BULANAN */
-.calendar-slide-container {
+/* STYLING GOOGLE CALENDAR STYLE SLIDE */
+.gcal-container {
   position: relative;
   z-index: 2;
   width: 100%;
   height: 100%;
   background: #ffffff;
-  padding: 24px;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  overflow: hidden;
 }
 
-.calendar-header-title {
-  font-size: 1.4rem;
+.gcal-header {
+  font-size: 1.25rem;
   font-weight: 800;
   color: #0f172a;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.calendar-grid {
+.gcal-grid-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-  text-align: center;
+  gap: 4px;
+  margin-bottom: 4px;
 }
 
-.cal-day-header {
-  font-size: 0.8rem;
+.gcal-day-header {
+  font-size: 0.75rem;
   font-weight: 800;
   color: #64748b;
-  padding: 6px 0;
+  text-align: center;
+  padding: 4px 0;
   text-transform: uppercase;
 }
 
-.cal-day-cell {
+.gcal-grid-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 4px;
+}
+
+.gcal-cell {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  height: 48px;
+  border-radius: 6px;
+  padding: 4px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #1e293b;
+  overflow: hidden;
 }
 
-.cal-day-cell.other-month {
-  opacity: 0.3;
+.gcal-cell.other-month {
   background: #f1f5f9;
+  opacity: 0.35;
 }
 
-.cal-day-cell.today {
+.gcal-cell.today {
   border: 2px solid #2563eb;
   background: #eff6ff;
+}
+
+.gcal-date-num {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #334155;
+  margin-bottom: 2px;
+}
+
+.gcal-cell.today .gcal-date-num {
   color: #2563eb;
 }
 
-.cal-event-bar {
-  width: 80%;
-  height: 4px;
-  border-radius: 2px;
-  margin-top: 2px;
+.gcal-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: hidden;
 }
 
-/* KET AGENDA BULANAN DI BAWAH KALENDER */
-.calendar-legend {
-  margin-top: 12px;
-  background: #f8fafc;
-  border-radius: 10px;
-  padding: 10px 14px;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #334155;
+.gcal-event-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 2px 4px;
+  border-radius: 4px;
   white-space: nowrap;
-}
-
-.legend-color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
 }
 
 /* COUNTDOWN CARD */
 .countdown-card {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 16px;
+  right: 16px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
-  padding: 12px 20px;
+  padding: 10px 16px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15);
@@ -332,21 +326,19 @@ body {
 }
 
 .countdown-badge {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 800;
   color: #ef4444;
-  letter-spacing: 0.5px;
 }
 
 .countdown-title {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #0f172a;
-  margin-top: 2px;
 }
 
 .countdown-timer {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: #2563eb;
 }
@@ -358,27 +350,25 @@ body {
   left: 0;
   right: 0;
   background: linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4) 70%, transparent);
-  padding: 36px 28px 20px;
+  padding: 32px 24px 16px;
   color: #ffffff;
   z-index: 10;
 }
 
 .category-badge {
   background: #2563eb;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 800;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 6px;
-  letter-spacing: 0.5px;
   display: inline-block;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 #media-title {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* FOOTER RUNNING TEXT */
@@ -398,10 +388,9 @@ body {
   display: flex;
   align-items: center;
   font-weight: 800;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   letter-spacing: 1px;
   z-index: 20;
-  box-shadow: 4px 0 12px rgba(0,0,0,0.2);
 }
 
 .ticker-wrap {
@@ -415,7 +404,7 @@ body {
   white-space: nowrap;
   padding-left: 100%;
   animation: ticker 28s linear infinite;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 600;
   color: #f8fafc;
 }
@@ -427,7 +416,7 @@ body {
 
 .empty-state {
   color: #94a3b8;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   text-align: center;
-  padding: 40px 10px;
+  padding: 30px 10px;
 }
