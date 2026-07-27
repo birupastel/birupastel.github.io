@@ -1,0 +1,281 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: #f4f6f9;
+  color: #1e293b;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* HEADER */
+.header {
+  height: 80px;
+  background: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  height: 52px;
+  width: auto;
+  object-fit: contain;
+}
+
+.school-info h1 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+.school-info p {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.clock-container {
+  text-align: right;
+}
+
+#clock-time {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #2563eb;
+  line-height: 1;
+}
+
+#clock-date {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* MAIN LAYOUT */
+.main-container {
+  flex: 1;
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  height: calc(100vh - 130px);
+}
+
+/* SIDEBAR AGENDA */
+.sidebar {
+  width: 320px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f1f5f9;
+  margin-bottom: 12px;
+}
+
+.agenda-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.agenda-card {
+  background: #f8fafc;
+  border-left: 4px solid #2563eb;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.agenda-date {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2563eb;
+  text-transform: uppercase;
+}
+
+.agenda-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-top: 2px;
+}
+
+.agenda-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 6px;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+/* MEDIA SECTION */
+.media-section {
+  flex: 1;
+  position: relative;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.media-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.media-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background-color: #0f172a;
+}
+
+.media-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* COUNTDOWN FLOATING CARD */
+.countdown-card {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  text-align: right;
+  z-index: 10;
+}
+
+.countdown-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #dc2626;
+  letter-spacing: 0.5px;
+}
+
+.countdown-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.countdown-timer {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #2563eb;
+}
+
+/* CAPTION OVERLAY */
+.media-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
+  padding: 24px 20px 16px;
+  color: #ffffff;
+  z-index: 10;
+}
+
+.category-badge {
+  background: #2563eb;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+#media-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* FOOTER RUNNING TEXT */
+.footer {
+  height: 50px;
+  background: #0f172a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ticker-label {
+  background: #2563eb;
+  padding: 0 20px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  z-index: 20;
+}
+
+.ticker-wrap {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ticker-move {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: ticker 25s linear infinite;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+@keyframes ticker {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-100%, 0, 0); }
+}
+
+.loading {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  padding: 20px;
+  text-align: center;
+}
