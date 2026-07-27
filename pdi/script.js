@@ -17,7 +17,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// FORMAT TANGGAL SINGKAT
+// FORMAT TANGGAL SINGKAT (Contoh: 2026-08-17 -> 17 Ags 2026)
 function formatTanggalSingkat(dateValue) {
   if (!dateValue) return "";
   
@@ -44,7 +44,7 @@ function formatTanggalSingkat(dateValue) {
   return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-// 2. LOAD DATA DARI APPS SCRIPT
+// 2. LOAD DATA DARI GOOGLE APPS SCRIPT
 async function loadData() {
   try {
     const response = await fetch(GAS_API_URL);
@@ -54,7 +54,6 @@ async function loadData() {
     renderRunningText(data.runningText || []);
     
     if (data.media && data.media.length > 0) {
-      // Filter Media berdasarkan kolom 'Status'
       mediaData = data.media.filter(item => {
         const status = String(item["Status"] || "").toLowerCase().trim();
         return status === "aktif" || status === "ya" || status === "true" || status === "";
@@ -69,7 +68,7 @@ async function loadData() {
   }
 }
 
-// 3. RENDER AGENDA
+// 3. RENDER AGENDA (SIDEBAR KIRI)
 function renderAgenda(agendaList) {
   const container = document.getElementById('agenda-container');
   container.innerHTML = '';
@@ -111,7 +110,7 @@ function renderAgenda(agendaList) {
     const katLower = String(kategori).toLowerCase();
     let badgeClass = "badge-umum";
     if (katLower.includes("akademik") || katLower.includes("ujian")) badgeClass = "badge-akademik";
-    else if (katLower.includes("siswa") || katLower.includes("ekstra") || katLower.includes("lomba") || katLower.includes("prestasi")) badgeClass = "badge-siswa";
+    else if (katLower.includes("siswa") || katLower.includes("ekstra") || katLower.includes("lomba") || katLower.includes("prestasi") || katLower.includes("kesiswaan")) badgeClass = "badge-siswa";
     else if (katLower.includes("libur")) badgeClass = "badge-libur";
     else if (katLower.includes("rapat") || katLower.includes("dinas")) badgeClass = "badge-rapat";
 
@@ -154,12 +153,12 @@ function renderAgenda(agendaList) {
   }
 }
 
-// 4. PARSER LINK MEDIA (MENGGUNAKAN IMAGE PROXY BANTUAN)
+// 4. PARSING LINK GOOGLE DRIVE & YOUTUBE
 function parseMediaUrl(url) {
   if (!url) return { type: 'image', url: '' };
   url = url.trim();
 
-  // YOUTUBE
+  // YOUTUBE EMBED
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     let videoId = '';
     if (url.includes('youtu.be/')) {
@@ -173,7 +172,7 @@ function parseMediaUrl(url) {
     };
   }
 
-  // GOOGLE DRIVE
+  // GOOGLE DRIVE IMAGE
   if (url.includes('drive.google.com') || url.includes('googleusercontent.com')) {
     let fileId = '';
     const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -183,12 +182,10 @@ function parseMediaUrl(url) {
     else if (matchId && matchId[1]) fileId = matchId[1];
 
     if (fileId) {
-      // Menggunakan Proxy WSRV.NL untuk bypass CORS & masalah otorisasi Google Drive
-      const driveDirectUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1920`;
       return {
         type: 'image',
         fileId: fileId,
-        url: `https://wsrv.nl/?url=${encodeURIComponent(driveDirectUrl)}`
+        url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`
       };
     }
   }
@@ -196,7 +193,7 @@ function parseMediaUrl(url) {
   return { type: 'image', url: url };
 }
 
-// 5. RENDER MEDIA
+// 5. RENDER SLIDE MEDIA (DENGAN BACKGROUND SOFT BLUR)
 function showMedia(index) {
   if (mediaData.length === 0) return;
 
@@ -219,11 +216,13 @@ function showMedia(index) {
     container.innerHTML = `<iframe src="${parsed.url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   } else {
     const fileId = parsed.fileId || '';
-    const fallbackUrl = fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : parsed.url;
+    const fallbackUrl1 = fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : parsed.url;
+    const fallbackUrl2 = fileId ? `https://docs.google.com/uc?export=view&id=${fileId}` : parsed.url;
 
     container.innerHTML = `
-      <img src="${parsed.url}" alt="${title}" 
-           onerror="this.onerror=null; this.src='${fallbackUrl}';">
+      <img src="${parsed.url}" class="media-bg-blur" alt="bg-blur">
+      <img src="${parsed.url}" class="media-main-img" alt="${title}" 
+           onerror="if(this.src !== '${fallbackUrl1}') { this.src='${fallbackUrl1}'; this.previousElementSibling.src='${fallbackUrl1}'; } else if(this.src !== '${fallbackUrl2}') { this.src='${fallbackUrl2}'; this.previousElementSibling.src='${fallbackUrl2}'; }">
     `;
   }
 
@@ -236,7 +235,7 @@ function showMedia(index) {
     captionBox.style.display = 'none';
   }
 
-  // Durasi Pindah Slide (Default 10 Detik)
+  // Durasi Pindah Slide (10 Detik)
   mediaTimer = setTimeout(() => {
     currentMediaIndex = (currentMediaIndex + 1) % mediaData.length;
     showMedia(currentMediaIndex);
@@ -260,6 +259,8 @@ function renderRunningText(textList) {
   }
 }
 
-// Inisialisasi
+// Inisialisasi Pertama
 loadData();
-setInterval(loadData, 1 * 60 * 1000); // Auto update data tiap 1 menit
+
+// Auto Update Data Setiap 1 Menit
+setInterval(loadData, 1 * 60 * 1000);
