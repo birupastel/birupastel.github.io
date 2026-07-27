@@ -154,12 +154,12 @@ function renderAgenda(agendaList) {
   }
 }
 
-// 4. FUNCTION PARSING LINK MEDIA YANG LEBIH TAHAN BANTING
+// 4. PARSER LINK MEDIA GOOGLE DRIVE & YOUTUBE
 function parseMediaUrl(url) {
   if (!url) return { type: 'image', url: '' };
   url = url.trim();
 
-  // YOUTUBE
+  // Handle YouTube
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     let videoId = '';
     if (url.includes('youtu.be/')) {
@@ -173,8 +173,8 @@ function parseMediaUrl(url) {
     };
   }
 
-  // GOOGLE DRIVE
-  if (url.includes('drive.google.com')) {
+  // Handle Google Drive
+  if (url.includes('drive.google.com') || url.includes('googleusercontent.com')) {
     let fileId = '';
     const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
     const matchId = url.match(/id=([a-zA-Z0-9_-]+)/);
@@ -183,6 +183,7 @@ function parseMediaUrl(url) {
     else if (matchId && matchId[1]) fileId = matchId[1];
 
     if (fileId) {
+      // Gunakan uc export view sebagai fallback direct stream
       return {
         type: 'image',
         fileId: fileId,
@@ -194,7 +195,7 @@ function parseMediaUrl(url) {
   return { type: 'image', url: url };
 }
 
-// 5. RENDER MEDIA
+// 5. RENDER MEDIA DENGAN MULTI-FALLBACK
 function showMedia(index) {
   if (mediaData.length === 0) return;
 
@@ -216,15 +217,27 @@ function showMedia(index) {
   if (type.includes('video') || parsed.type === 'youtube') {
     container.innerHTML = `<iframe src="${parsed.url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   } else {
-    // Penggunaan onerror multi-level agar jika 1 server CDN Google gagal, ia akan mencoba server alternatif secara otomatis
     const fileId = parsed.fileId || '';
     const altUrl1 = fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1920` : parsed.url;
     const altUrl2 = fileId ? `https://docs.google.com/uc?export=view&id=${fileId}` : parsed.url;
 
-    container.innerHTML = `
-      <img src="${parsed.url}" alt="${title}" 
-           onerror="if (this.src !== '${altUrl1}') { this.src='${altUrl1}'; } else if (this.src !== '${altUrl2}') { this.src='${altUrl2}'; } else { this.src='https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar'; }">
-    `;
+    const img = new Image();
+    img.alt = title;
+    img.src = parsed.url;
+
+    // Jikalh3 gagal, coba thumbnail API, jika gagal coba uc export
+    img.onerror = function() {
+      if (this.src !== altUrl1) {
+        this.src = altUrl1;
+      } else if (this.src !== altUrl2) {
+        this.src = altUrl2;
+      } else {
+        this.onerror = null;
+        this.src = 'https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';
+      }
+    };
+
+    container.appendChild(img);
   }
 
   // Caption Overlay
@@ -236,7 +249,7 @@ function showMedia(index) {
     captionBox.style.display = 'none';
   }
 
-  // Durasi Pindah Slide (Default 10 Detik)
+  // Timer Pindah Slide
   mediaTimer = setTimeout(() => {
     currentMediaIndex = (currentMediaIndex + 1) % mediaData.length;
     showMedia(currentMediaIndex);
