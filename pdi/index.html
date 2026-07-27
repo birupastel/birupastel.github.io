@@ -3,17 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Papan Informasi Digital Sekolah</title>
+  <title>Papan Informasi Digital - SMAN 1 Garut</title>
   <link rel="stylesheet" href="style.css">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <!-- HEADER -->
   <header class="header">
     <div class="brand">
-      <img src="https://lh3.googleusercontent.com/d/1_PLACEHOLDER_LOGO" alt="Logo Sekolah" id="school-logo" class="logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_Tut_Wuri_Handayani.png" alt="Logo Sekolah" id="school-logo" class="logo">
       <div class="school-info">
         <h1 id="school-name">SMAN 1 GARUT</h1>
         <p id="school-sub">Papan Informasi Digital Resmi</p>
@@ -21,52 +19,52 @@
     </div>
     <div class="clock-container">
       <div id="clock-time">00:00:00</div>
-      <div id="clock-date">Senin, 1 Januari 2026</div>
+      <div id="clock-date">Senin, 27 Juli 2026</div>
     </div>
   </header>
 
-  <!-- MAIN BODY -->
+  <!-- MAIN CONTAINER -->
   <main class="main-container">
     
-    <!-- SIDEBAR KIRI: AGENDA -->
+    <!-- SIDEBAR AGENDA -->
     <aside class="sidebar">
       <div class="section-title">
-        <span>📅 Agenda Bulan Ini</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span>Agenda Bulan Ini</span>
       </div>
       <div class="agenda-list" id="agenda-container">
-        <div class="loading">Memuat agenda...</div>
+        <div class="empty-state">Memuat data agenda...</div>
       </div>
     </aside>
 
-    <!-- AREA KANAN: MEDIA SLIDER & VIDEO -->
+    <!-- MEDIA SECTION -->
     <section class="media-section">
       <div class="media-container" id="media-container">
-        <!-- Render Media Gambar / Video YouTube via JS -->
-        <div class="loading">Memuat media...</div>
+        <div class="empty-state">Memuat media...</div>
       </div>
 
-      <!-- COUNTDOWN OVERLAY (OTOMATIS DARI AGENDA TERDEKAT) -->
+      <!-- COUNTDOWN CARD -->
       <div class="countdown-card" id="countdown-card" style="display: none;">
-        <span class="countdown-badge">⏳ AGENDA MENDATANG</span>
+        <span class="countdown-badge">⏳ AGENDA TERDEKAT</span>
         <div class="countdown-title" id="countdown-title">-</div>
         <div class="countdown-timer" id="countdown-timer">- Hari Lagi</div>
       </div>
 
-      <!-- CAPTION / OVERLAY TEXT MEDIA -->
+      <!-- MEDIA CAPTION OVERLAY -->
       <div class="media-caption" id="media-caption" style="display: none;">
-        <span class="category-badge" id="media-category">UMUM</span>
-        <p id="media-title">-</p>
+        <span class="category-badge" id="media-category">INFORMASI</span>
+        <h2 id="media-title">-</h2>
       </div>
     </section>
 
   </main>
 
-  <!-- FOOTER: RUNNING TEXT -->
+  <!-- FOOTER RUNNING TEXT -->
   <footer class="footer">
     <div class="ticker-label">INFORMASI</div>
     <div class="ticker-wrap">
       <div class="ticker-move" id="running-text-container">
-        Selamat datang di Papan Informasi Digital Sekolah...
+        Memuat informasi pengumuman sekolah...
       </div>
     </div>
   </footer>
