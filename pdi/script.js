@@ -17,7 +17,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// FORMAT TANGGAL SINGKAT (Contoh: 2026-08-17 -> 17 Ags 2026)
+// FORMAT TANGGAL SINGKAT
 function formatTanggalSingkat(dateValue) {
   if (!dateValue) return "";
   
@@ -57,7 +57,7 @@ async function loadData() {
       // Filter Media berdasarkan kolom 'Status'
       mediaData = data.media.filter(item => {
         const status = String(item["Status"] || "").toLowerCase().trim();
-        return status === "aktif" || status === "ya" || status === "";
+        return status === "aktif" || status === "ya" || status === "true" || status === "";
       });
 
       if (mediaData.length > 0) {
@@ -69,12 +69,11 @@ async function loadData() {
   }
 }
 
-// 3. RENDER AGENDA (SESUAI KOLOM SHEET AGENDA)
+// 3. RENDER AGENDA
 function renderAgenda(agendaList) {
   const container = document.getElementById('agenda-container');
   container.innerHTML = '';
 
-  // Filter Agenda berdasarkan kolom 'Status'
   const activeAgenda = agendaList.filter(item => {
     const status = String(item["Status"] || "").toLowerCase().trim();
     return status !== "selesai" && status !== "nonaktif";
@@ -92,17 +91,14 @@ function renderAgenda(agendaList) {
   let minDiffDays = Infinity;
 
   activeAgenda.forEach(item => {
-    // Membaca Kolom Tepat Sesuai Form Agenda Kamu
     const nama = item["Nama Kegiatan"] || "Agenda Sekolah";
     const tglMulaiRaw = item["Tanggal Mulai Agenda"] || "";
     const tglSelesaiRaw = item["Tanggal Selesai Agenda"] || "";
-    // Note: Menangani typos 'Ketegori' / 'Kategori' secara aman
     const kategori = item["Kategori"] || item["Ketegori"] || "Umum";
 
     const tglMulaiFormatted = formatTanggalSingkat(tglMulaiRaw);
     const tglSelesaiFormatted = formatTanggalSingkat(tglSelesaiRaw);
 
-    // Format Tampilan Teks Tanggal
     let dateStr = "";
     if (tglMulaiFormatted && tglSelesaiFormatted && tglMulaiFormatted !== tglSelesaiFormatted) {
       dateStr = `${tglMulaiFormatted} - ${tglSelesaiFormatted}`;
@@ -112,7 +108,6 @@ function renderAgenda(agendaList) {
       dateStr = "Tanggal belum diatur";
     }
 
-    // Warna Badge Kategori
     const katLower = String(kategori).toLowerCase();
     let badgeClass = "badge-umum";
     if (katLower.includes("akademik") || katLower.includes("ujian")) badgeClass = "badge-akademik";
@@ -134,7 +129,6 @@ function renderAgenda(agendaList) {
     `;
     container.appendChild(card);
 
-    // Hitung Countdown Agenda Terdekat
     if (tglMulaiRaw) {
       const eventDate = new Date(tglMulaiRaw);
       if (!isNaN(eventDate.getTime())) {
@@ -150,7 +144,6 @@ function renderAgenda(agendaList) {
     }
   });
 
-  // Floating Countdown Widget
   const countdownCard = document.getElementById('countdown-card');
   if (upcomingEvent) {
     document.getElementById('countdown-title').textContent = upcomingEvent.nama;
@@ -161,12 +154,12 @@ function renderAgenda(agendaList) {
   }
 }
 
-// 4. PARSE LINK MEDIA
+// 4. FUNCTION PARSING LINK MEDIA YANG LEBIH TAHAN BANTING
 function parseMediaUrl(url) {
   if (!url) return { type: 'image', url: '' };
   url = url.trim();
 
-  // YouTube
+  // YOUTUBE
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     let videoId = '';
     if (url.includes('youtu.be/')) {
@@ -180,7 +173,7 @@ function parseMediaUrl(url) {
     };
   }
 
-  // Google Drive
+  // GOOGLE DRIVE
   if (url.includes('drive.google.com')) {
     let fileId = '';
     const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
@@ -192,7 +185,8 @@ function parseMediaUrl(url) {
     if (fileId) {
       return {
         type: 'image',
-        url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w1920`
+        fileId: fileId,
+        url: `https://lh3.googleusercontent.com/d/${fileId}`
       };
     }
   }
@@ -200,7 +194,7 @@ function parseMediaUrl(url) {
   return { type: 'image', url: url };
 }
 
-// 5. RENDER MEDIA (SESUAI KOLOM SHEET MEDIA)
+// 5. RENDER MEDIA
 function showMedia(index) {
   if (mediaData.length === 0) return;
 
@@ -210,7 +204,6 @@ function showMedia(index) {
   
   const current = mediaData[index];
   
-  // Membaca Kolom Tepat Sesuai Form Media
   const rawUrl = current["Link URL"] || "";
   const title = current["Judul / Deskripsi Media"] || "";
   const category = current["Kategori Media"] || "INFORMASI";
@@ -223,7 +216,15 @@ function showMedia(index) {
   if (type.includes('video') || parsed.type === 'youtube') {
     container.innerHTML = `<iframe src="${parsed.url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   } else {
-    container.innerHTML = `<img src="${parsed.url}" alt="${title}" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';">`;
+    // Penggunaan onerror multi-level agar jika 1 server CDN Google gagal, ia akan mencoba server alternatif secara otomatis
+    const fileId = parsed.fileId || '';
+    const altUrl1 = fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w1920` : parsed.url;
+    const altUrl2 = fileId ? `https://docs.google.com/uc?export=view&id=${fileId}` : parsed.url;
+
+    container.innerHTML = `
+      <img src="${parsed.url}" alt="${title}" 
+           onerror="if (this.src !== '${altUrl1}') { this.src='${altUrl1}'; } else if (this.src !== '${altUrl2}') { this.src='${altUrl2}'; } else { this.src='https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar'; }">
+    `;
   }
 
   // Caption Overlay
@@ -242,14 +243,14 @@ function showMedia(index) {
   }, 10000);
 }
 
-// 6. RENDER RUNNING TEXT (SESUAI KOLOM SHEET RUNNING TEXT)
+// 6. RENDER RUNNING TEXT
 function renderRunningText(textList) {
   const container = document.getElementById('running-text-container');
   
   const activeTexts = textList
     .filter(item => {
       const status = String(item["Status"] || "").toLowerCase().trim();
-      return status === "aktif" || status === "ya" || status === "";
+      return status === "aktif" || status === "ya" || status === "true" || status === "";
     })
     .map(item => item["Teks Pengumuman"] || "")
     .filter(t => t !== "");
@@ -261,4 +262,4 @@ function renderRunningText(textList) {
 
 // Inisialisasi
 loadData();
-setInterval(loadData, 3 * 60 * 1000); // Refresh data dari Google Sheet tiap 3 menit
+setInterval(loadData, 1 * 60 * 1000); // Auto update data tiap 1 menit
