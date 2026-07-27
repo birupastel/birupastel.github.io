@@ -1,14 +1,13 @@
-// GANTI LINK DI BAWAH INI DENGAN LINK WEB APP APPS SCRIPT MILIKMU
+// GANTI DENGAN LINK WEB APP APPS SCRIPT ANDA
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzR9AiCrmh2y6daywe9L1b8ZTIhzQaCSnHp-mXr27_RAdQYJIMv-B3KuTiefNESM2u5/exec";
 
 let mediaData = [];
 let currentMediaIndex = 0;
 let mediaTimer = null;
 
-// 1. UPDATE JAM REAL-TIME
+// 1. JAM & TANGGAL REAL-TIME
 function updateClock() {
   const now = new Date();
-  
   const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
   document.getElementById('clock-time').textContent = now.toLocaleTimeString('id-ID', timeOptions).replace(/\./g, ':');
 
@@ -18,7 +17,22 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// 2. FETCH DATA DARI GOOGLE APPS SCRIPT
+// Helper untuk membaca properti object tanpa terpengaruh spasi / besar-kecil huruf
+function getProp(obj, possibleKeys, defaultValue = "") {
+  if (!obj) return defaultValue;
+  const keys = Object.keys(obj);
+  for (let key of keys) {
+    const cleanKey = key.trim().toLowerCase();
+    for (let pKey of possibleKeys) {
+      if (cleanKey === pKey.toLowerCase()) {
+        return obj[key] !== undefined && obj[key] !== null ? obj[key] : defaultValue;
+      }
+    }
+  }
+  return defaultValue;
+}
+
+// 2. AMBIL DATA DARI APPS SCRIPT
 async function loadData() {
   try {
     const response = await fetch(GAS_API_URL);
@@ -29,8 +43,8 @@ async function loadData() {
     
     if (data.media && data.media.length > 0) {
       mediaData = data.media.filter(item => {
-        const status = (item["Status"] || item["Status Media"] || "").toString().toLowerCase();
-        return status === "aktif" || status === "ya" || status === "";
+        const status = String(getProp(item, ["Status Media", "Status", "Status/Aktif"], "Aktif")).toLowerCase();
+        return status === "aktif" || status === "ya" || status === "true" || status === "";
       });
 
       if (mediaData.length > 0) {
@@ -38,22 +52,22 @@ async function loadData() {
       }
     }
   } catch (error) {
-    console.error("Gagal mengambil data:", error);
+    console.error("Gagal memuat data API:", error);
   }
 }
 
-// 3. RENDER AGENDA (SIDEBAR KIRI) & UPDATE COUNTDOWN
+// 3. RENDER AGENDA (SIDEBAR KIRI)
 function renderAgenda(agendaList) {
   const container = document.getElementById('agenda-container');
   container.innerHTML = '';
 
   const activeAgenda = agendaList.filter(item => {
-    const status = (item["Status"] || "").toString().toLowerCase();
+    const status = String(getProp(item, ["Status", "Status Agenda"], "Aktif")).toLowerCase();
     return status !== "selesai" && status !== "nonaktif";
   });
 
   if (activeAgenda.length === 0) {
-    container.innerHTML = '<div class="loading">Tidak ada agenda bulan ini.</div>';
+    container.innerHTML = '<div class="empty-state">Belum ada agenda bulan ini</div>';
     return;
   }
 
@@ -64,31 +78,47 @@ function renderAgenda(agendaList) {
   let minDiffDays = Infinity;
 
   activeAgenda.forEach(item => {
-    const nama = item["Nama Kegiatan"] || item["Nama Kegiatan / Agenda"] || "Agenda";
-    const tglMulaiStr = item["Tanggal Mulai"] || item["Tanggal"] || "";
-    const tglSelesaiStr = item["Tanggal Selesai"] || "";
-    const kategori = item["Kategori"] || "Umum";
+    const nama = getProp(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Agenda", "Nama"], "Agenda Sekolah");
+    const tglMulai = getProp(item, ["Tanggal Mulai", "Tanggal", "Tgl Mulai"], "");
+    const tglSelesai = getProp(item, ["Tanggal Selesai", "Tgl Selesai"], "");
+    const kategori = getProp(item, ["Kategori", "Kategori Agenda", "Jenis"], "Umum");
 
-    let dateDisplay = tglMulaiStr;
-    if (tglSelesaiStr && tglSelesaiStr !== tglMulaiStr) {
-      dateDisplay = `${tglMulaiStr} s/d ${tglSelesaiStr}`;
+    // Format Tampilan Tanggal
+    let dateStr = "";
+    if (tglMulai && tglSelesai && tglMulai !== tglSelesai) {
+      dateStr = `${formatTanggalSingkat(tglMulai)} - ${formatTanggalSingkat(tglSelesai)}`;
+    } else if (tglMulai) {
+      dateStr = formatTanggalSingkat(tglMulai);
+    } else {
+      dateStr = "Tanggal belum diatur";
     }
 
-    // Buat Kartu Agenda
+    // Penentuan Warna Badge berdasarkan Kategori
+    const katLower = kategori.toLowerCase();
+    let badgeClass = "badge-umum";
+    if (katLower.includes("akademik") || katLower.includes("ujian")) badgeClass = "badge-akademik";
+    else if (katLower.includes("siswa") || katLower.includes("ekstra") || katLower.includes("lomba")) badgeClass = "badge-siswa";
+    else if (katLower.includes("libur")) badgeClass = "badge-libur";
+    else if (katLower.includes("rapat") || katLower.includes("dinas")) badgeClass = "badge-rapat";
+
     const card = document.createElement('div');
     card.className = 'agenda-card';
     card.innerHTML = `
-      <div class="agenda-date">📅 ${dateDisplay}</div>
+      <div class="agenda-header">
+        <span class="agenda-badge ${badgeClass}">${kategori}</span>
+      </div>
       <div class="agenda-name">${nama}</div>
-      <span class="agenda-badge">${kategori}</span>
+      <div class="agenda-date">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span>${dateStr}</span>
+      </div>
     `;
     container.appendChild(card);
 
-    // Hitung Countdown Agenda Terdekat
-    if (tglMulaiStr) {
-      const eventDate = new Date(tglMulaiStr);
+    // Hitung Countdown
+    if (tglMulai) {
+      const eventDate = new Date(tglMulai);
       eventDate.setHours(0, 0, 0, 0);
-      
       const diffTime = eventDate - today;
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
@@ -99,44 +129,68 @@ function renderAgenda(agendaList) {
     }
   });
 
-  // Tampilkan Countdown Widget jika ada event terdekat
+  // Tampilkan Floating Countdown Widget
   const countdownCard = document.getElementById('countdown-card');
   if (upcomingEvent) {
     document.getElementById('countdown-title').textContent = upcomingEvent.nama;
-    document.getElementById('countdown-timer').textContent = upcomingEvent.diffDays === 0 ? "HARI INI!" : `${upcomingEvent.diffDays} Hari Lagi`;
-    countdownCard.style.display = 'block';
+    document.getElementById('countdown-timer').textContent = upcomingEvent.diffDays === 0 ? "HARI INI" : `${upcomingEvent.diffDays} Hari Lagi`;
+    countdownCard.style.display = 'flex';
   } else {
     countdownCard.style.display = 'none';
   }
 }
 
-// 4. CONVERT LINK DRIVE/YOUTUBE
-function parseMediaUrl(url, type) {
+// Format Tanggal (Contoh: 2026-08-17 -> 17 Ags 2026)
+function formatTanggalSingkat(dateString) {
+  if (!dateString) return "";
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return dateString;
+  const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+  return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// 4. CONVERT LINK GAMBAR GOOGLE DRIVE / YOUTUBE
+function parseMediaUrl(url) {
   if (!url) return '';
-  
-  // Handle YouTube Link
+  url = url.trim();
+
+  // YouTube
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     let videoId = '';
     if (url.includes('youtu.be/')) {
-      videoId = url.split('youtu.be/')[1].split('?')[0];
+      videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
     } else if (url.includes('watch?v=')) {
       videoId = url.split('watch?v=')[1].split('&')[0];
     }
-    return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}`;
+    return {
+      type: 'youtube',
+      url: `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}`
+    };
   }
 
-  // Handle Google Drive Image Link
+  // Google Drive Image
   if (url.includes('drive.google.com')) {
-    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (match && match[1]) {
-      return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    let fileId = '';
+    const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+    const matchId = url.match(/id=([a-zA-Z0-9_-]+)/);
+
+    if (matchD && matchD[1]) fileId = matchD[1];
+    else if (matchId && matchId[1]) fileId = matchId[1];
+
+    if (fileId) {
+      // Menggunakan Thumbnail API Google Drive agar gambar dijamin muncul tanpa terblokir CORS
+      return {
+        type: 'image',
+        url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w1920`
+      };
     }
   }
 
-  return url;
+  // Direct Image URL biasa
+  return { type: 'image', url: url };
 }
 
-// 5. RENDER MEDIA SLIDER
+// 5. TAMPILKAN MEDIA SLIDE
 function showMedia(index) {
   if (mediaData.length === 0) return;
 
@@ -145,23 +199,22 @@ function showMedia(index) {
   const captionBox = document.getElementById('media-caption');
   
   const current = mediaData[index];
-  const type = (current["Tipe Media"] || current["Tipe"] || "Gambar").toLowerCase();
-  const rawUrl = current["Link URL / Media"] || current["Link URL"] || current["Link Media"] || "";
-  const title = current["Judul / Deskripsi Media"] || current["Judul"] || "";
-  const category = current["Kategori Media"] || current["Kategori"] || "INFO";
-  const duration = parseInt(current["Durasi (detik)"]) || 10;
+  const rawUrl = getProp(current, ["Link URL / Media", "Link URL", "Link Media", "URL", "Link"], "");
+  const title = getProp(current, ["Judul / Deskripsi Media", "Judul", "Deskripsi", "Caption"], "");
+  const category = getProp(current, ["Kategori Media", "Kategori", "Jenis"], "INFORMASI");
+  const duration = parseInt(getProp(current, ["Durasi Tampil (detik)", "Durasi (detik)", "Durasi"], 10)) || 10;
 
-  const parsedUrl = parseMediaUrl(rawUrl, type);
+  const parsed = parseMediaUrl(rawUrl);
 
   container.innerHTML = '';
 
-  if (type.includes('video') || rawUrl.includes('youtube') || rawUrl.includes('youtu.be')) {
-    container.innerHTML = `<iframe src="${parsedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  if (parsed.type === 'youtube') {
+    container.innerHTML = `<iframe src="${parsed.url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
   } else {
-    container.innerHTML = `<img src="${parsedUrl}" alt="${title}">`;
+    container.innerHTML = `<img src="${parsed.url}" alt="${title}" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';">`;
   }
 
-  // Caption Overlay
+  // Overlay Caption
   if (title) {
     document.getElementById('media-category').textContent = category;
     document.getElementById('media-title').textContent = title;
@@ -170,7 +223,7 @@ function showMedia(index) {
     captionBox.style.display = 'none';
   }
 
-  // Timer putaran slide berikutnya
+  // Timer putaran slide selanjutnya
   mediaTimer = setTimeout(() => {
     currentMediaIndex = (currentMediaIndex + 1) % mediaData.length;
     showMedia(currentMediaIndex);
@@ -183,19 +236,17 @@ function renderRunningText(textList) {
   
   const activeTexts = textList
     .filter(item => {
-      const status = (item["Status"] || "").toString().toLowerCase();
-      return status === "aktif" || status === "ya" || status === "";
+      const status = String(getProp(item, ["Status", "Status Text"], "Aktif")).toLowerCase();
+      return status === "aktif" || status === "ya" || status === "true" || status === "";
     })
-    .map(item => item["Teks Pengumuman"] || item["Teks"] || item["Pengumuman"] || "")
+    .map(item => getProp(item, ["Teks Pengumuman", "Teks", "Pengumuman", "Isi"], ""))
     .filter(t => t !== "");
 
   if (activeTexts.length > 0) {
-    container.textContent = activeTexts.join("  •  📢  ");
+    container.textContent = activeTexts.join("  —  📢  ");
   }
 }
 
-// Inisialisasi Pertama
+// Inisialisasi
 loadData();
-
-// Auto Refresh Data di Latar Belakang Setiap 3 Menit
-setInterval(loadData, 3 * 60 * 1000);
+setInterval(loadData, 3 * 60 * 1000); // Auto-update data tiap 3 menit
