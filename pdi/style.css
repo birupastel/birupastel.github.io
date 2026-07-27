@@ -1,13 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 body {
-  background-color: #f4f6f9;
-  color: #1e293b;
+  background-color: #f8fafc;
+  color: #0f172a;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -16,14 +18,14 @@ body {
 
 /* HEADER */
 .header {
-  height: 80px;
+  height: 85px;
   background: #ffffff;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  padding: 0 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
 .brand {
@@ -33,13 +35,13 @@ body {
 }
 
 .logo {
-  height: 52px;
+  height: 54px;
   width: auto;
   object-fit: contain;
 }
 
 .school-info h1 {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.5px;
@@ -56,9 +58,10 @@ body {
 }
 
 #clock-time {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #2563eb;
+  letter-spacing: -0.5px;
   line-height: 1;
 }
 
@@ -73,30 +76,33 @@ body {
 .main-container {
   flex: 1;
   display: flex;
-  gap: 16px;
-  padding: 16px;
-  height: calc(100vh - 130px);
+  gap: 20px;
+  padding: 20px 32px;
+  height: calc(100vh - 140px);
 }
 
-/* SIDEBAR AGENDA */
+/* SIDEBAR KIRI: AGENDA */
 .sidebar {
-  width: 320px;
+  width: 360px;
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  padding: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  padding: 20px;
+  box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03);
 }
 
 .section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1e293b;
-  padding-bottom: 12px;
+  color: #0f172a;
+  padding-bottom: 14px;
   border-bottom: 2px solid #f1f5f9;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .agenda-list {
@@ -104,49 +110,68 @@ body {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  padding-right: 4px;
 }
 
 .agenda-card {
-  background: #f8fafc;
-  border-left: 4px solid #2563eb;
-  border-radius: 6px;
-  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
-.agenda-date {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #2563eb;
-  text-transform: uppercase;
-}
-
-.agenda-name {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin-top: 2px;
+.agenda-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
 }
 
 .agenda-badge {
-  display: inline-block;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-top: 6px;
-  background: #e2e8f0;
-  color: #475569;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
-/* MEDIA SECTION */
+/* WARNA BADGE KATEGORI AGENDA */
+.badge-akademik { background: #dbeafe; color: #1e40af; }
+.badge-siswa { background: #dcfce7; color: #166534; }
+.badge-libur { background: #fee2e2; color: #991b1b; }
+.badge-rapat { background: #fef3c7; color: #92400e; }
+.badge-umum { background: #f1f5f9; color: #475569; }
+
+.agenda-name {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.agenda-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* AREA KANAN: MEDIA */
 .media-section {
   flex: 1;
   position: relative;
-  background: #000;
-  border-radius: 12px;
+  background: #0f172a;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 30px -5px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
 }
 
 .media-container {
@@ -160,8 +185,7 @@ body {
 .media-container img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  background-color: #0f172a;
+  object-fit: cover;
 }
 
 .media-container iframe {
@@ -170,70 +194,76 @@ body {
   border: none;
 }
 
-/* COUNTDOWN FLOATING CARD */
+/* COUNTDOWN CARD */
 .countdown-card {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 20px;
+  right: 20px;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  padding: 12px 18px;
-  border-radius: 10px;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  text-align: right;
+  backdrop-filter: blur(12px);
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   z-index: 10;
 }
 
 .countdown-badge {
   font-size: 0.65rem;
   font-weight: 800;
-  color: #dc2626;
+  color: #ef4444;
   letter-spacing: 0.5px;
 }
 
 .countdown-title {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: #0f172a;
+  margin-top: 2px;
 }
 
 .countdown-timer {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 800;
   color: #2563eb;
 }
 
-/* CAPTION OVERLAY */
+/* CAPTION OVERLAY MEDIA */
 .media-caption {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(transparent, rgba(15, 23, 42, 0.9));
-  padding: 24px 20px 16px;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4) 70%, transparent);
+  padding: 36px 28px 20px;
   color: #ffffff;
   z-index: 10;
 }
 
 .category-badge {
   background: #2563eb;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  margin-bottom: 6px;
 }
 
 #media-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-top: 6px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* FOOTER RUNNING TEXT */
 .footer {
-  height: 50px;
+  height: 55px;
   background: #0f172a;
   color: #ffffff;
   display: flex;
@@ -243,14 +273,15 @@ body {
 
 .ticker-label {
   background: #2563eb;
-  padding: 0 20px;
+  padding: 0 24px;
   height: 100%;
   display: flex;
   align-items: center;
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   letter-spacing: 1px;
   z-index: 20;
+  box-shadow: 4px 0 12px rgba(0,0,0,0.2);
 }
 
 .ticker-wrap {
@@ -263,9 +294,10 @@ body {
   display: inline-block;
   white-space: nowrap;
   padding-left: 100%;
-  animation: ticker 25s linear infinite;
-  font-size: 1rem;
-  font-weight: 500;
+  animation: ticker 28s linear infinite;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f8fafc;
 }
 
 @keyframes ticker {
@@ -273,9 +305,9 @@ body {
   100% { transform: translate3d(-100%, 0, 0); }
 }
 
-.loading {
+.empty-state {
   color: #94a3b8;
   font-size: 0.9rem;
-  padding: 20px;
   text-align: center;
+  padding: 40px 10px;
 }
