@@ -1,11 +1,9 @@
-// GANTI DENGAN LINK WEB APP APPS SCRIPT ANDA
 const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzR9AiCrmh2y6daywe9L1b8ZTIhzQaCSnHp-mXr27_RAdQYJIMv-B3KuTiefNESM2u5/exec";
 
 let mediaData = [];
 let currentMediaIndex = 0;
 let mediaTimer = null;
 
-// 1. JAM & TANGGAL REAL-TIME
 function updateClock() {
   const now = new Date();
   const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
@@ -17,7 +15,6 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Helper untuk membaca properti object tanpa terpengaruh spasi / besar-kecil huruf
 function getProp(obj, possibleKeys, defaultValue = "") {
   if (!obj) return defaultValue;
   const keys = Object.keys(obj);
@@ -32,7 +29,6 @@ function getProp(obj, possibleKeys, defaultValue = "") {
   return defaultValue;
 }
 
-// 2. AMBIL DATA DARI APPS SCRIPT
 async function loadData() {
   try {
     const response = await fetch(GAS_API_URL);
@@ -56,7 +52,6 @@ async function loadData() {
   }
 }
 
-// 3. RENDER AGENDA (SIDEBAR KIRI)
 function renderAgenda(agendaList) {
   const container = document.getElementById('agenda-container');
   container.innerHTML = '';
@@ -83,7 +78,6 @@ function renderAgenda(agendaList) {
     const tglSelesai = getProp(item, ["Tanggal Selesai", "Tgl Selesai"], "");
     const kategori = getProp(item, ["Kategori", "Kategori Agenda", "Jenis"], "Umum");
 
-    // Format Tampilan Tanggal
     let dateStr = "";
     if (tglMulai && tglSelesai && tglMulai !== tglSelesai) {
       dateStr = `${formatTanggalSingkat(tglMulai)} - ${formatTanggalSingkat(tglSelesai)}`;
@@ -93,7 +87,6 @@ function renderAgenda(agendaList) {
       dateStr = "Tanggal belum diatur";
     }
 
-    // Penentuan Warna Badge berdasarkan Kategori
     const katLower = kategori.toLowerCase();
     let badgeClass = "badge-umum";
     if (katLower.includes("akademik") || katLower.includes("ujian")) badgeClass = "badge-akademik";
@@ -115,7 +108,6 @@ function renderAgenda(agendaList) {
     `;
     container.appendChild(card);
 
-    // Hitung Countdown
     if (tglMulai) {
       const eventDate = new Date(tglMulai);
       eventDate.setHours(0, 0, 0, 0);
@@ -129,7 +121,6 @@ function renderAgenda(agendaList) {
     }
   });
 
-  // Tampilkan Floating Countdown Widget
   const countdownCard = document.getElementById('countdown-card');
   if (upcomingEvent) {
     document.getElementById('countdown-title').textContent = upcomingEvent.nama;
@@ -140,7 +131,6 @@ function renderAgenda(agendaList) {
   }
 }
 
-// Format Tanggal (Contoh: 2026-08-17 -> 17 Ags 2026)
 function formatTanggalSingkat(dateString) {
   if (!dateString) return "";
   const d = new Date(dateString);
@@ -149,7 +139,6 @@ function formatTanggalSingkat(dateString) {
   return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-// 4. CONVERT LINK GAMBAR GOOGLE DRIVE / YOUTUBE
 function parseMediaUrl(url) {
   if (!url) return '';
   url = url.trim();
@@ -190,7 +179,6 @@ function parseMediaUrl(url) {
   return { type: 'image', url: url };
 }
 
-// 5. TAMPILKAN MEDIA SLIDE
 function showMedia(index) {
   if (mediaData.length === 0) return;
 
@@ -230,7 +218,6 @@ function showMedia(index) {
   }, duration * 1000);
 }
 
-// 6. RENDER RUNNING TEXT
 function renderRunningText(textList) {
   const container = document.getElementById('running-text-container');
   
