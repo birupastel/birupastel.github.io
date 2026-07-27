@@ -119,7 +119,6 @@ body {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 14px 16px;
-  transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
@@ -185,7 +184,7 @@ body {
   overflow: hidden;
 }
 
-/* BACKGROUND SOFT BLUR (Mengisi Sisi Kosong Jika Rasio 4:5 / 1:1) */
+/* BACKGROUND SOFT BLUR */
 .media-bg-blur {
   position: absolute;
   top: -10%;
@@ -198,7 +197,7 @@ body {
   z-index: 1;
 }
 
-/* GAMBAR UTAMA (Tetap Mempertahankan Rasio Asli) */
+/* GAMBAR UTAMA */
 .media-main-img {
   position: relative;
   max-width: 100%;
@@ -214,6 +213,105 @@ body {
   height: 100%;
   border: none;
   z-index: 2;
+}
+
+/* STYLING SLIDE KALENDER BULANAN */
+.calendar-slide-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.calendar-header-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+
+.cal-day-header {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #64748b;
+  padding: 6px 0;
+  text-transform: uppercase;
+}
+
+.cal-day-cell {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.cal-day-cell.other-month {
+  opacity: 0.3;
+  background: #f1f5f9;
+}
+
+.cal-day-cell.today {
+  border: 2px solid #2563eb;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.cal-event-bar {
+  width: 80%;
+  height: 4px;
+  border-radius: 2px;
+  margin-top: 2px;
+}
+
+/* KET AGENDA BULANAN DI BAWAH KALENDER */
+.calendar-legend {
+  margin-top: 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.legend-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
 }
 
 /* COUNTDOWN CARD */
