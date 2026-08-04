@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamGuard v3 - Secure Google Form Wrapper</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Mencegah seleksi teks dan gesture sentuh bawaan */
+        .no-select {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 64px);
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        #blurOverlay {
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between antialiased no-select">
+
+    <!-- HEADER APLIKASI -->
+    <header class="bg-slate-800 border-b border-slate-700 px-4 py-3 flex justify-between items-center z-40">
+        <div class="flex items-center space-x-2">
+            <div class="p-2 bg-indigo-600 rounded-lg shadow-lg shadow-indigo-600/30">
+                <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">ExamGuard v3</h1>
+                <p class="text-xs text-slate-400">Proteksi Ujian & Anti Split-Screen</p>
+            </div>
+        </div>
+
+        <!-- PANEL KONTROL UJIAN (Hanya tampil saat ujian aktif) -->
+        <div id="examControls" class="hidden flex items-center space-x-3 sm:space-x-4">
+            <div class="flex items-center bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium">
+                <i data-lucide="alert-triangle" class="w-4 h-4 mr-1 text-rose-400"></i>
+                Pelanggaran: <span id="violationCount" class="ml-1 font-bold text-rose-400">0</span>/<span id="maxViolationDisplay">3</span>
+            </div>
+
+            <div class="flex items-center bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold">
+                <i data-lucide="clock" class="w-4 h-4 mr-1.5 animate-pulse text-indigo-400"></i>
+                <span id="timerDisplay">00:00:00</span>
+            </div>
+
+            <button onclick="confirmFinishExam()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center shadow-md">
+                <i data-lucide="check-circle" class="w-4 h-4 mr-1"></i>
+                Selesai
+            </button>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA -->
+    <main class="flex-grow flex items-center justify-center relative">
+        
+        <!-- DASHBOARD GENERATOR LINK (PANEL GURU) -->
+        <div id="setupPanel" class="w-full max-w-xl p-6 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 my-8 mx-4">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-white mb-1">Pengunci Link Ujian</h2>
+                <p class="text-slate-400 text-sm">Masukan link Google Form untuk menghasilkan link ujian terkunci.</p>
+            </div>
+
+            <form id="generatorForm" onsubmit="generateSecureLink(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">URL Google Form Ujian</label>
+                    <div class="relative">
+                        <i data-lucide="link" class="w-5 h-5 absolute left-3 top-3 text-slate-500"></i>
+                        <input type="url" id="formUrl" required placeholder="https://forms.gle/..." value="https://forms.gle/UC2qXrGV9P92AvQs6"
+                            class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white placeholder-slate-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Durasi Ujian (Menit)</label>
+                        <input type="number" id="duration" min="1" max="300" value="60" required
+                            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Batas Maks. Toleransi</label>
+                        <input type="number" id="maxViolations" min="1" max="10" value="3" required
+                            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1">Domain Web Kamu (Opsional untuk Hosting)</label>
+                    <input type="text" id="customDomain" placeholder="https://sekolahku.netlify.app" 
+                        class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white placeholder-slate-600 text-xs outline-none">
+                    <p class="text-[11px] text-slate-500 mt-1">Isi jika Kamu meng-upload file HTML ini ke Netlify/GitHub Pages agar link yang disalin mengarah ke web tersebut.</p>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/30">
+                    <i data-lucide="lock" class="w-5 h-5"></i>
+                    <span>Generate Link Terkunci</span>
+                </button>
+            </form>
+
+            <!-- HASIL KELUARAN LINK -->
+            <div id="resultArea" class="hidden mt-6 p-4 bg-indigo-950/40 border border-indigo-500/30 rounded-xl space-y-3">
+                <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-300 text-xs flex items-start space-x-2">
+                    <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                    <span><b>Catatan Preview:</b> Link di bawah dapat disalin setelah file di-upload ke hosting publik. Untuk menguji coba fitur proteksi sekarang, gunakan tombol simulasi di bawah.</span>
+                </div>
+
+                <label class="block text-xs font-semibold text-indigo-300 uppercase tracking-wider">Hasil Link Ujian:</label>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="generatedLink" readonly class="w-full bg-slate-900 text-xs text-indigo-200 border border-slate-700 rounded-lg px-3 py-2 outline-none">
+                    <button onclick="copyGeneratedLink()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-lg text-xs font-medium shrink-0 flex items-center">
+                        <i data-lucide="copy" class="w-4 h-4 mr-1"></i> Salin
+                    </button>
+                </div>
+
+                <button onclick="startSimulationDirectly()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl text-sm font-bold transition flex items-center justify-center shadow-lg shadow-emerald-600/30">
+                    <i data-lucide="play-circle" class="w-5 h-5 mr-2"></i> Simulasi Mode Siswa (Layar Terkunci)
+                </button>
+            </div>
+        </div>
+
+        <!-- PORTAL MULAI UNTUK SISWA -->
+        <div id="startExamPortal" class="hidden w-full max-w-lg p-6 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 text-center my-8 mx-4">
+            <div class="w-16 h-16 bg-indigo-600/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-500/30">
+                <i data-lucide="shield-alert" class="w-8 h-8"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2">Konfirmasi Ujian Terkunci</h2>
+            <p class="text-slate-400 text-sm mb-6">Sistem mengunci layar penuh. Dilarang membagi layar (split screen), beralih aplikasi, atau keluar dari fullscreen.</p>
+
+            <button onclick="launchExamSession()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/30">
+                <i data-lucide="play" class="w-5 h-5"></i>
+                <span>Masuk Fullscreen & Mulai Ujian</span>
+            </button>
+        </div>
+
+        <!-- CONTAINER IFRAME SOAL UJIAN -->
+        <div id="examContainer" class="hidden iframe-container">
+            <iframe id="examIframe" src="about:blank"></iframe>
+        </div>
+
+        <!-- LAYAR DETEKSI KELUAR FOKUS / SPLIT SCREEN -->
+        <div id="blurOverlay" class="hidden fixed inset-0 bg-slate-950/95 z-50 flex flex-col items-center justify-center p-6 text-center space-y-4">
+            <div class="w-16 h-16 bg-rose-500/20 text-rose-400 rounded-full flex items-center justify-center border border-rose-500/30 animate-bounce">
+                <i data-lucide="minimize-2" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white tracking-wide">PELANGGARAN TERDETEKSI!</h3>
+            <p id="blurMessage" class="text-sm text-slate-300 max-w-md">
+                Kamu terdeteksi membagi layar (split screen), berpindah ke aplikasi lain, atau keluar dari mode layar penuh.
+            </p>
+            <button onclick="restoreExamFocus()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-indigo-600/30">
+                Kembali Ke Mode Ujian (Fullscreen)
+            </button>
+        </div>
+
+    </main>
+
+    <!-- MODAL POPUP DIALOG -->
+    <div id="customModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
+            <h3 id="modalTitle" class="text-xl font-bold text-white">Peringatan</h3>
+            <p id="modalMessage" class="text-sm text-slate-300">Pesan.</p>
+            <button id="modalBtn" onclick="closeModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl transition">
+                Mengerti
+            </button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let examState = {
+            targetUrl: '',
+            durationMinutes: 60,
+            maxViolations: 3,
+            currentViolations: 0,
+            timerInterval: null,
+            timeRemainingSec: 0,
+            isActive: false,
+            initialScreenHeight: window.screen.height
+        };
+
+        // PARSING DATA UJIAN JIKA DIAKSES DARI LINK
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('examData');
+
+            if (encodedData) {
+                try {
+                    const decoded = JSON.parse(atob(encodedData));
+                    examState.targetUrl = decoded.url;
+                    examState.durationMinutes = parseInt(decoded.duration) || 60;
+                    examState.maxViolations = parseInt(decoded.maxViolations) || 3;
+
+                    document.getElementById('maxViolationDisplay').innerText = examState.maxViolations;
+                    document.getElementById('setupPanel').classList.add('hidden');
+                    document.getElementById('startExamPortal').classList.remove('hidden');
+                } catch (e) {
+                    showModal('Error Link', 'Parameter link ujian tidak dapat dibaca.');
+                }
+            }
+        });
+
+        // GENERATE LINK TERKUNCI
+        function generateSecureLink(e) {
+            e.preventDefault();
+            const rawUrl = document.getElementById('formUrl').value.trim();
+            const duration = document.getElementById('duration').value;
+            const maxViolations = document.getElementById('maxViolations').value;
+            const customDomain = document.getElementById('customDomain').value.trim();
+
+            const payload = { url: rawUrl, duration: duration, maxViolations: maxViolations };
+            const encoded = btoa(JSON.stringify(payload));
+
+            let baseUrl = customDomain ? customDomain : window.location.href.split('?')[0];
+            
+            // Hapus trailing slash atau awalan blob
+            baseUrl = baseUrl.replace(/^blob:/, '').replace(/\/$/, '');
+
+            const secureUrl = `${baseUrl}?examData=${encoded}`;
+
+            document.getElementById('generatedLink').value = secureUrl;
+            document.getElementById('resultArea').classList.remove('hidden');
+
+            examState.targetUrl = rawUrl;
+            examState.durationMinutes = parseInt(duration);
+            examState.maxViolations = parseInt(maxViolations);
+        }
+
+        function copyGeneratedLink() {
+            const copyText = document.getElementById('generatedLink');
+            copyText.select();
+            
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                navigator.clipboard.writeText(copyText.value);
+            }
+            showModal('Berhasil Disalin!', 'Link ujian aman berhasil disalin.');
+        }
+
+        // SIMULASI LANGSUNG
+        function startSimulationDirectly() {
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('startExamPortal').classList.remove('hidden');
+            document.getElementById('maxViolationDisplay').innerText = examState.maxViolations;
+        }
+
+        function launchExamSession() {
+            requestFullScreen();
+
+            document.getElementById('startExamPortal').classList.add('hidden');
+            document.getElementById('examControls').classList.remove('hidden');
+            
+            const examContainer = document.getElementById('examContainer');
+            const iframe = document.getElementById('examIframe');
+
+            examContainer.classList.remove('hidden');
+            iframe.src = examState.targetUrl;
+
+            examState.isActive = true;
+            examState.currentViolations = 0;
+            examState.timeRemainingSec = examState.durationMinutes * 60;
+            examState.initialScreenHeight = window.screen.height || window.innerHeight;
+
+            startTimer();
+            attachSecurityListeners();
+        }
+
+        function requestFullScreen() {
+            const docEl = document.documentElement;
+            if (docEl.requestFullscreen) docEl.requestFullscreen();
+            else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            examState.timerInterval = setInterval(() => {
+                examState.timeRemainingSec--;
+                updateTimerDisplay();
+
+                if (examState.timeRemainingSec <= 0) {
+                    clearInterval(examState.timerInterval);
+                    finishExam('Waktu Ujian Habis!', 'Ujian otomatis diakhiri karena durasi waktu telah selesai.');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const hours = Math.floor(examState.timeRemainingSec / 3600);
+            const minutes = Math.floor((examState.timeRemainingSec % 3600) / 60);
+            const seconds = examState.timeRemainingSec % 60;
+            const format = (num) => String(num).padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
+        }
+
+        // LISTENER HAK PATEN DETEKSI SPLIT SCREEN & KELUAR FOKUS
+        function attachSecurityListeners() {
+            // 1. Deteksi Pindah Aplikasi / Pindah Tab
+            document.addEventListener('visibilitychange', () => {
+                if (examState.isActive && document.hidden) {
+                    triggerBlurProtection('Kamu terdeteksi berpindah aplikasi atau tab!');
+                }
+            });
+
+            // 2. Deteksi Keluar Jendela / Focus Blur (Swipe Notification / Split Screen)
+            window.addEventListener('blur', () => {
+                if (examState.isActive) {
+                    triggerBlurProtection('Fokus layar ujian terlepas!');
+                }
+            });
+
+            // 3. Deteksi Rasio Layar untuk Split Screen HP
+            window.addEventListener('resize', checkSplitScreenRatio);
+            setInterval(checkSplitScreenRatio, 1000); // Check berkala
+
+            // 4. Matikan Klik Kanan & Seleksi Teks
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('copy', e => e.preventDefault());
+            document.addEventListener('paste', e => e.preventDefault());
+        }
+
+        function checkSplitScreenRatio() {
+            if (!examState.isActive) return;
+
+            // Hitung persentase tinggi window vs tinggi layar fisik HP
+            const currentHeight = window.innerHeight;
+            const totalScreenHeight = window.screen.height || examState.initialScreenHeight;
+            const heightRatio = currentHeight / totalScreenHeight;
+
+            // Jika tinggi window kurang dari 75% tinggi layar, dipastikan dalam mode Split Screen
+            if (heightRatio < 0.72) {
+                triggerBlurProtection('Split Screen terdeteksi! Dilarang membagi layar saat ujian berlangsung.');
+            }
+        }
+
+        function triggerBlurProtection(msg) {
+            document.getElementById('blurMessage').innerText = msg;
+            document.getElementById('blurOverlay').classList.remove('hidden');
+
+            examState.currentViolations++;
+            document.getElementById('violationCount').innerText = examState.currentViolations;
+
+            if (examState.currentViolations >= examState.maxViolations) {
+                finishExam('Batas Pelanggaran Terlampaui!', 'Akses ujian dihentikan karena mencapai batas maksimal pelanggaran.');
+            }
+        }
+
+        function restoreExamFocus() {
+            document.getElementById('blurOverlay').classList.add('hidden');
+            requestFullScreen();
+        }
+
+        function confirmFinishExam() {
+            showModal('Konfirmasi Selesai', 'Apakah Kamu sudah menekan tombol Submit di Google Form dan ingin mengakhiri sesi?', () => {
+                finishExam('Ujian Selesai', 'Terima kasih telah menyelesaikan ujian secara tertib.');
+            });
+        }
+
+        function finishExam(title, message) {
+            examState.isActive = false;
+            clearInterval(examState.timerInterval);
+
+            if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+
+            document.getElementById('examContainer').classList.add('hidden');
+            document.getElementById('examControls').classList.add('hidden');
+            document.getElementById('blurOverlay').classList.add('hidden');
+
+            showModal(title, message, () => {
+                window.location.href = window.location.href.split('?')[0];
+            });
+        }
+
+        function showModal(title, message, onConfirm = null) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerText = message;
+            const modalBtn = document.getElementById('modalBtn');
+            modalBtn.onclick = () => {
+                closeModal();
+                if (onConfirm) onConfirm();
+            };
+            document.getElementById('customModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('customModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
