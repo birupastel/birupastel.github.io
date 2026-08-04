@@ -30,6 +30,35 @@
             backdrop-filter: blur(20px);
         }
     </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        window.initCloudStorage = async function() {
+            try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'exam-guard-app';
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                if (!firebaseConfig) return null;
+
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (token) {
+                    await signInWithCustomToken(auth, token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                return { db, appId };
+            } catch (err) {
+                console.warn("Cloud Lock initialized in Local Mode fallback.");
+                return null;
+            }
+        };
+    </script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between antialiased no-select">
 
@@ -97,11 +126,23 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">PIN / Password Pengawas</label>
+                        <input type="password" id="proctorPin" placeholder="Contoh: 1234" value="1234" required
+                            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white placeholder-slate-600 text-sm outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-1">Masa Berlaku Link (Jam)</label>
+                        <input type="number" id="linkExpiryHours" min="0.5" max="168" value="2" step="0.5" required
+                            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white text-sm outline-none">
+                    </div>
+                </div>
+
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-1">Domain Web Kamu (Opsional untuk Hosting)</label>
                     <input type="text" id="customDomain" placeholder="https://sekolahku.netlify.app" 
                         class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white placeholder-slate-600 text-xs outline-none">
-                    <p class="text-[11px] text-slate-500 mt-1">Isi jika Kamu meng-upload file HTML ini ke Netlify/GitHub Pages agar link yang disalin mengarah ke web tersebut.</p>
                 </div>
 
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/30">
@@ -137,7 +178,21 @@
                 <i data-lucide="shield-alert" class="w-8 h-8"></i>
             </div>
             <h2 class="text-2xl font-bold text-white mb-2">Konfirmasi Ujian Terkunci</h2>
-            <p class="text-slate-400 text-sm mb-6">Sistem mengunci layar penuh. Dilarang membagi layar (split screen), beralih aplikasi, atau keluar dari fullscreen.</p>
+            <p class="text-slate-400 text-sm mb-4">Silakan masukkan identitas diri sebelum mulai. Dilarang split screen / berpindah tab.</p>
+
+            <!-- INPUT IDENTITAS SISWA UNTUK PENGLOCKAN NAMA/NISN -->
+            <div class="space-y-3 mb-6 text-left">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Nama Lengkap Siswa</label>
+                    <input type="text" id="studentName" required placeholder="Contoh: Budi Santoso"
+                        class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white text-sm outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Nomor Induk / NISN</label>
+                    <input type="text" id="studentId" required placeholder="Contoh: 12345678"
+                        class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white text-sm outline-none">
+                </div>
+            </div>
 
             <button onclick="launchExamSession()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/30">
                 <i data-lucide="play" class="w-5 h-5"></i>
@@ -159,9 +214,15 @@
             <p id="blurMessage" class="text-sm text-slate-300 max-w-md">
                 Kamu terdeteksi membagi layar (split screen), berpindah ke aplikasi lain, atau keluar dari mode layar penuh.
             </p>
-            <button onclick="restoreExamFocus()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-indigo-600/30">
-                Kembali Ke Mode Ujian (Fullscreen)
-            </button>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md pt-2">
+                <button id="btnReturnExam" onclick="restoreExamFocus()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-3 rounded-xl transition shadow-lg shadow-indigo-600/30 text-sm">
+                    Kembali Ke Mode Ujian (Fullscreen)
+                </button>
+                <button id="btnUnblockProctor" onclick="promptProctorUnlock()" class="hidden flex-1 bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-3 rounded-xl transition shadow-lg shadow-amber-600/30 text-sm">
+                    Buka Kunci (PIN Guru)
+                </button>
+            </div>
         </div>
 
     </main>
@@ -185,23 +246,48 @@
             durationMinutes: 60,
             maxViolations: 3,
             currentViolations: 0,
+            proctorPin: '1234',
             timerInterval: null,
             timeRemainingSec: 0,
             isActive: false,
-            initialScreenHeight: window.screen.height
+            initialScreenHeight: window.screen.height,
+            studentId: '',
+            studentName: ''
         };
 
+        let cloudContext = null;
+
         // PARSING DATA UJIAN JIKA DIAKSES DARI LINK
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.initCloudStorage) {
+                cloudContext = await window.initCloudStorage();
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const encodedData = urlParams.get('examData');
 
             if (encodedData) {
                 try {
                     const decoded = JSON.parse(atob(encodedData));
+
+                    // CEK APAKAH LINK SUDAH KADALUARSA
+                    if (decoded.expiresAt && Date.now() > decoded.expiresAt) {
+                        const expiryDate = new Date(decoded.expiresAt).toLocaleString('id-ID', {
+                            dateStyle: 'medium',
+                            timeStyle: 'short'
+                        });
+                        document.getElementById('setupPanel').classList.add('hidden');
+                        showModal(
+                            'Link Ujian Kadaluarsa!', 
+                            `Masa berlaku link ini telah habis pada ${expiryDate}. Silakan hubungi Guru/Pengawas untuk mendapatkan link ujian baru.`
+                        );
+                        return;
+                    }
+
                     examState.targetUrl = decoded.url;
                     examState.durationMinutes = parseInt(decoded.duration) || 60;
                     examState.maxViolations = parseInt(decoded.maxViolations) || 3;
+                    examState.proctorPin = decoded.proctorPin || '1234';
 
                     document.getElementById('maxViolationDisplay').innerText = examState.maxViolations;
                     document.getElementById('setupPanel').classList.add('hidden');
@@ -218,14 +304,24 @@
             const rawUrl = document.getElementById('formUrl').value.trim();
             const duration = document.getElementById('duration').value;
             const maxViolations = document.getElementById('maxViolations').value;
+            const proctorPin = document.getElementById('proctorPin').value.trim() || '1234';
+            const expiryHours = parseFloat(document.getElementById('linkExpiryHours').value) || 2;
             const customDomain = document.getElementById('customDomain').value.trim();
 
-            const payload = { url: rawUrl, duration: duration, maxViolations: maxViolations };
+            const createdAt = Date.now();
+            const expiresAt = createdAt + (expiryHours * 60 * 60 * 1000);
+
+            const payload = { 
+                url: rawUrl, 
+                duration: duration, 
+                maxViolations: maxViolations,
+                proctorPin: proctorPin,
+                createdAt: createdAt,
+                expiresAt: expiresAt
+            };
             const encoded = btoa(JSON.stringify(payload));
 
             let baseUrl = customDomain ? customDomain : window.location.href.split('?')[0];
-            
-            // Hapus trailing slash atau awalan blob
             baseUrl = baseUrl.replace(/^blob:/, '').replace(/\/$/, '');
 
             const secureUrl = `${baseUrl}?examData=${encoded}`;
@@ -236,28 +332,32 @@
             examState.targetUrl = rawUrl;
             examState.durationMinutes = parseInt(duration);
             examState.maxViolations = parseInt(maxViolations);
+            examState.proctorPin = proctorPin;
         }
 
         function copyGeneratedLink() {
-            const copyText = document.getElementById('generatedLink');
-            copyText.select();
-            
-            try {
-                document.execCommand('copy');
-            } catch (err) {
-                navigator.clipboard.writeText(copyText.value);
+        async function launchExamSession() {
+            const studentName = document.getElementById('studentName').value.trim();
+            const studentId = document.getElementById('studentId').value.trim();
+
+            if (!studentName || !studentId) {
+                showModal('Identitas Belum Lengkap', 'Harap isi Nama Lengkap dan NISN terlebih dahulu!');
+                return;
             }
-            showModal('Berhasil Disalin!', 'Link ujian aman berhasil disalin.');
-        }
 
-        // SIMULASI LANGSUNG
-        function startSimulationDirectly() {
-            document.getElementById('setupPanel').classList.add('hidden');
-            document.getElementById('startExamPortal').classList.remove('hidden');
-            document.getElementById('maxViolationDisplay').innerText = examState.maxViolations;
-        }
+            examState.studentName = studentName;
+            examState.studentId = studentId;
 
-        function launchExamSession() {
+            // CEK STATUS DI CLOUD / LOCAL UNTUK MENCEGAH PENGGUNAAN KEMBALI LINK LAMA
+            const isBlocked = await checkStudentLockStatus(studentId);
+            if (isBlocked) {
+                showModal(
+                    'Ujian Terkunci Permanen!', 
+                    `Siswa dengan NISN (${studentId}) telah didiskualifikasi atau telah menyelesaikan ujian. Minta Guru/Proktor untuk memasukkan PIN Pengawas!`
+                );
+                return;
+            }
+
             requestFullScreen();
 
             document.getElementById('startExamPortal').classList.add('hidden');
@@ -278,73 +378,40 @@
             attachSecurityListeners();
         }
 
-        function requestFullScreen() {
-            const docEl = document.documentElement;
-            if (docEl.requestFullscreen) docEl.requestFullscreen();
-            else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
-        }
-
-        function startTimer() {
-            updateTimerDisplay();
-            examState.timerInterval = setInterval(() => {
-                examState.timeRemainingSec--;
-                updateTimerDisplay();
-
-                if (examState.timeRemainingSec <= 0) {
-                    clearInterval(examState.timerInterval);
-                    finishExam('Waktu Ujian Habis!', 'Ujian otomatis diakhiri karena durasi waktu telah selesai.');
+        async function checkStudentLockStatus(studentId) {
+            if (cloudContext && cloudContext.db) {
+                try {
+                    const { db, appId } = cloudContext;
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', studentId);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists() && docSnap.data().status === 'BLOCKED') {
+                        return true;
+                    }
+                } catch (e) {
+                    console.warn("Cloud status check failed, falling back.");
                 }
-            }, 1000);
+            }
+            return false;
         }
 
-        function updateTimerDisplay() {
-            const hours = Math.floor(examState.timeRemainingSec / 3600);
-            const minutes = Math.floor((examState.timeRemainingSec % 3600) / 60);
-            const seconds = examState.timeRemainingSec % 60;
-            const format = (num) => String(num).padStart(2, '0');
-            document.getElementById('timerDisplay').innerText = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
-        }
-
-        // LISTENER HAK PATEN DETEKSI SPLIT SCREEN & KELUAR FOKUS
-        function attachSecurityListeners() {
-            // 1. Deteksi Pindah Aplikasi / Pindah Tab
-            document.addEventListener('visibilitychange', () => {
-                if (examState.isActive && document.hidden) {
-                    triggerBlurProtection('Kamu terdeteksi berpindah aplikasi atau tab!');
+        async function updateStudentCloudStatus(status) {
+            if (cloudContext && cloudContext.db && examState.studentId) {
+                try {
+                    const { db, appId } = cloudContext;
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', examState.studentId);
+                    await setDoc(docRef, {
+                        studentId: examState.studentId,
+                        studentName: examState.studentName,
+                        status: status,
+                        timestamp: new Date().toISOString()
+                    });
+                } catch (e) {
+                    console.warn("Cloud status write failed.");
                 }
-            });
-
-            // 2. Deteksi Keluar Jendela / Focus Blur (Swipe Notification / Split Screen)
-            window.addEventListener('blur', () => {
-                if (examState.isActive) {
-                    triggerBlurProtection('Fokus layar ujian terlepas!');
-                }
-            });
-
-            // 3. Deteksi Rasio Layar untuk Split Screen HP
-            window.addEventListener('resize', checkSplitScreenRatio);
-            setInterval(checkSplitScreenRatio, 1000); // Check berkala
-
-            // 4. Matikan Klik Kanan & Seleksi Teks
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            document.addEventListener('copy', e => e.preventDefault());
-            document.addEventListener('paste', e => e.preventDefault());
-        }
-
-        function checkSplitScreenRatio() {
-            if (!examState.isActive) return;
-
-            // Hitung persentase tinggi window vs tinggi layar fisik HP
-            const currentHeight = window.innerHeight;
-            const totalScreenHeight = window.screen.height || examState.initialScreenHeight;
-            const heightRatio = currentHeight / totalScreenHeight;
-
-            // Jika tinggi window kurang dari 75% tinggi layar, dipastikan dalam mode Split Screen
-            if (heightRatio < 0.72) {
-                triggerBlurProtection('Split Screen terdeteksi! Dilarang membagi layar saat ujian berlangsung.');
             }
         }
 
+        function triggerBlurProtection(msg) {
         function triggerBlurProtection(msg) {
             document.getElementById('blurMessage').innerText = msg;
             document.getElementById('blurOverlay').classList.remove('hidden');
@@ -353,7 +420,28 @@
             document.getElementById('violationCount').innerText = examState.currentViolations;
 
             if (examState.currentViolations >= examState.maxViolations) {
-                finishExam('Batas Pelanggaran Terlampaui!', 'Akses ujian dihentikan karena mencapai batas maksimal pelanggaran.');
+                updateStudentCloudStatus('BLOCKED');
+                
+                // Kunci penuh & tampilkan tombol PIN Proktor
+                document.getElementById('btnReturnExam').classList.add('hidden');
+                document.getElementById('btnUnblockProctor').classList.remove('hidden');
+
+                finishExam('Batas Pelanggaran Terlampaui!', 'Akses ujian dihentikan. Membutuhkan PIN Pengawas dari Guru untuk membuka kembali.');
+            }
+        }
+
+        function promptProctorUnlock() {
+            const inputPin = prompt("Masukkan PIN / Password Pengawas (Guru) untuk membuka kunci:");
+            if (inputPin === examState.proctorPin) {
+                updateStudentCloudStatus('ACTIVE');
+                examState.currentViolations = 0;
+                document.getElementById('violationCount').innerText = 0;
+                document.getElementById('btnReturnExam').classList.remove('hidden');
+                document.getElementById('btnUnblockProctor').classList.add('hidden');
+                restoreExamFocus();
+                showModal('Kunci Terbuka!', 'Proktor telah memberikan kesempatan ujian kembali.');
+            } else if (inputPin !== null) {
+                alert("PIN Pengawas Salah!");
             }
         }
 
