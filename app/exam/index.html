@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ExamGuard v3 - Secure Google Form Wrapper</title>
+    <title>ExamGuard v3 - Portal Ujian Google Form Terkunci</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -54,7 +54,7 @@
 
                 return { db, appId };
             } catch (err) {
-                console.warn("Cloud Lock initialized in Local Mode fallback.");
+                console.warn("Cloud Lock fallback to local mode.");
                 return null;
             }
         };
@@ -74,7 +74,7 @@
             </div>
         </div>
 
-        <!-- PANEL KONTROL UJIAN (Hanya tampil saat ujian aktif) -->
+        <!-- PANEL KONTROL UJIAN (Tampil saat Ujian Aktif) -->
         <div id="examControls" class="hidden flex items-center space-x-3 sm:space-x-4">
             <div class="flex items-center bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium">
                 <i data-lucide="alert-triangle" class="w-4 h-4 mr-1 text-rose-400"></i>
@@ -180,7 +180,6 @@
             <h2 class="text-2xl font-bold text-white mb-2">Konfirmasi Ujian Terkunci</h2>
             <p class="text-slate-400 text-sm mb-4">Silakan masukkan identitas diri sebelum mulai. Dilarang split screen / berpindah tab.</p>
 
-            <!-- INPUT IDENTITAS SISWA UNTUK PENGLOCKAN NAMA/NISN -->
             <div class="space-y-3 mb-6 text-left">
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Nama Lengkap Siswa</label>
@@ -336,6 +335,23 @@
         }
 
         function copyGeneratedLink() {
+            const copyText = document.getElementById('generatedLink');
+            copyText.select();
+            
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                navigator.clipboard.writeText(copyText.value);
+            }
+            showModal('Berhasil Disalin!', 'Link ujian berhasil disalin ke clipboard.');
+        }
+
+        function startSimulationDirectly() {
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('startExamPortal').classList.remove('hidden');
+            document.getElementById('maxViolationDisplay').innerText = examState.maxViolations;
+        }
+
         async function launchExamSession() {
             const studentName = document.getElementById('studentName').value.trim();
             const studentId = document.getElementById('studentId').value.trim();
@@ -348,7 +364,7 @@
             examState.studentName = studentName;
             examState.studentId = studentId;
 
-            // CEK STATUS DI CLOUD / LOCAL UNTUK MENCEGAH PENGGUNAAN KEMBALI LINK LAMA
+            // CEK STATUS DI CLOUD UNTUK MENCEGAH PENGGUNAAN KEMBALI LINK LAMA
             const isBlocked = await checkStudentLockStatus(studentId);
             if (isBlocked) {
                 showModal(
@@ -388,7 +404,7 @@
                         return true;
                     }
                 } catch (e) {
-                    console.warn("Cloud status check failed, falling back.");
+                    console.warn("Cloud status check fallback.");
                 }
             }
             return false;
@@ -406,12 +422,71 @@
                         timestamp: new Date().toISOString()
                     });
                 } catch (e) {
-                    console.warn("Cloud status write failed.");
+                    console.warn("Cloud status write fallback.");
                 }
             }
         }
 
-        function triggerBlurProtection(msg) {
+        function requestFullScreen() {
+            const docEl = document.documentElement;
+            if (docEl.requestFullscreen) docEl.requestFullscreen();
+            else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            examState.timerInterval = setInterval(() => {
+                examState.timeRemainingSec--;
+                updateTimerDisplay();
+
+                if (examState.timeRemainingSec <= 0) {
+                    clearInterval(examState.timerInterval);
+                    finishExam('Waktu Ujian Habis!', 'Ujian otomatis diakhiri karena durasi waktu telah selesai.');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const hours = Math.floor(examState.timeRemainingSec / 3600);
+            const minutes = Math.floor((examState.timeRemainingSec % 3600) / 60);
+            const seconds = examState.timeRemainingSec % 60;
+            const format = (num) => String(num).padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
+        }
+
+        function attachSecurityListeners() {
+            document.addEventListener('visibilitychange', () => {
+                if (examState.isActive && document.hidden) {
+                    triggerBlurProtection('Kamu terdeteksi berpindah aplikasi atau tab!');
+                }
+            });
+
+            window.addEventListener('blur', () => {
+                if (examState.isActive) {
+                    triggerBlurProtection('Fokus layar ujian terlepas!');
+                }
+            });
+
+            window.addEventListener('resize', checkSplitScreenRatio);
+            setInterval(checkSplitScreenRatio, 1000);
+
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('copy', e => e.preventDefault());
+            document.addEventListener('paste', e => e.preventDefault());
+        }
+
+        function checkSplitScreenRatio() {
+            if (!examState.isActive) return;
+
+            const currentHeight = window.innerHeight;
+            const totalScreenHeight = window.screen.height || examState.initialScreenHeight;
+            const heightRatio = currentHeight / totalScreenHeight;
+
+            if (heightRatio < 0.72) {
+                triggerBlurProtection('Split Screen terdeteksi! Dilarang membagi layar saat ujian.');
+            }
+        }
+
         function triggerBlurProtection(msg) {
             document.getElementById('blurMessage').innerText = msg;
             document.getElementById('blurOverlay').classList.remove('hidden');
@@ -422,7 +497,6 @@
             if (examState.currentViolations >= examState.maxViolations) {
                 updateStudentCloudStatus('BLOCKED');
                 
-                // Kunci penuh & tampilkan tombol PIN Proktor
                 document.getElementById('btnReturnExam').classList.add('hidden');
                 document.getElementById('btnUnblockProctor').classList.remove('hidden');
 
@@ -441,7 +515,7 @@
                 restoreExamFocus();
                 showModal('Kunci Terbuka!', 'Proktor telah memberikan kesempatan ujian kembali.');
             } else if (inputPin !== null) {
-                alert("PIN Pengawas Salah!");
+                showModal('PIN Salah', 'PIN Pengawas yang dimasukkan salah!');
             }
         }
 
