@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ExamGuard v3 - Portal Ujian Google Form Terkunci</title>
+    <title>ExamGuard v3 - Portal Ujian Terkunci</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Mencegah seleksi teks dan gesture sentuh bawaan */
         .no-select {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -30,35 +29,6 @@
             backdrop-filter: blur(20px);
         }
     </style>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        window.initCloudStorage = async function() {
-            try {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'exam-guard-app';
-                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-                if (!firebaseConfig) return null;
-
-                const app = initializeApp(firebaseConfig);
-                const auth = getAuth(app);
-                const db = getFirestore(app);
-
-                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                if (token) {
-                    await signInWithCustomToken(auth, token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                return { db, appId };
-            } catch (err) {
-                console.warn("Cloud Lock fallback to local mode.");
-                return null;
-            }
-        };
-    </script>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between antialiased no-select">
 
@@ -70,11 +40,11 @@
             </div>
             <div>
                 <h1 class="font-bold text-lg leading-tight">ExamGuard v3</h1>
-                <p class="text-xs text-slate-400">Proteksi Ujian & Anti Split-Screen</p>
+                <p class="text-xs text-slate-400">Fixed Google Form Secure Wrapper</p>
             </div>
         </div>
 
-        <!-- PANEL KONTROL UJIAN (Tampil saat Ujian Aktif) -->
+        <!-- PANEL KONTROL UJIAN -->
         <div id="examControls" class="hidden flex items-center space-x-3 sm:space-x-4">
             <div class="flex items-center bg-rose-500/20 text-rose-300 border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium">
                 <i data-lucide="alert-triangle" class="w-4 h-4 mr-1 text-rose-400"></i>
@@ -100,7 +70,7 @@
         <div id="setupPanel" class="w-full max-w-xl p-6 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 my-8 mx-4">
             <div class="text-center mb-6">
                 <h2 class="text-2xl font-bold text-white mb-1">Pengunci Link Ujian</h2>
-                <p class="text-slate-400 text-sm">Masukan link Google Form untuk menghasilkan link ujian terkunci.</p>
+                <p class="text-slate-400 text-sm">Masukan link Google Form & atur PIN Pengawas.</p>
             </div>
 
             <form id="generatorForm" onsubmit="generateSecureLink(event)" class="space-y-4">
@@ -113,36 +83,22 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Durasi Ujian (Menit)</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Durasi (Menit)</label>
                         <input type="number" id="duration" min="1" max="300" value="60" required
-                            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white outline-none">
+                            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white outline-none text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Batas Maks. Toleransi</label>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Maks. Toleransi</label>
                         <input type="number" id="maxViolations" min="1" max="10" value="3" required
-                            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white outline-none">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">PIN / Password Pengawas</label>
-                        <input type="password" id="proctorPin" placeholder="Contoh: 1234" value="1234" required
-                            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white placeholder-slate-600 text-sm outline-none">
+                            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white outline-none text-sm">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-slate-300 mb-1">Masa Berlaku Link (Jam)</label>
-                        <input type="number" id="linkExpiryHours" min="0.5" max="168" value="2" step="0.5" required
-                            class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white text-sm outline-none">
+                        <label class="block text-xs font-medium text-slate-300 mb-1">PIN Pengawas</label>
+                        <input type="password" id="proctorPin" value="1234" maxlength="6" required
+                            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white outline-none text-sm">
                     </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-1">Domain Web Kamu (Opsional untuk Hosting)</label>
-                    <input type="text" id="customDomain" placeholder="https://sekolahku.netlify.app" 
-                        class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white placeholder-slate-600 text-xs outline-none">
                 </div>
 
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/30">
@@ -151,13 +107,8 @@
                 </button>
             </form>
 
-            <!-- HASIL KELUARAN LINK -->
+            <!-- HASIL LINK OUTPUT -->
             <div id="resultArea" class="hidden mt-6 p-4 bg-indigo-950/40 border border-indigo-500/30 rounded-xl space-y-3">
-                <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-300 text-xs flex items-start space-x-2">
-                    <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5"></i>
-                    <span><b>Catatan Preview:</b> Link di bawah dapat disalin setelah file di-upload ke hosting publik. Untuk menguji coba fitur proteksi sekarang, gunakan tombol simulasi di bawah.</span>
-                </div>
-
                 <label class="block text-xs font-semibold text-indigo-300 uppercase tracking-wider">Hasil Link Ujian:</label>
                 <div class="flex items-center space-x-2">
                     <input type="text" id="generatedLink" readonly class="w-full bg-slate-900 text-xs text-indigo-200 border border-slate-700 rounded-lg px-3 py-2 outline-none">
@@ -167,7 +118,7 @@
                 </div>
 
                 <button onclick="startSimulationDirectly()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl text-sm font-bold transition flex items-center justify-center shadow-lg shadow-emerald-600/30">
-                    <i data-lucide="play-circle" class="w-5 h-5 mr-2"></i> Simulasi Mode Siswa (Layar Terkunci)
+                    <i data-lucide="play-circle" class="w-5 h-5 mr-2"></i> Simulasi Mode Siswa (Uji Coba)
                 </button>
             </div>
         </div>
@@ -177,23 +128,23 @@
             <div class="w-16 h-16 bg-indigo-600/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-500/30">
                 <i data-lucide="shield-alert" class="w-8 h-8"></i>
             </div>
-            <h2 class="text-2xl font-bold text-white mb-2">Konfirmasi Ujian Terkunci</h2>
-            <p class="text-slate-400 text-sm mb-4">Silakan masukkan identitas diri sebelum mulai. Dilarang split screen / berpindah tab.</p>
+            <h2 class="text-2xl font-bold text-white mb-2">Konfirmasi Ujian Siswa</h2>
+            <p class="text-slate-400 text-xs mb-6">Masukan identitas Kamu sebelum memulai ujian. Sistem akan mengunci tampilan secara penuh.</p>
 
-            <div class="space-y-3 mb-6 text-left">
+            <div class="space-y-3 text-left mb-6">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Nama Lengkap Siswa</label>
-                    <input type="text" id="studentName" required placeholder="Contoh: Budi Santoso"
-                        class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white text-sm outline-none">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Nama Lengkap Siswa</label>
+                    <input type="text" id="studentName" placeholder="Contoh: Ahmad Fauzi" required
+                        class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white text-sm outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">Nomor Induk / NISN</label>
-                    <input type="text" id="studentId" required placeholder="Contoh: 12345678"
-                        class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white text-sm outline-none">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">NISN / Nomor Induk</label>
+                    <input type="text" id="studentNisn" placeholder="Contoh: 0012345678" required
+                        class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 text-white text-sm outline-none">
                 </div>
             </div>
 
-            <button onclick="launchExamSession()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/30">
+            <button onclick="validateAndLaunchExam()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-emerald-600/30">
                 <i data-lucide="play" class="w-5 h-5"></i>
                 <span>Masuk Fullscreen & Mulai Ujian</span>
             </button>
@@ -213,20 +164,41 @@
             <p id="blurMessage" class="text-sm text-slate-300 max-w-md">
                 Kamu terdeteksi membagi layar (split screen), berpindah ke aplikasi lain, atau keluar dari mode layar penuh.
             </p>
-            
-            <div class="flex flex-col sm:flex-row gap-3 w-full max-w-md pt-2">
-                <button id="btnReturnExam" onclick="restoreExamFocus()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 py-3 rounded-xl transition shadow-lg shadow-indigo-600/30 text-sm">
-                    Kembali Ke Mode Ujian (Fullscreen)
-                </button>
-                <button id="btnUnblockProctor" onclick="promptProctorUnlock()" class="hidden flex-1 bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-3 rounded-xl transition shadow-lg shadow-amber-600/30 text-sm">
-                    Buka Kunci (PIN Guru)
-                </button>
+            <button onclick="restoreExamFocus()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-indigo-600/30">
+                Kembali Ke Mode Ujian (Fullscreen)
+            </button>
+        </div>
+
+        <!-- PANEL UNLOCK PIN PENGAWAS (JIKA TERKUNCI PERMANEN) -->
+        <div id="pinUnlockModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-800 border border-rose-500/40 rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
+                <div class="w-12 h-12 bg-rose-500/20 text-rose-400 rounded-full flex items-center justify-center mx-auto border border-rose-500/30">
+                    <i data-lucide="lock" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white">UJIAN TERKUNCI PERMANEN!</h3>
+                <p id="pinModalMessage" class="text-xs text-slate-300">
+                    Siswa dengan NISN ini telah diblokir karena melakukan kecurangan melebihi batas. Minta Pengawas untuk memasukkan PIN Unblock.
+                </p>
+                
+                <div>
+                    <input type="password" id="inputProctorPin" placeholder="Masukkan PIN Pengawas" maxlength="6"
+                        class="w-full text-center tracking-widest text-lg px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl focus:ring-2 focus:ring-rose-500 text-white outline-none">
+                </div>
+
+                <div class="flex space-x-2">
+                    <button onclick="redirectToGoogle()" class="w-1/2 bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold py-2.5 rounded-xl text-xs transition">
+                        Keluar
+                    </button>
+                    <button onclick="verifyProctorPinAndUnlock()" class="w-1/2 bg-rose-600 hover:bg-rose-500 text-white font-semibold py-2.5 rounded-xl text-xs transition">
+                        Buka Kunci
+                    </button>
+                </div>
             </div>
         </div>
 
     </main>
 
-    <!-- MODAL POPUP DIALOG -->
+    <!-- MODAL POPUP DIAOG -->
     <div id="customModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl">
             <h3 id="modalTitle" class="text-xl font-bold text-white">Peringatan</h3>
@@ -244,55 +216,34 @@
             targetUrl: '',
             durationMinutes: 60,
             maxViolations: 3,
-            currentViolations: 0,
             proctorPin: '1234',
+            currentViolations: 0,
             timerInterval: null,
             timeRemainingSec: 0,
             isActive: false,
-            initialScreenHeight: window.screen.height,
-            studentId: '',
-            studentName: ''
+            studentNisn: '',
+            studentName: '',
+            initialScreenHeight: window.screen.height
         };
 
-        let cloudContext = null;
-
-        // PARSING DATA UJIAN JIKA DIAKSES DARI LINK
-        window.addEventListener('DOMContentLoaded', async () => {
-            if (window.initCloudStorage) {
-                cloudContext = await window.initCloudStorage();
-            }
-
+        // BACA KODE URL JIKA DIPANGGIL LEWAT LINK
+        window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const encodedData = urlParams.get('examData');
 
             if (encodedData) {
                 try {
                     const decoded = JSON.parse(atob(encodedData));
-
-                    // CEK APAKAH LINK SUDAH KADALUARSA
-                    if (decoded.expiresAt && Date.now() > decoded.expiresAt) {
-                        const expiryDate = new Date(decoded.expiresAt).toLocaleString('id-ID', {
-                            dateStyle: 'medium',
-                            timeStyle: 'short'
-                        });
-                        document.getElementById('setupPanel').classList.add('hidden');
-                        showModal(
-                            'Link Ujian Kadaluarsa!', 
-                            `Masa berlaku link ini telah habis pada ${expiryDate}. Silakan hubungi Guru/Pengawas untuk mendapatkan link ujian baru.`
-                        );
-                        return;
-                    }
-
                     examState.targetUrl = decoded.url;
                     examState.durationMinutes = parseInt(decoded.duration) || 60;
                     examState.maxViolations = parseInt(decoded.maxViolations) || 3;
-                    examState.proctorPin = decoded.proctorPin || '1234';
+                    examState.proctorPin = decoded.pin || '1234';
 
                     document.getElementById('maxViolationDisplay').innerText = examState.maxViolations;
                     document.getElementById('setupPanel').classList.add('hidden');
                     document.getElementById('startExamPortal').classList.remove('hidden');
                 } catch (e) {
-                    showModal('Error Link', 'Parameter link ujian tidak dapat dibaca.');
+                    showModal('Error Link', 'Parameter link ujian tidak valid.');
                 }
             }
         });
@@ -303,26 +254,12 @@
             const rawUrl = document.getElementById('formUrl').value.trim();
             const duration = document.getElementById('duration').value;
             const maxViolations = document.getElementById('maxViolations').value;
-            const proctorPin = document.getElementById('proctorPin').value.trim() || '1234';
-            const expiryHours = parseFloat(document.getElementById('linkExpiryHours').value) || 2;
-            const customDomain = document.getElementById('customDomain').value.trim();
+            const pin = document.getElementById('proctorPin').value.trim();
 
-            const createdAt = Date.now();
-            const expiresAt = createdAt + (expiryHours * 60 * 60 * 1000);
-
-            const payload = { 
-                url: rawUrl, 
-                duration: duration, 
-                maxViolations: maxViolations,
-                proctorPin: proctorPin,
-                createdAt: createdAt,
-                expiresAt: expiresAt
-            };
+            const payload = { url: rawUrl, duration: duration, maxViolations: maxViolations, pin: pin };
             const encoded = btoa(JSON.stringify(payload));
 
-            let baseUrl = customDomain ? customDomain : window.location.href.split('?')[0];
-            baseUrl = baseUrl.replace(/^blob:/, '').replace(/\/$/, '');
-
+            let baseUrl = window.location.href.split('?')[0].replace(/^blob:/, '');
             const secureUrl = `${baseUrl}?examData=${encoded}`;
 
             document.getElementById('generatedLink').value = secureUrl;
@@ -331,19 +268,18 @@
             examState.targetUrl = rawUrl;
             examState.durationMinutes = parseInt(duration);
             examState.maxViolations = parseInt(maxViolations);
-            examState.proctorPin = proctorPin;
+            examState.proctorPin = pin;
         }
 
         function copyGeneratedLink() {
             const copyText = document.getElementById('generatedLink');
             copyText.select();
-            
             try {
                 document.execCommand('copy');
             } catch (err) {
                 navigator.clipboard.writeText(copyText.value);
             }
-            showModal('Berhasil Disalin!', 'Link ujian berhasil disalin ke clipboard.');
+            showModal('Berhasil Disalin!', 'Link ujian aman berhasil disalin.');
         }
 
         function startSimulationDirectly() {
@@ -352,28 +288,45 @@
             document.getElementById('maxViolationDisplay').innerText = examState.maxViolations;
         }
 
-        async function launchExamSession() {
-            const studentName = document.getElementById('studentName').value.trim();
-            const studentId = document.getElementById('studentId').value.trim();
+        // VALIDASI SISWA & KUNCIAN NISN PERMANEN
+        function validateAndLaunchExam() {
+            const name = document.getElementById('studentName').value.trim();
+            const nisn = document.getElementById('studentNisn').value.trim();
 
-            if (!studentName || !studentId) {
-                showModal('Identitas Belum Lengkap', 'Harap isi Nama Lengkap dan NISN terlebih dahulu!');
+            if (!name || !nisn) {
+                showModal('Identitas Belum Lengkap', 'Harap isi Nama Lengkap dan NISN Kamu terlebih dahulu!');
                 return;
             }
 
-            examState.studentName = studentName;
-            examState.studentId = studentId;
+            examState.studentName = name;
+            examState.studentNisn = nisn;
 
-            // CEK STATUS DI CLOUD UNTUK MENCEGAH PENGGUNAAN KEMBALI LINK LAMA
-            const isBlocked = await checkStudentLockStatus(studentId);
-            if (isBlocked) {
-                showModal(
-                    'Ujian Terkunci Permanen!', 
-                    `Siswa dengan NISN (${studentId}) telah didiskualifikasi atau telah menyelesaikan ujian. Minta Guru/Proktor untuk memasukkan PIN Pengawas!`
-                );
+            // CEK APAKAH NISN SISWA INI SUDAH PERNAH DIBLOKIR DI LOCALSTORAGE
+            const isBlocked = localStorage.getItem(`exam_blocked_${nisn}`);
+            if (isBlocked === 'true') {
+                document.getElementById('pinUnlockModal').classList.remove('hidden');
                 return;
             }
 
+            launchExamSession();
+        }
+
+        function verifyProctorPinAndUnlock() {
+            const inputPin = document.getElementById('inputProctorPin').value.trim();
+            if (inputPin === examState.proctorPin) {
+                // Hapus Blokir
+                localStorage.removeItem(`exam_blocked_${examState.studentNisn}`);
+                document.getElementById('pinUnlockModal').classList.add('hidden');
+                document.getElementById('inputProctorPin').value = '';
+                showModal('Kunci Dibuka!', 'Pengawas berhasil membuka kunci ujian. Silakan lanjut mengerjakan.', () => {
+                    launchExamSession();
+                });
+            } else {
+                showModal('PIN Salah', 'PIN Pengawas yang dimasukkan salah!');
+            }
+        }
+
+        function launchExamSession() {
             requestFullScreen();
 
             document.getElementById('startExamPortal').classList.add('hidden');
@@ -392,39 +345,6 @@
 
             startTimer();
             attachSecurityListeners();
-        }
-
-        async function checkStudentLockStatus(studentId) {
-            if (cloudContext && cloudContext.db) {
-                try {
-                    const { db, appId } = cloudContext;
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', studentId);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists() && docSnap.data().status === 'BLOCKED') {
-                        return true;
-                    }
-                } catch (e) {
-                    console.warn("Cloud status check fallback.");
-                }
-            }
-            return false;
-        }
-
-        async function updateStudentCloudStatus(status) {
-            if (cloudContext && cloudContext.db && examState.studentId) {
-                try {
-                    const { db, appId } = cloudContext;
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'sessions', examState.studentId);
-                    await setDoc(docRef, {
-                        studentId: examState.studentId,
-                        studentName: examState.studentName,
-                        status: status,
-                        timestamp: new Date().toISOString()
-                    });
-                } catch (e) {
-                    console.warn("Cloud status write fallback.");
-                }
-            }
         }
 
         function requestFullScreen() {
@@ -454,22 +374,31 @@
             document.getElementById('timerDisplay').innerText = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
         }
 
+        // REVISI METODE DETEKSI KECURANGAN (MENCEGAH FALSE POSITIVE KLIK FORM)
         function attachSecurityListeners() {
+            // 1. Deteksi Pindah Tab / Minimalisasi Aplikasi (Visibility Change)
             document.addEventListener('visibilitychange', () => {
                 if (examState.isActive && document.hidden) {
                     triggerBlurProtection('Kamu terdeteksi berpindah aplikasi atau tab!');
                 }
             });
 
+            // 2. Deteksi Keluar Jendela / Focus Blur (Diperbaiki agar klik di dalam iframe TIDAK dianggap kecurangan)
             window.addEventListener('blur', () => {
-                if (examState.isActive) {
-                    triggerBlurProtection('Fokus layar ujian terlepas!');
+                if (!examState.isActive) return;
+
+                // JIKA FOKUS BERPINDAH KE IFRAME GOOGLE FORM, ABAIKAN (BUKAN KECURANGAN)
+                if (document.activeElement === document.getElementById('examIframe')) {
+                    return;
                 }
+
+                triggerBlurProtection('Fokus layar ujian terlepas!');
             });
 
+            // 3. Deteksi Split Screen HP
             window.addEventListener('resize', checkSplitScreenRatio);
-            setInterval(checkSplitScreenRatio, 1000);
 
+            // 4. Matikan Klik Kanan & Seleksi
             document.addEventListener('contextmenu', e => e.preventDefault());
             document.addEventListener('copy', e => e.preventDefault());
             document.addEventListener('paste', e => e.preventDefault());
@@ -494,28 +423,14 @@
             examState.currentViolations++;
             document.getElementById('violationCount').innerText = examState.currentViolations;
 
+            // JIKA MELEBIHI BATAS PELANGGARAN -> BLOKIR SISWA PERMANEN & PANDU KE GOOGLE.COM
             if (examState.currentViolations >= examState.maxViolations) {
-                updateStudentCloudStatus('BLOCKED');
-                
-                document.getElementById('btnReturnExam').classList.add('hidden');
-                document.getElementById('btnUnblockProctor').classList.remove('hidden');
+                // Simpan status blokir NISN ke localStorage
+                if (examState.studentNisn) {
+                    localStorage.setItem(`exam_blocked_${examState.studentNisn}`, 'true');
+                }
 
-                finishExam('Batas Pelanggaran Terlampaui!', 'Akses ujian dihentikan. Membutuhkan PIN Pengawas dari Guru untuk membuka kembali.');
-            }
-        }
-
-        function promptProctorUnlock() {
-            const inputPin = prompt("Masukkan PIN / Password Pengawas (Guru) untuk membuka kunci:");
-            if (inputPin === examState.proctorPin) {
-                updateStudentCloudStatus('ACTIVE');
-                examState.currentViolations = 0;
-                document.getElementById('violationCount').innerText = 0;
-                document.getElementById('btnReturnExam').classList.remove('hidden');
-                document.getElementById('btnUnblockProctor').classList.add('hidden');
-                restoreExamFocus();
-                showModal('Kunci Terbuka!', 'Proktor telah memberikan kesempatan ujian kembali.');
-            } else if (inputPin !== null) {
-                showModal('PIN Salah', 'PIN Pengawas yang dimasukkan salah!');
+                finishExamAndRedirectToGoogle('Ujian Dikunci!', 'Kamu telah melanggar batas toleransi kecurangan. Kamu dikeluarkan dari ujian!');
             }
         }
 
@@ -528,6 +443,26 @@
             showModal('Konfirmasi Selesai', 'Apakah Kamu sudah menekan tombol Submit di Google Form dan ingin mengakhiri sesi?', () => {
                 finishExam('Ujian Selesai', 'Terima kasih telah menyelesaikan ujian secara tertib.');
             });
+        }
+
+        // PENGALIHAN OTOMATIS KE GOOGLE.COM JIKA CURANG MELEBIHI BATAS
+        function finishExamAndRedirectToGoogle(title, message) {
+            examState.isActive = false;
+            clearInterval(examState.timerInterval);
+
+            if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+
+            document.getElementById('examContainer').classList.add('hidden');
+            document.getElementById('examControls').classList.add('hidden');
+            document.getElementById('blurOverlay').classList.add('hidden');
+
+            showModal(title, message, () => {
+                redirectToGoogle();
+            });
+        }
+
+        function redirectToGoogle() {
+            window.location.href = 'https://www.google.com';
         }
 
         function finishExam(title, message) {
