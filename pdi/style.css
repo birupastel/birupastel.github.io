@@ -266,6 +266,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: all 0.2s ease;
 }
 
 .gcal-cell.other-month {
@@ -276,6 +277,23 @@ body {
 .gcal-cell.today {
   border: 2px solid #2563eb;
   background: #eff6ff;
+}
+
+/* TAMPILAN KHUSUS HARI LIBUR NASIONAL */
+.gcal-cell.national-holiday {
+  background-color: #ef4444 !important;
+  border-color: #dc2626 !important;
+}
+
+.gcal-cell.national-holiday .gcal-date-num {
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.gcal-cell.national-holiday .gcal-event-pill {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .gcal-date-num {
@@ -350,7 +368,7 @@ body {
   color: #2563eb;
 }
 
-/* TOMBOL NAVIGASI MEDIA (DI KANAN BAWAH AREA MEDIA) */
+/* TOMBOL NAVIGASI MEDIA */
 .media-nav-buttons {
   position: absolute;
   bottom: 20px;
@@ -393,7 +411,7 @@ body {
   left: 0;
   right: 0;
   background: linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4) 70%, transparent);
-  padding: 32px 120px 16px 24px; /* Padding kanan besar agar caption tidak tertutup tombol nav */
+  padding: 32px 120px 16px 24px;
   color: #ffffff;
   z-index: 10;
 }
