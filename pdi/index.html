@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Papan Informasi Digital - SMAN 1 Garut</title>
 
-  <!-- FAVICON SMAN 1 GARUT -->
-  <link rel="shortcut icon" href="logo.png" type="image/png">
-  <link rel="icon" href="logo.png" type="image/png">
+  <!-- FAVICON -->
+  <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/id/8/8f/Logo_sman_1_garut.png" type="image/png">
+  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/id/8/8f/Logo_sman_1_garut.png" type="image/png">
 
   <link rel="stylesheet" href="style.css">
 </head>
@@ -16,7 +16,7 @@
   <!-- HEADER -->
   <header class="header">
     <div class="brand">
-      <img src="logo.png" alt="Logo SMAN 1 Garut" id="school-logo" class="logo">
+      <img src="https://upload.wikimedia.org/wikipedia/id/8/8f/Logo_sman_1_garut.png" alt="Logo SMAN 1 Garut" id="school-logo" class="logo">
       <div class="school-info">
         <h1 id="school-name">SMAN 1 GARUT</h1>
         <p id="school-sub">Papan Informasi Digital Resmi</p>
@@ -53,6 +53,16 @@
         <span class="countdown-badge">⏳ AGENDA TERDEKAT</span>
         <div class="countdown-title" id="countdown-title">-</div>
         <div class="countdown-timer" id="countdown-timer">- Hari Lagi</div>
+      </div>
+
+      <!-- TOMBOL NAVIGASI MEDIA (PREV / NEXT) -->
+      <div class="media-nav-buttons">
+        <button class="nav-btn" id="prev-btn" onclick="prevSlide()" title="Slide Sebelumnya">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()" title="Slide Selanjutnya">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
       </div>
 
       <!-- MEDIA CAPTION OVERLAY -->
