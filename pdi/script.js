@@ -6,7 +6,7 @@ let allAgendaData = [];
 let currentMediaIndex = 0;
 let mediaTimer = null;
 
-// PALET WARNA KHUSUS AGENDA (DI-GENERATE KONSISTEN BERDASARKAN NAMA AGENDA)
+// PALET WARNA KHUSUS AGENDA (KONSISTEN BERDASARKAN HASHTAG NAMA)
 const COLOR_PALETTE = [
   "#2563eb", "#059669", "#d97706", "#7c3aed", 
   "#0891b2", "#e11d48", "#4f46e5", "#0284c7", 
@@ -50,7 +50,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// HELPER READ JSON PROPERTY
+// HELPER MEMBACA VALUE JSON
 function getValue(obj, possibleKeys, defaultValue = "") {
   if (!obj) return defaultValue;
   const objKeys = Object.keys(obj);
@@ -67,16 +67,14 @@ function getValue(obj, possibleKeys, defaultValue = "") {
   return defaultValue;
 }
 
-// PARSER TANGGAL PINTAR (SUPPORT MM/DD/YYYY & YYYY-MM-DD & ISO STRING)
+// PARSER TANGGAL PERSISI (BEBAS DARI TIMEZONE OFFSETS BUG)
 function parseToDateObj(dateValue) {
   if (!dateValue) return null;
-  
   if (dateValue instanceof Date) return dateValue;
 
   let str = String(dateValue).trim();
-  if (str.includes('T')) str = str.split('T')[0]; // Hapus jam ISO jika ada
+  if (str.includes('T')) str = str.split('T')[0]; // Ambil bagian tanggal YYYY-MM-DD saja
 
-  // Cek jika format dipisahkan oleh slas, dash, atau titik
   const parts = str.split(/[-/.]/);
   
   if (parts.length === 3) {
@@ -84,29 +82,24 @@ function parseToDateObj(dateValue) {
     const p1 = parseInt(parts[1], 10);
     const p2 = parseInt(parts[2], 10);
 
-    // Format YYYY-MM-DD
+    // Format YYYY-MM-DD (contoh: 2026-08-07)
     if (parts[0].length === 4) {
       return new Date(p0, p1 - 1, p2);
     }
     
-    // Format MM/DD/YYYY atau DD/MM/YYYY
+    // Format MM/DD/YYYY atau DD/MM/YYYY (contoh: 8/7/2026)
     if (parts[2].length === 4) {
       let month = p0;
       let day = p1;
       let year = p2;
 
-      // Jika p1 > 12 (contoh 8/24/2026), berarti p0 pasti Bulan (8), p1 pasti Tanggal (24)
-      if (p1 > 12) {
+      if (p1 > 12) { // 8/24/2026 -> Month 8, Day 24
         month = p0;
         day = p1;
-      } 
-      // Jika p0 > 12 (contoh 24/8/2026), berarti p0 pasti Tanggal (24), p1 pasti Bulan (8)
-      else if (p0 > 12) {
+      } else if (p0 > 12) { // 24/8/2026 -> Day 24, Month 8
         day = p0;
         month = p1;
-      }
-      // Jika keduanya <= 12, standar Google Sheet US adalah M/D/YYYY
-      else {
+      } else { // Standard Google Form / Sheet US: M/D/YYYY (8/7/2026 -> Month 8, Day 7)
         month = p0;
         day = p1;
       }
@@ -161,7 +154,7 @@ async function loadData() {
   }
 }
 
-// 3. RENDER AGENDA (SIDEBAR KIRI)
+// 3. RENDER AGENDA (SIDEBAR KIRI) & COUNTDOWN
 function renderAgenda(agendaList) {
   const container = document.getElementById('agenda-container');
   container.innerHTML = '';
@@ -176,9 +169,9 @@ function renderAgenda(agendaList) {
     return;
   }
 
-  // Waktu Jakarta untuk acuan Hari Ini
-  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
-  today.setHours(0, 0, 0, 0);
+  // Acuan Hari Ini (Jakarta WIB)
+  const nowWib = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+  const today = new Date(nowWib.getFullYear(), nowWib.getMonth(), nowWib.getDate());
 
   let upcomingEvent = null;
   let minDiffDays = Infinity;
@@ -222,12 +215,13 @@ function renderAgenda(agendaList) {
     `;
     container.appendChild(card);
 
+    // Hitung Countdown Agenda Terdekat secara Presisi
     if (tglMulaiRaw) {
-      const eventDate = parseToDateObj(tglMulaiRaw);
-      if (eventDate && !isNaN(eventDate.getTime())) {
-        eventDate.setHours(0, 0, 0, 0);
+      const eventDateRaw = parseToDateObj(tglMulaiRaw);
+      if (eventDateRaw) {
+        const eventDate = new Date(eventDateRaw.getFullYear(), eventDateRaw.getMonth(), eventDateRaw.getDate());
         const diffTime = eventDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
         if (diffDays >= 0 && diffDays < minDiffDays) {
           minDiffDays = diffDays;
@@ -257,7 +251,7 @@ function parseMediaUrl(url) {
     if (url.includes('youtu.be/')) {
       videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
     } else if (url.includes('watch?v=')) {
-      videoId = url.split('watch?v=')[1].split('&')[0];
+      videoId = url.split('watch?v=')) [1].split('&')[0];
     }
     return {
       isYoutube: true,
@@ -286,9 +280,9 @@ function parseMediaUrl(url) {
 
 // 5. GENERATE KALENDER GOOGLE CALENDAR STYLE
 function renderCalendarSlide(container) {
-  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
-  const year = now.getFullYear();
-  const month = now.getMonth();
+  const nowWib = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+  const year = nowWib.getFullYear();
+  const month = nowWib.getMonth();
 
   const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
   
@@ -304,8 +298,12 @@ function renderCalendarSlide(container) {
     const nama = getValue(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Nama"], "Agenda");
     const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal"], "");
     const tglSelesaiRaw = getValue(item, ["Tanggal Selesai Agenda", "Tanggal Selesai"], tglMulaiRaw);
-    const dStart = parseToDateObj(tglMulaiRaw);
-    const dEnd = tglSelesaiRaw ? parseToDateObj(tglSelesaiRaw) : dStart;
+    
+    const dStartRaw = parseToDateObj(tglMulaiRaw);
+    const dEndRaw = tglSelesaiRaw ? parseToDateObj(tglSelesaiRaw) : dStartRaw;
+
+    const dStart = dStartRaw ? new Date(dStartRaw.getFullYear(), dStartRaw.getMonth(), dStartRaw.getDate()) : null;
+    const dEnd = dEndRaw ? new Date(dEndRaw.getFullYear(), dEndRaw.getMonth(), dEndRaw.getDate()) : dStart;
 
     return {
       nama,
@@ -315,16 +313,17 @@ function renderCalendarSlide(container) {
     };
   }).filter(ev => ev.dStart && !isNaN(ev.dStart.getTime()));
 
+  // Sort Agenda berdasarkan tanggal mulai & durasi
   sortedAgenda.sort((a, b) => a.dStart - b.dStart || (b.dEnd - b.dStart) - (a.dEnd - a.dStart));
 
   sortedAgenda.forEach(ev => {
-    let cur = new Date(ev.dStart);
+    let cur = new Date(ev.dStart.getTime());
     const end = ev.dEnd;
 
     let targetSlot = 0;
     while (true) {
       let isSlotFree = true;
-      let checkCur = new Date(cur);
+      let checkCur = new Date(cur.getTime());
       while (checkCur <= end) {
         if (checkCur.getMonth() === month && checkCur.getFullYear() === year) {
           const dayNum = checkCur.getDate();
@@ -374,7 +373,7 @@ function renderCalendarSlide(container) {
   }
 
   for (let day = 1; day <= lastDay.getDate(); day++) {
-    const isToday = day === now.getDate();
+    const isToday = day === nowWib.getDate();
     const todayClass = isToday ? 'today' : '';
     
     let pillsHtml = '';
@@ -445,10 +444,24 @@ function showMedia(index) {
     }
   }
 
+  // Timer Otomatis Slide (12 Detik)
   mediaTimer = setTimeout(() => {
     currentMediaIndex = (currentMediaIndex + 1) % mediaSlides.length;
     showMedia(currentMediaIndex);
   }, 12000);
+}
+
+// KONTROL NAVIGASI MANUAL (PREVIOUS & NEXT)
+function nextSlide() {
+  if (mediaSlides.length === 0) return;
+  currentMediaIndex = (currentMediaIndex + 1) % mediaSlides.length;
+  showMedia(currentMediaIndex);
+}
+
+function prevSlide() {
+  if (mediaSlides.length === 0) return;
+  currentMediaIndex = (currentMediaIndex - 1 + mediaSlides.length) % mediaSlides.length;
+  showMedia(currentMediaIndex);
 }
 
 // 7. RENDER RUNNING TEXT
@@ -469,6 +482,6 @@ function renderRunningText(textList) {
   }
 }
 
-// Inisialisasi
+// Inisialisasi Pertama
 loadData();
 setInterval(loadData, 1 * 60 * 1000);
