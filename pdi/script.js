@@ -6,19 +6,51 @@ let allAgendaData = [];
 let currentMediaIndex = 0;
 let mediaTimer = null;
 
-// 1. JAM & TANGGAL REAL-TIME
+// PALET WARNA KHUSUS AGENDA (DI-GENERATE KONSISTEN BERDASARKAN NAMA AGENDA)
+const COLOR_PALETTE = [
+  "#2563eb", "#059669", "#d97706", "#7c3aed", 
+  "#0891b2", "#e11d48", "#4f46e5", "#0284c7", 
+  "#b45309", "#4d7c0f", "#c026d3", "#0d9488"
+];
+
+function getEventColor(title) {
+  if (!title) return COLOR_PALETTE[0];
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) {
+    hash = title.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % COLOR_PALETTE.length;
+  return COLOR_PALETTE[index];
+}
+
+// 1. JAM & TANGGAL REAL-TIME (WIB - UTC+7 ASIA/JAKARTA)
 function updateClock() {
   const now = new Date();
-  const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-  document.getElementById('clock-time').textContent = now.toLocaleTimeString('id-ID', timeOptions).replace(/\./g, ':');
+  
+  const timeOptions = { 
+    timeZone: 'Asia/Jakarta', 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit', 
+    hour12: false 
+  };
+  const timeStr = new Intl.DateTimeFormat('id-ID', timeOptions).format(now).replace(/\./g, ':');
+  document.getElementById('clock-time').textContent = timeStr;
 
-  const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-  document.getElementById('clock-date').textContent = now.toLocaleDateString('id-ID', dateOptions);
+  const dateOptions = { 
+    timeZone: 'Asia/Jakarta', 
+    weekday: 'long', 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric' 
+  };
+  const dateStr = new Intl.DateTimeFormat('id-ID', dateOptions).format(now);
+  document.getElementById('clock-date').textContent = dateStr;
 }
 setInterval(updateClock, 1000);
 updateClock();
 
-// HELPER MEMBACA VALUE DARI KUNCI APAPUN DALAM OBJECT JSON
+// HELPER READ JSON PROPERTY
 function getValue(obj, possibleKeys, defaultValue = "") {
   if (!obj) return defaultValue;
   const objKeys = Object.keys(obj);
@@ -110,7 +142,8 @@ function renderAgenda(agendaList) {
     return;
   }
 
-  const today = new Date();
+  // Waktu Jakarta untuk acuan Hari Ini
+  const today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
   today.setHours(0, 0, 0, 0);
 
   let upcomingEvent = null;
@@ -180,12 +213,11 @@ function renderAgenda(agendaList) {
   }
 }
 
-// 4. PARSER UNTUK MEDIA (GARANSI HASIL PASTI ADA RESULT)
+// 4. PARSER MEDIA
 function parseMediaUrl(url) {
   if (!url) return { isYoutube: false, fileId: '', directUrl: '' };
   url = String(url).trim();
 
-  // YOUTUBE
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     let videoId = '';
     if (url.includes('youtu.be/')) {
@@ -199,7 +231,6 @@ function parseMediaUrl(url) {
     };
   }
 
-  // GOOGLE DRIVE
   let fileId = '';
   const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
   const matchId = url.match(/id=([a-zA-Z0-9_-]+)/);
@@ -211,7 +242,6 @@ function parseMediaUrl(url) {
     return {
       isYoutube: false,
       fileId: fileId,
-      // Gunakan Google Drive Viewer langsung untuk menjamin ketersediaan tampilan
       previewUrl: `https://drive.google.com/file/d/${fileId}/preview`,
       directImg: `https://lh3.googleusercontent.com/d/${fileId}`
     };
@@ -220,9 +250,9 @@ function parseMediaUrl(url) {
   return { isYoutube: false, directUrl: url };
 }
 
-// 5. GENERATE KALENDER GOOGLE CALENDAR STYLE
+// 5. GENERATE KALENDER DENGAN STACKING BARIS KONSISTEN (AGENDA LINTAS HARI BERSAMBUNG LURUS)
 function renderCalendarSlide(container) {
-  const now = new Date();
+  const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
   const year = now.getFullYear();
   const month = now.getMonth();
 
@@ -234,44 +264,63 @@ function renderCalendarSlide(container) {
   let startDayOfWeek = firstDay.getDay() - 1; // Mulai Senin (0)
   if (startDayOfWeek === -1) startDayOfWeek = 6;
 
-  // Warna Pill Kategori Agenda
-  const getCategoryColor = (cat) => {
-    const c = String(cat).toLowerCase();
-    if (c.includes("akademik") || c.includes("ujian")) return "#2563eb"; // Biru
-    if (c.includes("siswa") || c.includes("ekstra") || c.includes("lomba") || c.includes("kesiswaan") || c.includes("prestasi")) return "#059669"; // Hijau
-    if (c.includes("libur")) return "#dc2626"; // Merah
-    if (c.includes("rapat") || c.includes("dinas")) return "#d97706"; // Oranye
-    return "#475569"; // Slate
-  };
-
-  // Map Agenda ke Rentang Hari (Date Span)
-  const eventMap = {};
-
-  allAgendaData.forEach(item => {
+  // Algoritma Stacking Slot untuk Posisi Baris Konsisten
+  const daySlots = {}; // { dateNum: [ev1, null, ev2] }
+  
+  // Sort Agenda berdasarkan Tanggal Mulai dan Durasi
+  const sortedAgenda = [...allAgendaData].map(item => {
     const nama = getValue(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Nama"], "Agenda");
     const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal"], "");
     const tglSelesaiRaw = getValue(item, ["Tanggal Selesai Agenda", "Tanggal Selesai"], tglMulaiRaw);
-    const kategori = getValue(item, ["Kategori", "Ketegori"], "Umum");
-    const color = getCategoryColor(kategori);
+    const dStart = parseToDateObj(tglMulaiRaw);
+    const dEnd = tglSelesaiRaw ? parseToDateObj(tglSelesaiRaw) : dStart;
 
-    if (tglMulaiRaw) {
-      const dStart = parseToDateObj(tglMulaiRaw);
-      const dEnd = tglSelesaiRaw ? parseToDateObj(tglSelesaiRaw) : dStart;
+    return {
+      nama,
+      dStart,
+      dEnd: dEnd && !isNaN(dEnd.getTime()) ? dEnd : dStart,
+      color: getEventColor(nama)
+    };
+  }).filter(ev => ev.dStart && !isNaN(ev.dStart.getTime()));
 
-      if (dStart && !isNaN(dStart.getTime())) {
-        let cur = new Date(dStart);
-        const end = dEnd && !isNaN(dEnd.getTime()) ? dEnd : dStart;
+  // Urutkan agenda agar agenda lintas hari diproses terlebih dahulu
+  sortedAgenda.sort((a, b) => a.dStart - b.dStart || (b.dEnd - b.dStart) - (a.dEnd - a.dStart));
 
-        // Iterasi dari Tanggal Mulai sampai Tanggal Selesai
-        while (cur <= end) {
-          if (cur.getMonth() === month && cur.getFullYear() === year) {
-            const dateNum = cur.getDate();
-            if (!eventMap[dateNum]) eventMap[dateNum] = [];
-            eventMap[dateNum].push({ nama, color });
+  sortedAgenda.forEach(ev => {
+    let cur = new Date(ev.dStart);
+    const end = ev.dEnd;
+
+    // Cari Slot Index kosong yang tersedia sepanjang rentang hari agenda tersebut
+    let targetSlot = 0;
+    while (true) {
+      let isSlotFree = true;
+      let checkCur = new Date(cur);
+      while (checkCur <= end) {
+        if (checkCur.getMonth() === month && checkCur.getFullYear() === year) {
+          const dayNum = checkCur.getDate();
+          if (daySlots[dayNum] && daySlots[dayNum][targetSlot]) {
+            isSlotFree = false;
+            break;
           }
-          cur.setDate(cur.getDate() + 1);
         }
+        checkCur.setDate(checkCur.getDate() + 1);
       }
+      if (isSlotFree) break;
+      targetSlot++;
+    }
+
+    // Isikan Agenda pada Target Slot tersebut dari Tanggal Mulai s/d Tanggal Selesai
+    while (cur <= end) {
+      if (cur.getMonth() === month && cur.getFullYear() === year) {
+        const dayNum = cur.getDate();
+        if (!daySlots[dayNum]) daySlots[dayNum] = [];
+        // Isi slot kosong sebelumnya dengan null
+        while (daySlots[dayNum].length < targetSlot) {
+          daySlots[dayNum].push(null);
+        }
+        daySlots[dayNum][targetSlot] = ev;
+      }
+      cur.setDate(cur.getDate() + 1);
     }
   });
 
@@ -303,9 +352,14 @@ function renderCalendarSlide(container) {
     const todayClass = isToday ? 'today' : '';
     
     let pillsHtml = '';
-    if (eventMap[day]) {
-      eventMap[day].forEach(ev => {
-        pillsHtml += `<div class="gcal-event-pill" style="background-color: ${ev.color};" title="${ev.nama}">${ev.nama}</div>`;
+    if (daySlots[day]) {
+      daySlots[day].forEach(ev => {
+        if (ev) {
+          pillsHtml += `<div class="gcal-event-pill" style="background-color: ${ev.color};" title="${ev.nama}">${ev.nama}</div>`;
+        } else {
+          // Spacer transparan agar baris posisi agenda di bawahnya tetap sejajar
+          pillsHtml += `<div class="gcal-event-pill spacer">&nbsp;</div>`;
+        }
       });
     }
 
@@ -335,13 +389,10 @@ function showMedia(index) {
 
   container.innerHTML = '';
 
-  // JIKA SLIDE KALENDER
   if (currentSlide.isCalendar) {
     captionBox.style.display = 'none';
     renderCalendarSlide(container);
-  } 
-  // JIKA SLIDE GAMBAR / VIDEO
-  else {
+  } else {
     const current = currentSlide.data;
     const rawUrl = getValue(current, ["Link URL", "Link URL / Media", "URL", "Link Media", "Link"], "");
     const title = getValue(current, ["Judul / Deskripsi Media", "Judul", "Deskripsi"], "");
@@ -352,7 +403,6 @@ function showMedia(index) {
     if (parsed.isYoutube) {
       container.innerHTML = `<iframe src="${parsed.embedUrl}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
     } else if (parsed.fileId) {
-      // Gunakan iframe preview Google Drive yang paling tahan terhadap CORS
       container.innerHTML = `<iframe src="${parsed.previewUrl}" allow="autoplay"></iframe>`;
     } else if (parsed.directUrl) {
       container.innerHTML = `
@@ -377,7 +427,7 @@ function showMedia(index) {
   }, 12000);
 }
 
-// 7. RENDER RUNNING TEXT
+// 7. RENDER RUNNING TEXT (SEAMLESS INFINITE LOOPING)
 function renderRunningText(textList) {
   const container = document.getElementById('running-text-container');
   
@@ -390,7 +440,10 @@ function renderRunningText(textList) {
     .filter(t => t !== "");
 
   if (activeTexts.length > 0) {
-    container.textContent = activeTexts.join("  —  📢  ");
+    // Gabungkan teks dengan ikon pemisah yang jelas
+    const joinedText = activeTexts.join(" &nbsp;&nbsp;📢&nbsp;&nbsp; ") + " &nbsp;&nbsp;📢&nbsp;&nbsp; ";
+    // Duplikasi isi teks agar looping animasi translateX(-50%) berjalan mulus tanpa jeda
+    container.innerHTML = `<span>${joinedText}</span><span>${joinedText}</span>`;
   }
 }
 
