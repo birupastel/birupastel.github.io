@@ -67,7 +67,7 @@ function getValue(obj, possibleKeys, defaultValue = "") {
   return defaultValue;
 }
 
-// PARSER TANGGAL PERSISI (BEBAS DARI TIMEZONE OFFSETS BUG)
+// PARSER TANGGAL PRESISI (BEBAS DARI TIMEZONE OFFSETS BUG)
 function parseToDateObj(dateValue) {
   if (!dateValue) return null;
   if (dateValue instanceof Date) return dateValue;
@@ -82,12 +82,12 @@ function parseToDateObj(dateValue) {
     const p1 = parseInt(parts[1], 10);
     const p2 = parseInt(parts[2], 10);
 
-    // Format YYYY-MM-DD (contoh: 2026-08-07)
+    // Format YYYY-MM-DD
     if (parts[0].length === 4) {
       return new Date(p0, p1 - 1, p2);
     }
     
-    // Format MM/DD/YYYY atau DD/MM/YYYY (contoh: 8/7/2026)
+    // Format MM/DD/YYYY atau DD/MM/YYYY
     if (parts[2].length === 4) {
       let month = p0;
       let day = p1;
@@ -99,7 +99,7 @@ function parseToDateObj(dateValue) {
       } else if (p0 > 12) { // 24/8/2026 -> Day 24, Month 8
         day = p0;
         month = p1;
-      } else { // Standard Google Form / Sheet US: M/D/YYYY (8/7/2026 -> Month 8, Day 7)
+      } else { // Standard US: M/D/YYYY
         month = p0;
         day = p1;
       }
@@ -241,7 +241,7 @@ function renderAgenda(agendaList) {
   }
 }
 
-// 4. PARSER MEDIA
+// 4. PARSER MEDIA (FIXED SYNTAX ERROR)
 function parseMediaUrl(url) {
   if (!url) return { isYoutube: false, fileId: '', directUrl: '' };
   url = String(url).trim();
@@ -251,7 +251,7 @@ function parseMediaUrl(url) {
     if (url.includes('youtu.be/')) {
       videoId = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
     } else if (url.includes('watch?v=')) {
-      videoId = url.split('watch?v=')) [1].split('&')[0];
+      videoId = url.split('watch?v=')[1].split('&')[0];
     }
     return {
       isYoutube: true,
@@ -444,7 +444,6 @@ function showMedia(index) {
     }
   }
 
-  // Timer Otomatis Slide (12 Detik)
   mediaTimer = setTimeout(() => {
     currentMediaIndex = (currentMediaIndex + 1) % mediaSlides.length;
     showMedia(currentMediaIndex);
