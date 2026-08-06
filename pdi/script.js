@@ -67,6 +67,58 @@ function getValue(obj, possibleKeys, defaultValue = "") {
   return defaultValue;
 }
 
+// PARSER TANGGAL PINTAR (SUPPORT MM/DD/YYYY & YYYY-MM-DD & ISO STRING)
+function parseToDateObj(dateValue) {
+  if (!dateValue) return null;
+  
+  if (dateValue instanceof Date) return dateValue;
+
+  let str = String(dateValue).trim();
+  if (str.includes('T')) str = str.split('T')[0]; // Hapus jam ISO jika ada
+
+  // Cek jika format dipisahkan oleh slas, dash, atau titik
+  const parts = str.split(/[-/.]/);
+  
+  if (parts.length === 3) {
+    const p0 = parseInt(parts[0], 10);
+    const p1 = parseInt(parts[1], 10);
+    const p2 = parseInt(parts[2], 10);
+
+    // Format YYYY-MM-DD
+    if (parts[0].length === 4) {
+      return new Date(p0, p1 - 1, p2);
+    }
+    
+    // Format MM/DD/YYYY atau DD/MM/YYYY
+    if (parts[2].length === 4) {
+      let month = p0;
+      let day = p1;
+      let year = p2;
+
+      // Jika p1 > 12 (contoh 8/24/2026), berarti p0 pasti Bulan (8), p1 pasti Tanggal (24)
+      if (p1 > 12) {
+        month = p0;
+        day = p1;
+      } 
+      // Jika p0 > 12 (contoh 24/8/2026), berarti p0 pasti Tanggal (24), p1 pasti Bulan (8)
+      else if (p0 > 12) {
+        day = p0;
+        month = p1;
+      }
+      // Jika keduanya <= 12, standar Google Sheet US adalah M/D/YYYY
+      else {
+        month = p0;
+        day = p1;
+      }
+
+      return new Date(year, month - 1, day);
+    }
+  }
+
+  const fallback = new Date(str);
+  return isNaN(fallback.getTime()) ? null : fallback;
+}
+
 // FORMAT TANGGAL SINGKAT
 function formatTanggalSingkat(dateValue) {
   if (!dateValue) return "";
@@ -75,24 +127,6 @@ function formatTanggalSingkat(dateValue) {
 
   const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
   return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-function parseToDateObj(dateValue) {
-  if (!dateValue) return null;
-  let d;
-  if (typeof dateValue === 'string') {
-    const cleanStr = dateValue.split('T')[0].trim();
-    const parts = cleanStr.split(/[-/.]/);
-    if (parts.length === 3) {
-      if (parts[0].length === 4) {
-        d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-      } else if (parts[2].length === 4) {
-        d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
-      }
-    }
-  }
-  if (!d || isNaN(d.getTime())) d = new Date(dateValue);
-  return d;
 }
 
 // 2. LOAD DATA DARI APPS SCRIPT
@@ -250,7 +284,7 @@ function parseMediaUrl(url) {
   return { isYoutube: false, directUrl: url };
 }
 
-// 5. GENERATE KALENDER DENGAN STACKING BARIS KONSISTEN (AGENDA LINTAS HARI BERSAMBUNG LURUS)
+// 5. GENERATE KALENDER GOOGLE CALENDAR STYLE
 function renderCalendarSlide(container) {
   const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
   const year = now.getFullYear();
@@ -264,10 +298,8 @@ function renderCalendarSlide(container) {
   let startDayOfWeek = firstDay.getDay() - 1; // Mulai Senin (0)
   if (startDayOfWeek === -1) startDayOfWeek = 6;
 
-  // Algoritma Stacking Slot untuk Posisi Baris Konsisten
-  const daySlots = {}; // { dateNum: [ev1, null, ev2] }
+  const daySlots = {}; 
   
-  // Sort Agenda berdasarkan Tanggal Mulai dan Durasi
   const sortedAgenda = [...allAgendaData].map(item => {
     const nama = getValue(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Nama"], "Agenda");
     const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal"], "");
@@ -283,14 +315,12 @@ function renderCalendarSlide(container) {
     };
   }).filter(ev => ev.dStart && !isNaN(ev.dStart.getTime()));
 
-  // Urutkan agenda agar agenda lintas hari diproses terlebih dahulu
   sortedAgenda.sort((a, b) => a.dStart - b.dStart || (b.dEnd - b.dStart) - (a.dEnd - a.dStart));
 
   sortedAgenda.forEach(ev => {
     let cur = new Date(ev.dStart);
     const end = ev.dEnd;
 
-    // Cari Slot Index kosong yang tersedia sepanjang rentang hari agenda tersebut
     let targetSlot = 0;
     while (true) {
       let isSlotFree = true;
@@ -309,12 +339,10 @@ function renderCalendarSlide(container) {
       targetSlot++;
     }
 
-    // Isikan Agenda pada Target Slot tersebut dari Tanggal Mulai s/d Tanggal Selesai
     while (cur <= end) {
       if (cur.getMonth() === month && cur.getFullYear() === year) {
         const dayNum = cur.getDate();
         if (!daySlots[dayNum]) daySlots[dayNum] = [];
-        // Isi slot kosong sebelumnya dengan null
         while (daySlots[dayNum].length < targetSlot) {
           daySlots[dayNum].push(null);
         }
@@ -341,12 +369,10 @@ function renderCalendarSlide(container) {
       <div class="gcal-grid-body">
   `;
 
-  // Hari Kosong Bulan Lalu
   for (let i = 0; i < startDayOfWeek; i++) {
     html += `<div class="gcal-cell other-month"></div>`;
   }
 
-  // Hari Bulan Ini
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const isToday = day === now.getDate();
     const todayClass = isToday ? 'today' : '';
@@ -357,7 +383,6 @@ function renderCalendarSlide(container) {
         if (ev) {
           pillsHtml += `<div class="gcal-event-pill" style="background-color: ${ev.color};" title="${ev.nama}">${ev.nama}</div>`;
         } else {
-          // Spacer transparan agar baris posisi agenda di bawahnya tetap sejajar
           pillsHtml += `<div class="gcal-event-pill spacer">&nbsp;</div>`;
         }
       });
@@ -420,14 +445,13 @@ function showMedia(index) {
     }
   }
 
-  // Durasi Pindah Slide (12 Detik)
   mediaTimer = setTimeout(() => {
     currentMediaIndex = (currentMediaIndex + 1) % mediaSlides.length;
     showMedia(currentMediaIndex);
   }, 12000);
 }
 
-// 7. RENDER RUNNING TEXT (SEAMLESS INFINITE LOOPING)
+// 7. RENDER RUNNING TEXT
 function renderRunningText(textList) {
   const container = document.getElementById('running-text-container');
   
@@ -440,9 +464,7 @@ function renderRunningText(textList) {
     .filter(t => t !== "");
 
   if (activeTexts.length > 0) {
-    // Gabungkan teks dengan ikon pemisah yang jelas
     const joinedText = activeTexts.join(" &nbsp;&nbsp;📢&nbsp;&nbsp; ") + " &nbsp;&nbsp;📢&nbsp;&nbsp; ";
-    // Duplikasi isi teks agar looping animasi translateX(-50%) berjalan mulus tanpa jeda
     container.innerHTML = `<span>${joinedText}</span><span>${joinedText}</span>`;
   }
 }
