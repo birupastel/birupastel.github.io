@@ -67,16 +67,35 @@ function getValue(obj, possibleKeys, defaultValue = "") {
   return defaultValue;
 }
 
-// PARSER TANGGAL PRESISI (BEBAS DARI TIMEZONE OFFSETS BUG)
+// PARSER TANGGAL AKURAT (MENGATASI OFFSET TIMEZONE APPS SCRIPT)
 function parseToDateObj(dateValue) {
   if (!dateValue) return null;
-  if (dateValue instanceof Date) return dateValue;
+  
+  if (dateValue instanceof Date) {
+    return new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
+  }
 
   let str = String(dateValue).trim();
-  if (str.includes('T')) str = str.split('T')[0]; // Ambil bagian tanggal YYYY-MM-DD saja
 
+  // Jika Apps Script mengirimkan string ISO Date (contoh: "2026-08-06T17:00:00.000Z")
+  if (str.includes('T') || str.includes('Z')) {
+    const dIso = new Date(str);
+    if (!isNaN(dIso.getTime())) {
+      // Format ulang sesuai zona waktu Asia/Jakarta (WIB)
+      const wibFormatted = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+      }).format(dIso); // Menghasilkan format "M/D/YYYY" dalam WIB
+
+      const partsWib = wibFormatted.split('/');
+      return new Date(parseInt(partsWib[2]), parseInt(partsWib[0]) - 1, parseInt(partsWib[1]));
+    }
+  }
+
+  // Jika string tanggal biasa (misal "8/7/2026" atau "2026-08-07")
   const parts = str.split(/[-/.]/);
-  
   if (parts.length === 3) {
     const p0 = parseInt(parts[0], 10);
     const p1 = parseInt(parts[1], 10);
@@ -93,13 +112,13 @@ function parseToDateObj(dateValue) {
       let day = p1;
       let year = p2;
 
-      if (p1 > 12) { // 8/24/2026 -> Month 8, Day 24
+      if (p1 > 12) { // 8/24/2026
         month = p0;
         day = p1;
-      } else if (p0 > 12) { // 24/8/2026 -> Day 24, Month 8
+      } else if (p0 > 12) { // 24/8/2026
         day = p0;
         month = p1;
-      } else { // Standard US: M/D/YYYY
+      } else { // Default Google Sheet US: M/D/YYYY
         month = p0;
         day = p1;
       }
@@ -109,7 +128,7 @@ function parseToDateObj(dateValue) {
   }
 
   const fallback = new Date(str);
-  return isNaN(fallback.getTime()) ? null : fallback;
+  return isNaN(fallback.getTime()) ? null : new Date(fallback.getFullYear(), fallback.getMonth(), fallback.getDate());
 }
 
 // FORMAT TANGGAL SINGKAT
@@ -169,7 +188,7 @@ function renderAgenda(agendaList) {
     return;
   }
 
-  // Acuan Hari Ini (Jakarta WIB)
+  // Acuan Hari Ini (WIB)
   const nowWib = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
   const today = new Date(nowWib.getFullYear(), nowWib.getMonth(), nowWib.getDate());
 
@@ -217,10 +236,9 @@ function renderAgenda(agendaList) {
 
     // Hitung Countdown Agenda Terdekat secara Presisi
     if (tglMulaiRaw) {
-      const eventDateRaw = parseToDateObj(tglMulaiRaw);
-      if (eventDateRaw) {
-        const eventDate = new Date(eventDateRaw.getFullYear(), eventDateRaw.getMonth(), eventDateRaw.getDate());
-        const diffTime = eventDate - today;
+      const eventDate = parseToDateObj(tglMulaiRaw);
+      if (eventDate) {
+        const diffTime = eventDate.getTime() - today.getTime();
         const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
         if (diffDays >= 0 && diffDays < minDiffDays) {
@@ -241,7 +259,7 @@ function renderAgenda(agendaList) {
   }
 }
 
-// 4. PARSER MEDIA (FIXED SYNTAX ERROR)
+// 4. PARSER MEDIA
 function parseMediaUrl(url) {
   if (!url) return { isYoutube: false, fileId: '', directUrl: '' };
   url = String(url).trim();
@@ -299,16 +317,14 @@ function renderCalendarSlide(container) {
     const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal"], "");
     const tglSelesaiRaw = getValue(item, ["Tanggal Selesai Agenda", "Tanggal Selesai"], tglMulaiRaw);
     
-    const dStartRaw = parseToDateObj(tglMulaiRaw);
-    const dEndRaw = tglSelesaiRaw ? parseToDateObj(tglSelesaiRaw) : dStartRaw;
-
-    const dStart = dStartRaw ? new Date(dStartRaw.getFullYear(), dStartRaw.getMonth(), dStartRaw.getDate()) : null;
-    const dEnd = dEndRaw ? new Date(dEndRaw.getFullYear(), dEndRaw.getMonth(), dEndRaw.getDate()) : dStart;
+    const dStart = parseToDateObj(tglMulaiRaw);
+    const dEndRaw = tglSelesaiRaw ? parseToDateObj(tglSelesaiRaw) : dStart;
+    const dEnd = dEndRaw || dStart;
 
     return {
       nama,
       dStart,
-      dEnd: dEnd && !isNaN(dEnd.getTime()) ? dEnd : dStart,
+      dEnd,
       color: getEventColor(nama)
     };
   }).filter(ev => ev.dStart && !isNaN(ev.dStart.getTime()));
@@ -317,8 +333,8 @@ function renderCalendarSlide(container) {
   sortedAgenda.sort((a, b) => a.dStart - b.dStart || (b.dEnd - b.dStart) - (a.dEnd - a.dStart));
 
   sortedAgenda.forEach(ev => {
-    let cur = new Date(ev.dStart.getTime());
-    const end = ev.dEnd;
+    let cur = new Date(ev.dStart.getFullYear(), ev.dStart.getMonth(), ev.dStart.getDate());
+    const end = new Date(ev.dEnd.getFullYear(), ev.dEnd.getMonth(), ev.dEnd.getDate());
 
     let targetSlot = 0;
     while (true) {
