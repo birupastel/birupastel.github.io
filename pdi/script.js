@@ -13,7 +13,10 @@ const COLOR_PALETTE = [
   "#b45309", "#4d7c0f", "#c026d3", "#0d9488"
 ];
 
-function getEventColor(title) {
+function getEventColor(title, category = "") {
+  const cat = String(category).toLowerCase();
+  if (cat.includes("libur")) return "#dc2626"; // Warna merah khusus Libur
+
   if (!title) return COLOR_PALETTE[0];
   let hash = 0;
   for (let i = 0; i < title.length; i++) {
@@ -81,13 +84,12 @@ function parseToDateObj(dateValue) {
   if (str.includes('T') || str.includes('Z')) {
     const dIso = new Date(str);
     if (!isNaN(dIso.getTime())) {
-      // Format ulang sesuai zona waktu Asia/Jakarta (WIB)
       const wibFormatted = new Intl.DateTimeFormat('en-US', {
         timeZone: 'Asia/Jakarta',
         year: 'numeric',
         month: 'numeric',
         day: 'numeric'
-      }).format(dIso); // Menghasilkan format "M/D/YYYY" dalam WIB
+      }).format(dIso);
 
       const partsWib = wibFormatted.split('/');
       return new Date(parseInt(partsWib[2]), parseInt(partsWib[0]) - 1, parseInt(partsWib[1]));
@@ -178,9 +180,15 @@ function renderAgenda(agendaList) {
   const container = document.getElementById('agenda-container');
   container.innerHTML = '';
 
+  // Filter: Hanya tampilkan agenda yang aktif DAN BUKAN kategori Libur / Libur Nasional
   const activeAgenda = agendaList.filter(item => {
     const status = String(getValue(item, ["status"], "aktif")).toLowerCase().trim();
-    return status !== "selesai" && status !== "nonaktif";
+    const kategori = String(getValue(item, ["Kategori", "Ketegori"], "Umum")).toLowerCase().trim();
+    
+    const isAktif = status !== "selesai" && status !== "nonaktif";
+    const isNotHoliday = !kategori.includes("libur");
+
+    return isAktif && isNotHoliday;
   });
 
   if (activeAgenda.length === 0) {
@@ -217,7 +225,6 @@ function renderAgenda(agendaList) {
     let badgeClass = "badge-umum";
     if (katLower.includes("akademik") || katLower.includes("ujian")) badgeClass = "badge-akademik";
     else if (katLower.includes("siswa") || katLower.includes("ekstra") || katLower.includes("lomba") || katLower.includes("prestasi") || katLower.includes("kesiswaan")) badgeClass = "badge-siswa";
-    else if (katLower.includes("libur")) badgeClass = "badge-libur";
     else if (katLower.includes("rapat") || katLower.includes("dinas")) badgeClass = "badge-rapat";
 
     const card = document.createElement('div');
@@ -234,7 +241,7 @@ function renderAgenda(agendaList) {
     `;
     container.appendChild(card);
 
-    // Hitung Countdown Agenda Terdekat secara Presisi
+    // Hitung Countdown Agenda Terdekat
     if (tglMulaiRaw) {
       const eventDate = parseToDateObj(tglMulaiRaw);
       if (eventDate) {
@@ -296,7 +303,7 @@ function parseMediaUrl(url) {
   return { isYoutube: false, directUrl: url };
 }
 
-// 5. GENERATE KALENDER GOOGLE CALENDAR STYLE
+// 5. GENERATE KALENDER GOOGLE CALENDAR STYLE (DIMULAI HARI MINGGU & RED HIGHLIGHT LIBUR NASIONAL)
 function renderCalendarSlide(container) {
   const nowWib = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
   const year = nowWib.getFullYear();
@@ -307,25 +314,31 @@ function renderCalendarSlide(container) {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
 
-  let startDayOfWeek = firstDay.getDay() - 1; // Mulai Senin (0)
-  if (startDayOfWeek === -1) startDayOfWeek = 6;
+  // MULAI HARI MINGGU (0 = Minggu, 1 = Senin, dst)
+  const startDayOfWeek = firstDay.getDay(); 
 
   const daySlots = {}; 
+  const isNationalHolidayMap = {}; // Untuk melacak tanggal yang Libur Nasional
   
   const sortedAgenda = [...allAgendaData].map(item => {
     const nama = getValue(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Nama"], "Agenda");
     const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal"], "");
     const tglSelesaiRaw = getValue(item, ["Tanggal Selesai Agenda", "Tanggal Selesai"], tglMulaiRaw);
-    
+    const kategori = getValue(item, ["Kategori", "Ketegori"], "Umum");
+
     const dStart = parseToDateObj(tglMulaiRaw);
     const dEndRaw = tglSelesaiRaw ? parseToDateObj(tglSelesaiRaw) : dStart;
     const dEnd = dEndRaw || dStart;
 
+    const isHoliday = String(kategori).toLowerCase().includes("libur");
+
     return {
       nama,
+      kategori,
+      isHoliday,
       dStart,
       dEnd,
-      color: getEventColor(nama)
+      color: getEventColor(nama, kategori)
     };
   }).filter(ev => ev.dStart && !isNaN(ev.dStart.getTime()));
 
@@ -357,11 +370,17 @@ function renderCalendarSlide(container) {
     while (cur <= end) {
       if (cur.getMonth() === month && cur.getFullYear() === year) {
         const dayNum = cur.getDate();
+        
         if (!daySlots[dayNum]) daySlots[dayNum] = [];
         while (daySlots[dayNum].length < targetSlot) {
           daySlots[dayNum].push(null);
         }
         daySlots[dayNum][targetSlot] = ev;
+
+        // Tandai sebagai Libur Nasional jika berpenanda libur
+        if (ev.isHoliday) {
+          isNationalHolidayMap[dayNum] = true;
+        }
       }
       cur.setDate(cur.getDate() + 1);
     }
@@ -373,24 +392,30 @@ function renderCalendarSlide(container) {
         <span>📅 Agenda Bulan ${monthNames[month]} ${year}</span>
       </div>
       <div class="gcal-grid-header">
+        <div class="gcal-day-header" style="color: #ef4444;">Min</div>
         <div class="gcal-day-header">Sen</div>
         <div class="gcal-day-header">Sel</div>
         <div class="gcal-day-header">Rab</div>
         <div class="gcal-day-header">Kam</div>
         <div class="gcal-day-header">Jum</div>
         <div class="gcal-day-header">Sab</div>
-        <div class="gcal-day-header">Min</div>
       </div>
       <div class="gcal-grid-body">
   `;
 
+  // Sel Kosong Bulan Lalu
   for (let i = 0; i < startDayOfWeek; i++) {
     html += `<div class="gcal-cell other-month"></div>`;
   }
 
+  // Sel Hari Bulan Ini
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const isToday = day === nowWib.getDate();
-    const todayClass = isToday ? 'today' : '';
+    const isHoliday = isNationalHolidayMap[day] === true;
+
+    let cellClasses = ['gcal-cell'];
+    if (isToday) cellClasses.push('today');
+    if (isHoliday) cellClasses.push('national-holiday');
     
     let pillsHtml = '';
     if (daySlots[day]) {
@@ -404,7 +429,7 @@ function renderCalendarSlide(container) {
     }
 
     html += `
-      <div class="gcal-cell ${todayClass}">
+      <div class="${cellClasses.join(' ')}">
         <div class="gcal-date-num">${day}</div>
         <div class="gcal-events-list">
           ${pillsHtml}
@@ -497,6 +522,6 @@ function renderRunningText(textList) {
   }
 }
 
-// Inisialisasi Pertama
+// Inisialisasi
 loadData();
 setInterval(loadData, 1 * 60 * 1000);
