@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ResistoLearn - Media Pembelajaran Kode Warna Resistor</title>
+  <title>ResistoLearn</title>
   <style>
     :root {
       --primary: #0d9488;
@@ -587,6 +587,87 @@
       color: #dc2626;
     }
 
+    .materi-subnav {
+      display: flex;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      padding: 0.35rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .subtab-btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 0.6rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .subtab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .subtab-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .materi-subcontent {
+      display: none;
+    }
+
+    .materi-subcontent.active {
+      display: block;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .diagram-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    .diagram-svg {
+      width: 100%;
+      max-width: 480px;
+      height: auto;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .diagram-caption {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      margin-top: 1rem;
+    }
+
+    .resistor-illustration-box {
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 0.85rem;
+      padding: 0.5rem;
+    }
+
     @media (max-width: 640px) {
       .header-container {
         flex-direction: column;
@@ -632,73 +713,196 @@
     <section id="tab-materi" class="tab-content active">
       <h2 class="section-title">Materi Kode Warna Resistor</h2>
 
-      <!-- Accordion Section 1 -->
-      <div class="accordion-item active" id="acc-1">
-        <div class="accordion-header" onclick="toggleAccordion('acc-1')">
-          <span>1. Pengertian Resistor</span>
-          <span class="icon">+</span>
-        </div>
-        <div class="accordion-body">
-          <p><strong>Resistor</strong> adalah komponen elektronik pasif yang berfungsi untuk menghambat dan mengatur arus listrik dalam suatu rangkaian elektronik. Satuan nilai hambatan resistor diukur dalam <strong>Ohm (&Omega;)</strong>. Untuk menentukan nilai hambatan pada resistor tetap berukuran kecil, digunakan pita kode warna pada badannya.</p>
+      <!-- Sub-Navigation for Materi -->
+      <div class="materi-subnav">
+        <button class="subtab-btn active" id="subbtn-pengertian" onclick="switchSubMateri('pengertian')">Pengertian</button>
+        <button class="subtab-btn" id="subbtn-jenis" onclick="switchSubMateri('jenis')">Jenis Resistor</button>
+        <button class="subtab-btn" id="subbtn-hitung" onclick="switchSubMateri('hitung')">Cara Menghitung</button>
+        <button class="subtab-btn" id="subbtn-tabel" onclick="switchSubMateri('tabel')">Tabel Kode Warna</button>
+      </div>
+
+      <!-- Sub-Content 1: Pengertian (Default Active) -->
+      <div id="materi-sub-pengertian" class="materi-subcontent active">
+        <div class="card">
+          <h3 class="card-title">1. Pengertian Resistor</h3>
+          <p style="margin-bottom: 1rem;"><strong>Resistor</strong> adalah komponen elektronik pasif yang berfungsi untuk menghambat dan mengatur besarnya arus listrik yang mengalir dalam suatu rangkaian elektronik. Nilai hambatan atau resistansi resistor diukur dalam satuan <strong>Ohm (&Omega;)</strong>.</p>
+          <p>Ukuran fisik resistor tetap ukuran kecil tidak memungkinkan untuk dicetak angka nilainya secara langsung. Oleh karena itu, dibuatlah sistem pita/gelang <strong>kode warna</strong> pada badan resistor untuk menyatakan besaran nilai resistansi dan persentase toleransinya.</p>
         </div>
       </div>
 
-      <!-- Accordion Section 2 -->
-      <div class="accordion-item" id="acc-2">
-        <div class="accordion-header" onclick="toggleAccordion('acc-2')">
-          <span>2. Pengelompokan Jenis Resistor</span>
-          <span class="icon">+</span>
-        </div>
-        <div class="accordion-body">
+      <!-- Sub-Content 2: Jenis Resistor -->
+      <div id="materi-sub-jenis" class="materi-subcontent">
+        <div class="card">
+          <h3 class="card-title">2. Pengelompokan Jenis Resistor</h3>
           <div class="grid-3">
-            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
-              <h4 style="color: var(--primary); margin-bottom: 0.3rem;">Resistor Tetap (Fixed)</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatan konstan yang tidak dapat diubah. Nilainya ditandai oleh gelang warna pada badannya.</p>
+
+            <!-- Card Resistor Tetap -->
+            <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
+              <div class="resistor-illustration-box">
+                <svg width="220" height="60" viewBox="0 0 220 60">
+                  <line x1="10" y1="30" x2="50" y2="30" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/>
+                  <line x1="170" y1="30" x2="210" y2="30" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/>
+                  <rect x="50" y="15" width="120" height="30" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2.5" rx="6"/>
+                  <path d="M 50 15 Q 42 30 50 45" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2.5"/>
+                  <path d="M 170 15 Q 178 30 170 45" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2.5"/>
+                  <rect x="70" y="15" width="10" height="30" fill="#dc2626"/>
+                  <rect x="90" y="15" width="10" height="30" fill="#eab308"/>
+                  <rect x="110" y="15" width="10" height="30" fill="#2563eb"/>
+                  <rect x="145" y="15" width="10" height="30" fill="#d97706"/>
+                </svg>
+              </div>
+              <h4 style="color: var(--primary); font-size: 1rem; margin-bottom: 0.4rem;">Resistor Tetap (Fixed Resistor)</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatan bersifat konstan dan tidak dapat diubah-ubah. Nilainya diidentifikasi melalui pita kode warna pada badannya.</p>
             </div>
-            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
-              <h4 style="color: var(--primary); margin-bottom: 0.3rem;">Resistor Variabel (Variable)</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatannya dapat diatur manual (contoh: Potensiometer, Rheostat, Trimpot).</p>
+
+            <!-- Card Resistor Variabel -->
+            <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
+              <div class="resistor-illustration-box">
+                <svg width="120" height="80" viewBox="0 0 120 80">
+                  <!-- Potentiometer outline -->
+                  <circle cx="60" cy="35" r="26" fill="#e2e8f0" stroke="#64748b" stroke-width="2.5"/>
+                  <circle cx="60" cy="35" r="14" fill="#0d9488"/>
+                  <line x1="60" y1="35" x2="60" y2="12" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+                  <rect x="35" y="60" width="10" height="15" fill="#94a3b8" rx="2"/>
+                  <rect x="55" y="60" width="10" height="15" fill="#94a3b8" rx="2"/>
+                  <rect x="75" y="60" width="10" height="15" fill="#94a3b8" rx="2"/>
+                </svg>
+              </div>
+              <h4 style="color: var(--primary); font-size: 1rem; margin-bottom: 0.4rem;">Resistor Variabel (Variable Resistor)</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatannya dapat diatur secara manual dengan memutar atau menggeser tuas (Contoh: Potensiometer, Rheostat, Trimpot).</p>
             </div>
-            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
-              <h4 style="color: var(--primary); margin-bottom: 0.3rem;">Resistor Non-Linear</h4>
-              <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatannya berubah otomatis berdasarkan lingkungan seperti cahaya (LDR) atau suhu (NTC/PTC).</p>
+
+            <!-- Card Resistor Non-Linear -->
+            <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
+              <div class="resistor-illustration-box">
+                <svg width="140" height="80" viewBox="0 0 140 80">
+                  <!-- LDR / Thermistor illustration -->
+                  <circle cx="70" cy="40" r="24" fill="#ffedd5" stroke="#ea580c" stroke-width="2.5"/>
+                  <path d="M 54 32 Q 62 26 70 32 T 86 32" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M 54 48 Q 62 42 70 48 T 86 48" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round"/>
+                  <!-- Light Arrows -->
+                  <line x1="28" y1="18" x2="44" y2="30" stroke="#eab308" stroke-width="2.5" stroke-linecap="round"/>
+                  <polygon points="44,30 38,24 44,22" fill="#eab308"/>
+                  <line x1="38" y1="10" x2="54" y2="22" stroke="#eab308" stroke-width="2.5" stroke-linecap="round"/>
+                  <polygon points="54,22 48,16 54,14" fill="#eab308"/>
+                  <line x1="10" y1="40" x2="46" y2="40" stroke="#94a3b8" stroke-width="4"/>
+                  <line x1="94" y1="40" x2="130" y2="40" stroke="#94a3b8" stroke-width="4"/>
+                </svg>
+              </div>
+              <h4 style="color: var(--primary); font-size: 1rem; margin-bottom: 0.4rem;">Resistor Non-Linear</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatannya berubah secara otomatis mengikuti perubahan lingkungan fisik seperti cahaya (LDR) atau suhu (NTC/PTC).</p>
             </div>
+
           </div>
         </div>
       </div>
 
-      <!-- Accordion Section 3 -->
-      <div class="accordion-item" id="acc-3">
-        <div class="accordion-header" onclick="toggleAccordion('acc-3')">
-          <span>3. Cara Menghitung Kode Warna Resistor Tetap</span>
-          <span class="icon">+</span>
-        </div>
-        <div class="accordion-body">
-          <p>Resistor tetap umumnya menggunakan sistem 4 gelang warna atau 5 gelang warna:</p>
-          <div style="margin: 0.8rem 0;">
-            <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 0.3rem;">Resistor 4 Gelang Warna:</h4>
-            <ul style="padding-left: 1.25rem; font-size: 0.875rem;">
-              <li><strong>Gelang 1:</strong> Digit Kesatu &nbsp;|&nbsp; <strong>Gelang 2:</strong> Digit Kedua</li>
-              <li><strong>Gelang 3:</strong> Pengali (Multiplier) 10<sup>n</sup> &nbsp;|&nbsp; <strong>Gelang 4:</strong> Toleransi (%)</li>
-            </ul>
+      <!-- Sub-Content 3: Cara Menghitung dengan Ilustrasi Gambar Gelang (a) & (b) -->
+      <div id="materi-sub-hitung" class="materi-subcontent">
+        <div class="card">
+          <h3 class="card-title">3. Cara Menghitung Kode Warna Resistor Tetap</h3>
+          <p style="margin-bottom: 1rem;">Perhatikan diagram penunjuk pita/gelang warna resistor berikut untuk memahami posisi digit angka, pengali, dan toleransi:</p>
+
+          <!-- Diagram SVG Sesuai Referensi Gambar User -->
+          <div class="diagram-card">
+            <svg class="diagram-svg" viewBox="0 0 460 380">
+              <!-- (a) 4 GELANG RESISTOR DIAGRAM -->
+              <g id="diagram-4-band">
+                <!-- Lines to text top -->
+                <!-- Band 1 Line -->
+                <polyline points="115,100 115,25 310,25" fill="none" stroke="#000000" stroke-width="1.5"/>
+                <polygon points="315,25 305,21 305,29" fill="#000000"/>
+                <text x="325" y="29" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka I</text>
+
+                <!-- Band 2 Line -->
+                <polyline points="150,100 150,55 310,55" fill="none" stroke="#000000" stroke-width="1.5"/>
+                <polygon points="315,55 305,51 305,59" fill="#000000"/>
+                <text x="325" y="59" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka II</text>
+
+                <!-- Band 3 Line (Pengali) -->
+                <polyline points="185,100 185,85 310,85" fill="none" stroke="#000000" stroke-width="1.5"/>
+                <polygon points="315,85 305,81 305,89" fill="#000000"/>
+                <text x="325" y="89" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Pengali</text>
+
+                <!-- Band 4 Line (Toleransi) -->
+                <polyline points="230,100 230,115 310,115" fill="none" stroke="#000000" stroke-width="1.5"/>
+                <polygon points="315,115 305,111 305,119" fill="#000000"/>
+                <text x="325" y="119" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Toleransi</text>
+
+                <!-- Resistor Body (a) -->
+                <line x1="30" y1="135" x2="70" y2="135" stroke="#000000" stroke-width="6"/>
+                <line x1="270" y1="135" x2="310" y2="135" stroke="#000000" stroke-width="6"/>
+                <rect x="70" y="110" width="200" height="50" fill="#ffffff" stroke="#000000" stroke-width="3" rx="12"/>
+                
+                <!-- Bands (a) -->
+                <rect x="108" y="110" width="14" height="50" fill="#dc2626"/> <!-- Red -->
+                <rect x="143" y="110" width="14" height="50" fill="#eab308"/> <!-- Yellow -->
+                <rect x="178" y="110" width="14" height="50" fill="#2563eb"/> <!-- Blue -->
+                <rect x="223" y="110" width="14" height="50" fill="#d97706"/> <!-- Gold -->
+
+                <text x="170" y="190" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#000000">(a)</text>
+              </g>
+
+              <!-- (b) 5 GELANG RESISTOR DIAGRAM -->
+              <g id="diagram-5-band" transform="translate(0, 180)">
+                <!-- Lines to text -->
+                <!-- Band 1 Line -->
+                <polyline points="105,100 105,15 310,15" fill="none" stroke="#000000" stroke-width="1.5"/>
+                <polygon points="315,15 305,11 305,19" fill="#000000"/>
+                <text x="325" y="19" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka I</text>
+
+                <!-- Band 2 Line -->
+                <polyline points="135,100 135,40 310,40" fill="none" stroke="#000000" stroke-width="1.5"/>
+                <polygon points="315,40 305,36 305,44" fill="#000000"/>
+                <text x="325" y="44" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka II</text>
+
+                <!-- Band 3 Line -->
+                <polyline points="165,100 165,65 310,65" fill="none" stroke="#000000" stroke-width="1.5"/>
+                <polygon points="315,65 305,61 305,69" fill="#000000"/>
+                <text x="325" y="69" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka III</text>
+
+                <!-- Band 4 Line (Pengali) -->
+                <polyline points="195,100 195,90 310,90" fill="none" stroke="#000000" stroke-width="1.5"/>
+                <polygon points="315,90 305,86 305,94" fill="#000000"/>
+                <text x="325" y="94" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Pengali</text>
+
+                <!-- Band 5 Line (Toleransi) -->
+                <polyline points="235,100 235,115 310,115" fill="none" stroke="#000000" stroke-width="1.5"/>
+                <polygon points="315,115 305,111 305,119" fill="#000000"/>
+                <text x="325" y="119" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Toleransi</text>
+
+                <!-- Resistor Body (b) -->
+                <line x1="30" y1="135" x2="70" y2="135" stroke="#000000" stroke-width="6"/>
+                <line x1="270" y1="135" x2="310" y2="135" stroke="#000000" stroke-width="6"/>
+                <rect x="70" y="110" width="200" height="50" fill="#ffffff" stroke="#000000" stroke-width="3" rx="12"/>
+                
+                <!-- Bands (b) -->
+                <rect x="98" y="110" width="14" height="50" fill="#eab308"/> <!-- Yellow -->
+                <rect x="128" y="110" width="14" height="50" fill="#9333ea"/> <!-- Violet -->
+                <rect x="158" y="110" width="14" height="50" fill="#1e293b"/> <!-- Black -->
+                <rect x="188" y="110" width="14" height="50" fill="#854d0e"/> <!-- Brown -->
+                <rect x="228" y="110" width="14" height="50" fill="#d97706"/> <!-- Gold -->
+
+                <text x="170" y="190" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#000000">(b)</text>
+              </g>
+            </svg>
+            <div class="diagram-caption">Gambar Gelang Resistor (a) 4 gelang, (b) 5 gelang</div>
           </div>
-          <div style="margin: 0.8rem 0;">
-            <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 0.3rem;">Resistor 5 Gelang Warna:</h4>
+
+          <div style="margin-top: 1.25rem;">
+            <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 0.3rem;">Penjelasan Rumus Perhitungan:</h4>
             <ul style="padding-left: 1.25rem; font-size: 0.875rem;">
-              <li><strong>Gelang 1 & 2:</strong> Digit Kesatu & Kedua &nbsp;|&nbsp; <strong>Gelang 3:</strong> Digit Ketiga</li>
-              <li><strong>Gelang 4:</strong> Pengali (Multiplier) 10<sup>n</sup> &nbsp;|&nbsp; <strong>Gelang 5:</strong> Toleransi (%)</li>
+              <li><strong>Resistor 4 Gelang:</strong> Nilai = (Digit 1 &times; 10 + Digit 2) &times; 10<sup>Pengali</sup> &plusmn; Toleransi%</li>
+              <li><strong>Resistor 5 Gelang:</strong> Nilai = (Digit 1 &times; 100 + Digit 2 &times; 10 + Digit 3) &times; 10<sup>Pengali</sup> &plusmn; Toleransi%</li>
             </ul>
           </div>
         </div>
       </div>
 
-      <!-- Accordion Section 4 -->
-      <div class="accordion-item" id="acc-4">
-        <div class="accordion-header" onclick="toggleAccordion('acc-4')">
-          <span>4. Tabel Standar Kode Warna</span>
-          <span class="icon">+</span>
-        </div>
-        <div class="accordion-body">
+      <!-- Sub-Content 4: Tabel Standar Warna -->
+      <div id="materi-sub-tabel" class="materi-subcontent">
+        <div class="card">
+          <h3 class="card-title">4. Tabel Standar Kode Warna</h3>
           <div class="table-responsive">
             <table>
               <thead>
@@ -861,6 +1065,16 @@
       { name: "Emas", hex: "#d97706", digit: null, mult: 0.1, tol: 5 },
       { name: "Perak", hex: "#94a3b8", digit: null, mult: 0.01, tol: 10 }
     ];
+
+    function switchSubMateri(subTabId) {
+      document.querySelectorAll('.subtab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.id === `subbtn-${subTabId}`);
+      });
+
+      document.querySelectorAll('.materi-subcontent').forEach(sub => {
+        sub.classList.toggle('active', sub.id === `materi-sub-${subTabId}`);
+      });
+    }
 
     // STATE APLIKASI
     const appState = {
