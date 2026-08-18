@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResistoLearn - Media Pembelajaran Kode Warna Resistor</title>
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-hover: #0f766e;
+      --primary-light: #ccfbf1;
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+
+    .logo svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--primary);
+      stroke-width: 2.5;
+      fill: none;
+    }
+
+    nav.tab-nav {
+      display: flex;
+      gap: 0.4rem;
+      background-color: #f1f5f9;
+      padding: 0.3rem;
+      border-radius: 10px;
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      padding: 0.55rem 1.1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background-color: var(--card-bg);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.75rem 1.25rem;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      color: var(--text-main);
+      border-left: 4px solid var(--primary);
+      padding-left: 0.75rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+      color: var(--text-main);
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      margin-bottom: 0.85rem;
+      background-color: var(--card-bg);
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      padding: 1rem 1.25rem;
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background-color: #ffffff;
+      user-select: none;
+      transition: background 0.2s ease;
+    }
+
+    .accordion-header:hover {
+      background-color: #f8fafc;
+    }
+
+    .accordion-header .icon {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: var(--primary);
+      transition: transform 0.2s ease;
+    }
+
+    .accordion-item.active .accordion-header .icon {
+      transform: rotate(45deg);
+    }
+
+    .accordion-body {
+      display: none;
+      padding: 1.25rem;
+      border-top: 1px solid var(--border-color);
+      background-color: #ffffff;
+    }
+
+    .accordion-item.active .accordion-body {
+      display: block;
+    }
+
+    .resistor-display-box {
+      width: 100%;
+      max-width: 480px;
+      margin: 1rem auto;
+      background: #f8fafc;
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .resistor-svg {
+      width: 100%;
+      height: auto;
+      max-height: 140px;
+    }
+
+    .resistor-svg rect.band-interactive {
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .resistor-svg rect.band-interactive:hover {
+      filter: brightness(1.25) drop-shadow(0 0 4px rgba(13, 148, 136, 0.6));
+    }
+
+    .resistor-svg rect.band-interactive.selected {
+      stroke: var(--primary);
+      stroke-width: 3px;
+      filter: drop-shadow(0 0 6px rgba(13, 148, 136, 0.8));
+    }
+
+    .band-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      font-weight: 600;
+    }
+
+    .band-selector-tabs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .band-pill {
+      padding: 0.45rem 0.85rem;
+      border: 1px solid var(--border-color);
+      background: #f8fafc;
+      border-radius: 20px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .band-pill:hover {
+      border-color: var(--primary);
+      color: var(--text-main);
+    }
+
+    .band-pill.active {
+      background-color: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .color-palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.75rem;
+    }
+
+    .color-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .color-chip:hover {
+      border-color: var(--primary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .color-chip.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      color: var(--primary-hover);
+    }
+
+    .color-chip.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .color-swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 1rem;
+      background: #f1f5f9;
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.25rem;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .stat-item .val {
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-control, select {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.95rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: var(--card-bg);
+      color: var(--text-main);
+      outline: none;
+    }
+
+    .form-control:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #cbd5e1;
+    }
+
+    .mode-toggle {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 0.25rem;
+      border-radius: 8px;
+    }
+
+    .mode-toggle button {
+      padding: 0.45rem 0.9rem;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .mode-toggle button.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: #f8fafc;
+      font-weight: 700;
+    }
+
+    .color-dot {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+      border: 1px solid rgba(0,0,0,0.2);
+    }
+
+    .calc-box {
+      background-color: #f1f5f9;
+      border-left: 4px solid var(--primary);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      font-family: monospace;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+    }
+
+    .calc-box div {
+      margin-bottom: 0.3rem;
+    }
+
+    .calc-result {
+      margin-top: 0.8rem;
+      padding-top: 0.6rem;
+      border-top: 1px dashed #cbd5e1;
+      font-weight: bold;
+      font-size: 1.05rem;
+      color: var(--primary-hover);
+      font-family: system-ui, sans-serif;
+    }
+
+    .quiz-progress-bar {
+      height: 8px;
+      background-color: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 0.5rem 0 1.25rem 0;
+    }
+
+    .quiz-progress-fill {
+      height: 100%;
+      background-color: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .quiz-option-item {
+      display: flex;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 0.6rem;
+    }
+
+    .quiz-option-item:hover {
+      background-color: #f8fafc;
+      border-color: var(--primary);
+    }
+
+    .quiz-option-item input {
+      margin-right: 0.75rem;
+      accent-color: var(--primary);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+
+    .modal-icon-wrapper {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem auto;
+    }
+
+    .modal-icon-wrapper.success {
+      background-color: #dcfce7;
+      color: #16a34a;
+    }
+
+    .modal-icon-wrapper.error {
+      background-color: #fee2e2;
+      color: #dc2626;
+    }
+
+    @media (max-width: 640px) {
+      .header-container {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      nav.tab-nav {
+        justify-content: space-between;
+      }
+      .tab-btn {
+        padding: 0.5rem 0.65rem;
+        font-size: 0.825rem;
+      }
+      .input-group {
+        flex-direction: column;
+      }
+      .color-palette-grid {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        <svg viewBox="0 0 24 24">
+          <path d="M2 12h4l2-5 4 10 4-10 2 5h4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>ResistoLearn</span>
+      </div>
+      <nav class="tab-nav">
+        <button class="tab-btn active" id="btn-tab-materi" onclick="switchTab('materi')">Materi</button>
+        <button class="tab-btn" id="btn-tab-simulasi" onclick="switchTab('simulasi')">Simulasi</button>
+        <button class="tab-btn" id="btn-tab-latihan" onclick="switchTab('latihan')">Latihan Soal</button>
+        <button class="tab-btn" id="btn-tab-kuis" onclick="switchTab('kuis')">Kuis</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section id="tab-materi" class="tab-content active">
+      <h2 class="section-title">Materi Kode Warna Resistor</h2>
+
+      <!-- Accordion Section 1 -->
+      <div class="accordion-item active" id="acc-1">
+        <div class="accordion-header" onclick="toggleAccordion('acc-1')">
+          <span>1. Pengertian Resistor</span>
+          <span class="icon">+</span>
+        </div>
+        <div class="accordion-body">
+          <p><strong>Resistor</strong> adalah komponen elektronik pasif yang berfungsi untuk menghambat dan mengatur arus listrik dalam suatu rangkaian elektronik. Satuan nilai hambatan resistor diukur dalam <strong>Ohm (&Omega;)</strong>. Untuk menentukan nilai hambatan pada resistor tetap berukuran kecil, digunakan pita kode warna pada badannya.</p>
+        </div>
+      </div>
+
+      <!-- Accordion Section 2 -->
+      <div class="accordion-item" id="acc-2">
+        <div class="accordion-header" onclick="toggleAccordion('acc-2')">
+          <span>2. Pengelompokan Jenis Resistor</span>
+          <span class="icon">+</span>
+        </div>
+        <div class="accordion-body">
+          <div class="grid-3">
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+              <h4 style="color: var(--primary); margin-bottom: 0.3rem;">Resistor Tetap (Fixed)</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatan konstan yang tidak dapat diubah. Nilainya ditandai oleh gelang warna pada badannya.</p>
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+              <h4 style="color: var(--primary); margin-bottom: 0.3rem;">Resistor Variabel (Variable)</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatannya dapat diatur manual (contoh: Potensiometer, Rheostat, Trimpot).</p>
+            </div>
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+              <h4 style="color: var(--primary); margin-bottom: 0.3rem;">Resistor Non-Linear</h4>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatannya berubah otomatis berdasarkan lingkungan seperti cahaya (LDR) atau suhu (NTC/PTC).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion Section 3 -->
+      <div class="accordion-item" id="acc-3">
+        <div class="accordion-header" onclick="toggleAccordion('acc-3')">
+          <span>3. Cara Menghitung Kode Warna Resistor Tetap</span>
+          <span class="icon">+</span>
+        </div>
+        <div class="accordion-body">
+          <p>Resistor tetap umumnya menggunakan sistem 4 gelang warna atau 5 gelang warna:</p>
+          <div style="margin: 0.8rem 0;">
+            <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 0.3rem;">Resistor 4 Gelang Warna:</h4>
+            <ul style="padding-left: 1.25rem; font-size: 0.875rem;">
+              <li><strong>Gelang 1:</strong> Digit Kesatu &nbsp;|&nbsp; <strong>Gelang 2:</strong> Digit Kedua</li>
+              <li><strong>Gelang 3:</strong> Pengali (Multiplier) 10<sup>n</sup> &nbsp;|&nbsp; <strong>Gelang 4:</strong> Toleransi (%)</li>
+            </ul>
+          </div>
+          <div style="margin: 0.8rem 0;">
+            <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 0.3rem;">Resistor 5 Gelang Warna:</h4>
+            <ul style="padding-left: 1.25rem; font-size: 0.875rem;">
+              <li><strong>Gelang 1 & 2:</strong> Digit Kesatu & Kedua &nbsp;|&nbsp; <strong>Gelang 3:</strong> Digit Ketiga</li>
+              <li><strong>Gelang 4:</strong> Pengali (Multiplier) 10<sup>n</sup> &nbsp;|&nbsp; <strong>Gelang 5:</strong> Toleransi (%)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion Section 4 -->
+      <div class="accordion-item" id="acc-4">
+        <div class="accordion-header" onclick="toggleAccordion('acc-4')">
+          <span>4. Tabel Standar Kode Warna</span>
+          <span class="icon">+</span>
+        </div>
+        <div class="accordion-body">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Warna</th>
+                  <th>Digit Angka</th>
+                  <th>Pengali (Multiplier)</th>
+                  <th>Toleransi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="color-dot" style="background-color:#1e293b"></span>Hitam</td><td>0</td><td>10<sup>0</sup> (1)</td><td>-</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#854d0e"></span>Cokelat</td><td>1</td><td>10<sup>1</sup> (10)</td><td>&plusmn;1%</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#dc2626"></span>Merah</td><td>2</td><td>10<sup>2</sup> (100)</td><td>&plusmn;2%</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#ea580c"></span>Orange</td><td>3</td><td>10<sup>3</sup> (1.000)</td><td>-</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#eab308"></span>Kuning</td><td>4</td><td>10<sup>4</sup> (10.000)</td><td>-</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#16a34a"></span>Hijau</td><td>5</td><td>10<sup>5</sup> (100.000)</td><td>&plusmn;0.5%</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#2563eb"></span>Biru</td><td>6</td><td>10<sup>6</sup> (1.000.000)</td><td>&plusmn;0.25%</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#9333ea"></span>Ungu</td><td>7</td><td>10<sup>7</sup> (10.000.000)</td><td>&plusmn;0.1%</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#64748b"></span>Abu-abu</td><td>8</td><td>10<sup>8</sup> (100.000.000)</td><td>&plusmn;0.05%</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#ffffff"></span>Putih</td><td>9</td><td>10<sup>9</sup> (1.000.000.000)</td><td>-</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#d97706"></span>Emas</td><td>-</td><td>0.1</td><td>&plusmn;5%</td></tr>
+                <tr><td><span class="color-dot" style="background-color:#94a3b8"></span>Perak</td><td>-</td><td>0.01</td><td>&plusmn;10%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-simulasi" class="tab-content">
+      <h2 class="section-title">Simulator Kode Warna Resistor</h2>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+          <h3 class="card-title" style="margin: 0;">Klik Gelang Warna pada Resistor</h3>
+          <div class="mode-toggle">
+            <button id="sim-btn-4" class="active" onclick="setSimMode(4)">4 Gelang</button>
+            <button id="sim-btn-5" onclick="setSimMode(5)">5 Gelang</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Graphic SVG -->
+        <div class="resistor-display-box">
+          <svg id="sim-resistor-svg" class="resistor-svg" viewBox="0 0 400 120"></svg>
+          <span class="band-hint">💡 Tip: Klik gelang warna pada gambar di atas untuk memilih warna</span>
+        </div>
+
+        <!-- Band Selection Tabs -->
+        <div class="band-selector-tabs" id="sim-band-tabs"></div>
+
+        <!-- Interactive Color Palette -->
+        <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+          <div style="font-size: 0.875rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text-main);" id="sim-palette-title">
+            Pilih Warna Gelang:
+          </div>
+          <div class="color-palette-grid" id="sim-color-palette"></div>
+        </div>
+
+        <!-- Calculation Output -->
+        <div class="calc-box" id="sim-calc-breakdown"></div>
+      </div>
+    </section>
+
+    <section id="tab-latihan" class="tab-content">
+      <h2 class="section-title">Latihan Mandiri Interaktif</h2>
+
+      <!-- Gamification Stats Header -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <span>🏆 Total Poin:</span>
+          <span class="val" id="practice-score-val">0</span>
+        </div>
+        <div class="stat-item">
+          <span>🔥 Combo Streak:</span>
+          <span class="val" id="practice-streak-val">0x</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+          <div>
+            <h3 class="card-title" style="margin: 0;">Hitung Nilai Hambatan</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Tentukan nilai hambatan dan toleransi dari resistor berikut ini.</p>
+          </div>
+          <div class="mode-toggle">
+            <button id="practice-btn-4" class="active" onclick="setPracticeMode(4)">Mode: 4 Gelang</button>
+            <button id="practice-btn-5" onclick="setPracticeMode(5)">Mode: 5 Gelang</button>
+          </div>
+        </div>
+
+        <!-- Resistor SVG -->
+        <div class="resistor-display-box">
+          <svg id="practice-resistor-svg" class="resistor-svg" viewBox="0 0 400 120"></svg>
+        </div>
+
+        <!-- Input Form -->
+        <form onsubmit="submitPracticeAnswer(event)" style="max-width: 480px; margin: 0 auto;">
+          <div class="form-group">
+            <label>Nilai Hambatan & Satuan:</label>
+            <div class="input-group">
+              <input type="number" step="any" id="practice-val-input" class="form-control" placeholder="Contoh: 4.7 atau 100" required>
+              <select id="practice-unit-input" style="width: 110px;">
+                <option value="1">&Omega;</option>
+                <option value="1000">k&Omega;</option>
+                <option value="1000000">M&Omega;</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Toleransi (%):</label>
+            <input type="number" step="any" id="practice-tol-input" class="form-control" placeholder="Contoh: 5" required>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Jawaban</button>
+            <button type="button" class="btn btn-secondary" onclick="generatePracticeQuestion()">Generate Soal Baru</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="tab-kuis" class="tab-content">
+      <h2 class="section-title">Kuis Evaluasi (10 Soal)</h2>
+      <div id="quiz-container" class="card"></div>
+    </section>
+
+  </main>
+
+  <!-- POPUP MODAL NOTIFIKASI -->
+  <div id="modal-backdrop" class="modal-backdrop">
+    <div class="modal-box">
+      <div id="modal-icon" class="modal-icon-wrapper success">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h3 id="modal-title" style="font-size: 1.2rem; margin-bottom: 0.5rem;">Benar!</h3>
+      <div id="modal-body" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">Jawaban Anda tepat sekali.</div>
+      <div id="modal-actions">
+        <button class="btn btn-primary" style="width: 100%;" onclick="closeModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DATA WARNA RESISTOR
+    const COLOR_DATA = [
+      { name: "Hitam", hex: "#1e293b", digit: 0, mult: 1, tol: null },
+      { name: "Cokelat", hex: "#854d0e", digit: 1, mult: 10, tol: 1 },
+      { name: "Merah", hex: "#dc2626", digit: 2, mult: 100, tol: 2 },
+      { name: "Orange", hex: "#ea580c", digit: 3, mult: 1000, tol: null },
+      { name: "Kuning", hex: "#eab308", digit: 4, mult: 10000, tol: null },
+      { name: "Hijau", hex: "#16a34a", digit: 5, mult: 100000, tol: 0.5 },
+      { name: "Biru", hex: "#2563eb", digit: 6, mult: 1000000, tol: 0.25 },
+      { name: "Ungu", hex: "#9333ea", digit: 7, mult: 10000000, tol: 0.1 },
+      { name: "Abu-abu", hex: "#64748b", digit: 8, mult: 100000000, tol: 0.05 },
+      { name: "Putih", hex: "#ffffff", digit: 9, mult: 1000000000, tol: null },
+      { name: "Emas", hex: "#d97706", digit: null, mult: 0.1, tol: 5 },
+      { name: "Perak", hex: "#94a3b8", digit: null, mult: 0.01, tol: 10 }
+    ];
+
+    // STATE APLIKASI
+    const appState = {
+      activeTab: 'materi',
+      sim: {
+        mode: 4,
+        selectedBandIdx: 0,
+        bands: [1, 0, 2, 10] // Cokelat, Hitam, Merah, Emas
+      },
+      practice: {
+        mode: 4,
+        bands: [],
+        targetOhm: 0,
+        targetTol: 0,
+        score: 0,
+        streak: 0
+      },
+      quiz: {
+        currentIdx: 0,
+        score: 0,
+        questions: []
+      }
+    };
+
+    // ACCORDION TOGGLE
+    function toggleAccordion(id) {
+      const item = document.getElementById(id);
+      if (item) {
+        item.classList.toggle('active');
+      }
+    }
+
+    // TAB SWITCHING
+    function switchTab(tabId) {
+      appState.activeTab = tabId;
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.id === `btn-tab-${tabId}`);
+      });
+
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === `tab-${tabId}`);
+      });
+
+      if (tabId === 'simulasi') updateSimulation();
+      if (tabId === 'latihan' && appState.practice.bands.length === 0) generatePracticeQuestion();
+      if (tabId === 'kuis' && appState.quiz.questions.length === 0) startQuiz();
+    }
+
+    // HELPER FORMAT NILAI OHM
+    function formatOhmValue(ohm) {
+      if (ohm >= 1000000) {
+        return { val: parseFloat((ohm / 1000000).toFixed(2)), unit: 'M&Omega;' };
+      } else if (ohm >= 1000) {
+        return { val: parseFloat((ohm / 1000).toFixed(2)), unit: 'k&Omega;' };
+      }
+      return { val: parseFloat(ohm.toFixed(2)), unit: '&Omega;' };
+    }
+
+    // RENDER SVG RESISTOR INTERAKTIF
+    function renderResistorSVG(bands, mode, isInteractive = false, selectedBandIdx = 0) {
+      const leadColor = "#94a3b8";
+      const bodyBg = "#f1f5f9";
+      const bodyBorder = "#cbd5e1";
+
+      const positions = (mode === 4) ? [140, 175, 210, 260] : [130, 160, 190, 220, 260];
+
+      const bandsSVG = bands.map((colorIdx, idx) => {
+        const color = COLOR_DATA[colorIdx];
+        const strokeAttr = (color.name === 'Putih') ? 'stroke="#cbd5e1" stroke-width="1"' : '';
+        const interactiveClass = isInteractive ? 'band-interactive' : '';
+        const selectedClass = (isInteractive && selectedBandIdx === idx) ? 'selected' : '';
+        const onClickAttr = isInteractive ? `onclick="selectSimBand(${idx})"` : '';
+
+        return `<rect x="${positions[idx]}" y="30" width="16" height="60" fill="${color.hex}" rx="2" ${strokeAttr} class="${interactiveClass} ${selectedClass}" ${onClickAttr}/>`;
+      }).join('');
+
+      return `
+        <line x1="20" y1="60" x2="110" y2="60" stroke="${leadColor}" stroke-width="8" stroke-linecap="round"/>
+        <line x1="290" y1="60" x2="380" y2="60" stroke="${leadColor}" stroke-width="8" stroke-linecap="round"/>
+        <rect x="110" y="30" width="180" height="60" fill="${bodyBg}" stroke="${bodyBorder}" stroke-width="3" rx="12"/>
+        <path d="M 110 30 Q 100 60 110 90" fill="${bodyBg}" stroke="${bodyBorder}" stroke-width="3"/>
+        <path d="M 290 30 Q 300 60 290 90" fill="${bodyBg}" stroke="${bodyBorder}" stroke-width="3"/>
+        ${bandsSVG}
+      `;
+    }
+
+    function setSimMode(mode) {
+      appState.sim.mode = mode;
+      appState.sim.selectedBandIdx = 0;
+      document.getElementById('sim-btn-4').classList.toggle('active', mode === 4);
+      document.getElementById('sim-btn-5').classList.toggle('active', mode === 5);
+
+      appState.sim.bands = (mode === 4) ? [1, 0, 2, 10] : [1, 0, 0, 2, 10];
+      updateSimulation();
+    }
+
+    function selectSimBand(bIdx) {
+      appState.sim.selectedBandIdx = bIdx;
+      updateSimulation();
+    }
+
+    function updateSimulation() {
+      const { mode, bands, selectedBandIdx } = appState.sim;
+
+      // 1. Render SVG Gambar Resistor
+      const svgEl = document.getElementById('sim-resistor-svg');
+      if (svgEl) svgEl.innerHTML = renderResistorSVG(bands, mode, true, selectedBandIdx);
+
+      // 2. Render Band Pills (Tombol Pilih Gelang)
+      const tabsContainer = document.getElementById('sim-band-tabs');
+      if (tabsContainer) {
+        tabsContainer.innerHTML = '';
+        const labels = (mode === 4) 
+          ? ["Gelang 1 (Digit 1)", "Gelang 2 (Digit 2)", "Gelang 3 (Multiplier)", "Gelang 4 (Toleransi)"]
+          : ["Gelang 1 (Digit 1)", "Gelang 2 (Digit 2)", "Gelang 3 (Digit 3)", "Gelang 4 (Multiplier)", "Gelang 5 (Toleransi)"];
+
+        labels.forEach((lbl, idx) => {
+          const btn = document.createElement('button');
+          btn.className = `band-pill ${selectedBandIdx === idx ? 'active' : ''}`;
+          btn.innerText = lbl;
+          btn.onclick = () => selectSimBand(idx);
+          tabsContainer.appendChild(btn);
+        });
+      }
+
+      // 3. Render Palet Warna
+      const paletteContainer = document.getElementById('sim-color-palette');
+      const paletteTitle = document.getElementById('sim-palette-title');
+      if (paletteContainer) {
+        paletteContainer.innerHTML = '';
+        const isMultiplier = (mode === 4 && selectedBandIdx === 2) || (mode === 5 && selectedBandIdx === 3);
+        const isTolerance = (mode === 4 && selectedBandIdx === 3) || (mode === 5 && selectedBandIdx === 4);
+
+        if (paletteTitle) {
+          paletteTitle.innerText = `Pilih Warna untuk Gelang ke-${selectedBandIdx + 1}:`;
+        }
+
+        COLOR_DATA.forEach((c, cIdx) => {
+          let disabled = false;
+          if (!isMultiplier && !isTolerance && c.digit === null) disabled = true;
+          if (isTolerance && c.tol === null) disabled = true;
+
+          const chip = document.createElement('div');
+          chip.className = `color-chip ${bands[selectedBandIdx] === cIdx ? 'selected' : ''} ${disabled ? 'disabled' : ''}`;
+          chip.innerHTML = `<span class="color-swatch" style="background-color:${c.hex}"></span><span>${c.name}</span>`;
+          if (!disabled) {
+            chip.onclick = () => {
+              appState.sim.bands[selectedBandIdx] = cIdx;
+              updateSimulation();
+            };
+          }
+          paletteContainer.appendChild(chip);
+        });
+      }
+
+      // 4. Breakdown Perhitungan
+      let calcHTML = '';
+      let rawOhm = 0;
+      let tolVal = COLOR_DATA[bands[bands.length - 1]].tol;
+
+      if (mode === 4) {
+        const d1 = COLOR_DATA[bands[0]].digit;
+        const d2 = COLOR_DATA[bands[1]].digit;
+        const multObj = COLOR_DATA[bands[2]];
+        rawOhm = ((d1 * 10) + d2) * multObj.mult;
+
+        calcHTML += `<div>Gelang ke 1 : ${COLOR_DATA[bands[0]].name} = ${d1}</div>`;
+        calcHTML += `<div>Gelang ke 2 : ${COLOR_DATA[bands[1]].name} = ${d2}</div>`;
+        calcHTML += `<div>Gelang ke 3 : ${multObj.name} = 10^${multObj.mult < 1 ? multObj.mult : Math.round(Math.log10(multObj.mult))}</div>`;
+        calcHTML += `<div>Gelang ke 4 : ${COLOR_DATA[bands[3]].name}</div>`;
+      } else {
+        const d1 = COLOR_DATA[bands[0]].digit;
+        const d2 = COLOR_DATA[bands[1]].digit;
+        const d3 = COLOR_DATA[bands[2]].digit;
+        const multObj = COLOR_DATA[bands[3]];
+        rawOhm = ((d1 * 100) + (d2 * 10) + d3) * multObj.mult;
+
+        calcHTML += `<div>Gelang ke 1 : ${COLOR_DATA[bands[0]].name} = ${d1}</div>`;
+        calcHTML += `<div>Gelang ke 2 : ${COLOR_DATA[bands[1]].name} = ${d2}</div>`;
+        calcHTML += `<div>Gelang ke 3 : ${COLOR_DATA[bands[2]].name} = ${d3}</div>`;
+        calcHTML += `<div>Gelang ke 4 : ${multObj.name} = 10^${multObj.mult < 1 ? multObj.mult : Math.round(Math.log10(multObj.mult))}</div>`;
+        calcHTML += `<div>Gelang ke 5 : ${COLOR_DATA[bands[4]].name}</div>`;
+      }
+
+      const formatted = formatOhmValue(rawOhm);
+      calcHTML += `
+        <div class="calc-result">
+          Maka besaran nilai resistor adalah <strong>${formatted.val} ${formatted.unit}</strong> dengan nilai toleransi <strong>&plusmn;${tolVal}%</strong>.
+        </div>
+      `;
+
+      document.getElementById('sim-calc-breakdown').innerHTML = calcHTML;
+    }
+
+    function setPracticeMode(mode) {
+      appState.practice.mode = mode;
+      document.getElementById('practice-btn-4').classList.toggle('active', mode === 4);
+      document.getElementById('practice-btn-5').classList.toggle('active', mode === 5);
+      generatePracticeQuestion();
+    }
+
+    function generatePracticeQuestion() {
+      const mode = appState.practice.mode;
+      const validDigitsNoZero = COLOR_DATA.map((c, i) => i).filter(i => COLOR_DATA[i].digit !== null && COLOR_DATA[i].digit !== 0);
+      const validAllDigits = COLOR_DATA.map((c, i) => i).filter(i => COLOR_DATA[i].digit !== null);
+      const validMults = COLOR_DATA.map((c, i) => i).filter(i => COLOR_DATA[i].mult !== undefined);
+      const validTols = COLOR_DATA.map((c, i) => i).filter(i => COLOR_DATA[i].tol !== null);
+
+      let bands = [];
+      if (mode === 4) {
+        const b1 = validDigitsNoZero[Math.floor(Math.random() * validDigitsNoZero.length)];
+        const b2 = validAllDigits[Math.floor(Math.random() * validAllDigits.length)];
+        const b3 = validMults[Math.floor(Math.random() * validMults.length)];
+        const b4 = validTols[Math.floor(Math.random() * validTols.length)];
+        bands = [b1, b2, b3, b4];
+
+        appState.practice.targetOhm = ((COLOR_DATA[b1].digit * 10) + COLOR_DATA[b2].digit) * COLOR_DATA[b3].mult;
+        appState.practice.targetTol = COLOR_DATA[b4].tol;
+      } else {
+        const b1 = validDigitsNoZero[Math.floor(Math.random() * validDigitsNoZero.length)];
+        const b2 = validAllDigits[Math.floor(Math.random() * validAllDigits.length)];
+        const b3 = validAllDigits[Math.floor(Math.random() * validAllDigits.length)];
+        const b4 = validMults[Math.floor(Math.random() * validMults.length)];
+        const b5 = validTols[Math.floor(Math.random() * validTols.length)];
+        bands = [b1, b2, b3, b4, b5];
+
+        appState.practice.targetOhm = ((COLOR_DATA[b1].digit * 100) + (COLOR_DATA[b2].digit * 10) + COLOR_DATA[b3].digit) * COLOR_DATA[b4].mult;
+        appState.practice.targetTol = COLOR_DATA[b5].tol;
+      }
+
+      appState.practice.bands = bands;
+      document.getElementById('practice-resistor-svg').innerHTML = renderResistorSVG(bands, mode);
+
+      document.getElementById('practice-val-input').value = '';
+      document.getElementById('practice-tol-input').value = '';
+    }
+
+    function submitPracticeAnswer(e) {
+      e.preventDefault();
+      const userVal = parseFloat(document.getElementById('practice-val-input').value);
+      const unitMult = parseFloat(document.getElementById('practice-unit-input').value);
+      const userTol = parseFloat(document.getElementById('practice-tol-input').value);
+
+      if (isNaN(userVal) || isNaN(userTol)) return;
+
+      const userOhm = userVal * unitMult;
+      const targetOhm = appState.practice.targetOhm;
+      const targetTol = appState.practice.targetTol;
+
+      const isOhmCorrect = Math.abs(userOhm - targetOhm) < 0.001;
+      const isTolCorrect = Math.abs(userTol - targetTol) < 0.01;
+
+      if (isOhmCorrect && isTolCorrect) {
+        // Poin & Streak System
+        appState.practice.streak += 1;
+        const bonusPoints = 10 + (appState.practice.streak >= 3 ? 5 : 0);
+        appState.practice.score += bonusPoints;
+
+        document.getElementById('practice-score-val').innerText = appState.practice.score;
+        document.getElementById('practice-streak-val').innerText = `${appState.practice.streak}x`;
+
+        showModal(
+          true, 
+          "Jawaban Benar! 🎉", 
+          `Hebat! Jawaban Anda tepat sekali.<br><strong>+${bonusPoints} Poin</strong> ${appState.practice.streak >= 3 ? '(Bonus Combo Streak! 🔥)' : ''}`,
+          true // Show Next Question Button
+        );
+      } else {
+        appState.practice.streak = 0;
+        document.getElementById('practice-streak-val').innerText = "0x";
+
+        const targetFmt = formatOhmValue(targetOhm);
+        showModal(
+          false, 
+          "Jawaban Kurang Tepat ❌", 
+          `Jawaban yang benar adalah <strong>${targetFmt.val} ${targetFmt.unit} &plusmn;${targetTol}%</strong>.`,
+          false
+        );
+      }
+    }
+
+    function nextPracticeQuestion() {
+      closeModal();
+      generatePracticeQuestion();
+    }
+
+    function startQuiz() {
+      appState.quiz.currentIdx = 0;
+      appState.quiz.score = 0;
+      appState.quiz.questions = generateQuizQuestions();
+      renderQuizQuestion();
+    }
+
+    function generateQuizQuestions() {
+      const q = [];
+
+      q.push({
+        type: 'mc',
+        text: 'Apakah satuan standar internasional (SI) untuk mengukur hambatan resistor?',
+        options: ['Ampere (A)', 'Volt (V)', 'Ohm (&Omega;)', 'Watt (W)'],
+        answer: 2
+      });
+
+      q.push({
+        type: 'mc',
+        text: 'Pada resistor 4 gelang warna, fungsi dari gelang warna ke-3 adalah sebagai:',
+        options: ['Digit Angka Kesatu', 'Faktor Pengali (Multiplier)', 'Nilai Toleransi (%)', 'Digit Angka Ketiga'],
+        answer: 1
+      });
+
+      for (let i = 0; i < 4; i++) {
+        const b1 = Math.floor(Math.random() * 9) + 1;
+        const b2 = Math.floor(Math.random() * 10);
+        const b3 = Math.floor(Math.random() * 8);
+        const b4 = 10;
+
+        const ohm = ((COLOR_DATA[b1].digit * 10) + COLOR_DATA[b2].digit) * COLOR_DATA[b3].mult;
+        q.push({
+          type: 'calc',
+          mode: 4,
+          bands: [b1, b2, b3, b4],
+          targetOhm: ohm,
+          targetTol: 5
+        });
+      }
+
+      for (let i = 0; i < 4; i++) {
+        const b1 = Math.floor(Math.random() * 9) + 1;
+        const b2 = Math.floor(Math.random() * 10);
+        const b3 = Math.floor(Math.random() * 10);
+        const b4 = Math.floor(Math.random() * 8);
+        const b5 = 1;
+
+        const ohm = ((COLOR_DATA[b1].digit * 100) + (COLOR_DATA[b2].digit * 10) + COLOR_DATA[b3].digit) * COLOR_DATA[b4].mult;
+        q.push({
+          type: 'calc',
+          mode: 5,
+          bands: [b1, b2, b3, b4, b5],
+          targetOhm: ohm,
+          targetTol: 1
+        });
+      }
+
+      return q;
+    }
+
+    function renderQuizQuestion() {
+      const container = document.getElementById('quiz-container');
+      if (!container) return;
+
+      const idx = appState.quiz.currentIdx;
+      const total = appState.quiz.questions.length;
+
+      if (idx >= total) {
+        renderQuizResults();
+        return;
+      }
+
+      const q = appState.quiz.questions[idx];
+      const progressPercent = ((idx + 1) / total) * 100;
+
+      let bodyHTML = '';
+
+      if (q.type === 'mc') {
+        bodyHTML = `
+          <h4 style="font-size: 1.05rem; margin-bottom: 1rem;">Soal ${idx + 1}: ${q.text}</h4>
+          <div>
+            ${q.options.map((opt, oIdx) => `
+              <label class="quiz-option-item">
+                <input type="radio" name="quiz-choice" value="${oIdx}">
+                <span>${opt}</span>
+              </label>
+            `).join('')}
+          </div>
+        `;
+      } else {
+        bodyHTML = `
+          <h4 style="font-size: 1.05rem; margin-bottom: 0.5rem;">Soal ${idx + 1}: Hitung nilai hambatan resistor (${q.mode} gelang) berikut:</h4>
+          <div class="resistor-display-box">
+            <svg class="resistor-svg" viewBox="0 0 400 120">
+              ${renderResistorSVG(q.bands, q.mode)}
+            </svg>
+          </div>
+          <div style="max-width: 420px; margin: 0 auto;">
+            <div class="form-group">
+              <label>Nilai Hambatan & Satuan:</label>
+              <div class="input-group">
+                <input type="number" step="any" id="quiz-val-input" class="form-control" placeholder="Nilai" required>
+                <select id="quiz-unit-input" style="width: 110px;">
+                  <option value="1">&Omega;</option>
+                  <option value="1000">k&Omega;</option>
+                  <option value="1000000">M&Omega;</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Toleransi (%):</label>
+              <input type="number" step="any" id="quiz-tol-input" class="form-control" placeholder="Toleransi" required>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600;">
+          <span>Progres Kuis</span>
+          <span>${idx + 1} / ${total}</span>
+        </div>
+        <div class="quiz-progress-bar">
+          <div class="quiz-progress-fill" style="width: ${progressPercent}%;"></div>
+        </div>
+        ${bodyHTML}
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button class="btn btn-primary" onclick="submitQuizAnswer()">${idx === total - 1 ? 'Selesai Kuis' : 'Soal Berikutnya'}</button>
+        </div>
+      `;
+    }
+
+    function submitQuizAnswer() {
+      const idx = appState.quiz.currentIdx;
+      const q = appState.quiz.questions[idx];
+      let correct = false;
+
+      if (q.type === 'mc') {
+        const selected = document.querySelector('input[name="quiz-choice"]:checked');
+        if (!selected) {
+          showModal(false, "Peringatan", "Pilih salah satu jawaban terlebih dahulu.", false);
+          return;
+        }
+        if (parseInt(selected.value) === q.answer) correct = true;
+      } else {
+        const userVal = parseFloat(document.getElementById('quiz-val-input').value);
+        const unitMult = parseFloat(document.getElementById('quiz-unit-input').value);
+        const userTol = parseFloat(document.getElementById('quiz-tol-input').value);
+
+        if (isNaN(userVal) || isNaN(userTol)) {
+          showModal(false, "Peringatan", "Harap isi semua kolom nilai hambatan dan toleransi.", false);
+          return;
+        }
+
+        const userOhm = userVal * unitMult;
+        correct = (Math.abs(userOhm - q.targetOhm) < 0.001) && (Math.abs(userTol - q.targetTol) < 0.01);
+      }
+
+      if (correct) appState.quiz.score++;
+
+      appState.quiz.currentIdx++;
+      renderQuizQuestion();
+    }
+
+    function renderQuizResults() {
+      const container = document.getElementById('quiz-container');
+      const score = appState.quiz.score;
+      const total = appState.quiz.questions.length;
+
+      container.innerHTML = `
+        <div style="text-align: center; padding: 2rem 1rem;">
+          <h2 style="margin-bottom: 0.5rem;">Kuis Selesai!</h2>
+          <p style="color: var(--text-muted);">Skor akhir Anda:</p>
+          <div style="font-size: 3.5rem; font-weight: 800; color: var(--primary); margin: 0.8rem 0;">${score} / ${total}</div>
+          <p style="margin-bottom: 1.5rem;">
+            ${score >= 8 ? 'Luar biasa! Anda telah menguasai perhitungan kode warna resistor dengan sangat baik.' : 'Tetap semangat! Pelajari kembali materi dan coba tingkatkan skor Anda.'}
+          </p>
+          <button class="btn btn-primary" onclick="startQuiz()">Ulangi Kuis</button>
+        </div>
+      `;
+    }
+
+    // MODAL SYSTEM
+    function showModal(isSuccess, title, message, isNextAction = false) {
+      const backdrop = document.getElementById('modal-backdrop');
+      const iconWrapper = document.getElementById('modal-icon');
+      const actionsDiv = document.getElementById('modal-actions');
+
+      iconWrapper.className = `modal-icon-wrapper ${isSuccess ? 'success' : 'error'}`;
+      iconWrapper.innerHTML = isSuccess 
+        ? `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+        : `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-body').innerHTML = message;
+
+      if (isNextAction) {
+        actionsDiv.innerHTML = `<button class="btn btn-primary" style="width: 100%;" onclick="nextPracticeQuestion()">Soal Selanjutnya ➔</button>`;
+      } else {
+        actionsDiv.innerHTML = `<button class="btn btn-primary" style="width: 100%;" onclick="closeModal()">Tutup</button>`;
+      }
+
+      backdrop.classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.remove('active');
+    }
+
+    // INISIALISASI
+    updateSimulation();
+  </script>
+</body>
+</html>
