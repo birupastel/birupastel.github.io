@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ResistoLearn</title>
+  <title>ResistoLearn - Media Pembelajaran Kode Warna Resistor</title>
   <style>
     :root {
       --primary: #0d9488;
@@ -149,53 +149,6 @@
       font-weight: 700;
       margin-bottom: 0.85rem;
       color: var(--text-main);
-    }
-
-    .accordion-item {
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      margin-bottom: 0.85rem;
-      background-color: var(--card-bg);
-      overflow: hidden;
-    }
-
-    .accordion-header {
-      padding: 1rem 1.25rem;
-      font-weight: 700;
-      font-size: 1.05rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-      background-color: #ffffff;
-      user-select: none;
-      transition: background 0.2s ease;
-    }
-
-    .accordion-header:hover {
-      background-color: #f8fafc;
-    }
-
-    .accordion-header .icon {
-      font-weight: bold;
-      font-size: 1.2rem;
-      color: var(--primary);
-      transition: transform 0.2s ease;
-    }
-
-    .accordion-item.active .accordion-header .icon {
-      transform: rotate(45deg);
-    }
-
-    .accordion-body {
-      display: none;
-      padding: 1.25rem;
-      border-top: 1px solid var(--border-color);
-      background-color: #ffffff;
-    }
-
-    .accordion-item.active .accordion-body {
-      display: block;
     }
 
     .resistor-display-box {
@@ -535,6 +488,72 @@
       accent-color: var(--primary);
     }
 
+    .option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .option-card-img {
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #ffffff;
+    }
+
+    .option-card-img:hover {
+      border-color: var(--primary);
+      background-color: #f8fafc;
+    }
+
+    .option-card-img.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .option-card-img img {
+      max-width: 100%;
+      height: 110px;
+      object-fit: contain;
+      margin-bottom: 0.5rem;
+    }
+
+    .circuit-checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 0.6rem;
+      margin: 1rem 0;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      user-select: none;
+    }
+
+    .checkbox-item:hover {
+      background-color: #f8fafc;
+      border-color: var(--primary);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+    }
+
     .modal-backdrop {
       position: fixed;
       top: 0;
@@ -561,7 +580,7 @@
       background: var(--card-bg);
       border-radius: var(--radius);
       padding: 1.75rem;
-      max-width: 420px;
+      max-width: 440px;
       width: 100%;
       box-shadow: var(--shadow-lg);
       text-align: center;
@@ -668,6 +687,32 @@
       padding: 0.5rem;
     }
 
+    .question-img-container {
+      text-align: center;
+      margin: 1rem 0;
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+    }
+
+    .question-img-container img {
+      max-width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    .sheets-sync-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 0.85rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      color: #166534;
+    }
+
     @media (max-width: 640px) {
       .header-container {
         flex-direction: column;
@@ -686,11 +731,15 @@
       .color-palette-grid {
         grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
       }
+      .circuit-checklist-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- HEADER -->
   <header>
     <div class="header-container">
       <div class="logo">
@@ -710,10 +759,10 @@
 
   <main>
 
+    <!-- TAB 1: MATERI -->
     <section id="tab-materi" class="tab-content active">
       <h2 class="section-title">Materi Kode Warna Resistor</h2>
 
-      <!-- Sub-Navigation for Materi -->
       <div class="materi-subnav">
         <button class="subtab-btn active" id="subbtn-pengertian" onclick="switchSubMateri('pengertian')">Pengertian</button>
         <button class="subtab-btn" id="subbtn-jenis" onclick="switchSubMateri('jenis')">Jenis Resistor</button>
@@ -721,7 +770,6 @@
         <button class="subtab-btn" id="subbtn-tabel" onclick="switchSubMateri('tabel')">Tabel Kode Warna</button>
       </div>
 
-      <!-- Sub-Content 1: Pengertian (Default Active) -->
       <div id="materi-sub-pengertian" class="materi-subcontent active">
         <div class="card">
           <h3 class="card-title">1. Pengertian Resistor</h3>
@@ -730,13 +778,11 @@
         </div>
       </div>
 
-      <!-- Sub-Content 2: Jenis Resistor -->
       <div id="materi-sub-jenis" class="materi-subcontent">
         <div class="card">
           <h3 class="card-title">2. Pengelompokan Jenis Resistor</h3>
           <div class="grid-3">
 
-            <!-- Card Resistor Tetap -->
             <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
               <div class="resistor-illustration-box">
                 <svg width="220" height="60" viewBox="0 0 220 60">
@@ -755,11 +801,9 @@
               <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatan bersifat konstan dan tidak dapat diubah-ubah. Nilainya diidentifikasi melalui pita kode warna pada badannya.</p>
             </div>
 
-            <!-- Card Resistor Variabel -->
             <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
               <div class="resistor-illustration-box">
                 <svg width="120" height="80" viewBox="0 0 120 80">
-                  <!-- Potentiometer outline -->
                   <circle cx="60" cy="35" r="26" fill="#e2e8f0" stroke="#64748b" stroke-width="2.5"/>
                   <circle cx="60" cy="35" r="14" fill="#0d9488"/>
                   <line x1="60" y1="35" x2="60" y2="12" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
@@ -772,15 +816,12 @@
               <p style="font-size: 0.85rem; color: var(--text-muted);">Nilai hambatannya dapat diatur secara manual dengan memutar atau menggeser tuas (Contoh: Potensiometer, Rheostat, Trimpot).</p>
             </div>
 
-            <!-- Card Resistor Non-Linear -->
             <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border: 1px solid var(--border-color);">
               <div class="resistor-illustration-box">
                 <svg width="140" height="80" viewBox="0 0 140 80">
-                  <!-- LDR / Thermistor illustration -->
                   <circle cx="70" cy="40" r="24" fill="#ffedd5" stroke="#ea580c" stroke-width="2.5"/>
                   <path d="M 54 32 Q 62 26 70 32 T 86 32" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round"/>
                   <path d="M 54 48 Q 62 42 70 48 T 86 48" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round"/>
-                  <!-- Light Arrows -->
                   <line x1="28" y1="18" x2="44" y2="30" stroke="#eab308" stroke-width="2.5" stroke-linecap="round"/>
                   <polygon points="44,30 38,24 44,22" fill="#eab308"/>
                   <line x1="38" y1="10" x2="54" y2="22" stroke="#eab308" stroke-width="2.5" stroke-linecap="round"/>
@@ -797,91 +838,72 @@
         </div>
       </div>
 
-      <!-- Sub-Content 3: Cara Menghitung dengan Ilustrasi Gambar Gelang (a) & (b) -->
       <div id="materi-sub-hitung" class="materi-subcontent">
         <div class="card">
           <h3 class="card-title">3. Cara Menghitung Kode Warna Resistor Tetap</h3>
           <p style="margin-bottom: 1rem;">Perhatikan diagram penunjuk pita/gelang warna resistor berikut untuk memahami posisi digit angka, pengali, dan toleransi:</p>
 
-          <!-- Diagram SVG Sesuai Referensi Gambar User -->
           <div class="diagram-card">
             <svg class="diagram-svg" viewBox="0 0 460 380">
-              <!-- (a) 4 GELANG RESISTOR DIAGRAM -->
               <g id="diagram-4-band">
-                <!-- Lines to text top -->
-                <!-- Band 1 Line -->
                 <polyline points="115,100 115,25 310,25" fill="none" stroke="#000000" stroke-width="1.5"/>
                 <polygon points="315,25 305,21 305,29" fill="#000000"/>
                 <text x="325" y="29" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka I</text>
 
-                <!-- Band 2 Line -->
                 <polyline points="150,100 150,55 310,55" fill="none" stroke="#000000" stroke-width="1.5"/>
                 <polygon points="315,55 305,51 305,59" fill="#000000"/>
                 <text x="325" y="59" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka II</text>
 
-                <!-- Band 3 Line (Pengali) -->
                 <polyline points="185,100 185,85 310,85" fill="none" stroke="#000000" stroke-width="1.5"/>
                 <polygon points="315,85 305,81 305,89" fill="#000000"/>
                 <text x="325" y="89" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Pengali</text>
 
-                <!-- Band 4 Line (Toleransi) -->
                 <polyline points="230,100 230,115 310,115" fill="none" stroke="#000000" stroke-width="1.5"/>
                 <polygon points="315,115 305,111 305,119" fill="#000000"/>
                 <text x="325" y="119" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Toleransi</text>
 
-                <!-- Resistor Body (a) -->
                 <line x1="30" y1="135" x2="70" y2="135" stroke="#000000" stroke-width="6"/>
                 <line x1="270" y1="135" x2="310" y2="135" stroke="#000000" stroke-width="6"/>
                 <rect x="70" y="110" width="200" height="50" fill="#ffffff" stroke="#000000" stroke-width="3" rx="12"/>
                 
-                <!-- Bands (a) -->
-                <rect x="108" y="110" width="14" height="50" fill="#dc2626"/> <!-- Red -->
-                <rect x="143" y="110" width="14" height="50" fill="#eab308"/> <!-- Yellow -->
-                <rect x="178" y="110" width="14" height="50" fill="#2563eb"/> <!-- Blue -->
-                <rect x="223" y="110" width="14" height="50" fill="#d97706"/> <!-- Gold -->
+                <rect x="108" y="110" width="14" height="50" fill="#dc2626"/>
+                <rect x="143" y="110" width="14" height="50" fill="#eab308"/>
+                <rect x="178" y="110" width="14" height="50" fill="#2563eb"/>
+                <rect x="223" y="110" width="14" height="50" fill="#d97706"/>
 
                 <text x="170" y="190" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#000000">(a)</text>
               </g>
 
-              <!-- (b) 5 GELANG RESISTOR DIAGRAM -->
               <g id="diagram-5-band" transform="translate(0, 180)">
-                <!-- Lines to text -->
-                <!-- Band 1 Line -->
                 <polyline points="105,100 105,15 310,15" fill="none" stroke="#000000" stroke-width="1.5"/>
                 <polygon points="315,15 305,11 305,19" fill="#000000"/>
                 <text x="325" y="19" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka I</text>
 
-                <!-- Band 2 Line -->
                 <polyline points="135,100 135,40 310,40" fill="none" stroke="#000000" stroke-width="1.5"/>
                 <polygon points="315,40 305,36 305,44" fill="#000000"/>
                 <text x="325" y="44" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka II</text>
 
-                <!-- Band 3 Line -->
                 <polyline points="165,100 165,65 310,65" fill="none" stroke="#000000" stroke-width="1.5"/>
                 <polygon points="315,65 305,61 305,69" fill="#000000"/>
                 <text x="325" y="69" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Angka III</text>
 
-                <!-- Band 4 Line (Pengali) -->
                 <polyline points="195,100 195,90 310,90" fill="none" stroke="#000000" stroke-width="1.5"/>
                 <polygon points="315,90 305,86 305,94" fill="#000000"/>
                 <text x="325" y="94" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Pengali</text>
 
-                <!-- Band 5 Line (Toleransi) -->
                 <polyline points="235,100 235,115 310,115" fill="none" stroke="#000000" stroke-width="1.5"/>
                 <polygon points="315,115 305,111 305,119" fill="#000000"/>
                 <text x="325" y="119" font-family="sans-serif" font-size="14" font-weight="bold" fill="#000000">Toleransi</text>
 
-                <!-- Resistor Body (b) -->
                 <line x1="30" y1="135" x2="70" y2="135" stroke="#000000" stroke-width="6"/>
                 <line x1="270" y1="135" x2="310" y2="135" stroke="#000000" stroke-width="6"/>
                 <rect x="70" y="110" width="200" height="50" fill="#ffffff" stroke="#000000" stroke-width="3" rx="12"/>
                 
-                <!-- Bands (b) -->
-                <rect x="98" y="110" width="14" height="50" fill="#eab308"/> <!-- Yellow -->
-                <rect x="128" y="110" width="14" height="50" fill="#9333ea"/> <!-- Violet -->
-                <rect x="158" y="110" width="14" height="50" fill="#1e293b"/> <!-- Black -->
-                <rect x="188" y="110" width="14" height="50" fill="#854d0e"/> <!-- Brown -->
-                <rect x="228" y="110" width="14" height="50" fill="#d97706"/> <!-- Gold -->
+                <rect x="98" y="110" width="14" height="50" fill="#eab308"/>
+                <rect x="128" y="110" width="14" height="50" fill="#9333ea"/>
+                <rect x="158" y="110" width="14" height="50" fill="#1e293b"/>
+                <rect x="188" y="110" width="14" height="50" fill="#854d0e"/>
+                <rect x="228" y="110" width="14" height="50" fill="#d97706"/>
 
                 <text x="170" y="190" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="middle" fill="#000000">(b)</text>
               </g>
@@ -899,7 +921,6 @@
         </div>
       </div>
 
-      <!-- Sub-Content 4: Tabel Standar Warna -->
       <div id="materi-sub-tabel" class="materi-subcontent">
         <div class="card">
           <h3 class="card-title">4. Tabel Standar Kode Warna</h3>
@@ -933,6 +954,7 @@
       </div>
     </section>
 
+    <!-- TAB 2: SIMULASI -->
     <section id="tab-simulasi" class="tab-content">
       <h2 class="section-title">Simulator Kode Warna Resistor</h2>
 
@@ -945,16 +967,13 @@
           </div>
         </div>
 
-        <!-- Dynamic Graphic SVG -->
         <div class="resistor-display-box">
           <svg id="sim-resistor-svg" class="resistor-svg" viewBox="0 0 400 120"></svg>
           <span class="band-hint">💡 Tip: Klik gelang warna pada gambar di atas untuk memilih warna</span>
         </div>
 
-        <!-- Band Selection Tabs -->
         <div class="band-selector-tabs" id="sim-band-tabs"></div>
 
-        <!-- Interactive Color Palette -->
         <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
           <div style="font-size: 0.875rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text-main);" id="sim-palette-title">
             Pilih Warna Gelang:
@@ -962,15 +981,14 @@
           <div class="color-palette-grid" id="sim-color-palette"></div>
         </div>
 
-        <!-- Calculation Output -->
         <div class="calc-box" id="sim-calc-breakdown"></div>
       </div>
     </section>
 
+    <!-- TAB 3: LATIHAN SOAL -->
     <section id="tab-latihan" class="tab-content">
       <h2 class="section-title">Latihan Mandiri Interaktif</h2>
 
-      <!-- Gamification Stats Header -->
       <div class="stats-bar">
         <div class="stat-item">
           <span>🏆 Total Poin:</span>
@@ -994,12 +1012,10 @@
           </div>
         </div>
 
-        <!-- Resistor SVG -->
         <div class="resistor-display-box">
           <svg id="practice-resistor-svg" class="resistor-svg" viewBox="0 0 400 120"></svg>
         </div>
 
-        <!-- Input Form -->
         <form onsubmit="submitPracticeAnswer(event)" style="max-width: 480px; margin: 0 auto;">
           <div class="form-group">
             <label>Nilai Hambatan & Satuan:</label>
@@ -1026,6 +1042,7 @@
       </div>
     </section>
 
+    <!-- TAB 4: KUIS EVALUASI -->
     <section id="tab-kuis" class="tab-content">
       <h2 class="section-title">Kuis Evaluasi (10 Soal)</h2>
       <div id="quiz-container" class="card"></div>
@@ -1033,7 +1050,6 @@
 
   </main>
 
-  <!-- POPUP MODAL NOTIFIKASI -->
   <div id="modal-backdrop" class="modal-backdrop">
     <div class="modal-box">
       <div id="modal-icon" class="modal-icon-wrapper success">
@@ -1066,23 +1082,95 @@
       { name: "Perak", hex: "#94a3b8", digit: null, mult: 0.01, tol: 10 }
     ];
 
-    function switchSubMateri(subTabId) {
-      document.querySelectorAll('.subtab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.id === `subbtn-${subTabId}`);
-      });
+    // DAFTAR 15 KOMPONEN ARDUINO STANDAR
+    const ALL_COMPONENTS = [
+      "Arduino UNO",
+      "Kabel Jumper",
+      "Lampu LED",
+      "Lampu LED RGB",
+      "8x8 LED Dot Matrix",
+      "LCD 16x2",
+      "Resistor",
+      "Potentiometer",
+      "Sensor Gerak (PIR)",
+      "Sensor Ultrasonic",
+      "Stepper Motor",
+      "Seven Segment",
+      "Push Button",
+      "Buzzer",
+      "Breadboard"
+    ];
 
-      document.querySelectorAll('.materi-subcontent').forEach(sub => {
-        sub.classList.toggle('active', sub.id === `materi-sub-${subTabId}`);
-      });
-    }
+    // BANK SOAL LOCAL FALLBACK
+    let BANK_SOAL_KOMPONEN = [
+      {
+        id: "KMP-001",
+        questionText: "Komponen elektronik di bawah ini yang berfungsi untuk menampilkan teks 16 karakter dan 2 baris adalah...",
+        imgUrl: "",
+        type: "TEKS",
+        options: ["LCD 16x2", "8x8 LED Dot Matrix", "Seven Segment", "Arduino UNO", "Potentiometer"],
+        answerKey: "A"
+      },
+      {
+        id: "KMP-002",
+        questionText: "Manakah di antara komponen berikut yang berfungsi sebagai mikrokontroler utama pengendali rangkaian?",
+        imgUrl: "",
+        type: "TEKS",
+        options: ["Resistor", "Breadboard", "Arduino UNO", "Push Button", "Buzzer"],
+        answerKey: "C"
+      },
+      {
+        id: "KMP-003",
+        questionText: "Komponen yang berfungsi untuk menghambat dan membatasi arus listrik agar komponen LED tidak rusak adalah...",
+        imgUrl: "",
+        type: "TEKS",
+        options: ["Kabel Jumper", "Resistor", "Sensor Ultrasonic", "Stepper Motor", "Lampu LED RGB"],
+        answerKey: "B"
+      },
+      {
+        id: "KMP-004",
+        questionText: "Sensor yang memanfaatkan gelombang suara pantulan untuk mengukur jarak objek di depannya adalah...",
+        imgUrl: "",
+        type: "TEKS",
+        options: ["Sensor Gerak (PIR)", "Potentiometer", "Sensor Ultrasonic", "Push Button", "Breadboard"],
+        answerKey: "C"
+      },
+      {
+        id: "KMP-005",
+        questionText: "Papan bebas solder yang digunakan untuk merangkai komponen elektronik secara sementara dinamakan...",
+        imgUrl: "",
+        type: "TEKS",
+        options: ["Arduino UNO", "Breadboard", "LCD 16x2", "Buzzer", "Seven Segment"],
+        answerKey: "B"
+      },
+      {
+        id: "KMP-006",
+        questionText: "Komponen pasif yang dapat mengeluarkan suara/nada bip saat diberi sinyal listrik dinamakan...",
+        imgUrl: "",
+        type: "TEKS",
+        options: ["Lampu LED", "Seven Segment", "Sensor Gerak (PIR)", "Buzzer", "Potentiometer"],
+        answerKey: "D"
+      }
+    ];
+
+    let BANK_SOAL_RANGKAIAN = [
+      {
+        id: "RNG-001",
+        questionText: "Analisislah gambar skema rangkaian elektronika di bawah ini. Pilihlah semua komponen yang terdapat di dalamnya!",
+        imgUrl: "https://lh3.googleusercontent.com/d/1ABC123xyz_SAMPLE",
+        correctComponents: ["Arduino UNO", "Kabel Jumper", "LCD 16x2", "Sensor Ultrasonic", "Lampu LED", "Resistor", "Breadboard"]
+      }
+    ];
 
     // STATE APLIKASI
     const appState = {
       activeTab: 'materi',
+      sheetsUrl: localStorage.getItem("resisto_sheets_url") || "https://docs.google.com/spreadsheets/d/1cybKlwIPvdsBFGdKR3y5eZNLPB1VzhCGQU2XxGUOYDU",
+      isFetchingSheets: false,
       sim: {
         mode: 4,
         selectedBandIdx: 0,
-        bands: [1, 0, 2, 10] // Cokelat, Hitam, Merah, Emas
+        bands: [1, 0, 2, 10]
       },
       practice: {
         mode: 4,
@@ -1093,21 +1181,130 @@
         streak: 0
       },
       quiz: {
+        userName: "",
+        userClass: "",
+        started: false,
         currentIdx: 0,
         score: 0,
         questions: []
       }
     };
 
-    // ACCORDION TOGGLE
-    function toggleAccordion(id) {
-      const item = document.getElementById(id);
-      if (item) {
-        item.classList.toggle('active');
+    function convertDriveUrl(url) {
+      if (!url) return "";
+      const strUrl = String(url).trim();
+      if (strUrl.includes("drive.google.com") && strUrl.includes("/d/")) {
+        const matches = strUrl.match(/\/d\/([^\/]+)/);
+        if (matches && matches[1]) {
+          return `https://lh3.googleusercontent.com/d/${matches[1]}`;
+        }
+      }
+      return strUrl;
+    }
+
+    function extractSpreadsheetId(url) {
+      if (!url) return "";
+      const matches = String(url).match(/\/d\/([a-zA-Z0-9-_]+)/);
+      return matches ? matches[1] : url.trim();
+    }
+
+    async function fetchGoogleSheetsBankSoal(sheetUrl) {
+      const spreadsheetId = extractSpreadsheetId(sheetUrl);
+      if (!spreadsheetId) return false;
+
+      appState.isFetchingSheets = true;
+
+      try {
+        // Fetch Tab 1: Soal_Komponen
+        const urlKomponen = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&sheet=Soal_Komponen`;
+        const resK = await fetch(urlKomponen);
+        const textK = await resK.text();
+        const jsonMatchK = textK.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+
+        if (jsonMatchK && jsonMatchK[1]) {
+          const dataK = JSON.parse(jsonMatchK[1]);
+          const rowsK = dataK.table.rows;
+
+          if (rowsK && rowsK.length > 0) {
+            const parsedKomponen = [];
+            rowsK.forEach(r => {
+              const c = r.c;
+              if (c && c[0] && c[0].v) {
+                parsedKomponen.push({
+                  id: String(c[0] ? c[0].v : ""),
+                  questionText: String(c[1] ? c[1].v : ""),
+                  imgUrl: convertDriveUrl(c[2] ? c[2].v : ""),
+                  type: String(c[3] ? c[3].v : "TEKS").toUpperCase(),
+                  options: [
+                    String(c[4] ? c[4].v : ""),
+                    String(c[5] ? c[5].v : ""),
+                    String(c[6] ? c[6].v : ""),
+                    String(c[7] ? c[7].v : ""),
+                    String(c[8] ? c[8].v : "")
+                  ],
+                  answerKey: String(c[9] ? c[9].v : "A").trim().toUpperCase()
+                });
+              }
+            });
+
+            if (parsedKomponen.length > 0) {
+              BANK_SOAL_KOMPONEN = parsedKomponen;
+            }
+          }
+        }
+
+        // Fetch Tab 2: Soal_Rangkaian
+        const urlRangkaian = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&sheet=Soal_Rangkaian`;
+        const resR = await fetch(urlRangkaian);
+        const textR = await resR.text();
+        const jsonMatchR = textR.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+
+        if (jsonMatchR && jsonMatchR[1]) {
+          const dataR = JSON.parse(jsonMatchR[1]);
+          const rowsR = dataR.table.rows;
+
+          if (rowsR && rowsR.length > 0) {
+            const parsedRangkaian = [];
+            rowsR.forEach(r => {
+              const c = r.c;
+              if (c && c[0] && c[0].v) {
+                const compStr = String(c[3] ? c[3].v : "");
+                const correctList = compStr.split(",").map(s => s.trim()).filter(s => s.length > 0);
+
+                parsedRangkaian.push({
+                  id: String(c[0] ? c[0].v : ""),
+                  questionText: String(c[1] ? c[1].v : ""),
+                  imgUrl: convertDriveUrl(c[2] ? c[2].v : ""),
+                  correctComponents: correctList
+                });
+              }
+            });
+
+            if (parsedRangkaian.length > 0) {
+              BANK_SOAL_RANGKAIAN = parsedRangkaian;
+            }
+          }
+        }
+
+        appState.isFetchingSheets = false;
+        return true;
+      } catch (err) {
+        console.error("Gagal sinkronisasi Google Sheets:", err);
+        appState.isFetchingSheets = false;
+        return false;
       }
     }
 
-    // TAB SWITCHING
+    function switchSubMateri(subTabId) {
+      document.querySelectorAll('.subtab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.id === `subbtn-${subTabId}`);
+      });
+
+      document.querySelectorAll('.materi-subcontent').forEach(sub => {
+        sub.classList.toggle('active', sub.id === `materi-sub-${subTabId}`);
+      });
+    }
+
     function switchTab(tabId) {
       appState.activeTab = tabId;
 
@@ -1121,10 +1318,9 @@
 
       if (tabId === 'simulasi') updateSimulation();
       if (tabId === 'latihan' && appState.practice.bands.length === 0) generatePracticeQuestion();
-      if (tabId === 'kuis' && appState.quiz.questions.length === 0) startQuiz();
+      if (tabId === 'kuis') renderQuizScreen();
     }
 
-    // HELPER FORMAT NILAI OHM
     function formatOhmValue(ohm) {
       if (ohm >= 1000000) {
         return { val: parseFloat((ohm / 1000000).toFixed(2)), unit: 'M&Omega;' };
@@ -1134,7 +1330,6 @@
       return { val: parseFloat(ohm.toFixed(2)), unit: '&Omega;' };
     }
 
-    // RENDER SVG RESISTOR INTERAKTIF
     function renderResistorSVG(bands, mode, isInteractive = false, selectedBandIdx = 0) {
       const leadColor = "#94a3b8";
       const bodyBg = "#f1f5f9";
@@ -1162,6 +1357,7 @@
       `;
     }
 
+    // SIMULASI LOGIC
     function setSimMode(mode) {
       appState.sim.mode = mode;
       appState.sim.selectedBandIdx = 0;
@@ -1180,11 +1376,9 @@
     function updateSimulation() {
       const { mode, bands, selectedBandIdx } = appState.sim;
 
-      // 1. Render SVG Gambar Resistor
       const svgEl = document.getElementById('sim-resistor-svg');
       if (svgEl) svgEl.innerHTML = renderResistorSVG(bands, mode, true, selectedBandIdx);
 
-      // 2. Render Band Pills (Tombol Pilih Gelang)
       const tabsContainer = document.getElementById('sim-band-tabs');
       if (tabsContainer) {
         tabsContainer.innerHTML = '';
@@ -1201,7 +1395,6 @@
         });
       }
 
-      // 3. Render Palet Warna
       const paletteContainer = document.getElementById('sim-color-palette');
       const paletteTitle = document.getElementById('sim-palette-title');
       if (paletteContainer) {
@@ -1231,7 +1424,6 @@
         });
       }
 
-      // 4. Breakdown Perhitungan
       let calcHTML = '';
       let rawOhm = 0;
       let tolVal = COLOR_DATA[bands[bands.length - 1]].tol;
@@ -1270,6 +1462,7 @@
       document.getElementById('sim-calc-breakdown').innerHTML = calcHTML;
     }
 
+    // LATIHAN LOGIC
     function setPracticeMode(mode) {
       appState.practice.mode = mode;
       document.getElementById('practice-btn-4').classList.toggle('active', mode === 4);
@@ -1329,7 +1522,6 @@
       const isTolCorrect = Math.abs(userTol - targetTol) < 0.01;
 
       if (isOhmCorrect && isTolCorrect) {
-        // Poin & Streak System
         appState.practice.streak += 1;
         const bonusPoints = 10 + (appState.practice.streak >= 3 ? 5 : 0);
         appState.practice.score += bonusPoints;
@@ -1341,7 +1533,7 @@
           true, 
           "Jawaban Benar! 🎉", 
           `Hebat! Jawaban Anda tepat sekali.<br><strong>+${bonusPoints} Poin</strong> ${appState.practice.streak >= 3 ? '(Bonus Combo Streak! 🔥)' : ''}`,
-          true // Show Next Question Button
+          true
         );
       } else {
         appState.practice.streak = 0;
@@ -1362,64 +1554,167 @@
       generatePracticeQuestion();
     }
 
-    function startQuiz() {
+    // KUIS SYSTEM
+    function renderQuizScreen() {
+      const container = document.getElementById('quiz-container');
+      if (!container) return;
+
+      if (!appState.quiz.started) {
+        container.innerHTML = `
+          <div style="max-width: 480px; margin: 1rem auto; text-align: center;">
+            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Form Identitas Siswa</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.25rem;">Silakan isi nama dan kelas sebelum memulai kuis evaluasi 10 soal.</p>
+            
+            <form onsubmit="startQuiz(event)" style="text-align: left;">
+              <div class="form-group">
+                <label>Nama Lengkap Siswa:</label>
+                <input type="text" id="quiz-student-name" class="form-control" placeholder="Contoh: Budi Santoso" required>
+              </div>
+              <div class="form-group">
+                <label>Kelas / Rombel:</label>
+                <input type="text" id="quiz-student-class" class="form-control" placeholder="Contoh: X TAV 1" required>
+              </div>
+              
+              <div class="form-group" style="margin-top: 1.25rem;">
+                <label style="color: var(--primary);">Link Google Sheets Bank Soal (Opsional / Real-time):</label>
+                <input type="url" id="quiz-sheets-url" class="form-control" value="${appState.sheetsUrl}" placeholder="https://docs.google.com/spreadsheets/d/...">
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem;">💡 Kosongkan jika ingin menggunakan Bank Soal default bawaan.</p>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.8rem;" id="btn-start-quiz">
+                🚀 Mulai Kuis Sekarang
+              </button>
+            </form>
+          </div>
+        `;
+      } else {
+        renderQuizQuestion();
+      }
+    }
+
+    async function startQuiz(e) {
+      if (e) e.preventDefault();
+      const nameInput = document.getElementById('quiz-student-name');
+      const classInput = document.getElementById('quiz-student-class');
+      const sheetsUrlInput = document.getElementById('quiz-sheets-url');
+
+      if (nameInput && classInput) {
+        appState.quiz.userName = nameInput.value.trim();
+        appState.quiz.userClass = classInput.value.trim();
+      }
+
+      if (sheetsUrlInput && sheetsUrlInput.value.trim()) {
+        const url = sheetsUrlInput.value.trim();
+        appState.sheetsUrl = url;
+        localStorage.setItem("resisto_sheets_url", url);
+
+        const btnStart = document.getElementById('btn-start-quiz');
+        if (btnStart) btnStart.innerText = "⏳ Menyinkronkan Bank Soal dari Google Sheets...";
+
+        await fetchGoogleSheetsBankSoal(url);
+      }
+
+      appState.quiz.started = true;
       appState.quiz.currentIdx = 0;
       appState.quiz.score = 0;
       appState.quiz.questions = generateQuizQuestions();
+
       renderQuizQuestion();
     }
 
     function generateQuizQuestions() {
-      const q = [];
+      const questions = [];
 
-      q.push({
-        type: 'mc',
-        text: 'Apakah satuan standar internasional (SI) untuk mengukur hambatan resistor?',
-        options: ['Ampere (A)', 'Volt (V)', 'Ohm (&Omega;)', 'Watt (W)'],
-        answer: 2
+      // SOAL 1–6: KOMPONEN
+      const shuffledComponentBank = [...BANK_SOAL_KOMPONEN].sort(() => 0.5 - Math.random());
+      const selectedComponents = shuffledComponentBank.slice(0, 6);
+
+      selectedComponents.forEach(kmp => {
+        questions.push({
+          category: 'component',
+          questionText: kmp.questionText,
+          imgUrl: convertDriveUrl(kmp.imgUrl),
+          type: kmp.type || "TEKS",
+          options: kmp.options,
+          answerKey: kmp.answerKey
+        });
       });
 
-      q.push({
-        type: 'mc',
-        text: 'Pada resistor 4 gelang warna, fungsi dari gelang warna ke-3 adalah sebagai:',
-        options: ['Digit Angka Kesatu', 'Faktor Pengali (Multiplier)', 'Nilai Toleransi (%)', 'Digit Angka Ketiga'],
-        answer: 1
+      // SOAL 7: RANGKAIAN
+      const shuffledCircuitBank = [...BANK_SOAL_RANGKAIAN].sort(() => 0.5 - Math.random());
+      const circuitQ = shuffledCircuitBank[0] || {
+        questionText: "Pilihlah semua komponen yang terdapat di dalam gambar rangkaian di bawah ini!",
+        imgUrl: "",
+        correctComponents: ["Arduino UNO", "Kabel Jumper", "Resistor", "Lampu LED", "Breadboard"]
+      };
+
+      questions.push({
+        category: 'circuit',
+        questionText: circuitQ.questionText,
+        imgUrl: convertDriveUrl(circuitQ.imgUrl),
+        correctComponents: circuitQ.correctComponents
       });
 
-      for (let i = 0; i < 4; i++) {
-        const b1 = Math.floor(Math.random() * 9) + 1;
-        const b2 = Math.floor(Math.random() * 10);
-        const b3 = Math.floor(Math.random() * 8);
-        const b4 = 10;
+      // SOAL 8: KALKULASI RESISTOR 4 WARNA
+      const b1 = Math.floor(Math.random() * 9) + 1;
+      const b2 = Math.floor(Math.random() * 10);
+      const b3 = Math.floor(Math.random() * 7);
+      const b4 = 10;
+      const ohm8 = ((COLOR_DATA[b1].digit * 10) + COLOR_DATA[b2].digit) * COLOR_DATA[b3].mult;
 
-        const ohm = ((COLOR_DATA[b1].digit * 10) + COLOR_DATA[b2].digit) * COLOR_DATA[b3].mult;
-        q.push({
-          type: 'calc',
-          mode: 4,
-          bands: [b1, b2, b3, b4],
-          targetOhm: ohm,
-          targetTol: 5
-        });
-      }
+      questions.push({
+        category: 'calc_4band',
+        questionText: "Hitunglah nilai hambatan dan toleransi dari resistor 4 gelang warna berikut:",
+        bands: [b1, b2, b3, b4],
+        targetOhm: ohm8,
+        targetTol: 5
+      });
 
-      for (let i = 0; i < 4; i++) {
-        const b1 = Math.floor(Math.random() * 9) + 1;
-        const b2 = Math.floor(Math.random() * 10);
-        const b3 = Math.floor(Math.random() * 10);
-        const b4 = Math.floor(Math.random() * 8);
-        const b5 = 1;
+      // SOAL 9: REVERSE RESISTOR
+      const r_b1 = Math.floor(Math.random() * 9) + 1;
+      const r_b2 = Math.floor(Math.random() * 10);
+      const r_b3 = Math.floor(Math.random() * 6);
+      const targetOhm9 = ((COLOR_DATA[r_b1].digit * 10) + COLOR_DATA[r_b2].digit) * COLOR_DATA[r_b3].mult;
+      const targetFmt9 = formatOhmValue(targetOhm9);
 
-        const ohm = ((COLOR_DATA[b1].digit * 100) + (COLOR_DATA[b2].digit * 10) + COLOR_DATA[b3].digit) * COLOR_DATA[b4].mult;
-        q.push({
-          type: 'calc',
-          mode: 5,
-          bands: [b1, b2, b3, b4, b5],
-          targetOhm: ohm,
-          targetTol: 1
-        });
-      }
+      const correctSeq = `${COLOR_DATA[r_b1].name} - ${COLOR_DATA[r_b2].name} - ${COLOR_DATA[r_b3].name} - Emas`;
+      const wrongSeq1 = `${COLOR_DATA[r_b2].name} - ${COLOR_DATA[r_b1].name} - ${COLOR_DATA[r_b3].name} - Emas`;
+      const wrongSeq2 = `${COLOR_DATA[r_b1].name} - ${COLOR_DATA[r_b2].name} - ${COLOR_DATA[(r_b3+1)%8].name} - Emas`;
+      const wrongSeq3 = `${COLOR_DATA[r_b1].name} - ${COLOR_DATA[r_b2].name} - ${COLOR_DATA[r_b3].name} - Perak`;
+      const wrongSeq4 = `${COLOR_DATA[(r_b1+1)%9+1].name} - ${COLOR_DATA[r_b2].name} - ${COLOR_DATA[r_b3].name} - Emas`;
 
-      return q;
+      const optionsRev = [
+        { seq: correctSeq, isCorrect: true },
+        { seq: wrongSeq1, isCorrect: false },
+        { seq: wrongSeq2, isCorrect: false },
+        { seq: wrongSeq3, isCorrect: false },
+        { seq: wrongSeq4, isCorrect: false }
+      ].sort(() => 0.5 - Math.random());
+
+      questions.push({
+        category: 'reverse_resistor',
+        questionText: `Diketahui sebuah resistor memiliki nilai hambatan <strong>${targetFmt9.val} ${targetFmt9.unit} &plusmn;5%</strong>. Manakah susunan kode warna gelang yang tepat?`,
+        options: optionsRev.map(o => o.seq),
+        correctIdx: optionsRev.findIndex(o => o.isCorrect)
+      });
+
+      // SOAL 10: KALKULASI RESISTOR 5 WARNA
+      const c1 = Math.floor(Math.random() * 9) + 1;
+      const c2 = Math.floor(Math.random() * 10);
+      const c3 = Math.floor(Math.random() * 10);
+      const c4 = Math.floor(Math.random() * 6);
+      const c5 = 1;
+      const ohm10 = ((COLOR_DATA[c1].digit * 100) + (COLOR_DATA[c2].digit * 10) + COLOR_DATA[c3].digit) * COLOR_DATA[c4].mult;
+
+      questions.push({
+        category: 'calc_5band',
+        questionText: "Hitunglah nilai hambatan dan toleransi dari resistor 5 gelang warna berikut:",
+        bands: [c1, c2, c3, c4, c5],
+        targetOhm: ohm10,
+        targetTol: 1
+      });
+
+      return questions;
     }
 
     function renderQuizQuestion() {
@@ -1439,24 +1734,76 @@
 
       let bodyHTML = '';
 
-      if (q.type === 'mc') {
+      if (q.category === 'component') {
+        const optionLetters = ['A', 'B', 'C', 'D', 'E'];
+        let imgTag = q.imgUrl ? `<div class="question-img-container"><img src="${q.imgUrl}" alt="Soal"></div>` : '';
+
+        if (q.type === 'GAMBAR') {
+          bodyHTML = `
+            <h4 style="font-size: 1.05rem; margin-bottom: 1rem;">Soal ${idx + 1}: ${q.questionText}</h4>
+            ${imgTag}
+            <div class="option-grid">
+              ${q.options.map((optUrl, oIdx) => `
+                <div class="option-card-img" onclick="selectImgOption(${oIdx})">
+                  <input type="radio" name="quiz-choice" value="${optionLetters[oIdx]}" id="opt-${oIdx}" style="display:none;">
+                  <img src="${convertDriveUrl(optUrl)}" alt="Opsi ${optionLetters[oIdx]}">
+                  <div><strong>${optionLetters[oIdx]}</strong></div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          bodyHTML = `
+            <h4 style="font-size: 1.05rem; margin-bottom: 1rem;">Soal ${idx + 1}: ${q.questionText}</h4>
+            ${imgTag}
+            <div>
+              ${q.options.map((optText, oIdx) => `
+                <label class="quiz-option-item">
+                  <input type="radio" name="quiz-choice" value="${optionLetters[oIdx]}">
+                  <span><strong>${optionLetters[oIdx]}.</strong> ${optText}</span>
+                </label>
+              `).join('')}
+            </div>
+          `;
+        }
+      } 
+      else if (q.category === 'circuit') {
+        let imgTag = q.imgUrl ? `<div class="question-img-container"><img src="${q.imgUrl}" alt="Rangkaian"></div>` : '';
+
         bodyHTML = `
-          <h4 style="font-size: 1.05rem; margin-bottom: 1rem;">Soal ${idx + 1}: ${q.text}</h4>
-          <div>
-            ${q.options.map((opt, oIdx) => `
-              <label class="quiz-option-item">
-                <input type="radio" name="quiz-choice" value="${oIdx}">
-                <span>${opt}</span>
+          <h4 style="font-size: 1.05rem; margin-bottom: 0.5rem;">Soal ${idx + 1}: ${q.questionText}</h4>
+          ${imgTag}
+          <div class="circuit-checklist-grid">
+            ${ALL_COMPONENTS.map((compName) => `
+              <label class="checkbox-item">
+                <input type="checkbox" name="circuit-comp" value="${compName}">
+                <span>${compName}</span>
               </label>
             `).join('')}
           </div>
         `;
-      } else {
+      }
+      else if (q.category === 'reverse_resistor') {
+        const optionLetters = ['A', 'B', 'C', 'D', 'E'];
         bodyHTML = `
-          <h4 style="font-size: 1.05rem; margin-bottom: 0.5rem;">Soal ${idx + 1}: Hitung nilai hambatan resistor (${q.mode} gelang) berikut:</h4>
+          <h4 style="font-size: 1.05rem; margin-bottom: 1rem;">Soal ${idx + 1}: ${q.questionText}</h4>
+          <div>
+            ${q.options.map((seqText, oIdx) => `
+              <label class="quiz-option-item">
+                <input type="radio" name="quiz-choice" value="${oIdx}">
+                <span><strong>${optionLetters[oIdx]}.</strong> ${seqText}</span>
+              </label>
+            `).join('')}
+          </div>
+        `;
+      }
+      else {
+        const mode = q.category === 'calc_5band' ? 5 : 4;
+        bodyHTML = `
+          <h4 style="font-size: 1.05rem; margin-bottom: 0.5rem;">Soal ${idx + 1}: ${q.questionText}</h4>
           <div class="resistor-display-box">
             <svg class="resistor-svg" viewBox="0 0 400 120">
-              ${renderResistorSVG(q.bands, q.mode)}
+              ${renderResistorSVG(q.bands, mode)}
             </svg>
           </div>
           <div style="max-width: 420px; margin: 0 auto;">
@@ -1481,32 +1828,60 @@
 
       container.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600;">
-          <span>Progres Kuis</span>
-          <span>${idx + 1} / ${total}</span>
+          <span>Siswa: ${appState.quiz.userName} (${appState.quiz.userClass})</span>
+          <span>Soal ${idx + 1} / ${total}</span>
         </div>
         <div class="quiz-progress-bar">
           <div class="quiz-progress-fill" style="width: ${progressPercent}%;"></div>
         </div>
         ${bodyHTML}
         <div style="margin-top: 1.5rem; text-align: right;">
-          <button class="btn btn-primary" onclick="submitQuizAnswer()">${idx === total - 1 ? 'Selesai Kuis' : 'Soal Berikutnya'}</button>
+          <button class="btn btn-primary" onclick="submitQuizAnswer()">${idx === total - 1 ? 'Selesai & Lihat Hasil' : 'Soal Berikutnya ➔'}</button>
         </div>
       `;
+    }
+
+    function selectImgOption(oIdx) {
+      document.querySelectorAll('.option-card-img').forEach((card, idx) => {
+        card.classList.toggle('selected', idx === oIdx);
+      });
+      const radio = document.getElementById(`opt-${oIdx}`);
+      if (radio) radio.checked = true;
     }
 
     function submitQuizAnswer() {
       const idx = appState.quiz.currentIdx;
       const q = appState.quiz.questions[idx];
-      let correct = false;
+      let isCorrect = false;
 
-      if (q.type === 'mc') {
+      if (q.category === 'component') {
         const selected = document.querySelector('input[name="quiz-choice"]:checked');
         if (!selected) {
           showModal(false, "Peringatan", "Pilih salah satu jawaban terlebih dahulu.", false);
           return;
         }
-        if (parseInt(selected.value) === q.answer) correct = true;
-      } else {
+        if (selected.value === q.answerKey) isCorrect = true;
+      } 
+      else if (q.category === 'circuit') {
+        const checkboxes = document.querySelectorAll('input[name="circuit-comp"]:checked');
+        const userSelected = Array.from(checkboxes).map(cb => cb.value);
+
+        const correctSet = new Set(q.correctComponents);
+        const userSet = new Set(userSelected);
+
+        if (userSet.size === correctSet.size && [...userSet].every(item => correctSet.has(item))) {
+          isCorrect = true;
+        }
+      }
+      else if (q.category === 'reverse_resistor') {
+        const selected = document.querySelector('input[name="quiz-choice"]:checked');
+        if (!selected) {
+          showModal(false, "Peringatan", "Pilih salah satu jawaban terlebih dahulu.", false);
+          return;
+        }
+        if (parseInt(selected.value) === q.correctIdx) isCorrect = true;
+      }
+      else {
         const userVal = parseFloat(document.getElementById('quiz-val-input').value);
         const unitMult = parseFloat(document.getElementById('quiz-unit-input').value);
         const userTol = parseFloat(document.getElementById('quiz-tol-input').value);
@@ -1517,10 +1892,10 @@
         }
 
         const userOhm = userVal * unitMult;
-        correct = (Math.abs(userOhm - q.targetOhm) < 0.001) && (Math.abs(userTol - q.targetTol) < 0.01);
+        isCorrect = (Math.abs(userOhm - q.targetOhm) < 0.001) && (Math.abs(userTol - q.targetTol) < 0.01);
       }
 
-      if (correct) appState.quiz.score++;
+      if (isCorrect) appState.quiz.score += 10;
 
       appState.quiz.currentIdx++;
       renderQuizQuestion();
@@ -1529,19 +1904,44 @@
     function renderQuizResults() {
       const container = document.getElementById('quiz-container');
       const score = appState.quiz.score;
-      const total = appState.quiz.questions.length;
+      const name = appState.quiz.userName;
+      const cls = appState.quiz.userClass;
 
       container.innerHTML = `
         <div style="text-align: center; padding: 2rem 1rem;">
-          <h2 style="margin-bottom: 0.5rem;">Kuis Selesai!</h2>
-          <p style="color: var(--text-muted);">Skor akhir Anda:</p>
-          <div style="font-size: 3.5rem; font-weight: 800; color: var(--primary); margin: 0.8rem 0;">${score} / ${total}</div>
-          <p style="margin-bottom: 1.5rem;">
-            ${score >= 8 ? 'Luar biasa! Anda telah menguasai perhitungan kode warna resistor dengan sangat baik.' : 'Tetap semangat! Pelajari kembali materi dan coba tingkatkan skor Anda.'}
-          </p>
-          <button class="btn btn-primary" onclick="startQuiz()">Ulangi Kuis</button>
+          <h2 style="margin-bottom: 0.3rem;">🎉 Kuis Selesai!</h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem;">Kartu Hasil Evaluasi Pembelajaran</p>
+          
+          <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius); padding: 1.25rem; max-width: 420px; margin: 1.25rem auto; text-align: left;">
+            <div style="margin-bottom: 0.5rem;"><strong>Nama Siswa:</strong> ${name}</div>
+            <div style="margin-bottom: 0.5rem;"><strong>Kelas:</strong> ${cls}</div>
+            <div style="margin-bottom: 0.5rem;"><strong>Jumlah Soal:</strong> 10 Soal</div>
+            <div><strong>Status:</strong> <span style="color: ${score >= 70 ? '#16a34a' : '#dc2626'}; font-weight: bold;">${score >= 70 ? 'LULUS EVALUASI' : 'PERLU REMEDIAL'}</span></div>
+          </div>
+
+          <p style="font-size: 0.9rem; color: var(--text-muted);">Nilai Akhir (Skala 100):</p>
+          <div style="font-size: 4rem; font-weight: 800; color: var(--primary); line-height: 1.1; margin: 0.5rem 0 1.25rem 0;">${score}</div>
+          
+          <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="copyResultSummary()">📋 Salin Ringkasan Hasil</button>
+            <button class="btn btn-secondary" onclick="resetQuiz()">Ulangi Kuis</button>
+          </div>
         </div>
       `;
+    }
+
+    function copyResultSummary() {
+      const text = `HASIL KUIS RESISTOLEARN\nNama: ${appState.quiz.userName}\nKelas: ${appState.quiz.userClass}\nNilai Akhir: ${appState.quiz.score} / 100`;
+      navigator.clipboard.writeText(text).then(() => {
+        showModal(true, "Berhasil Disalin!", "Ringkasan hasil kuis telah disalin ke clipboard. Silakan kirimkan ke guru Anda.", false);
+      });
+    }
+
+    function resetQuiz() {
+      appState.quiz.started = false;
+      appState.quiz.currentIdx = 0;
+      appState.quiz.score = 0;
+      renderQuizScreen();
     }
 
     // MODAL SYSTEM
@@ -1571,8 +1971,19 @@
       document.getElementById('modal-backdrop').classList.remove('active');
     }
 
-    // INISIALISASI
-    updateSimulation();
+    // INIT APP
+    function initApp() {
+      updateSimulation();
+      if (appState.sheetsUrl) {
+        fetchGoogleSheetsBankSoal(appState.sheetsUrl);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
   </script>
 </body>
 </html>
