@@ -703,16 +703,6 @@
       border-radius: 6px;
     }
 
-    .sheets-sync-card {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-radius: 8px;
-      padding: 0.85rem;
-      margin-bottom: 1.25rem;
-      font-size: 0.85rem;
-      color: #166534;
-    }
-
     @media (max-width: 640px) {
       .header-container {
         flex-direction: column;
@@ -1165,7 +1155,7 @@
     // STATE APLIKASI
     const appState = {
       activeTab: 'materi',
-      sheetsUrl: localStorage.getItem("resisto_sheets_url") || "https://docs.google.com/spreadsheets/d/1cybKlwIPvdsBFGdKR3y5eZNLPB1VzhCGQU2XxGUOYDU",
+      sheetsUrl: "https://docs.google.com/spreadsheets/d/1cybKlwIPvdsBFGdKR3y5eZNLPB1VzhCGQU2XxGUOYDU",
       isFetchingSheets: false,
       sim: {
         mode: 4,
@@ -1574,14 +1564,8 @@
                 <label>Kelas / Rombel:</label>
                 <input type="text" id="quiz-student-class" class="form-control" placeholder="Contoh: X TAV 1" required>
               </div>
-              
-              <div class="form-group" style="margin-top: 1.25rem;">
-                <label style="color: var(--primary);">Link Google Sheets Bank Soal (Opsional / Real-time):</label>
-                <input type="url" id="quiz-sheets-url" class="form-control" value="${appState.sheetsUrl}" placeholder="https://docs.google.com/spreadsheets/d/...">
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.3rem;">💡 Kosongkan jika ingin menggunakan Bank Soal default bawaan.</p>
-              </div>
 
-              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.8rem;" id="btn-start-quiz">
+              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem; padding: 0.8rem;" id="btn-start-quiz">
                 🚀 Mulai Kuis Sekarang
               </button>
             </form>
@@ -1596,22 +1580,17 @@
       if (e) e.preventDefault();
       const nameInput = document.getElementById('quiz-student-name');
       const classInput = document.getElementById('quiz-student-class');
-      const sheetsUrlInput = document.getElementById('quiz-sheets-url');
 
       if (nameInput && classInput) {
         appState.quiz.userName = nameInput.value.trim();
         appState.quiz.userClass = classInput.value.trim();
       }
 
-      if (sheetsUrlInput && sheetsUrlInput.value.trim()) {
-        const url = sheetsUrlInput.value.trim();
-        appState.sheetsUrl = url;
-        localStorage.setItem("resisto_sheets_url", url);
+      const btnStart = document.getElementById('btn-start-quiz');
+      if (btnStart) btnStart.innerText = "⏳ Menyinkronkan Bank Soal...";
 
-        const btnStart = document.getElementById('btn-start-quiz');
-        if (btnStart) btnStart.innerText = "⏳ Menyinkronkan Bank Soal dari Google Sheets...";
-
-        await fetchGoogleSheetsBankSoal(url);
+      if (appState.sheetsUrl) {
+        await fetchGoogleSheetsBankSoal(appState.sheetsUrl);
       }
 
       appState.quiz.started = true;
@@ -1916,25 +1895,17 @@
             <div style="margin-bottom: 0.5rem;"><strong>Nama Siswa:</strong> ${name}</div>
             <div style="margin-bottom: 0.5rem;"><strong>Kelas:</strong> ${cls}</div>
             <div style="margin-bottom: 0.5rem;"><strong>Jumlah Soal:</strong> 10 Soal</div>
-            <div><strong>Status:</strong> <span style="color: ${score >= 70 ? '#16a34a' : '#dc2626'}; font-weight: bold;">${score >= 70 ? 'LULUS EVALUASI' : 'PERLU REMEDIAL'}</span></div>
+            <div><strong>Status:</strong> <span style="color: ${score >= 80 ? '#16a34a' : '#dc2626'}; font-weight: bold;">${score >= 80 ? 'LULUS EVALUASI' : 'COBA LAGI YAA'}</span></div>
           </div>
 
           <p style="font-size: 0.9rem; color: var(--text-muted);">Nilai Akhir (Skala 100):</p>
           <div style="font-size: 4rem; font-weight: 800; color: var(--primary); line-height: 1.1; margin: 0.5rem 0 1.25rem 0;">${score}</div>
           
           <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
-            <button class="btn btn-primary" onclick="copyResultSummary()">📋 Salin Ringkasan Hasil</button>
-            <button class="btn btn-secondary" onclick="resetQuiz()">Ulangi Kuis</button>
+            <button class="btn btn-primary" onclick="resetQuiz()">Ulangi Kuis</button>
           </div>
         </div>
       `;
-    }
-
-    function copyResultSummary() {
-      const text = `HASIL KUIS RESISTOLEARN\nNama: ${appState.quiz.userName}\nKelas: ${appState.quiz.userClass}\nNilai Akhir: ${appState.quiz.score} / 100`;
-      navigator.clipboard.writeText(text).then(() => {
-        showModal(true, "Berhasil Disalin!", "Ringkasan hasil kuis telah disalin ke clipboard. Silakan kirimkan ke guru Anda.", false);
-      });
     }
 
     function resetQuiz() {
