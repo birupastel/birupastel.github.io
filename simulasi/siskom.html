@@ -703,6 +703,18 @@
       border-radius: 6px;
     }
 
+    .target-val-banner {
+      background: var(--primary-light);
+      border: 1px solid var(--primary);
+      color: var(--primary-hover);
+      padding: 0.85rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
     @media (max-width: 640px) {
       .header-container {
         flex-direction: column;
@@ -729,7 +741,6 @@
 </head>
 <body>
 
-  <!-- HEADER -->
   <header>
     <div class="header-container">
       <div class="logo">
@@ -749,7 +760,6 @@
 
   <main>
 
-    <!-- TAB 1: MATERI -->
     <section id="tab-materi" class="tab-content active">
       <h2 class="section-title">Materi Kode Warna Resistor</h2>
 
@@ -944,7 +954,6 @@
       </div>
     </section>
 
-    <!-- TAB 2: SIMULASI -->
     <section id="tab-simulasi" class="tab-content">
       <h2 class="section-title">Simulator Kode Warna Resistor</h2>
 
@@ -975,7 +984,6 @@
       </div>
     </section>
 
-    <!-- TAB 3: LATIHAN SOAL -->
     <section id="tab-latihan" class="tab-content">
       <h2 class="section-title">Latihan Mandiri Interaktif</h2>
 
@@ -991,48 +999,30 @@
       </div>
 
       <div class="card">
+        <!-- MODE SELECTOR BARS -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
           <div>
-            <h3 class="card-title" style="margin: 0;">Hitung Nilai Hambatan</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">Tentukan nilai hambatan dan toleransi dari resistor berikut ini.</p>
-          </div>
-          <div class="mode-toggle">
-            <button id="practice-btn-4" class="active" onclick="setPracticeMode(4)">Mode: 4 Gelang</button>
-            <button id="practice-btn-5" onclick="setPracticeMode(5)">Mode: 5 Gelang</button>
-          </div>
-        </div>
-
-        <div class="resistor-display-box">
-          <svg id="practice-resistor-svg" class="resistor-svg" viewBox="0 0 400 120"></svg>
-        </div>
-
-        <form onsubmit="submitPracticeAnswer(event)" style="max-width: 480px; margin: 0 auto;">
-          <div class="form-group">
-            <label>Nilai Hambatan & Satuan:</label>
-            <div class="input-group">
-              <input type="number" step="any" id="practice-val-input" class="form-control" placeholder="Contoh: 4.7 atau 100" required>
-              <select id="practice-unit-input" style="width: 110px;">
-                <option value="1">&Omega;</option>
-                <option value="1000">k&Omega;</option>
-                <option value="1000000">M&Omega;</option>
-              </select>
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Tipe Latihan:</span>
+            <div class="mode-toggle">
+              <button id="practice-type-c2v" class="active" onclick="setPracticeType('color_to_value')">Warna ➔ Nilai</button>
+              <button id="practice-type-v2c" onclick="setPracticeType('value_to_color')">Nilai ➔ Warna (Susun Warna)</button>
             </div>
           </div>
 
-          <div class="form-group">
-            <label>Toleransi (%):</label>
-            <input type="number" step="any" id="practice-tol-input" class="form-control" placeholder="Contoh: 5" required>
+          <div>
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Jumlah Gelang:</span>
+            <div class="mode-toggle">
+              <button id="practice-btn-4" class="active" onclick="setPracticeMode(4)">4 Gelang</button>
+              <button id="practice-btn-5" onclick="setPracticeMode(5)">5 Gelang</button>
+            </div>
           </div>
+        </div>
 
-          <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
-            <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Jawaban</button>
-            <button type="button" class="btn btn-secondary" onclick="generatePracticeQuestion()">Generate Soal Baru</button>
-          </div>
-        </form>
+        <!-- DYNAMIC CONTAINER FOR PRACTICE TYPE -->
+        <div id="practice-dynamic-container"></div>
       </div>
     </section>
 
-    <!-- TAB 4: KUIS EVALUASI -->
     <section id="tab-kuis" class="tab-content">
       <h2 class="section-title">Kuis Evaluasi (10 Soal)</h2>
       <div id="quiz-container" class="card"></div>
@@ -1164,8 +1154,11 @@
         bands: [1, 0, 2, 10]
       },
       practice: {
+        type: 'color_to_value', // 'color_to_value' OR 'value_to_color'
         mode: 4,
-        bands: [],
+        selectedBandIdx: 0,
+        userBands: [0, 0, 0, 10], // For value_to_color mode
+        bands: [],                // Target bands
         targetOhm: 0,
         targetTol: 0,
         score: 0,
@@ -1337,7 +1330,7 @@
       return { val: parseFloat(ohm.toFixed(2)), unit: '&Omega;' };
     }
 
-    function renderResistorSVG(bands, mode, isInteractive = false, selectedBandIdx = 0) {
+    function renderResistorSVG(bands, mode, isInteractive = false, selectedBandIdx = 0, onClickFuncName = 'selectSimBand') {
       const leadColor = "#94a3b8";
       const bodyBg = "#f1f5f9";
       const bodyBorder = "#cbd5e1";
@@ -1349,7 +1342,7 @@
         const strokeAttr = (color.name === 'Putih') ? 'stroke="#cbd5e1" stroke-width="1"' : '';
         const interactiveClass = isInteractive ? 'band-interactive' : '';
         const selectedClass = (isInteractive && selectedBandIdx === idx) ? 'selected' : '';
-        const onClickAttr = isInteractive ? `onclick="selectSimBand(${idx})"` : '';
+        const onClickAttr = isInteractive ? `onclick="${onClickFuncName}(${idx})"` : '';
 
         return `<rect x="${positions[idx]}" y="30" width="16" height="60" fill="${color.hex}" rx="2" ${strokeAttr} class="${interactiveClass} ${selectedClass}" ${onClickAttr}/>`;
       }).join('');
@@ -1364,7 +1357,6 @@
       `;
     }
 
-    // SIMULASI LOGIC
     function setSimMode(mode) {
       appState.sim.mode = mode;
       appState.sim.selectedBandIdx = 0;
@@ -1384,7 +1376,7 @@
       const { mode, bands, selectedBandIdx } = appState.sim;
 
       const svgEl = document.getElementById('sim-resistor-svg');
-      if (svgEl) svgEl.innerHTML = renderResistorSVG(bands, mode, true, selectedBandIdx);
+      if (svgEl) svgEl.innerHTML = renderResistorSVG(bands, mode, true, selectedBandIdx, 'selectSimBand');
 
       const tabsContainer = document.getElementById('sim-band-tabs');
       if (tabsContainer) {
@@ -1469,12 +1461,24 @@
       document.getElementById('sim-calc-breakdown').innerHTML = calcHTML;
     }
 
-    // LATIHAN LOGIC
+    function setPracticeType(type) {
+      appState.practice.type = type;
+      document.getElementById('practice-type-c2v').classList.toggle('active', type === 'color_to_value');
+      document.getElementById('practice-type-v2c').classList.toggle('active', type === 'value_to_color');
+      generatePracticeQuestion();
+    }
+
     function setPracticeMode(mode) {
       appState.practice.mode = mode;
+      appState.practice.selectedBandIdx = 0;
       document.getElementById('practice-btn-4').classList.toggle('active', mode === 4);
       document.getElementById('practice-btn-5').classList.toggle('active', mode === 5);
       generatePracticeQuestion();
+    }
+
+    function selectPracticeBand(bIdx) {
+      appState.practice.selectedBandIdx = bIdx;
+      renderPracticeDynamicView();
     }
 
     function generatePracticeQuestion() {
@@ -1494,6 +1498,7 @@
 
         appState.practice.targetOhm = ((COLOR_DATA[b1].digit * 10) + COLOR_DATA[b2].digit) * COLOR_DATA[b3].mult;
         appState.practice.targetTol = COLOR_DATA[b4].tol;
+        appState.practice.userBands = [0, 0, 0, 10]; // Default user bands for value_to_color
       } else {
         const b1 = validDigitsNoZero[Math.floor(Math.random() * validDigitsNoZero.length)];
         const b2 = validAllDigits[Math.floor(Math.random() * validAllDigits.length)];
@@ -1504,29 +1509,156 @@
 
         appState.practice.targetOhm = ((COLOR_DATA[b1].digit * 100) + (COLOR_DATA[b2].digit * 10) + COLOR_DATA[b3].digit) * COLOR_DATA[b4].mult;
         appState.practice.targetTol = COLOR_DATA[b5].tol;
+        appState.practice.userBands = [0, 0, 0, 0, 10]; // Default user bands
       }
 
       appState.practice.bands = bands;
-      document.getElementById('practice-resistor-svg').innerHTML = renderResistorSVG(bands, mode);
+      appState.practice.selectedBandIdx = 0;
 
-      document.getElementById('practice-val-input').value = '';
-      document.getElementById('practice-tol-input').value = '';
+      renderPracticeDynamicView();
+    }
+
+    function renderPracticeDynamicView() {
+      const container = document.getElementById('practice-dynamic-container');
+      if (!container) return;
+
+      const { type, mode, bands, userBands, selectedBandIdx, targetOhm, targetTol } = appState.practice;
+
+      if (type === 'color_to_value') {
+        // MODE 1: WARNA -> NILAI (Tebak Nilai)
+        container.innerHTML = `
+          <div class="resistor-display-box">
+            <svg id="practice-resistor-svg" class="resistor-svg" viewBox="0 0 400 120">
+              ${renderResistorSVG(bands, mode)}
+            </svg>
+          </div>
+
+          <form onsubmit="submitPracticeAnswer(event)" style="max-width: 480px; margin: 0 auto;">
+            <div class="form-group">
+              <label>Nilai Hambatan & Satuan:</label>
+              <div class="input-group">
+                <input type="number" step="any" id="practice-val-input" class="form-control" placeholder="Contoh: 4.7 atau 100" required>
+                <select id="practice-unit-input" style="width: 110px;">
+                  <option value="1">&Omega;</option>
+                  <option value="1000">k&Omega;</option>
+                  <option value="1000000">M&Omega;</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Toleransi (%):</label>
+              <input type="number" step="any" id="practice-tol-input" class="form-control" placeholder="Contoh: 5" required>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
+              <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Jawaban</button>
+              <button type="button" class="btn btn-secondary" onclick="generatePracticeQuestion()">Generate Soal Baru</button>
+            </div>
+          </form>
+        `;
+      } else {
+        // MODE 2: NILAI -> WARNA (Susun Warna secara Interaktif)
+        const targetFmt = formatOhmValue(targetOhm);
+
+        const labels = (mode === 4) 
+          ? ["Gelang 1 (Digit 1)", "Gelang 2 (Digit 2)", "Gelang 3 (Multiplier)", "Gelang 4 (Toleransi)"]
+          : ["Gelang 1 (Digit 1)", "Gelang 2 (Digit 2)", "Gelang 3 (Digit 3)", "Gelang 4 (Multiplier)", "Gelang 5 (Toleransi)"];
+
+        const bandPills = labels.map((lbl, idx) => `
+          <button type="button" class="band-pill ${selectedBandIdx === idx ? 'active' : ''}" onclick="selectPracticeBand(${idx})">${lbl}</button>
+        `).join('');
+
+        const isMultiplier = (mode === 4 && selectedBandIdx === 2) || (mode === 5 && selectedBandIdx === 3);
+        const isTolerance = (mode === 4 && selectedBandIdx === 3) || (mode === 5 && selectedBandIdx === 4);
+
+        const colorChips = COLOR_DATA.map((c, cIdx) => {
+          let disabled = false;
+          if (!isMultiplier && !isTolerance && c.digit === null) disabled = true;
+          if (isTolerance && c.tol === null) disabled = true;
+
+          const isSel = userBands[selectedBandIdx] === cIdx;
+          return `
+            <div class="color-chip ${isSel ? 'selected' : ''} ${disabled ? 'disabled' : ''}" ${!disabled ? `onclick="applyPracticeColor(${cIdx})"` : ''}>
+              <span class="color-swatch" style="background-color:${c.hex}"></span>
+              <span>${c.name}</span>
+            </div>
+          `;
+        }).join('');
+
+        container.innerHTML = `
+          <div class="target-val-banner">
+            🎯 Target nilai yang harus disusun: <strong>${targetFmt.val} ${targetFmt.unit} &plusmn;${targetTol}%</strong>
+          </div>
+
+          <div class="resistor-display-box">
+            <svg id="practice-resistor-svg" class="resistor-svg" viewBox="0 0 400 120">
+              ${renderResistorSVG(userBands, mode, true, selectedBandIdx, 'selectPracticeBand')}
+            </svg>
+            <span class="band-hint">💡 Tip: Klik gelang pada gambar di atas lalu pilih warna di bawah ini</span>
+          </div>
+
+          <div class="band-selector-tabs">${bandPills}</div>
+
+          <div style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1.25rem;">
+            <div style="font-size: 0.875rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text-main);">
+              Pilih Warna untuk Gelang ke-${selectedBandIdx + 1}:
+            </div>
+            <div class="color-palette-grid">${colorChips}</div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; max-width: 480px; margin: 0 auto;">
+            <button type="button" class="btn btn-primary" style="flex: 1;" onclick="submitPracticeAnswer(event)">Submit Jawaban</button>
+            <button type="button" class="btn btn-secondary" onclick="generatePracticeQuestion()">Generate Soal Baru</button>
+          </div>
+        `;
+      }
+    }
+
+    function applyPracticeColor(cIdx) {
+      const bIdx = appState.practice.selectedBandIdx;
+      appState.practice.userBands[bIdx] = cIdx;
+      renderPracticeDynamicView();
     }
 
     function submitPracticeAnswer(e) {
-      e.preventDefault();
-      const userVal = parseFloat(document.getElementById('practice-val-input').value);
-      const unitMult = parseFloat(document.getElementById('practice-unit-input').value);
-      const userTol = parseFloat(document.getElementById('practice-tol-input').value);
+      if (e) e.preventDefault();
+      const { type, mode, targetOhm, targetTol, bands, userBands } = appState.practice;
 
-      if (isNaN(userVal) || isNaN(userTol)) return;
+      let isOhmCorrect = false;
+      let isTolCorrect = false;
 
-      const userOhm = userVal * unitMult;
-      const targetOhm = appState.practice.targetOhm;
-      const targetTol = appState.practice.targetTol;
+      if (type === 'color_to_value') {
+        const userVal = parseFloat(document.getElementById('practice-val-input').value);
+        const unitMult = parseFloat(document.getElementById('practice-unit-input').value);
+        const userTol = parseFloat(document.getElementById('practice-tol-input').value);
 
-      const isOhmCorrect = Math.abs(userOhm - targetOhm) < 0.001;
-      const isTolCorrect = Math.abs(userTol - targetTol) < 0.01;
+        if (isNaN(userVal) || isNaN(userTol)) return;
+
+        const userOhm = userVal * unitMult;
+        isOhmCorrect = Math.abs(userOhm - targetOhm) < 0.001;
+        isTolCorrect = Math.abs(userTol - targetTol) < 0.01;
+      } else {
+        // Mode: value_to_color (Susun Warna)
+        let calculatedUserOhm = 0;
+        let calculatedUserTol = COLOR_DATA[userBands[userBands.length - 1]].tol;
+
+        if (mode === 4) {
+          const d1 = COLOR_DATA[userBands[0]].digit;
+          const d2 = COLOR_DATA[userBands[1]].digit;
+          const mult = COLOR_DATA[userBands[2]].mult;
+          calculatedUserOhm = ((d1 * 10) + d2) * mult;
+        } else {
+          const d1 = COLOR_DATA[userBands[0]].digit;
+          const d2 = COLOR_DATA[userBands[1]].digit;
+          const d3 = COLOR_DATA[userBands[2]].digit;
+          const mult = COLOR_DATA[userBands[3]].mult;
+          calculatedUserOhm = ((d1 * 100) + (d2 * 10) + d3) * mult;
+        }
+
+        isOhmCorrect = Math.abs(calculatedUserOhm - targetOhm) < 0.001;
+        isTolCorrect = Math.abs(calculatedUserTol - targetTol) < 0.01;
+      }
 
       if (isOhmCorrect && isTolCorrect) {
         appState.practice.streak += 1;
@@ -1539,7 +1671,7 @@
         showModal(
           true, 
           "Jawaban Benar! 🎉", 
-          `Hebat! Jawaban Anda tepat sekali.<br><strong>+${bonusPoints} Poin</strong> ${appState.practice.streak >= 3 ? '(Bonus Combo Streak! 🔥)' : ''}`,
+          `Hebat! Susunan warna Anda tepat sekali.<br><strong>+${bonusPoints} Poin</strong> ${appState.practice.streak >= 3 ? '(Bonus Combo Streak! 🔥)' : ''}`,
           true
         );
       } else {
@@ -1547,10 +1679,12 @@
         document.getElementById('practice-streak-val').innerText = "0x";
 
         const targetFmt = formatOhmValue(targetOhm);
+        const correctColorNames = bands.map(bIdx => COLOR_DATA[bIdx].name).join(" - ");
+
         showModal(
           false, 
           "Jawaban Kurang Tepat ❌", 
-          `Jawaban yang benar adalah <strong>${targetFmt.val} ${targetFmt.unit} &plusmn;${targetTol}%</strong>.`,
+          `Nilai yang benar adalah <strong>${targetFmt.val} ${targetFmt.unit} &plusmn;${targetTol}%</strong>.<br>Susunan warna yang tepat: <strong>${correctColorNames}</strong>`,
           false
         );
       }
@@ -1561,7 +1695,6 @@
       generatePracticeQuestion();
     }
 
-    // KUIS SYSTEM
     function renderQuizScreen() {
       const container = document.getElementById('quiz-container');
       if (!container) return;
@@ -1944,7 +2077,6 @@
       renderQuizScreen();
     }
 
-    // MODAL SYSTEM
     function showModal(isSuccess, title, message, isNextAction = false) {
       const backdrop = document.getElementById('modal-backdrop');
       const iconWrapper = document.getElementById('modal-icon');
