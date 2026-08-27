@@ -149,7 +149,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      min-height: 0; /* Penting untuk fleksibilitas scroll overflow */
+      min-height: 0;
     }
 
     .section-title {
@@ -723,7 +723,7 @@
            onerror="this.onerror=null; this.src='https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/id/8/8f/Logo_sman_1_garut.png';">
       <div class="school-info">
         <h1 id="school-name">SMAN 1 GARUT</h1>
-        <p id="school-sub">Papan Informasi Digital Resmi</p>
+        <p id="school-sub">Papan Informasi Digital</p>
       </div>
     </div>
 
@@ -752,13 +752,13 @@
 
       <!-- YOUTUBE MUSIC COLLAPSIBLE WIDGET -->
       <div class="yt-music-card" id="yt-music-card">
-        <div class="yt-music-header" onclick="toggleYtMusic()" title="Klik untuk memutar/menyembunyikan musik latar">
+        <div class="yt-music-header" onclick="toggleYtMusic()" title="Klik untuk memutar/menyembunyikan suara latar">
           <div class="yt-music-title">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-            <span>Musik Latar</span>
+            <span>Suara Latar</span>
           </div>
           <button class="yt-music-toggle-btn" id="yt-music-toggle-btn" type="button">
-            <span id="yt-music-status-text">Putar Musik</span>
+            <span id="yt-music-status-text">Putar</span>
             <svg id="yt-music-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
           </button>
         </div>
@@ -920,33 +920,45 @@
       return defaultValue;
     }
 
-    // PARSER LINK YOUTUBE MUSIC / PLAYLIST DARI SHEET MUSIK
+    // PARSER LINK YOUTUBE MUSIC / PLAYLIST (PINTAR MEMBEDAKAN SINGLE VIDEO, PLAYLIST NORMAL, DAN MIX 'RD')
     function parseMusicUrl(url) {
       if (!url) return DEFAULT_MUSIC_PLAYLIST;
       url = String(url).trim();
 
-      // 1. JIKA LINK MERUPAKAN PLAYLIST (terdapat list=...)
-      if (url.includes('list=')) {
-        const match = url.match(/[?&]list=([^&]+)/);
-        if (match && match[1]) {
-          return `https://www.youtube-nocookie.com/embed/videoseries?list=${match[1]}&autoplay=1&loop=1`;
-        }
+      // Jika sudah berupa URL embed langsung
+      if (url.includes('/embed/')) {
+        return url;
       }
 
-      // 2. JIKA LINK MERUPAKAN SINGLE VIDEO (terdapat v= atau youtu.be/)
-      if (url.includes('youtube.com') || url.includes('youtu.be')) {
-        let videoId = '';
-        const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-        const match = url.match(regExp);
-
-        if (match && match[1]) {
-          videoId = match[1];
-          return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
-        }
+      // 1. EKSTRAKSI VIDEO ID JIKA ADA (contoh: watch?v=... atau youtu.be/...)
+      let videoId = '';
+      const vMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+      if (vMatch && vMatch[1]) {
+        videoId = vMatch[1];
       }
 
-      // 3. FALLBACK ATAU DIRECT EMBED URL
-      return url.includes('embed') ? url : DEFAULT_MUSIC_PLAYLIST;
+      // 2. EKSTRAKSI PLAYLIST ID JIKA ADA (list=...)
+      let listId = '';
+      const listMatch = url.match(/[?&]list=([^&]+)/);
+      if (listMatch && listMatch[1]) {
+        listId = listMatch[1];
+      }
+
+      // 3. LOGIKA CERDAS PLAYLIST MIX (RD...):
+      // Playlist Mix (berawalan 'RD') DILARANG diputar via embed /videoseries oleh YouTube.
+      // Jika listId berawalan 'RD', kita ABAIKAN listId dan utamakan ID Videonya!
+      if (listId && !listId.startsWith('RD')) {
+        // Playlist manual / album yang valid (misal berawalan PL..., OL..., dll)
+        return `https://www.youtube-nocookie.com/embed/videoseries?list=${listId}&autoplay=1&loop=1`;
+      }
+
+      // Jika memiliki Video ID (termasuk link Mix yang ber-ID video)
+      if (videoId) {
+        return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}`;
+      }
+
+      // Fallback default
+      return DEFAULT_MUSIC_PLAYLIST;
     }
 
     // LOGIKA TOGGLE SHOW/HIDE YOUTUBE MUSIC PLAYER
