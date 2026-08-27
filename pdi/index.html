@@ -5,34 +5,638 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Papan Informasi Digital - SMAN 1 Garut</title>
 
+  <!-- EARLY GLOBAL ERROR GUARD -->
+  <script>
+    (function() {
+      function isScriptError(msg) {
+        if (!msg) return true;
+        const str = String(msg).toLowerCase();
+        return str.includes('script error') || 
+               str.includes('frame-ancestors') || 
+               str.includes('listener indicated') || 
+               str.includes('message channel closed') || 
+               str.includes('resizeobserver') ||
+               str.includes('could not establish connection');
+      }
+
+      window.addEventListener('error', function(e) {
+        if (isScriptError(e.message) || isScriptError(e.error) || !e.filename) {
+          if (e.preventDefault) e.preventDefault();
+          if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+          return true;
+        }
+      }, true);
+
+      window.onerror = function(msg, url, lineNo, columnNo, error) {
+        if (isScriptError(msg) || !url) {
+          return true;
+        }
+        return false;
+      };
+
+      window.addEventListener('unhandledrejection', function(e) {
+        if (e && (isScriptError(e.reason) || isScriptError(e.message))) {
+          if (e.preventDefault) e.preventDefault();
+          if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        }
+      }, true);
+    })();
+  </script>
+
   <!-- FAVICON -->
-  <!--
-  <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/id/8/8f/Logo_sman_1_garut.png" type="image/png">
-  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/id/8/8f/Logo_sman_1_garut.png" type="image/png">
-  -->
   <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Logo_sman_1_garut.png/960px-Logo_sman_1_garut.png" type="image/png">
   <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Logo_sman_1_garut.png/960px-Logo_sman_1_garut.png" type="image/png">
 
-  <link rel="stylesheet" href="style.css">
+  <!-- FONT -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    .header {
+      height: 80px;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 28px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      height: 50px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .school-info h1 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+    }
+
+    .school-info p {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .clock-container {
+      text-align: right;
+    }
+
+    #clock-time {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #2563eb;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    #clock-date {
+      font-size: 0.82rem;
+      color: #64748b;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    /* MAIN CONTAINER */
+    .main-container {
+      flex: 1;
+      display: flex;
+      gap: 20px;
+      padding: 16px 28px;
+      height: calc(100vh - 135px);
+    }
+
+    /* SIDEBAR AGENDA */
+    .sidebar {
+      width: 340px;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      padding: 18px;
+      box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f172a;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #f1f5f9;
+      margin-bottom: 14px;
+    }
+
+    .agenda-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
+
+    .agenda-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .agenda-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .agenda-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .badge-akademik { background: #dbeafe; color: #1e40af; }
+    .badge-siswa { background: #dcfce7; color: #166534; }
+    .badge-libur { background: #fee2e2; color: #991b1b; }
+    .badge-rapat { background: #fef3c7; color: #92400e; }
+    .badge-umum { background: #f1f5f9; color: #475569; }
+
+    .agenda-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+
+    .agenda-date {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    /* MEDIA SECTION */
+    .media-section {
+      flex: 1;
+      position: relative;
+      background: #000000;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -5px rgba(0,0,0,0.1);
+      border: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .slide-progress-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      z-index: 35;
+      overflow: hidden;
+    }
+
+    .slide-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2563eb, #38bdf8, #60a5fa);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.9);
+      transition: width linear;
+    }
+
+    .media-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #000000;
+      overflow: hidden;
+    }
+
+    .media-bg-blur {
+      position: absolute;
+      top: -10%;
+      left: -10%;
+      width: 120%;
+      height: 120%;
+      object-fit: cover;
+      filter: blur(28px) brightness(0.65) opacity(0.85);
+      transform: scale(1.1);
+      z-index: 1;
+    }
+
+    .media-main-img {
+      position: relative;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      z-index: 2;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    .tiktok-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 2;
+      background: #000000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0;
+      box-sizing: border-box;
+    }
+
+    .tiktok-wrapper iframe {
+      width: auto;
+      height: 100% !important;
+      max-height: 100% !important;
+      aspect-ratio: 9 / 16;
+      background: #000000;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .youtube-wrapper {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 2;
+      background: #000000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .youtube-wrapper iframe {
+      width: 100% !important;
+      height: 100% !important;
+      border: none;
+    }
+
+    .media-error-card {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 32px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 16px;
+      color: #ffffff;
+      text-align: center;
+      max-width: 80%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(8px);
+    }
+
+    .media-error-card .error-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fca5a5;
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+
+    .media-error-card .error-msg {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* GOOGLE CALENDAR SLIDE */
+    .gcal-container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .gcal-header {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gcal-grid-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .gcal-day-header {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #64748b;
+      text-align: center;
+      padding: 4px 0;
+      text-transform: uppercase;
+    }
+
+    .gcal-grid-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-auto-rows: 1fr;
+      gap: 4px;
+    }
+
+    .gcal-cell {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .gcal-cell.other-month {
+      background: #f1f5f9;
+      opacity: 0.35;
+    }
+
+    .gcal-cell.today {
+      border: 2px solid #2563eb;
+      background: #eff6ff;
+    }
+
+    .gcal-cell.is-sunday .gcal-date-num {
+      color: #ef4444 !important;
+      font-weight: 900;
+    }
+
+    .gcal-cell.national-holiday {
+      background-color: #ef4444 !important;
+      border-color: #dc2626 !important;
+    }
+
+    .gcal-cell.national-holiday .gcal-date-num {
+      color: #ffffff !important;
+      font-weight: 900;
+    }
+
+    .gcal-cell.national-holiday .gcal-event-pill {
+      background-color: rgba(255, 255, 255, 0.25) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .gcal-date-num {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 2px;
+    }
+
+    .gcal-cell.today .gcal-date-num {
+      color: #2563eb;
+    }
+
+    .gcal-events-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      overflow-y: hidden;
+      flex: 1;
+    }
+
+    .gcal-event-pill {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #ffffff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+      height: 18px;
+    }
+
+    .gcal-event-pill.spacer {
+      background: transparent !important;
+      pointer-events: none;
+    }
+
+    /* COUNTDOWN CARD & CONTROLS */
+    .countdown-card {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      z-index: 10;
+    }
+
+    .countdown-badge {
+      font-size: 0.6rem;
+      font-weight: 800;
+      color: #ef4444;
+    }
+
+    .countdown-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .countdown-timer {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #2563eb;
+    }
+
+    .media-nav-buttons {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 8px;
+      z-index: 20;
+    }
+
+    .nav-btn {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .nav-btn:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+      transform: translateY(-2px);
+    }
+
+    .nav-btn:active {
+      transform: translateY(0);
+    }
+
+    .media-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4) 70%, transparent);
+      padding: 32px 160px 16px 24px;
+      color: #ffffff;
+      z-index: 10;
+    }
+
+    .category-badge {
+      background: #2563eb;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+
+    #media-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    /* FOOTER RUNNING TEXT */
+    .footer {
+      height: 55px;
+      background: #0f172a;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .ticker-label {
+      background: #2563eb;
+      padding: 0 24px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      font-weight: 800;
+      font-size: 0.88rem;
+      letter-spacing: 1px;
+      z-index: 20;
+    }
+
+    .ticker-wrap {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-move {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: infinite-ticker 35s linear infinite;
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    @keyframes infinite-ticker {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
+    }
+
+    .empty-state {
+      color: #94a3b8;
+      font-size: 0.88rem;
+      text-align: center;
+      padding: 30px 10px;
+    }
+  </style>
 </head>
 <body>
 
   <!-- HEADER -->
   <header class="header">
     <div class="brand">
-      <!--
-      <img src="https://upload.wikimedia.org/wikipedia/id/8/8f/Logo_sman_1_garut.png" 
-      -->
       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Logo_sman_1_garut.png/960px-Logo_sman_1_garut.png"
-          alt="Logo SMAN 1 Garut" 
+           alt="Logo SMAN 1 Garut" 
            id="school-logo" 
            class="logo"
            onerror="this.onerror=null; this.src='https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/id/8/8f/Logo_sman_1_garut.png';">
       <div class="school-info">
         <h1 id="school-name">SMAN 1 GARUT</h1>
-        <p id="school-sub">Papan Informasi Digital Resmi</p>
+        <p id="school-sub">Papan Informasi Digital</p>
       </div>
     </div>
+
     <div class="clock-container">
       <div id="clock-time">00:00:00</div>
       <div id="clock-date">Senin, 27 Juli 2026</div>
@@ -55,6 +659,11 @@
 
     <!-- MEDIA SECTION -->
     <section class="media-section">
+      <!-- PROGRESS BAR ANIMASI WAKTU TAYANG -->
+      <div class="slide-progress-container">
+        <div class="slide-progress-bar" id="slide-progress-bar"></div>
+      </div>
+
       <div class="media-container" id="media-container">
         <div class="empty-state">Memuat media...</div>
       </div>
@@ -66,13 +675,17 @@
         <div class="countdown-timer" id="countdown-timer">- Hari Lagi</div>
       </div>
 
-      <!-- TOMBOL NAVIGASI MEDIA -->
+      <!-- TOMBOL NAVIGASI MEDIA & FULLSCREEN -->
       <div class="media-nav-buttons">
         <button class="nav-btn" id="prev-btn" onclick="prevSlide()" title="Slide Sebelumnya">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
         <button class="nav-btn" id="next-btn" onclick="nextSlide()" title="Slide Selanjutnya">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        <button class="nav-btn" id="fullscreen-btn" onclick="toggleFullscreen()" title="Layar Penuh (Fullscreen)">
+          <svg id="fs-icon-expand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+          <svg id="fs-icon-compress" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
         </button>
       </div>
 
@@ -95,6 +708,793 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzR9AiCrmh2y6daywe9L1b8ZTIhzQaCSnHp-mXr27_RAdQYJIMv-B3KuTiefNESM2u5/exec";
+
+    // FALLBACK DATA WHEN API IS UNREACHABLE
+    const FALLBACK_DATA = {
+      agenda: [
+        { "Nama Kegiatan": "Upacara Bendera Hari Senin", "Tanggal Mulai": new Date().toISOString().split('T')[0], "Tanggal Selesai Agenda": new Date().toISOString().split('T')[0], "Kategori": "Akademik", "Status": "aktif" },
+        { "Nama Kegiatan": "Rapat Koordinasi Guru & Staf", "Tanggal Mulai": new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0], "Tanggal Selesai Agenda": new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0], "Kategori": "Rapat", "Status": "aktif" },
+        { "Nama Kegiatan": "Penilaian Tengah Semester (PTS)", "Tanggal Mulai": new Date(Date.now() + 86400000 * 5).toISOString().split('T')[0], "Tanggal Selesai Agenda": new Date(Date.now() + 86400000 * 10).toISOString().split('T')[0], "Kategori": "Akademik", "Status": "aktif" }
+      ],
+      media: [
+        { "Judul / Deskripsi Media": "SMA NEGERI 1 GARUT - ROAD TO KEJURCAB KAB. GARUT 2026", "Kategori Media": "KEGIATAN", "Tipe Media": "Video YouTube", "Link URL": "https://www.youtube.com/watch?v=Xhqn012PcZ8", "Status": "aktif", "Durasi": 35 },
+        { "Judul / Deskripsi Media": "Selamat Datang di SMAN 1 Garut", "Kategori Media": "INFORMASI", "Tipe Media": "Gambar", "Link URL": "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200", "Status": "aktif", "Durasi": 12 }
+      ],
+      runningText: [
+        { "Teks Pengumuman": "Selamat Datang di SMAN 1 Garut - Papan Informasi Digital Resmi.", "Status": "aktif" },
+        { "Teks Pengumuman": "Dihimbau kepada seluruh siswa untuk senantiasa menjaga kebersihan dan ketertiban lingkungan sekolah.", "Status": "aktif" }
+      ]
+    };
+
+    let mediaSlides = [];
+    let allAgendaData = [];
+    let currentMediaIndex = 0;
+    let mediaTimer = null;
+
+    const COLOR_PALETTE = [
+      "#2563eb", "#059669", "#d97706", "#7c3aed", 
+      "#0891b2", "#e11d48", "#4f46e5", "#0284c7", 
+      "#b45309", "#4d7c0f", "#c026d3", "#0d9488"
+    ];
+
+    function getEventColor(title, category = "") {
+      const cat = String(category).toLowerCase();
+      if (cat.includes("libur")) return "#dc2626";
+
+      if (!title) return COLOR_PALETTE[0];
+      let hash = 0;
+      for (let i = 0; i < title.length; i++) {
+        hash = title.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const index = Math.abs(hash) % COLOR_PALETTE.length;
+      return COLOR_PALETTE[index];
+    }
+
+    function updateClock() {
+      const now = new Date();
+      
+      const timeOptions = { 
+        timeZone: 'Asia/Jakarta', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit', 
+        hour12: false 
+      };
+      const timeStr = new Intl.DateTimeFormat('id-ID', timeOptions).format(now).replace(/\./g, ':');
+      document.getElementById('clock-time').textContent = timeStr;
+
+      const dateOptions = { 
+        timeZone: 'Asia/Jakarta', 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      };
+      const dateStr = new Intl.DateTimeFormat('id-ID', dateOptions).format(now);
+      document.getElementById('clock-date').textContent = dateStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function getValue(obj, possibleKeys, defaultValue = "") {
+      if (!obj) return defaultValue;
+      const objKeys = Object.keys(obj);
+      for (let key of objKeys) {
+        const cleanKey = key.trim().toLowerCase();
+        for (let pKey of possibleKeys) {
+          if (cleanKey === pKey.toLowerCase()) {
+            if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
+              return obj[key];
+            }
+          }
+        }
+      }
+      return defaultValue;
+    }
+
+    // PARSER DURASI MEDIA DARI SHEET (Mendukung Detik, MM:SS, atau HH:MM:SS)
+    function parseDurationInMs(durValue, defaultMs) {
+      if (!durValue) return defaultMs;
+      let str = String(durValue).trim();
+      if (!str) return defaultMs;
+
+      // Jika format MM:SS atau HH:MM:SS
+      if (str.includes(':')) {
+        const parts = str.split(':').map(p => parseFloat(p) || 0);
+        let seconds = 0;
+        if (parts.length === 2) {
+          seconds = parts[0] * 60 + parts[1];
+        } else if (parts.length === 3) {
+          seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+        }
+        if (seconds > 0) return seconds * 1000;
+      }
+
+      // Jika berupa angka polos (detik), contoh: 15, "15", "15 detik"
+      const num = parseFloat(str.replace(/[^0-9.]/g, ''));
+      if (!isNaN(num) && num > 0) {
+        return num * 1000;
+      }
+
+      return defaultMs;
+    }
+
+    function parseToDateObj(dateValue) {
+      if (!dateValue) return null;
+      
+      if (dateValue instanceof Date) {
+        return new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
+      }
+
+      if (typeof dateValue === 'number' || (!isNaN(Number(dateValue)) && !String(dateValue).includes('-') && !String(dateValue).includes('/'))) {
+        const d = new Date(Number(dateValue));
+        if (!isNaN(d.getTime())) {
+          return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        }
+      }
+
+      let str = String(dateValue).trim();
+
+      if (str.includes('T') || str.includes('Z')) {
+        const dIso = new Date(str);
+        if (!isNaN(dIso.getTime())) {
+          const wibFormatted = new Intl.DateTimeFormat('en-US', {
+            timeZone: 'Asia/Jakarta',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric'
+          }).format(dIso);
+
+          const partsWib = wibFormatted.split('/');
+          return new Date(parseInt(partsWib[2]), parseInt(partsWib[0]) - 1, parseInt(partsWib[1]));
+        }
+      }
+
+      const parts = str.split(/[-/.]/);
+      if (parts.length === 3) {
+        const p0 = parseInt(parts[0], 10);
+        const p1 = parseInt(parts[1], 10);
+        const p2 = parseInt(parts[2], 10);
+
+        if (parts[0].length === 4) {
+          return new Date(p0, p1 - 1, p2);
+        }
+        
+        if (parts[2].length === 4) {
+          let month = p0;
+          let day = p1;
+          let year = p2;
+
+          if (p1 > 12) {
+            month = p0;
+            day = p1;
+          } else if (p0 > 12) {
+            day = p0;
+            month = p1;
+          } else {
+            month = p0;
+            day = p1;
+          }
+
+          return new Date(year, month - 1, day);
+        }
+      }
+
+      const fallback = new Date(str);
+      return isNaN(fallback.getTime()) ? null : new Date(fallback.getFullYear(), fallback.getMonth(), fallback.getDate());
+    }
+
+    function formatTanggalSingkat(dateValue) {
+      if (!dateValue) return "";
+      let d = parseToDateObj(dateValue);
+      if (!d || isNaN(d.getTime())) return String(dateValue);
+
+      const bln = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Ags", "Sep", "Okt", "Nov", "Des"];
+      return `${d.getDate()} ${bln[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function parseMediaUrl(url, tipeMedia = "") {
+      if (!url) return { type: 'invalid', message: 'URL Kosong' };
+      url = String(url).trim();
+      const tipe = String(tipeMedia).toLowerCase();
+
+      // 1. YOUTUBE
+      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+        let videoId = '';
+        const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+        const match = url.match(regExp);
+
+        if (match && match[1]) {
+          videoId = match[1];
+        }
+
+        if (videoId) {
+          const originParam = window.location.origin && window.location.origin !== 'null' ? `&origin=${encodeURIComponent(window.location.origin)}` : '';
+          return {
+            type: 'youtube',
+            videoId: videoId,
+            embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=1&rel=0&loop=1&playlist=${videoId}&playsinline=1${originParam}`,
+            directWatchUrl: `https://www.youtube.com/watch?v=${videoId}`
+          };
+        } else {
+          return {
+            type: 'invalid',
+            message: 'Link YouTube tidak valid / Video ID tidak ditemukan'
+          };
+        }
+      }
+
+      // 2. TIKTOK
+      if (url.includes('tiktok.com')) {
+        let tiktokId = '';
+        const matchId = url.match(/(?:video|v|embed|v2|photo)\/(\d{15,22})/) || url.match(/(\d{15,22})/);
+        if (matchId && matchId[1]) {
+          tiktokId = matchId[1];
+        }
+        
+        if (tiktokId) {
+          return {
+            type: 'tiktok',
+            tiktokId: tiktokId,
+            embedUrl: `https://www.tiktok.com/player/v1/${tiktokId}?autoplay=1&loop=1&music_info=1`
+          };
+        } else {
+          return {
+            type: 'invalid',
+            message: 'Link TikTok harus berupa link video lengkap dengan ID angka.'
+          };
+        }
+      }
+
+      // 3. GOOGLE DRIVE
+      let fileId = '';
+      const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      const matchId = url.match(/id=([a-zA-Z0-9_-]+)/);
+      if (matchD && matchD[1]) fileId = matchD[1];
+      else if (matchId && matchId[1]) fileId = matchId[1];
+
+      if (fileId) {
+        const isImage = tipe.includes('gambar') || tipe.includes('foto') || tipe.includes('image');
+        if (isImage) {
+          return {
+            type: 'image',
+            directImg: `https://lh3.googleusercontent.com/d/${fileId}`
+          };
+        } else {
+          return {
+            type: 'drive-iframe',
+            embedUrl: `https://drive.google.com/file/d/${fileId}/preview`
+          };
+        }
+      }
+
+      // 4. DIRECT IMAGE OR VIDEO
+      if (tipe.includes('gambar') || tipe.includes('foto') || tipe.includes('image') || url.match(/\.(jpeg|jpg|gif|png|webp|svg)($|\?)/i)) {
+        return {
+          type: 'image',
+          directImg: url
+        };
+      }
+
+      if (tipe.includes('video') || url.match(/\.(mp4|webm|ogg)($|\?)/i)) {
+        return {
+          type: 'direct-video',
+          videoUrl: url
+        };
+      }
+
+      return {
+        type: 'invalid',
+        message: 'Format URL media tidak dikenali / tidak dapat ditayangkan langsung.'
+      };
+    }
+
+    async function loadData() {
+      try {
+        const response = await fetch(GAS_API_URL + "?nocache=" + new Date().getTime());
+        if (!response.ok) {
+          throw new Error(`HTTP Error Status: ${response.status}`);
+        }
+        
+        const rawText = await response.text();
+
+        if (rawText.trim().startsWith("<")) {
+          throw new Error("Respon server berupa HTML, bukan JSON.");
+        }
+
+        const data = JSON.parse(rawText);
+
+        allAgendaData = data.agenda || [];
+        renderAgenda(allAgendaData);
+        renderRunningText(data.runningText || []);
+        
+        mediaSlides = [];
+
+        if (data.media && data.media.length > 0) {
+          const activeMedia = data.media.filter(item => {
+            const status = String(getValue(item, ["status"], "aktif")).toLowerCase().trim();
+            return status === "aktif" || status === "ya" || status === "true" || status === "";
+          });
+          activeMedia.forEach(m => mediaSlides.push({ isCalendar: false, data: m }));
+        }
+
+        mediaSlides.push({ isCalendar: true });
+
+        if (mediaSlides.length > 0) {
+          showMedia(currentMediaIndex);
+        }
+      } catch (error) {
+        if (allAgendaData.length === 0) {
+          allAgendaData = FALLBACK_DATA.agenda;
+          renderAgenda(allAgendaData);
+          renderRunningText(FALLBACK_DATA.runningText);
+
+          mediaSlides = [];
+          FALLBACK_DATA.media.forEach(m => mediaSlides.push({ isCalendar: false, data: m }));
+          mediaSlides.push({ isCalendar: true });
+
+          if (mediaSlides.length > 0) {
+            showMedia(0);
+          }
+        }
+      }
+    }
+
+    function renderAgenda(agendaList) {
+      const container = document.getElementById('agenda-container');
+      container.innerHTML = '';
+
+      const nowWib = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+      const currentMonth = nowWib.getMonth();
+      const currentYear = nowWib.getFullYear();
+      const today = new Date(currentYear, currentMonth, nowWib.getDate());
+
+      const activeAgenda = agendaList.filter(item => {
+        const status = String(getValue(item, ["status"], "aktif")).toLowerCase().trim();
+        const kategori = String(getValue(item, ["Kategori", "Ketegori"], "Umum")).toLowerCase().trim();
+        
+        const isAktif = status !== "selesai" && status !== "nonaktif";
+        const isNotHoliday = !kategori.includes("libur");
+
+        const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal", "Tgl Mulai"], "");
+        const tglSelesaiRaw = getValue(item, ["Tanggal Selesai Agenda", "Tanggal Selesai", "Tgl Selesai"], "");
+        const dStart = parseToDateObj(tglMulaiRaw);
+        const dEnd = parseToDateObj(tglSelesaiRaw) || dStart;
+
+        let isCurrentMonth = false;
+        if (dStart) {
+          if (dStart.getMonth() === currentMonth && dStart.getFullYear() === currentYear) {
+            isCurrentMonth = true;
+          }
+        }
+        if (!isCurrentMonth && dEnd) {
+          if (dEnd.getMonth() === currentMonth && dEnd.getFullYear() === currentYear) {
+            isCurrentMonth = true;
+          }
+        }
+
+        return isAktif && isNotHoliday && isCurrentMonth;
+      });
+
+      if (activeAgenda.length === 0) {
+        container.innerHTML = '<div class="empty-state">Belum ada agenda bulan ini</div>';
+        document.getElementById('countdown-card').style.display = 'none';
+        return;
+      }
+
+      let upcomingEvent = null;
+      let minDiffDays = Infinity;
+
+      activeAgenda.forEach(item => {
+        const nama = getValue(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Nama"], "Agenda Sekolah");
+        const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal", "Tgl Mulai"], "");
+        const tglSelesaiRaw = getValue(item, ["Tanggal Selesai Agenda", "Tanggal Selesai", "Tgl Selesai"], "");
+        const kategori = getValue(item, ["Kategori", "Ketegori"], "Umum");
+
+        const tglMulaiFormatted = formatTanggalSingkat(tglMulaiRaw);
+        const tglSelesaiFormatted = formatTanggalSingkat(tglSelesaiRaw);
+
+        let dateStr = "";
+        if (tglMulaiFormatted && tglSelesaiFormatted && tglMulaiFormatted !== tglSelesaiFormatted) {
+          dateStr = `${tglMulaiFormatted} - ${tglSelesaiFormatted}`;
+        } else if (tglMulaiFormatted) {
+          dateStr = tglMulaiFormatted;
+        } else {
+          dateStr = "Tanggal belum diatur";
+        }
+
+        const katLower = String(kategori).toLowerCase();
+        let badgeClass = "badge-umum";
+        if (katLower.includes("akademik") || katLower.includes("ujian")) badgeClass = "badge-akademik";
+        else if (katLower.includes("siswa") || katLower.includes("ekstra") || katLower.includes("lomba") || katLower.includes("prestasi") || katLower.includes("kesiswaan")) badgeClass = "badge-siswa";
+        else if (katLower.includes("rapat") || katLower.includes("dinas")) badgeClass = "badge-rapat";
+
+        const card = document.createElement('div');
+        card.className = 'agenda-card';
+        card.innerHTML = `
+          <div class="agenda-header">
+            <span class="agenda-badge ${badgeClass}">${kategori}</span>
+          </div>
+          <div class="agenda-name">${nama}</div>
+          <div class="agenda-date">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span>${dateStr}</span>
+          </div>
+        `;
+        container.appendChild(card);
+
+        if (tglMulaiRaw) {
+          const eventDate = parseToDateObj(tglMulaiRaw);
+          if (eventDate) {
+            const diffTime = eventDate.getTime() - today.getTime();
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays >= 0 && diffDays < minDiffDays) {
+              minDiffDays = diffDays;
+              upcomingEvent = { nama, diffDays };
+            }
+          }
+        }
+      });
+
+      const countdownCard = document.getElementById('countdown-card');
+      if (upcomingEvent) {
+        document.getElementById('countdown-title').textContent = upcomingEvent.nama;
+        document.getElementById('countdown-timer').textContent = upcomingEvent.diffDays === 0 ? "HARI INI" : `${upcomingEvent.diffDays} Hari Lagi`;
+        countdownCard.style.display = 'flex';
+      } else {
+        countdownCard.style.display = 'none';
+      }
+    }
+
+    function renderCalendarSlide(container) {
+      const nowWib = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+      const year = nowWib.getFullYear();
+      const month = nowWib.getMonth();
+
+      const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+      
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+
+      const startDayOfWeek = firstDay.getDay(); 
+
+      const daySlots = {}; 
+      const isNationalHolidayMap = {};
+      
+      const sortedAgenda = [...allAgendaData].map(item => {
+        const nama = getValue(item, ["Nama Kegiatan", "Nama Kegiatan / Agenda", "Judul Agenda", "Nama"], "Agenda");
+        const tglMulaiRaw = getValue(item, ["Tanggal Mulai Agenda", "Tanggal Mulai", "Tanggal"], "");
+        const tglSelesaiRaw = getValue(item, ["Tanggal Selesai Agenda", "Tanggal Selesai"], tglMulaiRaw);
+        const kategori = getValue(item, ["Kategori", "Ketegori"], "Umum");
+
+        const dStart = parseToDateObj(tglMulaiRaw);
+        const dEndRaw = tglSelesaiRaw ? parseToDateObj(tglSelesaiRaw) : dStart;
+        const dEnd = dEndRaw || dStart;
+
+        const isHoliday = String(kategori).toLowerCase().includes("libur");
+
+        return {
+          nama,
+          kategori,
+          isHoliday,
+          dStart,
+          dEnd,
+          color: getEventColor(nama, kategori)
+        };
+      }).filter(ev => ev.dStart && !isNaN(ev.dStart.getTime()));
+
+      sortedAgenda.sort((a, b) => a.dStart - b.dStart || (b.dEnd - b.dStart) - (a.dEnd - a.dStart));
+
+      sortedAgenda.forEach(ev => {
+        let cur = new Date(ev.dStart.getFullYear(), ev.dStart.getMonth(), ev.dStart.getDate());
+        const end = new Date(ev.dEnd.getFullYear(), ev.dEnd.getMonth(), ev.dEnd.getDate());
+
+        let targetSlot = 0;
+        while (true) {
+          let isSlotFree = true;
+          let checkCur = new Date(cur.getTime());
+          while (checkCur <= end) {
+            if (checkCur.getMonth() === month && checkCur.getFullYear() === year) {
+              const dayNum = checkCur.getDate();
+              if (daySlots[dayNum] && daySlots[dayNum][targetSlot]) {
+                isSlotFree = false;
+                break;
+              }
+            }
+            checkCur.setDate(checkCur.getDate() + 1);
+          }
+          if (isSlotFree) break;
+          targetSlot++;
+        }
+
+        while (cur <= end) {
+          if (cur.getMonth() === month && cur.getFullYear() === year) {
+            const dayNum = cur.getDate();
+            
+            if (!daySlots[dayNum]) daySlots[dayNum] = [];
+            while (daySlots[dayNum].length < targetSlot) {
+              daySlots[dayNum].push(null);
+            }
+            daySlots[dayNum][targetSlot] = ev;
+
+            if (ev.isHoliday) {
+              isNationalHolidayMap[dayNum] = true;
+            }
+          }
+          cur.setDate(cur.getDate() + 1);
+        }
+      });
+
+      let html = `
+        <div class="gcal-container">
+          <div class="gcal-header">
+            <span>📅 Agenda Bulan ${monthNames[month]} ${year}</span>
+          </div>
+          <div class="gcal-grid-header">
+            <div class="gcal-day-header" style="color: #ef4444;">Min</div>
+            <div class="gcal-day-header">Sen</div>
+            <div class="gcal-day-header">Sel</div>
+            <div class="gcal-day-header">Rab</div>
+            <div class="gcal-day-header">Kam</div>
+            <div class="gcal-day-header">Jum</div>
+            <div class="gcal-day-header">Sab</div>
+          </div>
+          <div class="gcal-grid-body">
+      `;
+
+      for (let i = 0; i < startDayOfWeek; i++) {
+        html += `<div class="gcal-cell other-month"></div>`;
+      }
+
+      for (let day = 1; day <= lastDay.getDate(); day++) {
+        const isToday = day === nowWib.getDate();
+        const isHoliday = isNationalHolidayMap[day] === true;
+        const dateObj = new Date(year, month, day);
+        const isSunday = dateObj.getDay() === 0;
+
+        let cellClasses = ['gcal-cell'];
+        if (isToday) cellClasses.push('today');
+        if (isSunday) cellClasses.push('is-sunday');
+        if (isHoliday) cellClasses.push('national-holiday');
+        
+        let pillsHtml = '';
+        if (daySlots[day]) {
+          daySlots[day].forEach(ev => {
+            if (ev) {
+              pillsHtml += `<div class="gcal-event-pill" style="background-color: ${ev.color};" title="${ev.nama}">${ev.nama}</div>`;
+            } else {
+              pillsHtml += `<div class="gcal-event-pill spacer">&nbsp;</div>`;
+            }
+          });
+        }
+
+        html += `
+          <div class="${cellClasses.join(' ')}">
+            <div class="gcal-date-num">${day}</div>
+            <div class="gcal-events-list">
+              ${pillsHtml}
+            </div>
+          </div>
+        `;
+      }
+
+      html += `</div></div>`;
+      container.innerHTML = html;
+    }
+
+    function startProgressBar(durationMs) {
+      const progressBar = document.getElementById('slide-progress-bar');
+      if (!progressBar) return;
+
+      progressBar.style.transition = 'none';
+      progressBar.style.width = '0%';
+      void progressBar.offsetWidth;
+
+      progressBar.style.transition = `width ${durationMs}ms linear`;
+      progressBar.style.width = '100%';
+    }
+
+    function showMedia(index) {
+      if (mediaSlides.length === 0) return;
+
+      clearTimeout(mediaTimer);
+
+      const container = document.getElementById('media-container');
+      const captionBox = document.getElementById('media-caption');
+      
+      const currentSlide = mediaSlides[index];
+      container.innerHTML = '';
+
+      let slideDuration = 12000;
+
+      if (currentSlide.isCalendar) {
+        captionBox.style.display = 'none';
+        renderCalendarSlide(container);
+
+        slideDuration = 12000;
+        startProgressBar(slideDuration);
+        mediaTimer = setTimeout(() => {
+          nextSlide();
+        }, slideDuration);
+
+      } else {
+        const current = currentSlide.data;
+        const rawUrl = getValue(current, ["Link URL", "Link URL / Media", "URL", "Link Media", "Link"], "");
+        const title = getValue(current, ["Judul / Deskripsi Media", "Judul", "Deskripsi"], "");
+        const category = getValue(current, ["Kategori Media", "Kategori"], "INFORMASI");
+        const tipeMedia = getValue(current, ["Tipe Media", "Tipe"], "");
+        
+        // BACA KOLOM DURASI KUSTOM DARI SPREADSHEET (JIKA ADA)
+        const customDurRaw = getValue(current, ["Durasi", "Duration", "Waktu", "Waktu Tayang"], null);
+
+        const parsed = parseMediaUrl(rawUrl, tipeMedia);
+
+        if (parsed.type === 'invalid') {
+          container.innerHTML = `
+            <div class="media-error-card">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <div class="error-title">Format Media Tidak Didukung</div>
+              <div class="error-msg">${parsed.message || 'URL media tidak dapat ditayangkan.'}</div>
+            </div>`;
+
+          slideDuration = parseDurationInMs(customDurRaw, 4000);
+          startProgressBar(slideDuration);
+          mediaTimer = setTimeout(() => { nextSlide(); }, slideDuration);
+
+        } else if (parsed.type === 'youtube') {
+          container.innerHTML = `
+            <div class="youtube-wrapper">
+              <iframe 
+                id="yt-player-iframe"
+                src="${parsed.embedUrl}" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerpolicy="no-referrer-when-downgrade" 
+                allowfullscreen>
+              </iframe>
+            </div>`;
+
+          slideDuration = parseDurationInMs(customDurRaw, 35000);
+          startProgressBar(slideDuration);
+          mediaTimer = setTimeout(() => {
+            nextSlide();
+          }, slideDuration);
+
+        } else if (parsed.type === 'direct-video') {
+          container.innerHTML = `
+            <video id="main-direct-video" src="${parsed.videoUrl}" autoplay muted playsinline style="max-width: 100%; max-height: 100%; z-index: 2; border-radius: 12px;"></video>
+          `;
+          slideDuration = parseDurationInMs(customDurRaw, 25000);
+          startProgressBar(slideDuration);
+
+          const vidEl = document.getElementById('main-direct-video');
+          if (vidEl) {
+            vidEl.onended = function() { nextSlide(); };
+            vidEl.onerror = function() {
+              container.innerHTML = `
+                <div class="media-error-card">
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                  <div class="error-title">Gagal Memuat Video</div>
+                  <div class="error-msg">File video tidak dapat diputar.</div>
+                </div>`;
+              slideDuration = 3500;
+              startProgressBar(slideDuration);
+              mediaTimer = setTimeout(() => { nextSlide(); }, slideDuration);
+            };
+          }
+
+        } else if (parsed.type === 'tiktok') {
+          container.innerHTML = `
+            <div class="social-embed-wrapper tiktok-wrapper">
+              <iframe id="tiktok-iframe" src="${parsed.embedUrl}" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; audio; fullscreen" 
+                scrolling="no" 
+                frameborder="0">
+              </iframe>
+            </div>`;
+
+          slideDuration = parseDurationInMs(customDurRaw, 20000);
+          startProgressBar(slideDuration);
+          mediaTimer = setTimeout(() => {
+            nextSlide();
+          }, slideDuration);
+
+        } else if (parsed.type === 'image') {
+          container.innerHTML = `
+            <img src="${parsed.directImg}" class="media-bg-blur" alt="bg-blur">
+            <img src="${parsed.directImg}" class="media-main-img" alt="${title}" onerror="this.onerror=null; this.src='https://placehold.co/1280x720/e2e8f0/475569?text=Gagal+Memuat+Gambar';">
+          `;
+
+          slideDuration = parseDurationInMs(customDurRaw, 12000);
+          startProgressBar(slideDuration);
+          mediaTimer = setTimeout(() => {
+            nextSlide();
+          }, slideDuration);
+
+        } else if (parsed.embedUrl) {
+          container.innerHTML = `
+            <iframe src="${parsed.embedUrl}" 
+              allow="autoplay; encrypted-media" 
+              allowfullscreen 
+              style="width: 100%; height: 100%; border: none; z-index: 2;">
+            </iframe>`;
+
+          slideDuration = parseDurationInMs(customDurRaw, 15000);
+          startProgressBar(slideDuration);
+          mediaTimer = setTimeout(() => {
+            nextSlide();
+          }, slideDuration);
+        }
+
+        if (title && parsed.type !== 'invalid') {
+          document.getElementById('media-category').textContent = category;
+          document.getElementById('media-title').textContent = title;
+          captionBox.style.display = 'block';
+        } else {
+          captionBox.style.display = 'none';
+        }
+      }
+    }
+
+    function nextSlide() {
+      if (mediaSlides.length === 0) return;
+      currentMediaIndex = (currentMediaIndex + 1) % mediaSlides.length;
+      showMedia(currentMediaIndex);
+    }
+
+    function prevSlide() {
+      if (mediaSlides.length === 0) return;
+      currentMediaIndex = (currentMediaIndex - 1 + mediaSlides.length) % mediaSlides.length;
+      showMedia(currentMediaIndex);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn("Gagal membuka mode fullscreen:", err.message);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      const iconExpand = document.getElementById('fs-icon-expand');
+      const iconCompress = document.getElementById('fs-icon-compress');
+      if (document.fullscreenElement) {
+        if (iconExpand) iconExpand.style.display = 'none';
+        if (iconCompress) iconCompress.style.display = 'block';
+      } else {
+        if (iconExpand) iconExpand.style.display = 'block';
+        if (iconCompress) iconCompress.style.display = 'none';
+      }
+    });
+
+    function renderRunningText(textList) {
+      const container = document.getElementById('running-text-container');
+      
+      const activeTexts = textList
+        .filter(item => {
+          const status = String(getValue(item, ["status"], "aktif")).toLowerCase().trim();
+          return status === "aktif" || status === "ya" || status === "true" || status === "";
+        })
+        .map(item => getValue(item, ["Teks Pengumuman", "Teks", "Pengumuman"], ""))
+        .filter(t => t !== "");
+
+      if (activeTexts.length > 0) {
+        const joinedText = activeTexts.join(" &nbsp;&nbsp;📢&nbsp;&nbsp; ") + " &nbsp;&nbsp;📢&nbsp;&nbsp; ";
+        container.innerHTML = `<span>${joinedText}</span><span>${joinedText}</span>`;
+      }
+    }
+
+    // INITIALIZE APPLICATION
+    loadData();
+    setInterval(loadData, 1 * 60 * 1000);
+  </script>
 </body>
 </html>
