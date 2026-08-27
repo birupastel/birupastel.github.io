@@ -47,6 +47,9 @@
   <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Logo_sman_1_garut.png/960px-Logo_sman_1_garut.png" type="image/png">
   <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Logo_sman_1_garut.png/960px-Logo_sman_1_garut.png" type="image/png">
 
+  <!-- SOUNDCLOUD WIDGET SDK -->
+  <script src="https://w.soundcloud.com/player/api.js"></script>
+
   <!-- FONT -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap">
 
@@ -132,7 +135,7 @@
       height: calc(100vh - 135px);
     }
 
-    /* SIDEBAR AGENDA & MUSIC */
+    /* SIDEBAR AGENDA & SOUNDCLOUD TOGGLE */
     .sidebar {
       width: 340px;
       background: #ffffff;
@@ -219,83 +222,115 @@
       color: #64748b;
     }
 
-    /* YOUTUBE MUSIC WIDGET */
-    .yt-music-card {
+    /* SOUNDCLOUD EMBED CARD WITH TOGGLE */
+    .sc-music-section {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 14px;
-      overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .yt-music-header {
-      padding: 10px 14px;
+    .sc-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sc-header-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sc-toggle-btn {
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .sc-toggle-btn:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .sc-toggle-btn.active {
+      background: #ef4444;
+    }
+
+    .sc-toggle-btn.active:hover {
+      background: #dc2626;
+    }
+
+    .sc-player-wrapper {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sc-player-wrapper.show {
+      display: flex;
+    }
+
+    .sc-track-nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
       background: #ffffff;
-      cursor: pointer;
-      user-select: none;
-      border-bottom: 1px solid transparent;
-      transition: background-color 0.2s;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 6px 10px;
     }
 
-    .yt-music-header:hover {
-      background: #f1f5f9;
-    }
-
-    .yt-music-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #0f172a;
-    }
-
-    .yt-music-toggle-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .sc-track-label {
       font-size: 0.75rem;
       font-weight: 700;
       color: #2563eb;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      padding: 4px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .yt-music-toggle-btn:hover {
-      background: #2563eb;
-      color: #ffffff;
-      border-color: #2563eb;
-    }
-
-    .yt-music-body {
-      max-height: 0;
+      white-space: nowrap;
       overflow: hidden;
-      transition: max-height 0.35s ease-in-out, padding 0.35s ease-in-out;
-      background: #000000;
+      text-overflow: ellipsis;
+      max-width: 180px;
     }
 
-    .yt-music-card.expanded .yt-music-body {
-      max-height: 180px;
+    .sc-nav-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
-    .yt-music-card.expanded .yt-music-header {
-      border-bottom-color: #e2e8f0;
+    .sc-nav-btn:hover {
+      background: #e2e8f0;
     }
 
-    .yt-music-player-container {
+    .sc-iframe-box {
       width: 100%;
-      height: 160px;
-      position: relative;
+      height: 140px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
     }
 
-    .yt-music-player-container iframe {
+    .sc-iframe-box iframe {
       width: 100%;
       height: 100%;
       border: none;
@@ -736,10 +771,10 @@
   <!-- MAIN CONTAINER -->
   <main class="main-container">
     
-    <!-- SIDEBAR AGENDA & MUSIC -->
+    <!-- SIDEBAR AGENDA & SOUNDCLOUD EMBED TOGGLE -->
     <aside class="sidebar">
       
-      <!-- DAFAR AGENDA BULAN INI -->
+      <!-- DAFTAR AGENDA BULAN INI -->
       <div class="sidebar-agenda-section">
         <div class="section-title">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
@@ -750,21 +785,21 @@
         </div>
       </div>
 
-      <!-- YOUTUBE MUSIC COLLAPSIBLE WIDGET -->
-      <div class="yt-music-card" id="yt-music-card">
-        <div class="yt-music-header" onclick="toggleYtMusic()" title="Klik untuk memutar/menyembunyikan suara latar">
-          <div class="yt-music-title">
+      <!-- SOUNDCLOUD EMBED CARD WITH TOGGLE -->
+      <div class="sc-music-section">
+        <div class="sc-header-bar">
+          <div class="sc-header-title">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
             <span>Suara Latar</span>
           </div>
-          <button class="yt-music-toggle-btn" id="yt-music-toggle-btn" type="button">
-            <span id="yt-music-status-text">Putar</span>
-            <svg id="yt-music-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <button class="sc-toggle-btn" id="sc-toggle-btn" onclick="toggleScEmbed()">
+            <span>🎵 Putar</span>
           </button>
         </div>
-        <div class="yt-music-body">
-          <div class="yt-music-player-container" id="yt-music-player-container">
-            <!-- IFRAME YOUTUBE MUSIC DIINJEKSI SECARA DINAMIS KETIKA UNCOLLAPSED/SHOW -->
+
+        <div class="sc-player-wrapper" id="sc-player-wrapper">
+          <div class="sc-iframe-box" id="sc-iframe-box">
+            <!-- SoundCloud IFRAME injected here on toggle -->
           </div>
         </div>
       </div>
@@ -773,6 +808,7 @@
 
     <!-- MEDIA SECTION -->
     <section class="media-section">
+      
       <!-- PROGRESS BAR ANIMASI WAKTU TAYANG -->
       <div class="slide-progress-container">
         <div class="slide-progress-bar" id="slide-progress-bar"></div>
@@ -826,11 +862,15 @@
   <script>
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzR9AiCrmh2y6daywe9L1b8ZTIhzQaCSnHp-mXr27_RAdQYJIMv-B3KuTiefNESM2u5/exec";
 
-    // PLAYLIST YOUTUBE MUSIC DEFAULT (INSTRUMENTAL / RELAXING SCHOOL MUSIC)
-    const DEFAULT_MUSIC_PLAYLIST = "https://www.youtube-nocookie.com/embed/videoseries?list=PL3-sRm8wvJSIInS5R6uC8qVbLylS7eL2m&autoplay=1&loop=1";
+    // DEFAULT SOUNDCLOUD TRACKS FROM SMAN 1 GARUT
+    const DEFAULT_SC_TRACKS = [
+      "https://soundcloud.com/teguh_budiawan/hymne-sman-1-garut-test",
+      "https://soundcloud.com/lutfi-muzzaki/mars-sman-garut-w-vocal"
+    ];
 
-    // VAR UNTUK MENYIMPAN URL MUSIK AKTIF DARI GOOGLE SHEET
-    let activeMusicUrl = DEFAULT_MUSIC_PLAYLIST;
+    let scTrackList = [...DEFAULT_SC_TRACKS];
+    let currentScIndex = 0;
+    let isScIframeLoaded = false;
 
     // FALLBACK DATA WHEN API IS UNREACHABLE
     const FALLBACK_DATA = {
@@ -848,7 +888,8 @@
         { "Teks Pengumuman": "Dihimbau kepada seluruh siswa untuk senantiasa menjaga kebersihan dan ketertiban lingkungan sekolah.", "Status": "aktif" }
       ],
       musik: [
-        { "Link URL": "https://www.youtube.com/playlist?list=PL3-sRm8wvJSIInS5R6uC8qVbLylS7eL2m", "Status": "aktif" }
+        { "Link URL": "https://soundcloud.com/teguh_budiawan/hymne-sman-1-garut-test", "Status": "aktif" },
+        { "Link URL": "https://soundcloud.com/lutfi-muzzaki/mars-sman-garut-w-vocal", "Status": "aktif" }
       ]
     };
 
@@ -856,7 +897,6 @@
     let allAgendaData = [];
     let currentMediaIndex = 0;
     let mediaTimer = null;
-    let isMusicPlaying = false;
 
     const COLOR_PALETTE = [
       "#2563eb", "#059669", "#d97706", "#7c3aed", 
@@ -920,99 +960,109 @@
       return defaultValue;
     }
 
-    // PARSER LINK YOUTUBE MUSIC / PLAYLIST (PINTAR MEMBEDAKAN SINGLE VIDEO, PLAYLIST NORMAL, DAN MIX 'RD')
-    function parseMusicUrl(url) {
-      if (!url) return DEFAULT_MUSIC_PLAYLIST;
-      url = String(url).trim();
-
-      let embedUrl = url;
-
-      // Jika belum berupa URL embed langsung, ekstrak ID Video / Playlist
-      if (!url.includes('/embed/')) {
-        let videoId = '';
-        const vMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-        if (vMatch && vMatch[1]) {
-          videoId = vMatch[1];
-        }
-
-        let listId = '';
-        const listMatch = url.match(/[?&]list=([^&]+)/);
-        if (listMatch && listMatch[1]) {
-          listId = listMatch[1];
-        }
-
-        if (listId && !listId.startsWith('RD')) {
-          embedUrl = `https://www.youtube.com/embed/videoseries?list=${listId}`;
-        } else if (videoId) {
-          embedUrl = `https://www.youtube.com/embed/${videoId}`;
-        } else {
-          return DEFAULT_MUSIC_PLAYLIST;
-        }
-      }
-
-      // Pastikan ada parameter autoplay=1
-      if (!embedUrl.includes('autoplay=')) {
-        embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'autoplay=1';
-      }
-
-      return embedUrl;
-    }
-
-    // LOGIKA TOGGLE SHOW/HIDE YOUTUBE MUSIC PLAYER
-    function toggleYtMusic() {
-      const musicCard = document.getElementById('yt-music-card');
-      const statusText = document.getElementById('yt-music-status-text');
-      const icon = document.getElementById('yt-music-icon');
-      const playerContainer = document.getElementById('yt-music-player-container');
-
-      isMusicPlaying = !isMusicPlaying;
-
-      if (isMusicPlaying) {
-        // TAMPILKAN PLAYER & START AUTOPLAY MENGGUNAKAN LINK DARI SHEET MUSIK
-        musicCard.classList.add('expanded');
-        statusText.textContent = "Sembunyikan";
-        icon.innerHTML = `<polyline points="18 15 12 9 6 15"></polyline>`;
-
-        playerContainer.innerHTML = `
-          <iframe 
-            src="${activeMusicUrl}" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen>
-          </iframe>`;
-      } else {
-        // SEMBUNYIKAN PLAYER & MATIKAN MUSIK TOTAL
-        musicCard.classList.remove('expanded');
-        statusText.textContent = "Putar Musik";
-        icon.innerHTML = `<polygon points="5 3 19 12 5 21 5 3"></polygon>`;
-
-        playerContainer.innerHTML = '';
-      }
-    }
-
-    // PARSER DURASI MEDIA DARI SHEET
-    function parseDurationInMs(durValue, defaultMs) {
-      if (!durValue) return defaultMs;
-      let str = String(durValue).trim();
-      if (!str) return defaultMs;
-
+    function parseDurationInMs(val, defaultMs) {
+      if (val === null || val === undefined || val === '') return defaultMs;
+      if (typeof val === 'number') return val > 1000 ? val : val * 1000;
+      const str = String(val).trim();
       if (str.includes(':')) {
-        const parts = str.split(':').map(p => parseFloat(p) || 0);
-        let seconds = 0;
+        const parts = str.split(':');
         if (parts.length === 2) {
-          seconds = parts[0] * 60 + parts[1];
-        } else if (parts.length === 3) {
-          seconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+          const mins = parseInt(parts[0], 10) || 0;
+          const secs = parseInt(parts[1], 10) || 0;
+          return (mins * 60 + secs) * 1000;
         }
-        if (seconds > 0) return seconds * 1000;
       }
-
-      const num = parseFloat(str.replace(/[^0-9.]/g, ''));
-      if (!isNaN(num) && num > 0) {
-        return num * 1000;
+      const num = parseFloat(str);
+      if (!isNaN(num)) {
+        return num > 1000 ? num : num * 1000;
       }
-
       return defaultMs;
+    }
+
+    function parseSoundCloudUrl(url) {
+      if (!url) return "";
+      url = String(url).trim();
+      if (url.toLowerCase().includes('soundcloud.com')) {
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://' + url;
+        }
+        return url;
+      }
+      return "";
+    }
+
+    /* SOUNDCLOUD TOGGLE & EMBED BUILDER */
+    function toggleScEmbed() {
+      const toggleBtn = document.getElementById('sc-toggle-btn');
+      const playerWrapper = document.getElementById('sc-player-wrapper');
+      
+      if (playerWrapper.classList.contains('show')) {
+        // HIDE VISUALLY ONLY, KEEP AUDIO PLAYING/PAUSED
+        playerWrapper.classList.remove('show');
+        toggleBtn.classList.remove('active');
+        toggleBtn.innerHTML = '<span>🎵 Tampilkan Pemutar</span>';
+      } else {
+        // SHOW VISUALLY
+        playerWrapper.classList.add('show');
+        toggleBtn.classList.add('active');
+        toggleBtn.innerHTML = '<span>❌ Sembunyikan</span>';
+        
+        // Render iframe if not loaded yet
+        if (!isScIframeLoaded) {
+          renderScIframe();
+        }
+      }
+    }
+
+    let scWidget = null;
+
+    function initScWidget() {
+      const iframeEl = document.getElementById('sc-widget-iframe');
+      if (iframeEl && typeof SC !== 'undefined' && SC.Widget) {
+        scWidget = SC.Widget(iframeEl);
+        scWidget.bind(SC.Widget.Events.READY, function() {
+          try {
+            scWidget.unbind(SC.Widget.Events.FINISH);
+          } catch(e) {}
+          
+          scWidget.bind(SC.Widget.Events.FINISH, function() {
+            nextScTrack();
+          });
+        });
+      }
+    }
+
+    function renderScIframe() {
+      if (scTrackList.length === 0) return;
+
+      currentScIndex = (currentScIndex + scTrackList.length) % scTrackList.length;
+      const trackUrl = scTrackList[currentScIndex];
+
+      const iframeBox = document.getElementById('sc-iframe-box');
+      const embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(trackUrl)}&color=%232563eb&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false`;
+      
+      iframeBox.innerHTML = `<iframe id="sc-widget-iframe" src="${embedUrl}" allow="autoplay" width="100%" height="140" frameborder="0" onload="initScWidget()"></iframe>`;
+      isScIframeLoaded = true;
+    }
+
+    function nextScTrack() {
+      if (scTrackList.length === 0) return;
+      currentScIndex = (currentScIndex + 1) % scTrackList.length;
+      const nextTrackUrl = scTrackList[currentScIndex];
+
+      if (scWidget && typeof scWidget.load === 'function') {
+        scWidget.load(nextTrackUrl, {
+          auto_play: true,
+          color: '2563eb',
+          show_comments: false,
+          show_user: true,
+          show_reposts: false,
+          show_teaser: false,
+          visual: false
+        });
+      } else {
+        renderScIframe();
+      }
     }
 
     function parseToDateObj(dateValue) {
@@ -1020,13 +1070,6 @@
       
       if (dateValue instanceof Date) {
         return new Date(dateValue.getFullYear(), dateValue.getMonth(), dateValue.getDate());
-      }
-
-      if (typeof dateValue === 'number' || (!isNaN(Number(dateValue)) && !String(dateValue).includes('-') && !String(dateValue).includes('/'))) {
-        const d = new Date(Number(dateValue));
-        if (!isNaN(d.getTime())) {
-          return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-        }
       }
 
       let str = String(dateValue).trim();
@@ -1094,7 +1137,7 @@
       url = String(url).trim();
       const tipe = String(tipeMedia).toLowerCase();
 
-      // 1. YOUTUBE
+      // YOUTUBE
       if (url.includes('youtube.com') || url.includes('youtu.be')) {
         let videoId = '';
         const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts|live)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
@@ -1120,7 +1163,7 @@
         }
       }
 
-      // 2. TIKTOK
+      // TIKTOK
       if (url.includes('tiktok.com')) {
         let tiktokId = '';
         const matchId = url.match(/(?:video|v|embed|v2|photo)\/(\d{15,22})/) || url.match(/(\d{15,22})/);
@@ -1142,7 +1185,7 @@
         }
       }
 
-      // 3. GOOGLE DRIVE
+      // GOOGLE DRIVE
       let fileId = '';
       const matchD = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
       const matchId = url.match(/id=([a-zA-Z0-9_-]+)/);
@@ -1164,7 +1207,7 @@
         }
       }
 
-      // 4. DIRECT IMAGE OR VIDEO
+      // DIRECT IMAGE OR VIDEO
       if (tipe.includes('gambar') || tipe.includes('foto') || tipe.includes('image') || url.match(/\.(jpeg|jpg|gif|png|webp|svg)($|\?)/i)) {
         return {
           type: 'image',
@@ -1204,18 +1247,42 @@
         renderAgenda(allAgendaData);
         renderRunningText(data.runningText || []);
         
-        // Dapatkan Link Musik Aktif dari Sheet Musik
-        const musikList = data.musik || data.Musik || data.music || [];
-        const activeMusikItem = musikList.find(item => {
-          const status = String(getValue(item, ["status"], "aktif")).toLowerCase().trim();
+        // MEMBACA SHEET MUSIK DARIPADA GOOGLE SHEETS
+        let musikList = [];
+        if (data) {
+          for (let key in data) {
+            const cleanKey = key.trim().toLowerCase();
+            if (cleanKey === 'musik' || cleanKey === 'music') {
+              if (Array.isArray(data[key])) {
+                musikList = data[key];
+                break;
+              }
+            }
+          }
+        }
+
+        if (musikList.length === 0 && data.musik && Array.isArray(data.musik)) {
+          musikList = data.musik;
+        }
+
+        const activeMusikItems = musikList.filter(item => {
+          const status = String(getValue(item, ["status", "Status"], "aktif")).toLowerCase().trim();
           return status === "aktif" || status === "ya" || status === "true" || status === "";
         });
 
-        if (activeMusikItem) {
-          const rawMusicUrl = getValue(activeMusikItem, ["Link URL", "Link", "URL"], "");
-          activeMusicUrl = parseMusicUrl(rawMusicUrl);
-        } else {
-          activeMusicUrl = DEFAULT_MUSIC_PLAYLIST;
+        if (activeMusikItems.length > 0) {
+          const fetchedTracks = activeMusikItems
+            .map(m => parseSoundCloudUrl(getValue(m, ["Link URL", "Link URL / Media", "Link", "URL", "Tautan", "Tautan SoundCloud", "SoundCloud", "Link Musik"], "")))
+            .filter(url => url !== "");
+
+          if (fetchedTracks.length > 0) {
+            const isDifferent = JSON.stringify(scTrackList) !== JSON.stringify(fetchedTracks);
+            scTrackList = fetchedTracks;
+            if (isDifferent && isScEmbedActive) {
+              currentScIndex = 0;
+              renderScIframe();
+            }
+          }
         }
 
         mediaSlides = [];
@@ -1240,7 +1307,7 @@
           renderRunningText(FALLBACK_DATA.runningText);
 
           if (FALLBACK_DATA.musik && FALLBACK_DATA.musik.length > 0) {
-            activeMusicUrl = parseMusicUrl(FALLBACK_DATA.musik[0]["Link URL"]);
+            scTrackList = FALLBACK_DATA.musik.map(m => parseSoundCloudUrl(m["Link URL"])).filter(u => u !== "");
           }
 
           mediaSlides = [];
