@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlgoPlay</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .smooth-transition { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+    .water-fill { transition: height 0.4s ease-in-out; }
+    .coin-pop { animation: pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Dynamic Cartoon Environments */
+    .night-scene {
+      background: linear-gradient(to bottom, #0f172a, #1e1b4b 60%, #311b92);
+    }
+    .river-scene {
+      background: linear-gradient(to bottom, #38bdf8 0%, #0284c7 50%, #0369a1 100%);
+    }
+    .cave-scene {
+      background: linear-gradient(to bottom, #262626 0%, #171717 70%, #0a0a0a 100%);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-800">
+
+  <!-- TOP HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingPage()">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-100">
+          ⚡
+        </div>
+        <div>
+          <h1 class="font-bold text-slate-900 leading-tight text-base sm:text-lg flex items-center gap-2">
+            AlgoPlay SMA X
+            <span class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded-full border border-indigo-200">Informatika</span>
+          </h1>
+          <p class="text-xs text-slate-500 hidden sm:block">Laboratorium Interaktif Berpikir Komputasional & Algoritma</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="navHomeBtn" onclick="showLandingPage()" class="px-3.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center gap-1.5 transition">
+          🏠 Menu Utama
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+
+    <!-- VIEW 1: LANDING PAGE (Daftar 8 Game Cards Grid) -->
+    <div id="landingPage" class="space-y-6">
+      
+      <!-- Hero Banner -->
+      <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl font-black select-none pointer-events-none">⚡ALGO</div>
+        <div class="max-w-3xl space-y-3 relative z-10">
+          <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-white/20 uppercase tracking-wider backdrop-blur-md">Elemen Berpikir Komputasional</span>
+          <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">Laboratorium Permainan Logika Algoritma</h2>
+          <p class="text-sm sm:text-base text-indigo-100 leading-relaxed">
+            Pilih salah satu tantangan <em>problem solving</em> di bawah ini. Uji strategi Anda untuk menemukan solusi <strong>Benar</strong> dan <strong>Paling Optimal</strong>, lalu bedah konsep Informatika di baliknya!
+          </p>
+        </div>
+      </div>
+
+      <!-- 8 Game Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" id="gameGridCards">
+        <!-- Dynamically rendered by JavaScript -->
+      </div>
+    </div>
+
+    <!-- VIEW 2: GAME INTERACTIVE STAGE VIEW -->
+    <div id="gameView" class="hidden space-y-4">
+      
+      <!-- GAME HEADER CARD -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="showLandingPage()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-100 transition">
+              &larr; Kembali ke Menu
+            </button>
+            <span id="gameNumberBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-800">Game 1/8</span>
+          </div>
+          <h2 id="gameTitle" class="text-xl sm:text-2xl font-bold text-slate-900">Menara Hanoi</h2>
+          <p id="gameDescription" class="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">Deskripsi game...</p>
+        </div>
+
+        <!-- Action controls & Status counters -->
+        <div class="flex items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 self-start md:self-auto">
+          <div class="text-center px-3 border-r border-slate-200">
+            <div class="text-[10px] uppercase tracking-wider font-bold text-slate-400">Langkah / Waktu</div>
+            <div id="stepCounter" class="text-xl font-bold font-mono text-indigo-600">0</div>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="resetCurrentGame()" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-lg shadow-sm flex items-center gap-1 transition">
+              🔄 Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LIVE GAME STAGE CONTAINER -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3 sm:p-6 min-h-[380px] sm:min-h-[440px] flex flex-col justify-center relative overflow-hidden" id="gameStage">
+        <!-- Dynamic Game Content injected by Javascript -->
+      </div>
+
+      <!-- INLINE FEEDBACK ALERT / BANNER -->
+      <div id="liveFeedbackBanner" class="hidden rounded-xl p-4 border transition duration-300">
+        <div class="flex items-start gap-3">
+          <div id="feedbackIcon" class="text-xl">💡</div>
+          <div class="flex-1">
+            <h4 id="feedbackTitle" class="font-bold text-sm">Status</h4>
+            <p id="feedbackMessage" class="text-xs mt-0.5 leading-relaxed text-slate-600"></p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- GAME OVER / DEFEAT POPUP MODAL -->
+  <div id="defeatModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl border border-slate-100 relative">
+      <div class="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-3xl mx-auto border-4 border-rose-50">
+        ⚠️
+      </div>
+      <div class="space-y-1">
+        <h3 id="defeatTitle" class="text-xl font-extrabold text-slate-900">Gagal / Game Over!</h3>
+        <p id="defeatMessage" class="text-xs text-slate-600 leading-relaxed px-2"></p>
+      </div>
+      <button onclick="closeDefeatModalAndReset()" class="w-full py-3 px-4 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md transition flex items-center justify-center gap-2">
+        🔄 Coba Lagi (Reset Game)
+      </button>
+    </div>
+  </div>
+
+  <!-- VICTORY & CONGRATULATIONS POPUP MODAL -->
+  <div id="victoryModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl border border-slate-100 relative">
+      
+      <!-- Close Button (X) -->
+      <button onclick="closeVictoryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-slate-100 p-2 rounded-full transition">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto border-4 border-emerald-50">
+        🎉
+      </div>
+
+      <div class="space-y-1">
+        <span id="victoryBadge" class="px-3 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">100% Optimal</span>
+        <h3 id="victoryTitle" class="text-2xl font-extrabold text-slate-900 mt-2">Selamat! Anda Berhasil!</h3>
+        <p id="victorySubtitle" class="text-xs text-slate-600 leading-relaxed px-2">Anda telah memecahkan tantangan ini dengan strategi yang tepat.</p>
+      </div>
+
+      <div id="victoryStatsCard" class="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-xs font-mono text-indigo-700">
+        Hasil: 7 Langkah
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col gap-2 pt-2">
+        <button onclick="openTheoryFromVictory()" class="w-full py-3 px-4 rounded-xl font-bold text-xs bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-100 transition flex items-center justify-center gap-2">
+          <span>📚</span> Bedah Konsep / Lihat Teori
+        </button>
+        <button onclick="goToNextGameFromVictory()" class="w-full py-3 px-4 rounded-xl font-bold text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 transition flex items-center justify-center gap-1">
+          Game Selanjutnya &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THEORY & EDUCATIONAL BREAKDOWN MODAL -->
+  <div id="theoryModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-100 overflow-hidden relative">
+      
+      <!-- Modal Header -->
+      <div class="p-6 bg-gradient-to-r from-indigo-600 to-violet-700 text-white relative">
+        <button onclick="closeTheoryModal()" class="absolute top-5 right-5 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 p-2 rounded-full transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="flex items-center gap-2 mb-1">
+          <span id="theoryCategoryBadge" class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/20 text-white">Konsep Informatika</span>
+        </div>
+        <h3 id="theoryTitle" class="text-xl sm:text-2xl font-bold">Bedah Konsep Algoritma</h3>
+        <p id="theorySubtitle" class="text-xs text-indigo-100 mt-1">Logika komputasi & struktur data di balik permainan.</p>
+      </div>
+
+      <!-- Body Content -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-1 text-slate-700 text-sm">
+        
+        <!-- Formula / Key Concept Bar -->
+        <div id="theoryFormulaBar" class="text-xs font-mono bg-indigo-50 p-3 rounded-2xl border border-indigo-100 text-indigo-800">
+          Optimal Formula
+        </div>
+
+        <!-- Points List -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-slate-900 flex items-center gap-2 text-base">
+            <span class="w-6 h-6 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs">🧠</span>
+            Prinsip Berpikir Komputasional
+          </h4>
+          <div id="theoryPointsBody" class="space-y-3 text-slate-600 leading-relaxed text-sm">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Real World Analogy -->
+        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+          <h5 class="text-xs font-bold uppercase tracking-wider text-amber-800 mb-1 flex items-center gap-1.5">
+            <span>🌐</span> Penerapan di Dunia Nyata / Pemrograman
+          </h5>
+          <p id="theoryRealWorld" class="text-xs text-amber-900 leading-relaxed">
+            Analogi industri...
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+        <button onclick="closeTheoryModal()" class="px-5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-100 rounded-xl transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC ENGINE -->
+  <script>
+    // Audio Synthesis (Web Audio API)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq = 440, type = 'sine', duration = 0.1) {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+    function soundSuccess() { playBeep(523.25, 'triangle', 0.15); setTimeout(() => playBeep(659.25, 'triangle', 0.2), 120); setTimeout(() => playBeep(783.99, 'triangle', 0.3), 240); }
+    function soundError() { playBeep(220, 'sawtooth', 0.2); setTimeout(() => playBeep(180, 'sawtooth', 0.25), 150); }
+    function soundMove() { playBeep(600, 'sine', 0.05); }
+
+    // GLOBAL APP STATE
+    let currentActiveIndex = 0;
+    let currentStepCount = 0;
+    let completedGames = {};
+
+    // 8 GAMES METADATA
+    const GAMES_DATA = [
+      {
+        id: 'hanoi',
+        name: 'Menara Hanoi',
+        category: 'Rekursi & Stack',
+        icon: '🗼',
+        desc: 'Pindahkan 3 cakram dari Tiang A ke Tiang C. Aturan: hanya 1 cakram yang dipindah per langkah, dan cakram besar tidak boleh menindih cakram lebih kecil.',
+        optimalSteps: 7,
+        theory: {
+        title: 'Algoritma Rekursif & Struktur Data Stack',
+        formula: 'Rumus Keoptimalan: L(n) = 2^n - 1 (Dinamis sesuai jumlah cakram n)',
+        points: [
+          '<strong>Divide and Conquer:</strong> Memecah masalah n cakram menjadi: (1) Pindahkan n-1 cakram ke bantu, (2) Pindahkan cakram terbesar ke target, (3) Pindahkan n-1 cakram ke target.',
+          '<strong>Struktur Data Stack (LIFO):</strong> Setiap tiang bekerja persis seperti Stack (<em>Last-In, First-Out</em>) hanya elemen paling atas yang dapat di-Pop & Push.',
+          '<strong>Kompleksitas Eksponensial:</strong> Waktu eksekusi berlipat ganda setiap penambahan cakram O(2^n).'
+        ],
+        realWorld: 'Digunakan pada Call Stack sistem operasi, fitur Undo/Redo pada software edit foto, dan memori fungsi rekursif.'
+      }
+    },
+    {
+      id: 'frogs',
+      name: 'Katak Menyeberang',
+      category: 'Pola Algoritmik & Queue',
+      icon: '🐸',
+      desc: 'Tukarkan posisi Katak Hijau (kiri) dengan Katak Abu-abu (kanan). Atur jumlah pasangan katak (3-5 pasang) sesuai keinginan!',
+      optimalSteps: 24,
+      theory: {
+        title: 'Invarian Pola & Anti-Deadlock',
+        formula: 'Rumus Keoptimalan: L(n) = n(n + 2) langkah (Dinamis sesuai jumlah pasang katak n)',
+        points: [
+          '<strong>Pencegahan Deadlock:</strong> Deadlock terjadi jika dua katak sejenis berada berdampingan menghadap arah yang sama tanpa selang-seling.',
+          '<strong>Invarian State Transition:</strong> Komputer harus memprediksi kondisi state beberapa langkah ke depan agar antrean tidak buntu.',
+          '<strong>Struktur Data Queue (FIFO):</strong> Merepresentasikan pemrosesan antrean data terurut.'
+        ],
+        realWorld: 'Manajemen alokasi sumber daya pada Operating System (Banker\'s Algorithm) dan perutean kereta api satu jalur.'
+      }
+    },
+    {
+      id: 'coinchange',
+        name: 'Money Changer',
+        category: 'Greedy vs Dynamic Programming',
+        icon: '🪙',
+        desc: 'Pilihlah kombinasi koin [1, 6, 9, 15] untuk mencapai target nominal acak dengan jumlah keping koin sekecil-kecilnya.',
+        optimalSteps: 2,
+        theory: {
+          title: 'Greedy vs Dynamic Programming (DP)',
+          formula: 'Global Optimal (DP) vs Local Optimal (Greedy)',
+          points: [
+            '<strong>Kegagalan Algoritma Greedy:</strong> Strategi Greedy (selalu mengambil koin terbesar) sering kali menjebak dan menghasilkan jumlah keping koin lebih banyak.',
+            '<strong>Dynamic Programming (DP):</strong> Memecah masalah menjadi sub-masalah dan menyimpan hasilnya (Memoization) untuk menemukan keping koin paling minimal.'
+          ],
+          realWorld: 'Optimasi kemasan pengiriman (Knapsack Problem), kompresi file zip/huffman, dan alokasi memori komputer.'
+        }
+      },
+      {
+        id: 'waterjug',
+        name: 'Teka-Teki Ember Air',
+        category: 'Graf Ruang Status & BFS',
+        icon: '🏺',
+        desc: 'Gunakan ember 5 Liter dan 7 Liter (tanpa garis ukur) untuk mendapatkan tepat 6 Liter air. Ukur ember Anda di atas timbangan!',
+        optimalSteps: 14,
+        theory: {
+          title: 'State Space Search & Algoritma BFS',
+          formula: 'Jalur Terpendek Pencarian Ruang Status (Breadth-First Search)',
+          points: [
+            '<strong>Representasi Graf Status:</strong> Kondisi air dinyatakan sebagai pasangan node (A, B).',
+            '<strong>Breadth-First Search (BFS):</strong> Mencari rute terpendek dengan mengeksplorasi seluruh kemungkinan transisi air.',
+            '<strong>Persamaan Diophantine / Bézout:</strong> Target Z dapat dicapai jika Z kelipatan dari FPB(5,7) = 1.'
+          ],
+          realWorld: 'Routing paket data internet (Dijkstra/OSPF) dan perencanaan navigasi robotik.'
+        }
+      },
+      {
+        id: 'familycrisis',
+        name: 'Family Crisis (Jembatan Kayu)',
+        category: 'Optimasi & Penjadwalan',
+        icon: '🌉',
+        desc: 'Bantu 5 anggota keluarga (1s, 3s, 6s, 8s, 12s) menyeberangi jembatan kayu malam hari. Perahu/jembatan muat maks 2 orang & butuh 1 lampu. Lampu habis dalam 30 detik!',
+        optimalSteps: 29,
+        theory: {
+          title: 'Algoritma Penjadwalan & Counter-Intuitive Strategy',
+          formula: 'Strategi Optimal: Mengelompokkan Orang Lambat Bersama (1&3-> 1<- 8&12-> 3<- 1&3-> = 29s)',
+          points: [
+            '<strong>Kegagalan Heuristik Sederhana:</strong> Memakai orang tercepat (1s) sebagai pengantar bolak-balik terus-menerus akan gagal (membutuhkan 31 detik!).',
+            '<strong>Optimasi Pengelompokan (Pairing Slowest):</strong> Menyeberangkan dua orang terlambat (8s & 12s) bersama-sama menghemat total waktu secara signifikan.'
+          ],
+          realWorld: 'Penjadwalan prosesor multi-core (CPU Scheduling) dan optimasi rantai pasok logistik.'
+        }
+      },
+      {
+        id: 'fakescale',
+        name: 'Timbangan Koin Palsu',
+        category: 'Ternary Search & Decision Tree',
+        icon: '⚖️',
+        desc: 'Terdapat 9 koin identik, 1 diantaranya koin palsu yang LEBIH RINGAN. Temukan koin palsu menggunakan neraca sesedikit mungkin!',
+        optimalSteps: 2,
+        theory: {
+          title: 'Ternary Search & Pohon Keputusan 3 Cabang',
+          formula: 'Batas Penimbangan: ⌈log₃(N)⌉ = ⌈log₃(9)⌉ = 2 kali timbang',
+          points: [
+            '<strong>Ternary Decision Tree:</strong> Neraca memberikan 3 informasi output (<, =, >).',
+            '<strong>Bagi Tiga (Divide by 3):</strong> Membagi 9 koin menjadi 3 kelompok (3, 3, 3) memaksimalkan perolehan informasi (entropi).'
+          ],
+          realWorld: 'Deteksi hardware rusak, pengujian sampel medis masal, dan pembagian masalah komputasi terdistribusi.'
+        }
+      },
+      {
+        id: 'rivercrossing',
+        name: 'Serigala, Kambing, & Kubis',
+        category: 'Constraint Satisfaction & Graf',
+        icon: '🛶',
+        desc: 'Bantu Petani menyeberangkan Serigala, Kambing, dan Kubis. Aturan: Serigala akan memakan Kambing jika ditinggal, dan Kambing akan memakan Kubis jika ditinggal tanpa Petani!',
+        optimalSteps: 7,
+        theory: {
+          title: 'Constraint Satisfaction Problem (CSP)',
+          formula: 'Validasi Batasan Status (State Constraint Validation)',
+          points: [
+            '<strong>Constraint Rules:</strong> Kombinasi (Serigala+Kambing) dan (Kambing+Kubis) adalah Hazard State terlarang.',
+            '<strong>Langkah Counter-Intuitive:</strong> Mewajibkan membawa kambing KEMBALI ke tepi asal pada langkah ke-5 untuk menjaga keamanan batasan.'
+          ],
+          realWorld: 'Sistem kontrol keamanan izin akses (RBAC), ACID transaksi database, dan autopilot pesawat.'
+        }
+      },
+      {
+        id: 'knightstour',
+        name: "Knight's Tour (Catur 5x5)",
+        category: 'Backtracking & Array 2D',
+        icon: '♞',
+        desc: 'Gerakkan Kuda Catur (pola "L") untuk mengunjungi seluruh 25 petak pada papan 5x5 tepat satu kali tanpa mengulang!',
+        optimalSteps: 25,
+        theory: {
+          title: 'Algoritma Backtracking & Matriks 2D',
+          formula: 'Exploration via Depth-First Search with Undo',
+          points: [
+            '<strong>Algoritma Backtracking:</strong> Eksplorasi langkah. Jika buntu, algoritma "mundur" (backtrack) 1 langkah untuk mencoba cabang alternatif.',
+            '<strong>Heuristik Warnsdorff:</strong> Memilih petak dengan opsi langkah berikutnya paling sedikit untuk meminimalisir buntu.'
+          ],
+          realWorld: 'Desain sirkuit PCB otomatis, pemecahan Sudoku AI, dan perutean kabel jaringan fiber optic.'
+        }
+      }
+    ];
+
+    // INITIALIZATION ON LOAD
+    window.addEventListener('DOMContentLoaded', () => {
+      renderLandingPageGrid();
+    });
+
+    // NAVIGATION CONTROLLERS
+    function showLandingPage() {
+      document.getElementById('landingPage').classList.remove('hidden');
+      document.getElementById('gameView').classList.add('hidden');
+      hideLiveFeedback();
+      renderLandingPageGrid();
+    }
+
+    function selectGameFromLanding(index) {
+      document.getElementById('landingPage').classList.add('hidden');
+      document.getElementById('gameView').classList.remove('hidden');
+      loadGame(index);
+    }
+
+    function renderLandingPageGrid() {
+      const grid = document.getElementById('gameGridCards');
+      if (!grid) return;
+      grid.innerHTML = GAMES_DATA.map((g, idx) => {
+        const isDone = completedGames[g.id];
+        return `
+          <div onclick="selectGameFromLanding(${idx})" class="group bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-xl hover:border-indigo-400 cursor-pointer transition flex flex-col justify-between relative overflow-hidden">
+            ${isDone ? '<div class="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">✓ Selesai</div>' : ''}
+            <div class="space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+                ${g.icon}
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 text-lg group-hover:text-indigo-600 transition">${g.name}</h3>
+                <p class="text-xs text-slate-500 line-clamp-2 mt-1 leading-relaxed">${g.desc}</p>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end text-xs font-semibold text-slate-400 group-hover:text-indigo-600">
+              <span>Mainkan &rarr;</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function loadGame(index) {
+      currentActiveIndex = index;
+      const game = GAMES_DATA[index];
+
+      document.getElementById('gameNumberBadge').innerText = `Game ${index + 1}/8`;
+      document.getElementById('gameTitle').innerText = game.name;
+      document.getElementById('gameDescription').innerText = game.desc;
+      
+      hideLiveFeedback();
+      setStepCount(0);
+
+      const stage = document.getElementById('gameStage');
+      switch (game.id) {
+        case 'hanoi': initHanoiGame(stage); break;
+        case 'frogs': initFrogsGame(stage); break;
+        case 'coinchange': initCoinChangeGame(stage); break;
+        case 'waterjug': initWaterJugGame(stage); break;
+        case 'familycrisis': initFamilyCrisisGame(stage); break;
+        case 'fakescale': initFakeScaleGame(stage); break;
+        case 'rivercrossing': initRiverCrossingGame(stage); break;
+        case 'knightstour': initKnightsTourGame(stage); break;
+      }
+    }
+
+    function setStepCount(count) {
+      currentStepCount = count;
+      document.getElementById('stepCounter').innerText = count;
+    }
+
+    function incrementStep() {
+      soundMove();
+      setStepCount(currentStepCount + 1);
+    }
+
+    function resetCurrentGame() {
+      loadGame(currentActiveIndex);
+    }
+
+    // MODAL AND VICTORY CONTROLLERS
+    function triggerWin(stepsTaken, customMsg = null) {
+      soundSuccess();
+      const game = GAMES_DATA[currentActiveIndex];
+      const isOptimal = stepsTaken <= game.optimalSteps;
+
+      completedGames[game.id] = { completed: true, steps: stepsTaken, isOptimal: isOptimal };
+
+      document.getElementById('victoryBadge').innerText = isOptimal ? "⭐ 100% Optimal" : "✓ Berhasil";
+      document.getElementById('victorySubtitle').innerText = customMsg || "Anda berhasil menyelesaikan puzzle ini!";
+      document.getElementById('victoryStatsCard').innerText = `Hasil: ${stepsTaken} Langkah / Detik`;
+      document.getElementById('victoryModal').classList.remove('hidden');
+    }
+
+    function closeVictoryModal() {
+      document.getElementById('victoryModal').classList.add('hidden');
+    }
+
+    function openTheoryFromVictory() {
+      closeVictoryModal();
+      openTheoryModal();
+    }
+
+    function goToNextGameFromVictory() {
+      closeVictoryModal();
+      if (currentActiveIndex < GAMES_DATA.length - 1) {
+        selectGameFromLanding(currentActiveIndex + 1);
+      } else {
+        showLandingPage();
+      }
+    }
+
+    function openTheoryModal() {
+      const game = GAMES_DATA[currentActiveIndex];
+      document.getElementById('theoryCategoryBadge').innerText = game.category;
+      document.getElementById('theoryTitle').innerText = game.theory.title;
+      document.getElementById('theoryFormulaBar').innerHTML = game.theory.formula;
+      
+      document.getElementById('theoryPointsBody').innerHTML = game.theory.points.map(p => `
+        <div class="flex items-start gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <span class="text-indigo-600 font-bold mt-0.5">•</span>
+          <div>${p}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('theoryRealWorld').innerText = game.theory.realWorld;
+      document.getElementById('theoryModal').classList.remove('hidden');
+    }
+
+    function closeTheoryModal() {
+      document.getElementById('theoryModal').classList.add('hidden');
+    }
+
+    function showDefeatModal(msg) {
+      soundError();
+      document.getElementById('defeatMessage').innerText = msg;
+      document.getElementById('defeatModal').classList.remove('hidden');
+    }
+
+    function closeDefeatModalAndReset() {
+      document.getElementById('defeatModal').classList.add('hidden');
+      resetCurrentGame();
+    }
+
+    function showLiveFeedback(title, msg, isError = false) {
+      const banner = document.getElementById('liveFeedbackBanner');
+      const icon = document.getElementById('feedbackIcon');
+      const titleEl = document.getElementById('feedbackTitle');
+      const msgEl = document.getElementById('feedbackMessage');
+
+      banner.classList.remove('hidden');
+      if (isError) {
+        banner.className = "rounded-xl p-4 border bg-rose-50 border-rose-200 text-rose-800 flex items-start gap-3 smooth-transition";
+        icon.innerText = "⚠️";
+        soundError();
+      } else {
+        banner.className = "rounded-xl p-4 border bg-indigo-50 border-indigo-200 text-indigo-900 flex items-start gap-3 smooth-transition";
+        icon.innerText = "💡";
+      }
+      titleEl.innerText = title;
+      msgEl.innerText = msg;
+    }
+
+    function hideLiveFeedback() {
+      document.getElementById('liveFeedbackBanner').classList.add('hidden');
+    }
+
+    // =========================================================================
+    // GAME 1: MENARA HANOI (Dynamic Disks 1-5)
+    // =========================================================================
+    let hanoiDiskCount = 3;
+    let hanoiTowers = [[3, 2, 1], [], []];
+    let hanoiSelectedPeg = null;
+
+    function initHanoiGame(container) {
+      setHanoiDiskCount(hanoiDiskCount);
+    }
+
+    function setHanoiDiskCount(n) {
+      hanoiDiskCount = parseInt(n);
+      const initialDisks = [];
+      for (let i = hanoiDiskCount; i >= 1; i--) {
+        initialDisks.push(i);
+      }
+      hanoiTowers = [initialDisks, [], []];
+      hanoiSelectedPeg = null;
+      setStepCount(0);
+      hideLiveFeedback();
+      GAMES_DATA[0].optimalSteps = Math.pow(2, hanoiDiskCount) - 1;
+      renderHanoiStage(document.getElementById('gameStage'));
+    }
+
+    function renderHanoiStage(container) {
+      const diskColors = {
+        1: 'bg-emerald-500 border-emerald-600',
+        2: 'bg-indigo-500 border-indigo-600',
+        3: 'bg-amber-500 border-amber-600',
+        4: 'bg-rose-500 border-rose-600',
+        5: 'bg-purple-500 border-purple-600'
+      };
+      const diskWidths = {
+        1: 'w-16 sm:w-20',
+        2: 'w-24 sm:w-28',
+        3: 'w-32 sm:w-36',
+        4: 'w-40 sm:w-44',
+        5: 'w-48 sm:w-52'
+      };
+
+      container.innerHTML = `
+        <div class="flex flex-col items-center justify-between h-full py-2 gap-4">
+          <!-- Dynamic Controls Bar -->
+          <div class="flex items-center justify-between w-full max-w-2xl bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-200">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-700">Jumlah Cakram:</span>
+              <div class="flex gap-1">
+                ${[1, 2, 3, 4, 5].map(n => `
+                  <button onclick="setHanoiDiskCount(${n})" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${hanoiDiskCount === n ? 'bg-indigo-600 text-white shadow' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'}">
+                    ${n}
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+            <span class="text-[11px] text-indigo-700 font-semibold hidden sm:inline">Target Optimal: ${Math.pow(2, hanoiDiskCount) - 1} Langkah</span>
+          </div>
+
+          <div class="text-xs text-slate-500 font-medium text-center">
+            Klik tiang asal untuk memilih cakram atas, lalu klik tiang tujuan.
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 sm:gap-8 w-full max-w-2xl px-2">
+            ${[0, 1, 2].map(pegIdx => {
+              const disks = hanoiTowers[pegIdx];
+              const isSelected = hanoiSelectedPeg === pegIdx;
+              const pegName = ['Tiang A', 'Tiang B', 'Tiang C'][pegIdx];
+              return `
+                <div onclick="handleHanoiPegClick(${pegIdx})" class="group cursor-pointer flex flex-col items-center relative p-2 sm:p-3 rounded-2xl transition border-2 ${isSelected ? 'border-indigo-500 bg-indigo-50/50 shadow-md' : 'border-transparent hover:border-slate-300 bg-slate-50/50'}">
+                  <div class="w-3.5 h-48 bg-slate-300 rounded-t-full relative flex flex-col-reverse items-center justify-start mb-1">
+                    ${disks.map((d, dIdx) => {
+                      const isTop = dIdx === disks.length - 1;
+                      const isFloating = isSelected && isTop;
+                      return `
+                        <div class="h-7 sm:h-8 ${diskWidths[d]} ${diskColors[d]} border-b-2 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center z-10 transition-all transform ${isFloating ? '-translate-y-4 ring-4 ring-indigo-300 ring-offset-1' : ''} mb-0.5 sm:mb-1">
+                          ${d}
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                  <div class="w-full h-3.5 bg-slate-700 rounded-full shadow-sm"></div>
+                  <span class="text-xs font-bold text-slate-700 mt-2">${pegName}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="text-xs text-slate-400">
+            ${hanoiSelectedPeg !== null ? `<span class="text-indigo-600 font-semibold animate-pulse">Tiang ${String.fromCharCode(65 + hanoiSelectedPeg)} terpilih. Klik tiang tujuan!</span>` : 'Pilih tiang.'}
+          </div>
+        </div>
+      `;
+    }
+
+    function handleHanoiPegClick(pegIdx) {
+      if (hanoiSelectedPeg === null) {
+        if (hanoiTowers[pegIdx].length === 0) {
+          showLiveFeedback("Tiang Kosong", "Tidak ada cakram pada tiang ini.", true);
+          return;
+        }
+        hanoiSelectedPeg = pegIdx;
+        hideLiveFeedback();
+        soundMove();
+        renderHanoiStage(document.getElementById('gameStage'));
+      } else {
+        if (hanoiSelectedPeg === pegIdx) {
+          hanoiSelectedPeg = null;
+          renderHanoiStage(document.getElementById('gameStage'));
+          return;
+        }
+
+        const srcDisks = hanoiTowers[hanoiSelectedPeg];
+        const destDisks = hanoiTowers[pegIdx];
+        const movingDisk = srcDisks[srcDisks.length - 1];
+        const topDestDisk = destDisks.length > 0 ? destDisks[destDisks.length - 1] : null;
+
+        if (topDestDisk !== null && movingDisk > topDestDisk) {
+          showLiveFeedback("Langkah Ilegal", `Cakram ${movingDisk} tidak boleh ditaruh di atas cakram ${topDestDisk}!`, true);
+          hanoiSelectedPeg = null;
+          renderHanoiStage(document.getElementById('gameStage'));
+          return;
+        }
+
+        srcDisks.pop();
+        destDisks.push(movingDisk);
+        hanoiSelectedPeg = null;
+        incrementStep();
+        hideLiveFeedback();
+        renderHanoiStage(document.getElementById('gameStage'));
+
+        if (hanoiTowers[2].length === hanoiDiskCount) {
+          triggerWin(currentStepCount, `Hebat! Semua ${hanoiDiskCount} cakram berhasil dipindahkan ke Tiang C.`);
+        }
+      }
+    }
+
+    // =========================================================================
+    // GAME 2: KATAK MENYEBERANG (Dynamic 3-5 Pairs)
+    // =========================================================================
+    let frogPairCount = 4;
+    let frogBoard = [];
+
+    function initFrogsGame(container) {
+      setFrogPairCount(frogPairCount);
+    }
+
+    function setFrogPairCount(n) {
+      frogPairCount = parseInt(n);
+      const greens = Array(frogPairCount).fill('G');
+      const grays = Array(frogPairCount).fill('A');
+      frogBoard = [...greens, 'E', ...grays];
+      setStepCount(0);
+      hideLiveFeedback();
+      GAMES_DATA[1].optimalSteps = frogPairCount * (frogPairCount + 2);
+      renderFrogsStage(document.getElementById('gameStage'));
+    }
+
+    function renderFrogsStage(container) {
+      const totalSlots = frogPairCount * 2 + 1;
+      container.innerHTML = `
+        <div class="flex flex-col items-center justify-between h-full py-2 gap-4">
+          <!-- Dynamic Controls Bar -->
+          <div class="flex items-center justify-between w-full max-w-3xl bg-slate-50 px-4 py-2.5 rounded-2xl border border-slate-200">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-700">Jumlah Pasang:</span>
+              <div class="flex gap-1">
+                ${[3, 4, 5].map(n => `
+                  <button onclick="setFrogPairCount(${n})" class="px-2.5 py-1 rounded-lg text-xs font-bold transition ${frogPairCount === n ? 'bg-indigo-600 text-white shadow' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'}">
+                    ${n} Pasang
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+            <span class="text-[11px] text-indigo-700 font-semibold hidden sm:inline">Target Optimal: ${frogPairCount * (frogPairCount + 2)} Langkah</span>
+          </div>
+
+          <div class="text-xs text-slate-500 font-medium text-center">
+            Klik katak untuk melompat 1 batu kosong atau melompati 1 katak lawan arah.
+          </div>
+
+          <div class="grid grid-cols-${totalSlots} gap-1 sm:gap-2 w-full max-w-4xl p-3 sm:p-4 bg-sky-50/80 rounded-3xl border border-sky-100 items-center justify-center overflow-x-auto">
+            ${frogBoard.map((slot, idx) => {
+              let content = '';
+              let badge = '';
+              if (slot === 'G') {
+                content = `<div class="text-2xl sm:text-3xl transform scale-x-[-1]">🐸</div>`;
+                badge = `<span class="text-[8px] sm:text-[9px] font-bold text-emerald-700 bg-emerald-100 px-1 rounded">Hijau</span>`;
+              } else if (slot === 'A') {
+                content = `<div class="text-2xl sm:text-3xl filter grayscale opacity-90">🐸</div>`;
+                badge = `<span class="text-[8px] sm:text-[9px] font-bold text-slate-700 bg-slate-200 px-1 rounded">Abu</span>`;
+              } else {
+                content = `<div class="w-5 sm:w-6 h-5 sm:h-6 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-300 text-xs">○</div>`;
+                badge = `<span class="text-[8px] sm:text-[9px] text-slate-400">Kosong</span>`;
+              }
+
+              return `
+                <div onclick="handleFrogClick(${idx})" class="aspect-square min-w-[32px] flex flex-col items-center justify-center p-1 rounded-xl sm:rounded-2xl bg-white border border-slate-200 shadow-sm cursor-pointer hover:border-indigo-400 transition active:scale-95">
+                  ${content}
+                  <div class="mt-0.5">${badge}</div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function handleFrogClick(index) {
+      const type = frogBoard[index];
+      if (type === 'E') return;
+
+      const totalSlots = frogPairCount * 2 + 1;
+      let targetIdx = -1;
+      if (type === 'G') {
+        if (index + 1 < totalSlots && frogBoard[index + 1] === 'E') targetIdx = index + 1;
+        else if (index + 2 < totalSlots && frogBoard[index + 2] === 'E' && frogBoard[index + 1] === 'A') targetIdx = index + 2;
+      } else if (type === 'A') {
+        if (index - 1 >= 0 && frogBoard[index - 1] === 'E') targetIdx = index - 1;
+        else if (index - 2 >= 0 && frogBoard[index - 2] === 'E' && frogBoard[index - 1] === 'G') targetIdx = index - 2;
+      }
+
+      if (targetIdx !== -1) {
+        frogBoard[targetIdx] = type;
+        frogBoard[index] = 'E';
+        incrementStep();
+        hideLiveFeedback();
+        renderFrogsStage(document.getElementById('gameStage'));
+
+        const winPattern = [...Array(frogPairCount).fill('A'), 'E', ...Array(frogPairCount).fill('G')];
+        if (frogBoard.every((val, i) => val === winPattern[i])) {
+          triggerWin(currentStepCount, `Luar biasa! Kedua kelompok katak (${frogPairCount} pasang) sukses bertukar posisi.`);
+          return;
+        }
+
+        if (isFrogDeadlocked()) {
+          showLiveFeedback("Deadlock (Jalan Buntu)", "Tidak ada katak yang bisa melompat lagi. Silakan Reset!", true);
+        }
+      }
+    }
+
+    function isFrogDeadlocked() {
+      const totalSlots = frogPairCount * 2 + 1;
+      for (let i = 0; i < totalSlots; i++) {
+        const type = frogBoard[i];
+        if (type === 'G') {
+          if (i + 1 < totalSlots && frogBoard[i + 1] === 'E') return false;
+          if (i + 2 < totalSlots && frogBoard[i + 2] === 'E' && frogBoard[i + 1] === 'A') return false;
+        } else if (type === 'A') {
+          if (i - 1 >= 0 && frogBoard[i - 1] === 'E') return false;
+          if (i - 2 >= 0 && frogBoard[i - 2] === 'E' && frogBoard[i - 1] === 'G') return false;
+        }
+      }
+      return true;
+    }
+
+    // =========================================================================
+    // GAME 3: MONEY CHANGER (Dynamic Target)
+    // =========================================================================
+    const coinDenominations = [15, 9, 6, 1];
+    let dynamicCoinTarget = 23;
+    let userSelectedCoins = [];
+
+    function initCoinChangeGame(container) {
+      randomizeCoinTarget();
+      userSelectedCoins = [];
+      renderCoinChangeStage(container);
+    }
+
+    function randomizeCoinTarget() {
+      dynamicCoinTarget = Math.floor(Math.random() * 20) + 12; // 12 to 32
+      userSelectedCoins = [];
+    }
+
+    function getMinCoinsDP(target, coins) {
+      const dp = Array(target + 1).fill(Infinity);
+      dp[0] = 0;
+      for (let i = 1; i <= target; i++) {
+        for (const c of coins) {
+          if (i - c >= 0) dp[i] = Math.min(dp[i], dp[i - c] + 1);
+        }
+      }
+      return dp[target];
+    }
+
+    function renderCoinChangeStage(container) {
+      const currentSum = userSelectedCoins.reduce((a, b) => a + b, 0);
+
+      container.innerHTML = `
+        <div class="flex flex-col items-center justify-between h-full py-2 gap-5 max-w-2xl mx-auto w-full">
+          <div class="flex items-center justify-between w-full bg-slate-50 p-4 rounded-2xl border border-slate-200">
+            <div>
+              <div class="text-[10px] uppercase font-bold text-slate-400">Target Nominal (Random)</div>
+              <div class="text-3xl font-black text-indigo-700 font-mono">${dynamicCoinTarget}</div>
+            </div>
+            <button onclick="randomizeCoinTarget(); renderCoinChangeStage(document.getElementById('gameStage'));" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border rounded-lg shadow-sm">
+              🎲 Acak Target Baru
+            </button>
+          </div>
+
+          <div class="w-full flex flex-col items-center gap-2">
+            <div class="text-xs font-semibold text-slate-500">Pilih koin nominal [15, 9, 6, 1]:</div>
+            <div class="flex items-center justify-center gap-3">
+              ${coinDenominations.map(val => `
+                <button onclick="addCoin(${val})" class="w-16 h-16 rounded-2xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-lg border-2 border-amber-600 shadow flex items-center justify-center transition active:scale-95">
+                  ${val}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="w-full bg-slate-50 rounded-2xl p-4 border border-slate-200">
+            <div class="text-xs font-semibold text-slate-500 mb-2">Total Koin: ${currentSum} / ${dynamicCoinTarget} (${userSelectedCoins.length} Keping)</div>
+            <div class="min-h-[44px] flex items-center gap-2 flex-wrap bg-white p-2 rounded-xl border border-slate-200">
+              ${userSelectedCoins.map((val, idx) => `
+                <button onclick="removeCoin(${idx})" class="px-2.5 py-1 rounded-lg bg-amber-100 border text-amber-900 font-bold text-xs">
+                  🪙 ${val} ✕
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <button onclick="validateCoinChange()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow transition">
+            Validasi & Uji Keoptimalan
+          </button>
+        </div>
+      `;
+    }
+
+    function addCoin(val) { userSelectedCoins.push(val); incrementStep(); hideLiveFeedback(); renderCoinChangeStage(document.getElementById('gameStage')); }
+    function removeCoin(idx) { userSelectedCoins.splice(idx, 1); soundMove(); renderCoinChangeStage(document.getElementById('gameStage')); }
+
+    function validateCoinChange() {
+      const currentSum = userSelectedCoins.reduce((a, b) => a + b, 0);
+      const minCoins = getMinCoinsDP(dynamicCoinTarget, coinDenominations);
+
+      if (currentSum !== dynamicCoinTarget) {
+        showLiveFeedback("Jumlah Belum Sesuai", `Total koin Anda ${currentSum}, target ${dynamicCoinTarget}.`, true);
+        return;
+      }
+
+      if (userSelectedCoins.length === minCoins) {
+        triggerWin(userSelectedCoins.length, `Sempurna! Anda menemukan kombinasi koin paling minimal (${minCoins} keping koin)!`);
+      } else {
+        showLiveFeedback("Belum Optimal!", `Berhasil mencapai nominal ${dynamicCoinTarget}, namun solusi DP optimal hanya membutuhkan ${minCoins} keping koin!`, false);
+      }
+    }
+
+    // =========================================================================
+    // GAME 4: TEKA-TEKI EMBER AIR (5L & 7L -> Target 6L)
+    // =========================================================================
+    let jugA = 0; // 5L
+    let jugB = 0; // 7L
+    const CAP_A = 5;
+    const CAP_B = 7;
+    const TARGET_WATER = 6;
+    let jugOnScale = null;
+    let measuredWeight = null;
+
+    function initWaterJugGame(container) {
+      jugA = 0; jugB = 0; jugOnScale = null; measuredWeight = null;
+      renderWaterJugStage(container);
+    }
+
+    function renderWaterJugStage(container) {
+      const pctA = (jugA / CAP_A) * 100;
+      const pctB = (jugB / CAP_B) * 100;
+
+      container.innerHTML = `
+        <div class="cave-scene rounded-2xl p-4 sm:p-6 text-white flex flex-col items-center justify-between h-full min-h-[420px] w-full relative overflow-x-auto">
+          <div class="text-[11px] sm:text-xs text-slate-300 text-center bg-black/50 px-3.5 py-1.5 rounded-full backdrop-blur-sm max-w-xl">
+            Isi & tuang air. Timbang ember di atas <strong>Timbangan Pengukur Digital</strong> untuk mengetahui isinya!
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full max-w-4xl my-4 items-end justify-items-center">
+            
+            <!-- Jug A Control Card -->
+            <div class="bg-black/40 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl border border-white/10 w-full flex flex-col items-center gap-3">
+              <span class="text-xs font-bold text-sky-300 flex items-center gap-1">
+                <span>🏺</span> Ember A (Maks 5L)
+              </span>
+              <div class="relative w-20 sm:w-24 h-32 sm:h-36 border-4 border-t-0 border-slate-300 bg-white/10 rounded-b-2xl overflow-hidden flex flex-col justify-end">
+                <div class="water-fill w-full bg-sky-400/80" style="height: ${pctA}%;"></div>
+              </div>
+              
+              <!-- Cleaned Action Buttons Grid -->
+              <div class="w-full space-y-1.5 pt-1">
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button onclick="actionFillA()" class="py-2 px-2 text-[11px] font-bold bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-white rounded-xl transition shadow flex items-center justify-center gap-1">
+                    🚰 Isi
+                  </button>
+                  <button onclick="actionEmptyA()" class="py-2 px-2 text-[11px] font-bold bg-rose-600/90 hover:bg-rose-500 text-white rounded-xl transition shadow flex items-center justify-center gap-1">
+                    🗑️ Buang
+                  </button>
+                </div>
+                <button onclick="actionPourAtoB()" class="w-full py-2 px-2 text-[11px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition shadow flex items-center justify-center gap-1">
+                  🌊 Tuang ke B ➔
+                </button>
+                <button onclick="weighJug('A')" class="w-full py-2.5 px-2 text-[11px] font-bold bg-amber-400 hover:bg-amber-300 text-amber-950 rounded-xl transition shadow flex items-center justify-center gap-1 border border-amber-500">
+                  ⚖️ Timbang Ember A
+                </button>
+              </div>
+            </div>
+
+            <!-- Digital Scale Display -->
+            <div class="flex flex-col items-center bg-slate-900/90 p-4 rounded-2xl border border-emerald-500/50 w-full my-2 md:my-0 shadow-xl">
+              <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                <span>⚖️</span> Timbangan Digital
+              </div>
+              <div class="w-full bg-black border-2 border-emerald-500/80 rounded-xl p-4 text-center">
+                <div class="text-[10px] text-emerald-400/80 font-mono tracking-widest">BERAT TERUKUR</div>
+                <div class="text-3xl sm:text-4xl font-black font-mono text-emerald-400 mt-1">
+                  ${measuredWeight !== null ? `${measuredWeight} L` : '--- L'}
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400 text-center mt-2">
+                ${jugOnScale ? `Ember ${jugOnScale} di atas timbangan` : 'Klik timbang pada ember yang ingin diperiksa.'}
+              </p>
+            </div>
+
+            <!-- Jug B Control Card -->
+            <div class="bg-black/40 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl border border-white/10 w-full flex flex-col items-center gap-3">
+              <span class="text-xs font-bold text-sky-300 flex items-center gap-1">
+                <span>🏺</span> Ember B (Maks 7L)
+              </span>
+              <div class="relative w-24 sm:w-28 h-36 sm:h-40 border-4 border-t-0 border-slate-300 bg-white/10 rounded-b-2xl overflow-hidden flex flex-col justify-end">
+                <div class="water-fill w-full bg-sky-500/80" style="height: ${pctB}%;"></div>
+              </div>
+
+              <!-- Cleaned Action Buttons Grid -->
+              <div class="w-full space-y-1.5 pt-1">
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button onclick="actionFillB()" class="py-2 px-2 text-[11px] font-bold bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-white rounded-xl transition shadow flex items-center justify-center gap-1">
+                    🚰 Isi
+                  </button>
+                  <button onclick="actionEmptyB()" class="py-2 px-2 text-[11px] font-bold bg-rose-600/90 hover:bg-rose-500 text-white rounded-xl transition shadow flex items-center justify-center gap-1">
+                    🗑️ Buang
+                  </button>
+                </div>
+                <button onclick="actionPourBtoA()" class="w-full py-2 px-2 text-[11px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl transition shadow flex items-center justify-center gap-1">
+                  ⬅ Tuang ke A
+                </button>
+                <button onclick="weighJug('B')" class="w-full py-2.5 px-2 text-[11px] font-bold bg-amber-400 hover:bg-amber-300 text-amber-950 rounded-xl transition shadow flex items-center justify-center gap-1 border border-amber-500">
+                  ⚖️ Timbang Ember B
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function weighJug(target) {
+      jugOnScale = target;
+      measuredWeight = target === 'A' ? jugA : jugB;
+      soundMove();
+      renderWaterJugStage(document.getElementById('gameStage'));
+
+      if (measuredWeight === TARGET_WATER) {
+        triggerWin(currentStepCount, "Tepat sekali! Timbangan mengukur tepat 6 Liter air!");
+      }
+    }
+
+    function actionFillA() { jugA = CAP_A; measuredWeight = null; incrementStep(); renderWaterJugStage(document.getElementById('gameStage')); }
+    function actionFillB() { jugB = CAP_B; measuredWeight = null; incrementStep(); renderWaterJugStage(document.getElementById('gameStage')); }
+    function actionEmptyA() { jugA = 0; measuredWeight = null; incrementStep(); renderWaterJugStage(document.getElementById('gameStage')); }
+    function actionEmptyB() { jugB = 0; measuredWeight = null; incrementStep(); renderWaterJugStage(document.getElementById('gameStage')); }
+    function actionPourAtoB() {
+      const spaceB = CAP_B - jugB;
+      const transfer = Math.min(jugA, spaceB);
+      jugA -= transfer; jugB += transfer;
+      measuredWeight = null; incrementStep(); renderWaterJugStage(document.getElementById('gameStage'));
+    }
+    function actionPourBtoA() {
+      const spaceA = CAP_A - jugA;
+      const transfer = Math.min(jugB, spaceA);
+      jugB -= transfer; jugA += transfer;
+      measuredWeight = null; incrementStep(); renderWaterJugStage(document.getElementById('gameStage'));
+    }
+
+    // =========================================================================
+    // GAME 5: FAMILY CRISIS (Jembatan Kayu 30s)
+    // =========================================================================
+    const familyMembers = [
+      { id: 'kid', time: 1, icon: '👦' },
+      { id: 'sibling', time: 3, icon: '🧒' },
+      { id: 'aunt', time: 6, icon: '👩' },
+      { id: 'uncle', time: 8, icon: '👨' },
+      { id: 'grandpa', time: 12, icon: '👴' }
+    ];
+    let familyPositions = { kid: 'left', sibling: 'left', aunt: 'left', uncle: 'left', grandpa: 'left' };
+    let lanternPosition = 'left';
+    let selectedForCross = [];
+    let elapsedTime = 0;
+    let isCrossingAnimating = false;
+
+    function initFamilyCrisisGame(container) {
+      familyPositions = { kid: 'left', sibling: 'left', aunt: 'left', uncle: 'left', grandpa: 'left' };
+      lanternPosition = 'left';
+      selectedForCross = [];
+      elapsedTime = 0;
+      isCrossingAnimating = false;
+      setStepCount(0);
+      renderFamilyCrisisStage(container);
+    }
+
+    function renderFamilyCrisisStage(container) {
+      const leftMembers = familyMembers.filter(m => familyPositions[m.id] === 'left');
+      const rightMembers = familyMembers.filter(m => familyPositions[m.id] === 'right');
+
+      container.innerHTML = `
+        <div class="night-scene rounded-2xl p-4 sm:p-6 text-white flex flex-col justify-between h-full min-h-[420px] w-full relative">
+          <div class="flex items-center justify-between bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/20">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🔦</span>
+              <span class="text-xs font-bold">Waktu: <span class="text-amber-300 font-mono text-base">${elapsedTime}s</span> / 30s</span>
+            </div>
+            <button onclick="crossBridgeWithTorch()" ${selectedForCross.length === 0 || isCrossingAnimating ? 'disabled' : ''} class="px-5 py-2 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-slate-950 font-extrabold text-xs rounded-xl shadow transition">
+              ${isCrossingAnimating ? '🚶 Menyeberang...' : '🚶 Menyeberang'}
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 my-4 items-center relative">
+            <!-- Left Cliff -->
+            <div class="bg-amber-950/70 p-4 rounded-2xl border border-amber-800/50 min-h-[170px]">
+              <div class="text-[10px] font-bold text-amber-300 mb-2">Tepi Kiri ${lanternPosition === 'left' ? '🔦' : ''}</div>
+              <div class="flex flex-wrap gap-2">
+                ${leftMembers.map(m => `
+                  <button onclick="toggleSelectFamily('${m.id}')" ${isCrossingAnimating ? 'disabled' : ''} class="p-2.5 rounded-2xl border flex items-center gap-1.5 ${selectedForCross.includes(m.id) ? 'bg-amber-400 text-slate-950 font-bold border-white ring-4 ring-amber-300' : 'bg-white/10 border-white/20'}">
+                    <span class="text-2xl">${m.icon}</span>
+                    <span class="text-xs font-mono font-bold">${m.time}s</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Bridge -->
+            <div class="flex flex-col items-center justify-center relative min-h-[100px]">
+              <div id="animWalker" class="absolute top-1 transition-all duration-1000 hidden flex items-center gap-1 bg-amber-400 text-slate-950 px-2 py-1 rounded-full text-xs font-bold shadow-lg"></div>
+              <div class="w-full h-5 bg-amber-800 border-y-2 border-amber-950 rounded"></div>
+              <span class="text-[10px] text-amber-200 mt-2 font-semibold">Jembatan Kayu (Maks 2)</span>
+            </div>
+
+            <!-- Right Cliff -->
+            <div class="bg-amber-950/70 p-4 rounded-2xl border border-amber-800/50 min-h-[170px]">
+              <div class="text-[10px] font-bold text-amber-300 mb-2">Tepi Kanan ${lanternPosition === 'right' ? '🔦' : ''}</div>
+              <div class="flex flex-wrap gap-2">
+                ${rightMembers.map(m => `
+                  <button onclick="toggleSelectFamily('${m.id}')" ${isCrossingAnimating ? 'disabled' : ''} class="p-2.5 rounded-2xl border flex items-center gap-1.5 ${selectedForCross.includes(m.id) ? 'bg-amber-400 text-slate-950 font-bold border-white ring-4 ring-amber-300' : 'bg-white/10 border-white/20'}">
+                    <span class="text-2xl">${m.icon}</span>
+                    <span class="text-xs font-mono font-bold">${m.time}s</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleSelectFamily(id) {
+      if (familyPositions[id] !== lanternPosition) {
+        showLiveFeedback("Lampu di Seberang", "Hanya bisa memilih anggota yang berada di sisi yang sama dengan Lampu.", true);
+        return;
+      }
+      if (selectedForCross.includes(id)) {
+        selectedForCross = selectedForCross.filter(x => x !== id);
+      } else {
+        if (selectedForCross.length >= 2) return;
+        selectedForCross.push(id);
+      }
+      hideLiveFeedback();
+      renderFamilyCrisisStage(document.getElementById('gameStage'));
+    }
+
+    function crossBridgeWithTorch() {
+      if (selectedForCross.length === 0 || isCrossingAnimating) return;
+
+      isCrossingAnimating = true;
+      const srcSide = lanternPosition;
+      const destSide = lanternPosition === 'left' ? 'right' : 'left';
+      const selectedObjs = familyMembers.filter(m => selectedForCross.includes(m.id));
+      const slowestTime = Math.max(...selectedObjs.map(m => m.time));
+
+      const animWalker = document.getElementById('animWalker');
+      if (animWalker) {
+        animWalker.innerHTML = `🔦 ${selectedObjs.map(m => m.icon).join('')}`;
+        animWalker.classList.remove('hidden');
+        animWalker.style.left = srcSide === 'left' ? '5%' : '75%';
+        setTimeout(() => { animWalker.style.left = destSide === 'right' ? '75%' : '5%'; }, 50);
+      }
+
+      soundMove();
+
+      setTimeout(() => {
+        selectedForCross.forEach(id => { familyPositions[id] = destSide; });
+        lanternPosition = destSide;
+        elapsedTime += slowestTime;
+        selectedForCross = [];
+        setStepCount(elapsedTime);
+        isCrossingAnimating = false;
+
+        renderFamilyCrisisStage(document.getElementById('gameStage'));
+
+        if (elapsedTime > 30) {
+          showDefeatModal(`Lampu Padam! Total waktu (${elapsedTime}s) melebihi batas 30 detik.`);
+          return;
+        }
+
+        if (familyMembers.every(m => familyPositions[m.id] === 'right')) {
+          triggerWin(elapsedTime, `Luar biasa! Seluruh keluarga berhasil menyeberang dalam ${elapsedTime} detik.`);
+        }
+      }, 1100);
+    }
+
+    // =========================================================================
+    // GAME 6: TIMBANGAN KOIN PALSU
+    // =========================================================================
+    let fakeCoinIndex = 4;
+    let leftPanCoins = [];
+    let rightPanCoins = [];
+    let scaleTilt = 0;
+
+    function initFakeScaleGame(container) {
+      fakeCoinIndex = Math.floor(Math.random() * 9) + 1;
+      leftPanCoins = []; rightPanCoins = []; scaleTilt = 0;
+      renderFakeScaleStage(container);
+    }
+
+    function renderFakeScaleStage(container) {
+      const poolCoins = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(c => !leftPanCoins.includes(c) && !rightPanCoins.includes(c));
+
+      container.innerHTML = `
+        <div class="flex flex-col items-center justify-between h-full py-2 gap-4 max-w-3xl mx-auto w-full">
+          <div class="text-xs text-slate-500 text-center">
+            Timbang koin untuk menemukan 1 koin palsu (LEBIH RINGAN) dalam maksimal 2 kali timbang!
+          </div>
+
+          <div class="w-full bg-slate-50 p-6 rounded-3xl border border-slate-200 flex flex-col items-center">
+            <div class="w-72 sm:w-96 h-3 bg-slate-700 rounded-full relative transition-transform duration-500 flex items-center justify-between px-6 shadow-sm" style="transform: rotate(${scaleTilt * 10}deg);">
+              <div class="absolute left-1/2 -top-3 w-6 h-6 bg-indigo-600 rounded-full transform -translate-x-1/2 border-2 border-white shadow"></div>
+
+              <div class="flex flex-col items-center -mb-28" style="transform: rotate(${-scaleTilt * 10}deg);">
+                <div class="w-0.5 h-12 bg-slate-400"></div>
+                <div onclick="leftPanCoins=[]; renderFakeScaleStage(document.getElementById('gameStage'))" class="min-w-[100px] min-h-[44px] bg-white border-2 border-indigo-200 rounded-2xl shadow p-1.5 flex items-center justify-center gap-1 flex-wrap cursor-pointer">
+                  ${leftPanCoins.length === 0 ? '<span class="text-[10px] text-slate-400">Piring Kiri</span>' : ''}
+                  ${leftPanCoins.map(c => `<span class="px-1.5 py-0.5 bg-indigo-100 text-indigo-800 rounded font-bold text-xs">#${c}</span>`).join('')}
+                </div>
+              </div>
+
+              <div class="flex flex-col items-center -mb-28" style="transform: rotate(${-scaleTilt * 10}deg);">
+                <div class="w-0.5 h-12 bg-slate-400"></div>
+                <div onclick="rightPanCoins=[]; renderFakeScaleStage(document.getElementById('gameStage'))" class="min-w-[100px] min-h-[44px] bg-white border-2 border-indigo-200 rounded-2xl shadow p-1.5 flex items-center justify-center gap-1 flex-wrap cursor-pointer">
+                  ${rightPanCoins.length === 0 ? '<span class="text-[10px] text-slate-400">Piring Kanan</span>' : ''}
+                  ${rightPanCoins.map(c => `<span class="px-1.5 py-0.5 bg-indigo-100 text-indigo-800 rounded font-bold text-xs">#${c}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+
+            <div class="w-6 h-20 bg-slate-400 mt-0 rounded-b"></div>
+            
+            <div class="mt-4 flex gap-2">
+              <button onclick="handleWeighAction()" class="px-4 py-2 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow">⚖️ Timbang</button>
+              <button onclick="leftPanCoins=[]; rightPanCoins=[]; scaleTilt=0; renderFakeScaleStage(document.getElementById('gameStage'))" class="px-3 py-2 bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl">Reset Timbangan</button>
+            </div>
+          </div>
+
+          <div class="w-full bg-white p-3 rounded-2xl border border-slate-200 flex flex-wrap gap-2 justify-center">
+            ${poolCoins.map(c => `
+              <div class="flex items-center gap-1 bg-amber-50 p-1 rounded-xl border border-amber-200 text-xs font-bold text-amber-900">
+                <span>🪙 ${c}</span>
+                <button onclick="leftPanCoins.push(${c}); renderFakeScaleStage(document.getElementById('gameStage'))" class="px-1 bg-white rounded border">Kiri</button>
+                <button onclick="rightPanCoins.push(${c}); renderFakeScaleStage(document.getElementById('gameStage'))" class="px-1 bg-white rounded border">Kanan</button>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="w-full flex items-center justify-between bg-emerald-50 p-3 rounded-2xl border border-emerald-200 text-xs">
+            <span class="font-bold text-emerald-900">Tebak Koin Palsu:</span>
+            <div class="flex gap-1">
+              ${[1,2,3,4,5,6,7,8,9].map(c => `<button onclick="guessFakeCoin(${c})" class="w-7 h-7 bg-white border rounded font-bold text-emerald-900">${c}</button>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleWeighAction() {
+      if (leftPanCoins.length === 0 || leftPanCoins.length !== rightPanCoins.length) {
+        showLiveFeedback("Perhatikan Jumlah", "Isi kedua piringan dengan jumlah koin yang sama!", true);
+        return;
+      }
+      incrementStep();
+      const leftHasFake = leftPanCoins.includes(fakeCoinIndex);
+      const rightHasFake = rightPanCoins.includes(fakeCoinIndex);
+
+      if (leftHasFake) scaleTilt = 1;
+      else if (rightHasFake) scaleTilt = -1;
+      else scaleTilt = 0;
+
+      renderFakeScaleStage(document.getElementById('gameStage'));
+    }
+
+    function guessFakeCoin(guessed) {
+      if (guessed === fakeCoinIndex) {
+        triggerWin(currentStepCount, `Tepat sekali! Koin #${fakeCoinIndex} adalah koin palsu yang lebih ringan.`);
+      } else {
+        showLiveFeedback("Tebakan Salah", `Koin #${guessed} adalah koin asli. Coba timbang lagi!`, true);
+      }
+    }
+
+    // =========================================================================
+    // GAME 7: SERIGALA, KAMBING, DAN KUBIS
+    // =========================================================================
+    let riverState = { farmer: 'left', boatSide: 'left', wolf: 'left', goat: 'left', cabbage: 'left' };
+    let isBoatRowing = false;
+
+    function initRiverCrossingGame(container) {
+      riverState = { farmer: 'left', boatSide: 'left', wolf: 'left', goat: 'left', cabbage: 'left' };
+      isBoatRowing = false;
+      renderRiverCrossingStage(container);
+    }
+
+    function renderRiverCrossingStage(container) {
+      // Pure icons only (no text character names displayed)
+      const icons = { wolf: '🐺', goat: '🐐', cabbage: '🥬' };
+      const leftItems = ['wolf', 'goat', 'cabbage'].filter(k => riverState[k] === 'left');
+      const rightItems = ['wolf', 'goat', 'cabbage'].filter(k => riverState[k] === 'right');
+      const boatItem = ['wolf', 'goat', 'cabbage'].find(k => riverState[k] === 'boat');
+
+      container.innerHTML = `
+        <div class="flex flex-col items-center justify-between h-full py-2 gap-4 max-w-4xl mx-auto w-full">
+          <div class="w-full grid grid-cols-1 md:grid-cols-3 min-h-[260px] rounded-3xl overflow-hidden border border-slate-200 shadow-inner bg-slate-50">
+            
+            <!-- Left Bank -->
+            <div class="river-scene p-4 flex flex-col justify-between border-b md:border-b-0 md:border-r border-sky-300/40">
+              <span class="text-xs font-bold text-white bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm self-start flex items-center gap-1.5">
+                <span>Tepi Kiri</span> ${riverState.farmer === 'left' ? '<span>👨‍🌾</span>' : ''}
+              </span>
+              <div class="flex items-center justify-center gap-3 my-6 flex-wrap">
+                ${leftItems.map(item => `
+                  <button onclick="loadRiverItem('${item}')" ${isBoatRowing ? 'disabled' : ''} class="w-14 h-14 bg-white/90 hover:bg-white active:scale-95 rounded-2xl border-2 border-white/60 text-3xl shadow-md hover:shadow-xl hover:scale-110 transition flex items-center justify-center">
+                    ${icons[item]}
+                  </button>
+                `).join('')}
+              </div>
+              <span class="text-[10px] text-sky-100 font-semibold text-center bg-black/20 py-0.5 px-2 rounded-full self-center">${leftItems.length} objek di tepi kiri</span>
+            </div>
+
+            <!-- River & Boat with Movement Animation -->
+            <div class="bg-sky-200/80 p-4 flex flex-col items-center justify-between relative overflow-hidden min-h-[180px]">
+              <div class="text-[10px] font-bold text-sky-800 tracking-wider uppercase bg-white/50 px-2.5 py-0.5 rounded-full">Sungai Deras</div>
+              
+              <!-- Animated Boat Position -->
+              <div id="riverBoatContainer" class="w-44 bg-amber-800 text-white rounded-2xl p-3 shadow-xl border-2 border-amber-950 text-center transition-all duration-700 ease-in-out my-auto" style="transform: translateX(${riverState.boatSide === 'left' ? '-30%' : '30%'});">
+                <div class="text-2xl flex items-center justify-center gap-2">
+                  <span>👨‍🌾</span>
+                  ${boatItem ? `<span class="bg-amber-900/60 p-1 rounded-xl">${icons[boatItem]}</span>` : '<span class="text-xs text-amber-200/60 font-semibold">(Kosong)</span>'}
+                </div>
+                ${boatItem ? `
+                  <button onclick="unloadRiverItem('${boatItem}')" ${isBoatRowing ? 'disabled' : ''} class="text-[10px] font-bold bg-amber-950/80 hover:bg-amber-950 px-2 py-0.5 rounded-lg mt-1.5 text-amber-200 hover:text-white transition inline-block">
+                    Turunkan
+                  </button>
+                ` : ''}
+              </div>
+
+              <button onclick="rowBoatWithAnimation()" ${isBoatRowing ? 'disabled' : ''} class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-50 text-white font-extrabold text-xs rounded-xl shadow-lg shadow-indigo-200 transition active:scale-95">
+                ${isBoatRowing ? '🛶 Mendayung...' : '🛶 Dayung Perahu'}
+              </button>
+            </div>
+
+            <!-- Right Bank -->
+            <div class="river-scene p-4 flex flex-col justify-between border-t md:border-t-0 md:border-l border-sky-300/40">
+              <span class="text-xs font-bold text-white bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm self-start flex items-center gap-1.5">
+                <span>Tepi Kanan</span> ${riverState.farmer === 'right' ? '<span>👨‍🌾</span>' : ''}
+              </span>
+              <div class="flex items-center justify-center gap-3 my-6 flex-wrap">
+                ${rightItems.map(item => `
+                  <button onclick="loadRiverItem('${item}')" ${isBoatRowing ? 'disabled' : ''} class="w-14 h-14 bg-white/90 hover:bg-white active:scale-95 rounded-2xl border-2 border-white/60 text-3xl shadow-md hover:shadow-xl hover:scale-110 transition flex items-center justify-center">
+                    ${icons[item]}
+                  </button>
+                `).join('')}
+              </div>
+              <span class="text-[10px] text-sky-100 font-semibold text-center bg-black/20 py-0.5 px-2 rounded-full self-center">${rightItems.length} objek di tepi kanan</span>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function loadRiverItem(itemKey) {
+      if (isBoatRowing) return;
+      if (riverState[itemKey] !== riverState.boatSide) {
+        showLiveFeedback("Perahu di Seberang", "Hanya bisa memuat objek di tepi sungai tempat perahu berada.", true);
+        return;
+      }
+      const existingBoatItem = ['wolf', 'goat', 'cabbage'].find(k => riverState[k] === 'boat');
+      if (existingBoatItem) {
+        showLiveFeedback("Perahu Penuh", "Perahu hanya muat Petani dan 1 objek!", true);
+        return;
+      }
+      riverState[itemKey] = 'boat';
+      soundMove();
+      hideLiveFeedback();
+      renderRiverCrossingStage(document.getElementById('gameStage'));
+    }
+
+    function unloadRiverItem(itemKey) {
+      if (isBoatRowing) return;
+      riverState[itemKey] = riverState.boatSide;
+      soundMove();
+      hideLiveFeedback();
+      renderRiverCrossingStage(document.getElementById('gameStage'));
+    }
+
+    function rowBoatWithAnimation() {
+      if (isBoatRowing) return;
+      isBoatRowing = true;
+      soundMove();
+
+      const destSide = riverState.boatSide === 'left' ? 'right' : 'left';
+      
+      // Animate boat translation visually first
+      const boatContainer = document.getElementById('riverBoatContainer');
+      if (boatContainer) {
+        boatContainer.style.transform = `translateX(${destSide === 'left' ? '-30%' : '30%'})`;
+      }
+
+      setTimeout(() => {
+        riverState.boatSide = destSide;
+        riverState.farmer = destSide;
+        incrementStep();
+
+        const boatItem = ['wolf', 'goat', 'cabbage'].find(k => riverState[k] === 'boat');
+        if (boatItem) riverState[boatItem] = destSide;
+
+        isBoatRowing = false;
+        renderRiverCrossingStage(document.getElementById('gameStage'));
+
+        // Check Hazards on abandoned side
+        const abandonedSide = destSide === 'left' ? 'right' : 'left';
+        const abandonedItems = ['wolf', 'goat', 'cabbage'].filter(k => riverState[k] === abandonedSide);
+
+        if (abandonedItems.includes('wolf') && abandonedItems.includes('goat')) {
+          showDefeatModal("Gagal! Serigala memakan Kambing karena ditinggalkan di tepi sungai tanpa Petani!");
+          return;
+        }
+        if (abandonedItems.includes('goat') && abandonedItems.includes('cabbage')) {
+          showDefeatModal("Gagal! Kambing memakan Kubis karena ditinggalkan di tepi sungai tanpa Petani!");
+          return;
+        }
+
+        const allRight = ['wolf', 'goat', 'cabbage'].every(k => riverState[k] === 'right') && riverState.farmer === 'right';
+        if (allRight) triggerWin(currentStepCount, "Hebat! Semua objek berhasil menyeberang dengan selamat!");
+      }, 750);
+    }
+
+    // =========================================================================
+    // GAME 8: KNIGHT'S TOUR (Catur 5x5)
+    // =========================================================================
+    const KNIGHT_BOARD_SIZE = 5;
+    let knightVisitedGrid = [];
+    let knightCurrentPos = null;
+    let knightMoveHistory = [];
+
+    function initKnightsTourGame(container) {
+      knightVisitedGrid = Array(KNIGHT_BOARD_SIZE).fill().map(() => Array(KNIGHT_BOARD_SIZE).fill(0));
+      knightCurrentPos = null; knightMoveHistory = [];
+      renderKnightsTourStage(container);
+    }
+
+    function renderKnightsTourStage(container) {
+      const validMoves = knightCurrentPos ? getValidKnightMoves(knightCurrentPos.r, knightCurrentPos.c) : [];
+
+      container.innerHTML = `
+        <div class="flex flex-col items-center justify-between h-full py-2 gap-4 max-w-md mx-auto w-full">
+          <div class="grid grid-cols-5 gap-1.5 p-3 bg-slate-800 rounded-2xl shadow-xl w-full aspect-square">
+            ${Array.from({ length: KNIGHT_BOARD_SIZE }).map((_, r) => {
+              return Array.from({ length: KNIGHT_BOARD_SIZE }).map((_, c) => {
+                const stepVal = knightVisitedGrid[r][c];
+                const isCurrent = knightCurrentPos && knightCurrentPos.r === r && knightCurrentPos.c === c;
+                const isValidNext = validMoves.some(m => m.r === r && m.c === c);
+
+                let cellBg = (r + c) % 2 === 0 ? 'bg-amber-50' : 'bg-amber-100';
+                if (stepVal > 0) cellBg = 'bg-indigo-600 text-white font-bold';
+                if (isCurrent) cellBg = 'bg-amber-500 text-white font-black ring-4 ring-amber-300';
+                if (isValidNext) cellBg = 'bg-emerald-400 text-emerald-950 font-bold animate-pulse cursor-pointer';
+
+                return `
+                  <button onclick="handleKnightCellClick(${r}, ${c})" ${!isValidNext && knightCurrentPos ? 'disabled' : ''} class="${cellBg} rounded-xl text-sm flex items-center justify-center">
+                    ${isCurrent ? '♞' : stepVal > 0 ? stepVal : ''}
+                  </button>
+                `;
+              }).join('');
+            }).join('')}
+          </div>
+
+          <div class="flex items-center justify-between w-full text-xs">
+            <span class="font-bold text-slate-700">Kemajuan: <span class="text-indigo-600 font-mono text-sm">${knightMoveHistory.length} / 25</span></span>
+            <button onclick="undoKnightMove()" ${knightMoveHistory.length <= 1 ? 'disabled' : ''} class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg font-semibold border">
+              ↩ Mundur (Backtrack)
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function getValidKnightMoves(r, c) {
+      const deltas = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]];
+      return deltas.map(([dr, dc]) => ({ r: r + dr, c: c + dc }))
+        .filter(m => m.r >= 0 && m.r < 5 && m.c >= 0 && m.c < 5 && knightVisitedGrid[m.r][m.c] === 0);
+    }
+
+    function handleKnightCellClick(r, c) {
+      if (!knightCurrentPos) {
+        knightVisitedGrid[r][c] = 1; knightCurrentPos = { r, c }; knightMoveHistory.push({ r, c });
+        incrementStep(); renderKnightsTourStage(document.getElementById('gameStage'));
+        return;
+      }
+      const validMoves = getValidKnightMoves(knightCurrentPos.r, knightCurrentPos.c);
+      if (validMoves.some(m => m.r === r && m.c === c)) {
+        const stepNum = knightMoveHistory.length + 1;
+        knightVisitedGrid[r][c] = stepNum; knightCurrentPos = { r, c }; knightMoveHistory.push({ r, c });
+        incrementStep(); renderKnightsTourStage(document.getElementById('gameStage'));
+
+        if (stepNum === 25) triggerWin(25);
+      }
+    }
+
+    function undoKnightMove() {
+      if (knightMoveHistory.length <= 1) return;
+      const last = knightMoveHistory.pop();
+      knightVisitedGrid[last.r][last.c] = 0;
+      knightCurrentPos = knightMoveHistory[knightMoveHistory.length - 1];
+      soundMove(); renderKnightsTourStage(document.getElementById('gameStage'));
+    }
+  </script>
+</body>
+</html>
