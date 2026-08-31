@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FlowLearn: Media Pembelajaran Flowchart Interaktif</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Plus Jakarta Sans"', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['"Fira Code"', 'monospace'],
+        },
+        colors: {
+          brand: { 50:'#f0fdfa',100:'#ccfbf1',200:'#99f6e4',300:'#5eead4',400:'#2dd4bf',500:'#14b8a6',600:'#0d9488',700:'#0f766e',800:'#115e59',900:'#134e4a' },
+          accent: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8' }
+        },
+        boxShadow: {
+          soft: '0 2px 10px -2px rgba(15,23,42,.08), 0 8px 24px -8px rgba(15,23,42,.10)',
+          softer: '0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04)',
+        },
+        keyframes: {
+          fadeIn: { from:{opacity:0,transform:'translateY(6px)'}, to:{opacity:1,transform:'translateY(0)'} },
+          popIn: { from:{opacity:0,transform:'scale(.92)'}, to:{opacity:1,transform:'scale(1)'} },
+        },
+        animation: { 'fade-in':'fadeIn .3s ease-out', 'pop-in':'popIn .22s cubic-bezier(.34,1.56,.64,1)' }
+      }
+    }
+  }
+</script>
+<style>
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: 'Inter', sans-serif; }
+  .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #99f6e4; border-radius: 99px; }
+  .node-active { outline:3px solid #14b8a6; outline-offset:3px; box-shadow:0 0 0 6px rgba(20,184,166,.18),0 8px 20px -6px rgba(20,184,166,.5); transform:translateY(-2px) scale(1.03); z-index:10; }
+  .tab-active { color:#0d9488 !important; background:#f0fdfa !important; border-color:#99f6e4 !important; }
+  .code-tab-active { color:#1d4ed8; border-bottom:2px solid #1d4ed8; }
+  .diamond { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+  .parallelogram { clip-path: polygon(18% 0%, 100% 0%, 82% 100%, 0% 100%); }
+  .view { animation: fadeIn .25s ease-out; }
+  .radio-card:has(:checked) { border-color:#0d9488; background:#f0fdfa; }
+  @media (prefers-reduced-motion: reduce) { * { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased font-body">
+
+<div id="app" class="h-screen flex flex-col">
+
+<!-- ============ HEADER & NAV ============ -->
+<header class="bg-white border-b border-slate-200 flex-shrink-0 z-40">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6">
+    <div class="flex items-center justify-between h-14">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-accent-500 flex items-center justify-center shadow-softer flex-shrink-0">
+          <i data-lucide="workflow" class="w-4 h-4 text-white"></i>
+        </div>
+        <div class="hidden sm:block leading-tight">
+          <p class="font-display font-bold text-slate-800 text-sm">FlowLearn</p>
+          <p class="text-[10px] text-slate-400">Media Pembelajaran Flowchart Interaktif</p>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-1 overflow-x-auto no-scrollbar" id="navTabs">
+        <button data-nav="katalog" class="nav-btn whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-500 border border-transparent hover:text-brand-600 hover:bg-brand-50 transition-colors">Katalog</button>
+        <button data-nav="builder" class="nav-btn whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-500 border border-transparent hover:text-brand-600 hover:bg-brand-50 transition-colors">Builder</button>
+        <button data-nav="simulator" class="nav-btn whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-500 border border-transparent hover:text-brand-600 hover:bg-brand-50 transition-colors">Simulator</button>
+        <button data-nav="translator" class="nav-btn whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-500 border border-transparent hover:text-brand-600 hover:bg-brand-50 transition-colors">Translator</button>
+        <button data-nav="kuis" class="nav-btn whitespace-nowrap px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-500 border border-transparent hover:text-brand-600 hover:bg-brand-50 transition-colors">Kuis</button>
+      </nav>
+
+      <div class="hidden md:flex flex-col items-end w-28 flex-shrink-0">
+        <div class="flex items-center justify-between w-full text-[10px] text-slate-400 mb-1">
+          <span>Progres</span><span id="progressLabel" class="font-semibold text-brand-600">0%</span>
+        </div>
+        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-brand-400 to-accent-500 rounded-full transition-all duration-500" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MAIN: single-viewport, tab-switched views ============ -->
+<main class="flex-1 overflow-hidden relative bg-slate-50">
+
+  <!-- ===== VIEW: KATALOG ===== -->
+  <section data-view="katalog" class="view h-full overflow-y-auto">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-5">
+      <div class="mb-4">
+        <h2 class="font-display text-lg sm:text-xl font-bold text-slate-800">Katalog Simbol Flowchart</h2>
+        <p class="text-slate-500 text-xs sm:text-sm mt-0.5">8 simbol standar ISO. Klik kartu untuk melihat contoh penggunaan &amp; aturan penulisan.</p>
+      </div>
+      <div id="symbolGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"></div>
+    </div>
+  </section>
+
+  <!-- ===== VIEW: BUILDER ===== -->
+  <section data-view="builder" class="view hidden h-full overflow-hidden">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-4 h-full flex flex-col">
+      <div class="mb-3 flex-shrink-0">
+        <h2 class="font-display text-lg sm:text-xl font-bold text-slate-800">Flowchart Builder &amp; Studi Kasus</h2>
+        <p class="text-slate-500 text-xs sm:text-sm mt-0.5">Susun flowchart-mu sendiri untuk studi kasus terpilih, lalu cek apakah sudah benar.</p>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-4 flex-1 min-h-0">
+        <div class="lg:col-span-1 flex flex-col gap-3 min-h-0 overflow-y-auto pr-0.5">
+          <div class="bg-white rounded-xl border border-slate-200 shadow-softer p-4 flex-shrink-0">
+            <label class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Studi Kasus</label>
+            <select id="caseSelect" class="mt-1.5 w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-400"></select>
+            <p id="caseDesc" class="text-[11px] text-slate-400 mt-2 leading-relaxed"></p>
+          </div>
+
+          <div class="bg-white rounded-xl border border-slate-200 shadow-softer p-4 flex-shrink-0">
+            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5"><i data-lucide="layout-template" class="w-3.5 h-3.5"></i> Cara Menyusun</p>
+            <p class="text-[11px] text-slate-400 leading-relaxed">Klik tombol <span class="font-semibold text-slate-500">+ simbol</span> di kanvas untuk menambah blok. Setiap blok punya formulir kecil untuk diisi (nama variabel, ekspresi, dsb). Klik <span class="font-semibold text-slate-500">Edit</span> pada blok untuk mengubahnya.</p>
+          </div>
+
+          <div class="bg-white rounded-xl border border-slate-200 shadow-softer p-4 flex-shrink-0 space-y-2">
+            <button id="btnCheckFlow" class="w-full inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl shadow-softer transition-colors">
+              <i data-lucide="check-check" class="w-4 h-4"></i> Cek Jawaban
+            </button>
+            <button id="btnClearFlow" class="w-full inline-flex items-center justify-center gap-2 bg-white hover:bg-red-50 text-red-400 text-xs font-semibold px-4 py-2 rounded-xl border border-dashed border-red-200 transition-colors">
+              <i data-lucide="eraser" class="w-3.5 h-3.5"></i> Kosongkan Kanvas
+            </button>
+          </div>
+
+          <div id="checkResultPanel" class="hidden bg-white rounded-xl border p-4 flex-shrink-0"></div>
+        </div>
+
+        <div class="lg:col-span-2 min-h-0 flex flex-col">
+          <div class="bg-white rounded-xl border border-slate-200 shadow-soft p-4 flex-1 min-h-0 flex flex-col">
+            <div class="flex items-center justify-between mb-3 flex-shrink-0">
+              <p class="font-display font-bold text-slate-700 text-sm flex items-center gap-2"><i data-lucide="pencil-ruler" class="w-4 h-4 text-brand-500"></i> Kanvas Flowchart-mu</p>
+              <span id="caseNodeCount" class="text-[10px] font-semibold text-slate-400 bg-slate-50 px-2 py-1 rounded-full"></span>
+            </div>
+            <div id="builderCanvas" class="flex-1 min-h-0 overflow-auto"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VIEW: SIMULATOR ===== -->
+  <section data-view="simulator" class="view hidden h-full overflow-hidden">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-4 h-full flex flex-col">
+      <div class="mb-3 flex-shrink-0">
+        <h2 class="font-display text-lg sm:text-xl font-bold text-slate-800">Simulator &amp; Monitor Variabel Real-Time</h2>
+        <p class="text-slate-500 text-xs sm:text-sm mt-0.5">Jalankan flowchart yang kamu susun di Builder. Nilai input diminta langsung saat simulasi berjalan.</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 mb-3 flex-shrink-0">
+        <button id="btnPlay" class="inline-flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl shadow-softer transition-colors"><i data-lucide="play" class="w-4 h-4"></i> Mulai</button>
+        <button id="btnPause" class="inline-flex items-center gap-1.5 bg-amber-100 hover:bg-amber-200 text-amber-700 text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl transition-colors" disabled><i data-lucide="pause" class="w-4 h-4"></i> Jeda</button>
+        <button id="btnStep" class="inline-flex items-center gap-1.5 bg-accent-100 hover:bg-accent-200 text-accent-700 text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl transition-colors"><i data-lucide="step-forward" class="w-4 h-4"></i> Langkah</button>
+        <button id="btnReset" class="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl transition-colors"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reset</button>
+        <span id="simStatus" class="ml-auto text-[11px] font-semibold text-slate-400 bg-white border border-slate-200 px-3 py-1.5 rounded-full">Siap dijalankan</span>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-4 flex-1 min-h-0">
+        <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 shadow-soft p-4 min-h-0 overflow-auto">
+          <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5"><i data-lucide="git-branch" class="w-3.5 h-3.5"></i> Diagram Flowchart-mu</p>
+          <div id="simDiagram"></div>
+        </div>
+        <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 shadow-soft p-4 min-h-0 flex flex-col">
+          <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5 flex-shrink-0"><i data-lucide="terminal" class="w-3.5 h-3.5"></i> Log Eksekusi</p>
+          <div id="execLog" class="flex-1 min-h-0 overflow-y-auto bg-slate-900 rounded-lg p-3 font-mono text-[11.5px] text-slate-200 space-y-1"></div>
+        </div>
+        <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 shadow-soft p-4 min-h-0 overflow-auto">
+          <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wide mb-2 flex items-center gap-1.5"><i data-lucide="eye" class="w-3.5 h-3.5"></i> Watch Window</p>
+          <div id="watchWindow" class="bg-slate-50 border border-slate-200 rounded-lg divide-y divide-slate-200 overflow-hidden"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VIEW: TRANSLATOR ===== -->
+  <section data-view="translator" class="view hidden h-full overflow-hidden">
+    <div class="max-w-5xl mx-auto px-3 sm:px-6 py-4 h-full flex flex-col">
+      <div class="mb-3 flex-shrink-0">
+        <h2 class="font-display text-lg sm:text-xl font-bold text-slate-800">Translator Pseudocode &amp; Kode C++</h2>
+        <p class="text-slate-500 text-xs sm:text-sm mt-0.5">Konversi otomatis dari flowchart yang kamu susun di Builder.</p>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 shadow-soft overflow-hidden flex-1 min-h-0 flex flex-col">
+        <div class="flex items-center justify-between border-b border-slate-200 px-3 sm:px-5 flex-shrink-0">
+          <div class="flex gap-1">
+            <button data-codetab="pseudo" class="code-tab px-3.5 py-3 text-xs sm:text-sm font-semibold text-slate-400 code-tab-active">Pseudocode</button>
+            <button data-codetab="cpp" class="code-tab px-3.5 py-3 text-xs sm:text-sm font-semibold text-slate-400">C++ Code</button>
+          </div>
+          <button id="btnCopyCode" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-brand-600 px-2.5 py-1.5 rounded-lg hover:bg-brand-50 transition-colors">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> Salin
+          </button>
+        </div>
+        <pre id="codeOutput" class="p-4 sm:p-6 text-[12.5px] font-mono text-slate-100 bg-slate-900 overflow-auto leading-relaxed flex-1"><code></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== VIEW: KUIS ===== -->
+  <section data-view="kuis" class="view hidden h-full overflow-y-auto">
+    <div class="max-w-2xl mx-auto px-3 sm:px-6 py-5">
+      <div class="mb-3">
+        <h2 class="font-display text-lg sm:text-xl font-bold text-slate-800">Mini Kuis Evaluasi</h2>
+        <p class="text-slate-500 text-xs sm:text-sm mt-0.5">5 soal pilihan ganda untuk menguji pemahamanmu.</p>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 shadow-soft p-5">
+        <div id="quizArea"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<!-- ============ MODAL: SYMBOL DETAIL ============ -->
+<div id="symbolModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div id="symbolModalOverlay" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-soft max-w-lg w-full p-6 animate-pop-in max-h-[85vh] overflow-y-auto">
+    <button id="closeSymbolModal" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+    <div id="symbolModalBody"></div>
+  </div>
+</div>
+
+<!-- ============ MODAL: BLOCK CONFIG (add / edit) ============ -->
+<div id="blockModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div id="blockModalOverlay" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-soft max-w-md w-full p-6 animate-pop-in max-h-[85vh] overflow-y-auto">
+    <button id="closeBlockModal" type="button" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+    <p id="blockModalTitle" class="font-display font-bold text-slate-800 mb-4 pr-8"></p>
+    <form id="blockModalForm" class="space-y-4">
+      <div id="fieldTerminator" class="hidden">
+        <label class="text-xs font-semibold text-slate-500">Jenis Terminator</label>
+        <div class="flex gap-2 mt-1.5">
+          <label class="radio-card flex-1 flex items-center justify-center gap-2 border border-slate-200 rounded-lg px-3 py-2 cursor-pointer transition-colors"><input type="radio" name="terminatorSubtype" value="mulai" class="accent-brand-600"><span class="text-sm font-medium">Mulai</span></label>
+          <label class="radio-card flex-1 flex items-center justify-center gap-2 border border-slate-200 rounded-lg px-3 py-2 cursor-pointer transition-colors"><input type="radio" name="terminatorSubtype" value="selesai" class="accent-brand-600"><span class="text-sm font-medium">Selesai</span></label>
+        </div>
+      </div>
+
+      <div id="fieldIoType" class="hidden">
+        <label class="text-xs font-semibold text-slate-500">Jenis Blok</label>
+        <div class="flex gap-2 mt-1.5">
+          <label class="radio-card flex-1 flex items-center justify-center gap-2 border border-slate-200 rounded-lg px-3 py-2 cursor-pointer transition-colors"><input type="radio" id="ioTypeInput" name="ioType" value="input" class="accent-brand-600"><span class="text-sm font-medium">Input</span></label>
+          <label class="radio-card flex-1 flex items-center justify-center gap-2 border border-slate-200 rounded-lg px-3 py-2 cursor-pointer transition-colors"><input type="radio" id="ioTypeOutput" name="ioType" value="output" class="accent-brand-600"><span class="text-sm font-medium">Output</span></label>
+        </div>
+      </div>
+      <div id="fieldIoVarName" class="hidden">
+        <label class="text-xs font-semibold text-slate-500">Nama Variabel yang Dibaca</label>
+        <input id="inputVarName" type="text" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" placeholder="contoh: s">
+      </div>
+      <div id="fieldIoTemplate" class="hidden">
+        <label class="text-xs font-semibold text-slate-500">Teks / Template Output</label>
+        <input id="inputTemplate" type="text" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" placeholder="contoh: Luas = {luas}">
+        <p class="text-[10px] text-slate-400 mt-1">Gunakan <span class="font-mono">{nama_variabel}</span> untuk menyisipkan nilai variabel.</p>
+        <p id="ioTemplateCheckNote" class="hidden text-[10px] text-amber-600 mt-1">⚠️ Untuk studi kasus ini, "Cek Jawaban" membandingkan teks output-nya — tulis semirip mungkin dengan konteks soal.</p>
+      </div>
+
+      <div id="fieldProcessVar" class="hidden">
+        <label class="text-xs font-semibold text-slate-500">Nama Variabel Hasil</label>
+        <input id="inputProcessVar" type="text" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" placeholder="contoh: luas">
+      </div>
+      <div id="fieldProcessExpr" class="hidden">
+        <label class="text-xs font-semibold text-slate-500">Ekspresi</label>
+        <input id="inputProcessExpr" type="text" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" placeholder="contoh: s * s">
+      </div>
+
+      <div id="fieldDecisionExpr" class="hidden">
+        <label class="text-xs font-semibold text-slate-500">Ekspresi Kondisi</label>
+        <input id="inputDecisionExpr" type="text" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400" placeholder="contoh: nilai >= 80">
+        <p class="text-[10px] text-slate-400 mt-1">Operator: == != &lt; &gt; &lt;= &gt;= &amp;&amp; ||</p>
+      </div>
+
+      <div id="fieldConnectorNote" class="hidden">
+        <p class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-3">Blok ini akan mengarahkan alur kembali ke Decision terdekat di atasnya — gunakan untuk membuat perulangan (loop).</p>
+      </div>
+
+      <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">Simpan Blok</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============ MODAL: DYNAMIC SIMULATION INPUT ============ -->
+<div id="inputModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-2xl shadow-soft max-w-sm w-full p-6 animate-pop-in">
+    <div class="w-11 h-11 rounded-xl bg-accent-100 flex items-center justify-center mb-4"><i data-lucide="keyboard" class="w-5 h-5 text-accent-600"></i></div>
+    <p class="font-display font-bold text-slate-800 mb-1">Input Diperlukan</p>
+    <p id="inputModalLabel" class="text-sm text-slate-500 mb-4">Masukkan nilai variabel</p>
+    <form id="inputModalForm">
+      <input id="inputModalField" type="number" step="any" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-400 mb-4" placeholder="0" autocomplete="off">
+      <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">Kirim Nilai</button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-800 text-white text-sm font-medium px-4 py-2.5 rounded-xl shadow-soft flex items-center gap-2">
+  <i data-lucide="check-circle-2" class="w-4 h-4 text-brand-400"></i> <span id="toastMsg">Berhasil!</span>
+</div>
+
+<script>
+/* =========================================================================
+   DATA: 8 SIMBOL FLOWCHART STANDAR ISO
+   ========================================================================= */
+const SYMBOLS = [
+  { id:'flowline', name:'Garis Alir (Flowline)', desc:'Menunjukkan arah aliran proses dari satu simbol ke simbol berikutnya.',
+    svg:`<svg viewBox="0 0 120 80" class="w-full h-full"><line x1="15" y1="40" x2="95" y2="40" stroke="#0d9488" stroke-width="3"/><polygon points="95,32 110,40 95,48" fill="#0d9488"/></svg>`,
+    example:'Setiap panah yang menghubungkan simbol "Mulai" ke "Input", lalu ke "Proses", hingga "Selesai" adalah flowline. Arah panah menentukan urutan eksekusi program.',
+    rules:'Selalu digambar dengan garis lurus atau siku (bukan diagonal bebas), dan wajib memiliki kepala panah yang menunjukkan arah aliran.' },
+  { id:'terminator', name:'Terminator (Mulai/Selesai)', desc:'Menandai titik awal dan akhir dari sebuah program atau algoritma.',
+    svg:`<svg viewBox="0 0 120 80" class="w-full h-full"><rect x="15" y="20" width="90" height="40" rx="20" fill="#f0fdfa" stroke="#0d9488" stroke-width="3"/></svg>`,
+    example:'Pada flowchart menghitung luas persegi, simbol ini dipakai dua kali: "Mulai" di paling atas dan "Selesai" di paling bawah.',
+    rules:'Hanya boleh ada satu terminator "Mulai" di awal. Terminator "Selesai" boleh lebih dari satu jika ada banyak jalur keluar.' },
+  { id:'process', name:'Proses', desc:'Merepresentasikan operasi aritmatika, komputasi, atau pemberian nilai (assignment).',
+    svg:`<svg viewBox="0 0 120 80" class="w-full h-full"><rect x="15" y="20" width="90" height="40" fill="#f0fdfa" stroke="#0d9488" stroke-width="3"/></svg>`,
+    example:'Perhitungan seperti "luas = panjang × lebar" digambarkan dengan simbol persegi panjang ini.',
+    rules:'Isi teks berupa instruksi ringkas, umumnya "variabel ← ekspresi". Idealnya satu kotak hanya berisi satu operasi utama.' },
+  { id:'decision', name:'Percabangan (Decision)', desc:'Titik pengambilan keputusan dengan dua kemungkinan keluaran: Ya atau Tidak.',
+    svg:`<svg viewBox="0 0 120 80" class="w-full h-full"><polygon points="60,10 110,40 60,70 10,40" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/></svg>`,
+    example:'Pada validasi kelulusan, belah ketupat berisi "nilai >= 80?" — jika ya berarti lulus, jika tidak berarti remedial.',
+    rules:'Pertanyaan di dalamnya harus berupa kondisi logika (boolean). Wajib punya tepat dua jalur keluar: "Ya" dan "Tidak".' },
+  { id:'io', name:'Masukan / Keluaran (Input/Output)', desc:'Merepresentasikan proses memasukkan data (input) atau menampilkan hasil (output).',
+    svg:`<svg viewBox="0 0 120 80" class="w-full h-full"><polygon points="35,20 115,20 90,60 10,60" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/></svg>`,
+    example:'Perintah "Baca N" saat pengguna mengetik angka, atau "Tampilkan hasil" saat program mencetak jawaban, digambarkan dengan jajar genjang ini.',
+    rules:'Dipakai baik untuk pembacaan data maupun penulisan hasil. Teks harus jelas menyebutkan nama variabel yang dibaca/ditampilkan.' },
+  { id:'subprogram', name:'Subprogram', desc:'Menandakan pemanggilan prosedur atau fungsi yang telah didefinisikan terpisah.',
+    svg:`<svg viewBox="0 0 120 80" class="w-full h-full"><rect x="15" y="20" width="90" height="40" fill="#f0fdfa" stroke="#0d9488" stroke-width="3"/><line x1="27" y1="20" x2="27" y2="60" stroke="#0d9488" stroke-width="3"/><line x1="93" y1="20" x2="93" y2="60" stroke="#0d9488" stroke-width="3"/></svg>`,
+    example:'Pemanggilan fungsi seperti "hitungFaktorial(n)" yang logikanya ada di flowchart terpisah, digambarkan dengan simbol ini.',
+    rules:'Dipakai untuk memecah flowchart besar menjadi modul kecil yang bisa dipanggil berulang. Nama subprogram harus merujuk flowchart detailnya.' },
+  { id:'onpage', name:'Penghubung Dalam Halaman (On-page Connector)', desc:'Menghubungkan alur flowchart yang terputus dalam satu halaman yang sama.',
+    svg:`<svg viewBox="0 0 120 80" class="w-full h-full"><circle cx="60" cy="40" r="22" fill="#f0fdfa" stroke="#0d9488" stroke-width="3"/><text x="60" y="46" font-size="18" text-anchor="middle" fill="#0d9488" font-family="monospace">A</text></svg>`,
+    example:'Pada flowchart deret 1 sampai N, konektor lingkaran menyambungkan kembali alur dari akhir badan perulangan ke simbol keputusan di atasnya.',
+    rules:'Kedua konektor berpasangan harus berada di halaman yang sama dan memiliki label identik.' },
+  { id:'offpage', name:'Penghubung Antarhalaman (Off-page Connector)', desc:'Menghubungkan alur flowchart yang bersambung ke halaman lain.',
+    svg:`<svg viewBox="0 0 120 80" class="w-full h-full"><polygon points="25,15 95,15 95,50 60,68 25,50" fill="#eff6ff" stroke="#2563eb" stroke-width="3"/></svg>`,
+    example:'Untuk flowchart yang sangat panjang, simbol segi lima ini menandai "lanjut ke halaman 2" di bagian bawah halaman pertama.',
+    rules:'Dipakai hanya ketika flowchart terlalu panjang untuk satu halaman. Label di halaman asal dan tujuan harus sama persis.' },
+];
+
+/* =========================================================================
+   DATA: KUIS
+   ========================================================================= */
+const QUIZ = [
+  { q:'Simbol apa yang digunakan untuk menandai titik "Mulai" dan "Selesai" pada sebuah flowchart?', opts:['Proses (persegi panjang)','Terminator (oval/stadium)','Decision (belah ketupat)','Konektor (lingkaran)'], correct:1, explain:'Terminator berbentuk oval/stadium digunakan khusus untuk menandai awal dan akhir alur program.' },
+  { q:'Simbol belah ketupat (diamond) pada flowchart digunakan untuk merepresentasikan apa?', opts:['Input data dari pengguna','Percabangan / pengambilan keputusan','Pemanggilan subprogram','Garis alir antar simbol'], correct:1, explain:'Belah ketupat selalu berisi kondisi logika dan memiliki dua jalur keluar: "Ya" dan "Tidak".' },
+  { q:'Pada studi kasus kelulusan siswa dengan KKM = 80, jika nilai siswa 80, apa hasilnya?', opts:['Remedial, karena harus lebih besar dari 80', 'Lulus, karena nilai >= 80 bernilai benar', 'Program akan error', 'Tidak dapat ditentukan'], correct:1, explain:'Kondisi "nilai >= 80" akan bernilai benar untuk nilai 80, sehingga cabang "Ya" (Lulus) yang dijalankan.' },
+  { q:'Simbol jajar genjang (parallelogram) pada flowchart paling tepat digunakan untuk apa?', opts:['Proses aritmatika','Percabangan majemuk','Input / Output data','Penghubung antarhalaman'], correct:2, explain:'Jajar genjang adalah simbol standar untuk operasi input (membaca data) maupun output (menampilkan hasil).' },
+  { q:'Pada studi kasus "Deret Menarik 1 sampai N", kapan perulangan (loop) akan berhenti?', opts:['Ketika i sama dengan 0 saja','Ketika i lebih besar dari N','Ketika total mencapai nilai negatif','Loop tidak pernah berhenti'], correct:1, explain:'Selama kondisi "i <= N" bernilai benar, loop terus berjalan. Begitu i > N, loop berhenti dan hasil dijumlahkan ditampilkan.' },
+];
+
+/* =========================================================================
+   BLOCK SCHEMA & PALETTE
+   ========================================================================= */
+const PALETTE = [
+  { type:'terminator', label:'Terminator', icon:'circle' },
+  { type:'io', label:'Input/Output', icon:'log-in' },
+  { type:'process', label:'Proses', icon:'square' },
+  { type:'decision', label:'Decision', icon:'diamond' },
+  { type:'connector', label:'Connector', icon:'corner-up-left' },
+];
+const TYPE_LABEL_BASE = { terminator:'Terminator', io:'Input/Output', process:'Proses', decision:'Decision', connector:'Connector' };
+function typeKey(b){ if (b.type==='io') return 'io-'+b.ioType; if (b.type==='terminator') return 'terminator-'+b.subtype; return b.type; }
+function typeLabel(b){
+  if (b.type==='io') return b.ioType==='input' ? 'Input' : 'Output';
+  if (b.type==='terminator') return b.subtype==='mulai' ? 'Terminator (Mulai)' : 'Terminator (Selesai)';
+  return TYPE_LABEL_BASE[b.type];
+}
+function blockDisplayText(b){
+  switch(b.type){
+    case 'terminator': return b.subtype==='mulai' ? 'Mulai' : 'Selesai';
+    case 'process': return `${b.varName} ← ${b.expr}`;
+    case 'io': return b.ioType==='input' ? `Baca ${b.varName}` : `Tampilkan: ${b.template}`;
+    case 'decision': return `${b.expr} ?`;
+    case 'connector': return 'Kembali ke Decision';
+    default: return '';
+  }
+}
+
+/* =========================================================================
+   DATA: 4 STUDI KASUS TERPERIKSA + 1 CUSTOM (answer trees, hand-authored)
+   ========================================================================= */
+let __uid_answer = 0;
+function A(type, extra){ const b = Object.assign({ __uid:'a'+(++__uid_answer), type }, extra||{}); if (type==='decision') { b.yes = b.yes||[]; b.no = b.no||[]; } return b; }
+
+const CASES = {
+  luas: {
+    name:'Menghitung Luas Persegi', tag:'Dasar Aritmatika', checkable:true,
+    desc:'Alur linear: baca sisi, hitung luas persegi, tampilkan hasil.',
+    testInputs: [[4], [7], [2.5]],
+    answerTree: [
+      A('terminator', { subtype:'mulai' }),
+      A('io', { ioType:'input', varName:'s' }),
+      A('process', { varName:'luas', expr:'s*s' }),
+      A('io', { ioType:'output', template:'Luas persegi = {luas}' }),
+      A('terminator', { subtype:'selesai' }),
+    ],
+  },
+  kubus: {
+    name:'Menghitung Volume Kubus', tag:'Dasar Aritmatika', checkable:true,
+    desc:'Alur linear: baca sisi, hitung volume kubus, tampilkan hasil.',
+    testInputs: [[3], [5], [1.5]],
+    answerTree: [
+      A('terminator', { subtype:'mulai' }),
+      A('io', { ioType:'input', varName:'s' }),
+      A('process', { varName:'volume', expr:'s*s*s' }),
+      A('io', { ioType:'output', template:'Volume kubus = {volume}' }),
+      A('terminator', { subtype:'selesai' }),
+    ],
+  },
+  kelulusan: {
+    name:'Menentukan Kelulusan Siswa (KKM = 80)', tag:'Percabangan (Decision)', checkable:true,
+    desc:'Satu percabangan: jika nilai >= 80 maka Lulus, jika tidak maka Remedial.',
+    testInputs: [[85], [60], [80]],
+    answerTree: [
+      A('terminator', { subtype:'mulai' }),
+      A('io', { ioType:'input', varName:'nilai' }),
+      A('decision', { expr:'nilai >= 80',
+        yes:[ A('io', { ioType:'output', template:'Siswa dinyatakan LULUS' }) ],
+        no:[ A('io', { ioType:'output', template:'Siswa dinyatakan REMEDIAL' }) ] }),
+      A('terminator', { subtype:'selesai' }),
+    ],
+  },
+  deret: {
+    name:'Deret Menarik 1 sampai N', tag:'Perulangan / Looping', checkable:true,
+    desc:'Menjumlahkan deret 1 + 2 + ... + N menggunakan decision berulang dengan on-page connector.',
+    testInputs: [[5], [1], [3]],
+    answerTree: [
+      A('terminator', { subtype:'mulai' }),
+      A('io', { ioType:'input', varName:'N' }),
+      A('process', { varName:'total', expr:'0' }),
+      A('process', { varName:'i', expr:'1' }),
+      A('decision', { expr:'i <= N',
+        yes:[ A('process', { varName:'total', expr:'total + i' }), A('process', { varName:'i', expr:'i + 1' }), A('connector', {}) ],
+        no:[ A('io', { ioType:'output', template:'Jumlah deret 1 sampai N = {total}' }) ] }),
+      A('terminator', { subtype:'selesai' }),
+    ],
+  },
+  custom: {
+    name:'Custom (Flowchart Bebas)', tag:'Mode Bebas', checkable:false,
+    desc:'Buat flowchart apa pun sesuai keinginanmu. Tidak ada pemeriksaan otomatis di mode ini — langsung jalankan di Simulator untuk mengujinya.',
+    testInputs: [], answerTree: [],
+  },
+};
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+let currentCaseId = 'luas';
+let currentView = 'katalog';
+let visitedSections = new Set();
+let uidCounter = 0;
+function newUid(){ return 'b' + (++uidCounter); }
+let userFlows = { luas:{root:[]}, kubus:{root:[]}, kelulusan:{root:[]}, deret:{root:[]}, custom:{root:[]} };
+
+let sim = { tree:[], vars:{}, address:null, playing:false, finished:false, steps:0 };
+let quizState = { index:0, score:0, answered:false, done:false };
+let activeCodeTab = 'pseudo';
+let currentModalCtx = null;
+
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* =========================================================================
+   EXPRESSION EVALUATOR (safe, recursive-descent — no eval/Function)
+   ========================================================================= */
+function tokenizeExpr(str){
+  const re = /\s*(\d+\.\d+|\d+|[A-Za-z_][A-Za-z0-9_]*|==|!=|<=|>=|&&|\|\||[+\-*/%()<>!])\s*/g;
+  const tokens = []; let m; let lastIndex = 0;
+  while ((m = re.exec(str))) {
+    if (m.index !== lastIndex) throw new Error(`Karakter tidak dikenali dekat "${str.slice(lastIndex, m.index)}"`);
+    tokens.push(m[1]);
+    lastIndex = re.lastIndex;
+  }
+  if (lastIndex !== str.length) throw new Error(`Karakter tidak dikenali dekat "${str.slice(lastIndex)}"`);
+  return tokens;
+}
+function evalExpr(str, vars){
+  const tokens = tokenizeExpr(String(str||'').trim());
+  let pos = 0;
+  const peek = () => tokens[pos];
+  const next = () => tokens[pos++];
+  function parsePrimary(){
+    const t = peek();
+    if (t === undefined) throw new Error('Ekspresi tidak lengkap');
+    if (t === '(') { next(); const v = parseOr(); if (peek() !== ')') throw new Error('Tanda kurung tidak seimbang'); next(); return v; }
+    if (t === '-') { next(); return -parseUnary(); }
+    if (t === '!') { next(); return !parseUnary(); }
+    if (/^\d/.test(t)) { next(); return parseFloat(t); }
+    if (/^[A-Za-z_]/.test(t)) { next(); if (!(t in vars)) throw new Error(`Variabel "${t}" belum memiliki nilai`); return vars[t]; }
+    throw new Error(`Token tidak dikenali: "${t}"`);
+  }
+  function parseUnary(){ return parsePrimary(); }
+  function parseTerm(){
+    let v = parseUnary();
+    while (peek()==='*'||peek()==='/'||peek()==='%') { const op=next(); const r=parseUnary(); if(op==='*') v=v*r; else if(op==='/') v=v/r; else v=v%r; }
+    return v;
+  }
+  function parseAdditive(){
+    let v = parseTerm();
+    while (peek()==='+'||peek()==='-') { const op=next(); const r=parseTerm(); v = op==='+' ? v+r : v-r; }
+    return v;
+  }
+  function parseComparison(){
+    let v = parseAdditive();
+    while (['<','>','<=','>='].includes(peek())) { const op=next(); const r=parseAdditive();
+      if (op==='<') v=v<r; else if (op==='>') v=v>r; else if (op==='<=') v=v<=r; else v=v>=r; }
+    return v;
+  }
+  function parseEquality(){
+    let v = parseComparison();
+    while (peek()==='=='||peek()==='!=') { const op=next(); const r=parseComparison(); v = op==='==' ? v===r : v!==r; }
+    return v;
+  }
+  function parseAnd(){ let v=parseEquality(); while(peek()==='&&'){ next(); const r=parseEquality(); v = v && r; } return v; }
+  function parseOr(){ let v=parseAnd(); while(peek()==='||'){ next(); const r=parseAnd(); v = v || r; } return v; }
+  const result = parseOr();
+  if (pos < tokens.length) throw new Error(`Token tak terduga: "${tokens[pos]}"`);
+  return result;
+}
+function renderTemplate(tpl, vars){
+  return String(tpl||'').replace(/\{([A-Za-z_][A-Za-z0-9_]*)\}/g, (m,name) => (name in vars) ? vars[name] : `?${name}?`);
+}
+
+/* =========================================================================
+   GENERIC TREE INTERPRETER — address-based traversal
+   address = [idx] | [idx,'yes'/'no', idx, 'yes'/'no', ...]
+   ========================================================================= */
+function getNodeAt(tree, address){
+  let list = tree, node = null;
+  for (let i=0;i<address.length;i++){
+    const seg = address[i];
+    if (typeof seg === 'number') node = list[seg];
+    else list = node[seg];
+  }
+  return node;
+}
+function getNextAddress(tree, address){
+  const idx = address[address.length-1];
+  if (address.length === 1) {
+    return (idx+1 < tree.length) ? [idx+1] : null;
+  }
+  const parentAddr = address.slice(0,-2);
+  const key = address[address.length-2];
+  const parentNode = getNodeAt(tree, parentAddr);
+  const list = parentNode[key];
+  if (idx+1 < list.length) return parentAddr.concat([key, idx+1]);
+  return getNextAddress(tree, parentAddr);
+}
+function branchStart(tree, address, key){
+  const node = getNodeAt(tree, address);
+  const list = node[key];
+  if (list && list.length) return address.concat([key, 0]);
+  return getNextAddress(tree, address);
+}
+function connectorTarget(address){ return address.slice(0,-2); }
+
+function countTree(list){
+  return (list||[]).reduce((n,b) => n + 1 + (b.type==='decision' ? countTree(b.yes) + countTree(b.no) : 0), 0);
+}
+
+// Synchronous run for answer-checking (no UI, predetermined input queue)
+function runSync(tree, inputs){
+  const vars = {}; const outputs = []; const queue = [...inputs];
+  let address = tree.length ? [0] : null; let steps = 0;
+  try {
+    while (address) {
+      steps++; if (steps > 3000) throw new Error('kemungkinan perulangan tak berhenti (melebihi batas langkah)');
+      const node = getNodeAt(tree, address);
+      if (!node) break;
+      if (node.type === 'terminator') { if (node.subtype==='selesai') { address=null; break; } address = getNextAddress(tree, address); continue; }
+      if (node.type === 'io' && node.ioType === 'input') { vars[node.varName] = queue.length ? queue.shift() : 0; address = getNextAddress(tree, address); continue; }
+      if (node.type === 'io') { outputs.push(renderTemplate(node.template, vars)); address = getNextAddress(tree, address); continue; }
+      if (node.type === 'process') { vars[node.varName] = evalExpr(node.expr, vars); address = getNextAddress(tree, address); continue; }
+      if (node.type === 'decision') { const r = !!evalExpr(node.expr, vars); address = branchStart(tree, address, r?'yes':'no'); continue; }
+      if (node.type === 'connector') { address = connectorTarget(address); continue; }
+      address = getNextAddress(tree, address);
+    }
+  } catch(e) { return { vars, outputs, error: e.message }; }
+  return { vars, outputs, error: null };
+}
+
+/* =========================================================================
+   CHECKER — structure (type & order) + input/output behaviour
+   ========================================================================= */
+function diffTree(userList, ansList, label, issues){
+  let matched = 0;
+  const len = Math.max((userList||[]).length, (ansList||[]).length);
+  for (let i=0;i<len;i++){
+    const u = (userList||[])[i], a = (ansList||[])[i];
+    if (!a && u) { issues.push(`${label}Langkah ke-${i+1}: blok "${typeLabel(u)}" tidak diperlukan di sini.`); continue; }
+    if (!u && a) { issues.push(`${label}Langkah ke-${i+1}: belum ada blok. Seharusnya "${typeLabel(a)}".`); continue; }
+    if (!u && !a) continue;
+    if (typeKey(u) === typeKey(a)) {
+      matched += 1;
+      if (a.type === 'decision') {
+        const y = diffTree(u.yes, a.yes, `${label}[Cabang YA langkah ${i+1}] `, issues);
+        const n = diffTree(u.no, a.no, `${label}[Cabang TIDAK langkah ${i+1}] `, issues);
+        matched += y + n;
+      }
+    } else {
+      issues.push(`${label}Langkah ke-${i+1}: seharusnya "${typeLabel(a)}", kamu memasang "${typeLabel(u)}".`);
+    }
+  }
+  return matched;
+}
+
+function checkCurrentFlow(){
+  const c = CASES[currentCaseId];
+  if (!c.checkable) return;
+  const ansTree = c.answerTree;
+  const userTree = userFlows[currentCaseId].root;
+  const issues = [];
+  const total = countTree(ansTree);
+  const matched = total ? diffTree(userTree, ansTree, '', issues) : 0;
+  const structScore = total ? matched/total : 0;
+
+  function normalizeOutput(s){ return String(s).trim().replace(/\s+/g,' ').toLowerCase(); }
+  let runtimeMatch = 0;
+  c.testInputs.forEach(inputs => {
+    const ref = runSync(ansTree, inputs);
+    const usr = runSync(userTree, inputs);
+    const refOut = ref.outputs.join(' | ');
+    if (usr.error) { issues.push(`Uji input [${inputs.join(', ')}]: terjadi error saat menjalankan flowchart-mu — ${usr.error}.`); return; }
+    const usrOut = usr.outputs.join(' | ');
+    if (normalizeOutput(refOut) === normalizeOutput(usrOut)) runtimeMatch++;
+    else issues.push(`Uji input [${inputs.join(', ')}]: keluaran seharusnya "${refOut}" namun flowchart-mu menghasilkan "${usrOut || '(tidak ada output)'}".`);
+  });
+  const runtimeScore = c.testInputs.length ? runtimeMatch/c.testInputs.length : 0;
+  const score = Math.round((structScore*0.5 + runtimeScore*0.5) * 100);
+
+  const panel = document.getElementById('checkResultPanel');
+  panel.classList.remove('hidden');
+  let verdict, colorClasses, icon;
+  if (score >= 90) { verdict = 'Flowchart kamu sudah benar — struktur maupun hasil eksekusinya sesuai!'; colorClasses = 'border-brand-200 bg-brand-50'; icon = 'circle-check-big'; }
+  else if (score >= 60) { verdict = 'Sudah cukup baik, ada beberapa yang perlu diperbaiki.'; colorClasses = 'border-amber-200 bg-amber-50'; icon = 'triangle-alert'; }
+  else { verdict = 'Perlu diperbaiki — cek kembali jenis/urutan blok dan hasil outputnya.'; colorClasses = 'border-red-200 bg-red-50'; icon = 'circle-x'; }
+  panel.className = `bg-white rounded-xl border p-4 flex-shrink-0 ${colorClasses}`;
+  panel.innerHTML = `
+    <div class="flex items-center gap-2 mb-1.5">
+      <i data-lucide="${icon}" class="w-5 h-5 text-slate-700"></i>
+      <p class="font-display font-bold text-slate-800 text-sm">${score}% Kecocokan</p>
+    </div>
+    <p class="text-xs text-slate-600 mb-2">${verdict}</p>
+    ${issues.length ? `<ul class="space-y-1 max-h-44 overflow-y-auto pr-1">${issues.slice(0,8).map(t=>`<li class="text-[11px] text-slate-500 leading-snug flex gap-1.5"><span class="text-slate-300">•</span>${escapeHtml(t)}</li>`).join('')}</ul>` : `<p class="text-[11px] text-brand-600 font-medium">Tidak ada catatan — struktur &amp; hasil flowchart-mu tepat!</p>`}
+    <p class="text-[10px] text-slate-400 mt-2 italic">*Pemeriksaan berdasarkan jenis &amp; urutan blok, serta input/output yang dihasilkan saat dijalankan.</p>
+  `;
+  lucide.createIcons();
+  markSectionVisited('builder-checked');
+}
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+  renderSymbolCatalog();
+  populateCaseSelect();
+  loadCase(currentCaseId);
+  renderQuiz();
+  setupNav();
+  setupBuilderEvents();
+  setupBlockModal();
+  setupSimulatorControls();
+  setupCodeTabs();
+  setupModals();
+  switchView('katalog');
+});
+
+/* =========================================================================
+   VIEW SWITCHING
+   ========================================================================= */
+function setupNav(){
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.nav)));
+}
+function switchView(name){
+  currentView = name;
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.dataset.view !== name));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('tab-active', b.dataset.nav === name));
+  if (name === 'simulator') resetSimulation();
+  if (name === 'translator') renderTranslator();
+  markSectionVisited(name);
+  lucide.createIcons();
+}
+function markSectionVisited(key){
+  if (visitedSections.has(key)) return;
+  visitedSections.add(key);
+  updateProgress();
+}
+function updateProgress(){
+  const total = 7;
+  const pct = Math.min(100, Math.round((visitedSections.size/total)*100));
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = pct + '%';
+}
+
+/* =========================================================================
+   MODULE 1: SYMBOL CATALOG
+   ========================================================================= */
+function renderSymbolCatalog(){
+  const grid = document.getElementById('symbolGrid');
+  grid.innerHTML = SYMBOLS.map((s,i) => `
+    <button data-symbol="${s.id}" class="symbol-card group text-left bg-white rounded-xl border border-slate-200 hover:border-brand-300 shadow-softer hover:shadow-soft p-3 transition-all hover:-translate-y-0.5">
+      <div class="h-16 flex items-center justify-center bg-slate-50 rounded-lg mb-2 group-hover:bg-brand-50/60 transition-colors">${s.svg}</div>
+      <p class="text-[10px] font-bold text-slate-400">0${i+1}</p>
+      <p class="font-display font-semibold text-xs sm:text-sm text-slate-800 leading-snug">${s.name}</p>
+      <p class="text-[10px] text-slate-400 mt-0.5 leading-snug line-clamp-2">${s.desc}</p>
+    </button>`).join('');
+  grid.querySelectorAll('.symbol-card').forEach(card => card.addEventListener('click', () => openSymbolModal(card.dataset.symbol)));
+}
+function openSymbolModal(id){
+  const s = SYMBOLS.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('symbolModalBody').innerHTML = `
+    <div class="h-24 flex items-center justify-center bg-slate-50 rounded-xl mb-4">${s.svg}</div>
+    <p class="font-display font-bold text-lg text-slate-800 mb-1">${s.name}</p>
+    <p class="text-sm text-slate-500 mb-4">${s.desc}</p>
+    <div class="space-y-3">
+      <div class="bg-brand-50 border border-brand-100 rounded-xl p-3.5">
+        <p class="text-xs font-bold text-brand-700 uppercase tracking-wide mb-1 flex items-center gap-1.5"><i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Contoh Dunia Nyata</p>
+        <p class="text-sm text-slate-600 leading-relaxed">${s.example}</p>
+      </div>
+      <div class="bg-accent-50 border border-accent-100 rounded-xl p-3.5">
+        <p class="text-xs font-bold text-accent-700 uppercase tracking-wide mb-1 flex items-center gap-1.5"><i data-lucide="scroll-text" class="w-3.5 h-3.5"></i> Aturan Penulisan</p>
+        <p class="text-sm text-slate-600 leading-relaxed">${s.rules}</p>
+      </div>
+    </div>`;
+  document.getElementById('symbolModal').classList.remove('hidden');
+  lucide.createIcons();
+}
+function setupModals(){
+  const closeSym = () => document.getElementById('symbolModal').classList.add('hidden');
+  document.getElementById('closeSymbolModal').addEventListener('click', closeSym);
+  document.getElementById('symbolModalOverlay').addEventListener('click', closeSym);
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    closeSym();
+    document.getElementById('blockModal').classList.add('hidden');
+  });
+}
+
+/* =========================================================================
+   MODULE 2: BUILDER
+   ========================================================================= */
+function populateCaseSelect(){
+  const sel = document.getElementById('caseSelect');
+  sel.innerHTML = Object.entries(CASES).map(([id,c]) => `<option value="${id}">${c.name}</option>`).join('');
+  sel.addEventListener('change', e => loadCase(e.target.value));
+}
+function loadCase(id){
+  currentCaseId = id;
+  const c = CASES[id];
+  document.getElementById('caseSelect').value = id;
+  const noteHtml = c.checkable
+    ? `<p class="text-[10px] text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-2 py-1.5 mt-2 leading-relaxed"><span class="font-bold">Catatan:</span> teks pada blok Output akan dibandingkan dengan jawaban referensi (tidak peka huruf besar/kecil &amp; spasi berlebih), jadi tulis kalimatnya semirip mungkin dengan konteks soal.</p>`
+    : '';
+  document.getElementById('caseDesc').innerHTML = `<span class="inline-block bg-slate-100 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1.5">${c.tag}</span><br>${c.desc}${noteHtml}`;
+  document.getElementById('btnCheckFlow').classList.toggle('hidden', !c.checkable);
+  document.getElementById('checkResultPanel').classList.add('hidden');
+  renderBuilderCanvas();
+  resetSimulation();
+  renderTranslator();
+}
+
+function resolveList(path){
+  let cur = userFlows[currentCaseId].root;
+  for (let i=0;i<path.length;i+=2) cur = cur[path[i]][path[i+1]];
+  return cur;
+}
+
+function shapeNodeUser(type, innerHtml, uid){
+  const base = `data-uid="${uid}" data-node`;
+  switch(type){
+    case 'terminator': return `<div ${base} class="px-4 py-2 rounded-full bg-slate-800 text-white text-[11px] font-mono shadow-softer transition-all duration-300 min-w-[110px] text-center">${innerHtml}</div>`;
+    case 'process': return `<div ${base} class="px-3.5 py-2 bg-white border-2 border-brand-300 rounded-lg text-[11px] font-mono text-slate-700 shadow-softer transition-all duration-300 min-w-[150px] text-center">${innerHtml}</div>`;
+    case 'io': return `<div ${base} class="parallelogram px-6 py-2 bg-accent-50 border-2 border-accent-300 text-accent-700 text-[11px] font-mono shadow-softer transition-all duration-300 min-w-[160px] text-center">${innerHtml}</div>`;
+    case 'decision': return `<div ${base} class="diamond w-28 h-28 bg-blue-50 border-2 border-accent-400 flex items-center justify-center text-center px-3 text-[10px] font-mono text-accent-700 shadow-softer transition-all duration-300">${innerHtml}</div>`;
+    case 'connector': return `<div ${base} class="w-16 h-16 rounded-full bg-white border-2 border-brand-300 flex items-center justify-center text-center px-1 text-[9px] font-mono text-brand-700 shadow-softer transition-all duration-300">${innerHtml}</div>`;
+    default: return `<div ${base} class="px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] font-mono">${innerHtml}</div>`;
+  }
+}
+function arrowDownSmall(){ return `<div class="flex justify-center py-0.5"><i data-lucide="arrow-down" class="w-3.5 h-3.5 text-slate-300"></i></div>`; }
+
+function renderAddToolbar(listPath){
+  const pathAttr = encodeURIComponent(JSON.stringify(listPath));
+  return `<div class="flex flex-wrap gap-1 justify-center mt-1 mb-2">
+    ${PALETTE.map(p => `<button data-add-path="${pathAttr}" data-add-type="${p.type}" class="add-block-btn inline-flex items-center gap-1 text-[9px] font-semibold bg-white border border-dashed border-slate-300 hover:border-brand-400 hover:text-brand-600 text-slate-400 px-1.5 py-1 rounded-md transition-colors"><i data-lucide="${p.icon}" class="w-2.5 h-2.5"></i>${p.label}</button>`).join('')}
+  </div>`;
+}
+function renderUserList(list, listPath, readonly){
+  let html = `<div class="flex flex-col items-center">`;
+  (list||[]).forEach((b,i) => { html += renderUserNode(b, listPath, i, readonly); html += arrowDownSmall(); });
+  if (!readonly) html += renderAddToolbar(listPath);
+  else if (!list || !list.length) html += `<p class="text-[10px] text-slate-300 italic py-2">(kosong)</p>`;
+  html += `</div>`;
+  return html;
+}
+function renderUserNode(b, listPath, idx, readonly){
+  const pathAttr = encodeURIComponent(JSON.stringify(listPath));
+  const shapeHtml = shapeNodeUser(b.type, escapeHtml(blockDisplayText(b)), b.__uid);
+  let inner = `<div class="flex flex-col items-center">${shapeHtml}`;
+  if (!readonly) {
+    inner += `<div class="flex gap-2 mt-1">
+      <button data-edit-path="${pathAttr}" data-edit-idx="${idx}" class="edit-block-btn text-[9px] text-accent-500 hover:text-accent-700 flex items-center gap-0.5"><i data-lucide="pencil" class="w-2.5 h-2.5"></i>Edit</button>
+      <button data-del-path="${pathAttr}" data-del-idx="${idx}" class="del-block-btn text-[9px] text-red-400 hover:text-red-600 flex items-center gap-0.5"><i data-lucide="trash-2" class="w-2.5 h-2.5"></i>Hapus</button>
+    </div>`;
+  }
+  inner += `</div>`;
+  if (b.type === 'decision') {
+    inner += arrowDownSmall();
+    inner += `<div class="flex flex-col sm:flex-row gap-4 items-start justify-center border-t border-dashed border-slate-200 pt-2 w-full">
+      <div class="flex-1 flex flex-col items-center min-w-[140px]">
+        <span class="text-[9px] font-bold text-brand-500 bg-brand-50 px-2 py-0.5 rounded-full mb-1">YA</span>
+        ${renderUserList(b.yes, listPath.concat([idx,'yes']), readonly)}
+      </div>
+      <div class="flex-1 flex flex-col items-center min-w-[140px]">
+        <span class="text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full mb-1">TIDAK</span>
+        ${renderUserList(b.no, listPath.concat([idx,'no']), readonly)}
+      </div>
+    </div>`;
+  }
+  return inner;
+}
+function renderBuilderCanvas(){
+  const canvas = document.getElementById('builderCanvas');
+  canvas.innerHTML = renderUserList(userFlows[currentCaseId].root, [], false);
+  document.getElementById('caseNodeCount').textContent = `Blokmu: ${countTree(userFlows[currentCaseId].root)}`;
+  lucide.createIcons();
+}
+
+function setupBuilderEvents(){
+  const canvas = document.getElementById('builderCanvas');
+  canvas.addEventListener('click', e => {
+    const addBtn = e.target.closest('.add-block-btn');
+    if (addBtn) { openBlockModal(addBtn.dataset.addType, JSON.parse(decodeURIComponent(addBtn.dataset.addPath)), null, null); return; }
+    const editBtn = e.target.closest('.edit-block-btn');
+    if (editBtn) {
+      const path = JSON.parse(decodeURIComponent(editBtn.dataset.editPath));
+      const idx = parseInt(editBtn.dataset.editIdx);
+      const block = resolveList(path)[idx];
+      openBlockModal(block.type, path, idx, block);
+      return;
+    }
+    const delBtn = e.target.closest('.del-block-btn');
+    if (delBtn) {
+      const path = JSON.parse(decodeURIComponent(delBtn.dataset.delPath));
+      const idx = parseInt(delBtn.dataset.delIdx);
+      resolveList(path).splice(idx,1);
+      renderBuilderCanvas();
+      return;
+    }
+  });
+
+  document.getElementById('btnCheckFlow').addEventListener('click', checkCurrentFlow);
+  document.getElementById('btnClearFlow').addEventListener('click', () => {
+    userFlows[currentCaseId] = { root: [] };
+    renderBuilderCanvas();
+    document.getElementById('checkResultPanel').classList.add('hidden');
+    resetSimulation();
+    showToast('Kanvas dikosongkan.');
+  });
+}
+
+/* =========================================================================
+   BLOCK CONFIG MODAL (add / edit)
+   ========================================================================= */
+function showFieldsForType(type){
+  ['fieldTerminator','fieldIoType','fieldIoVarName','fieldIoTemplate','fieldProcessVar','fieldProcessExpr','fieldDecisionExpr','fieldConnectorNote']
+    .forEach(id => document.getElementById(id).classList.add('hidden'));
+  if (type === 'terminator') document.getElementById('fieldTerminator').classList.remove('hidden');
+  if (type === 'io') { document.getElementById('fieldIoType').classList.remove('hidden'); }
+  if (type === 'process') { document.getElementById('fieldProcessVar').classList.remove('hidden'); document.getElementById('fieldProcessExpr').classList.remove('hidden'); }
+  if (type === 'decision') document.getElementById('fieldDecisionExpr').classList.remove('hidden');
+  if (type === 'connector') document.getElementById('fieldConnectorNote').classList.remove('hidden');
+}
+function toggleIoSubfields(ioType){
+  document.getElementById('fieldIoVarName').classList.toggle('hidden', ioType !== 'input');
+  document.getElementById('fieldIoTemplate').classList.toggle('hidden', ioType !== 'output');
+  document.getElementById('ioTemplateCheckNote').classList.toggle('hidden', !(ioType === 'output' && CASES[currentCaseId].checkable));
+}
+function openBlockModal(type, path, idx, existing){
+  currentModalCtx = { type, path, idx, uid: existing ? existing.__uid : null };
+  document.getElementById('blockModalTitle').textContent = (existing ? 'Edit Blok: ' : 'Tambah Blok: ') + TYPE_LABEL_BASE[type];
+  showFieldsForType(type);
+  if (type === 'terminator') {
+    const val = existing ? existing.subtype : 'mulai';
+    const radio = document.querySelector(`input[name="terminatorSubtype"][value="${val}"]`);
+    if (radio) radio.checked = true;
+  }
+  if (type === 'io') {
+    const val = existing ? existing.ioType : 'input';
+    const radio = document.querySelector(`input[name="ioType"][value="${val}"]`);
+    if (radio) radio.checked = true;
+    document.getElementById('inputVarName').value = (existing && existing.ioType === 'input') ? existing.varName : '';
+    document.getElementById('inputTemplate').value = (existing && existing.ioType === 'output') ? existing.template : '';
+    toggleIoSubfields(val);
+  }
+  if (type === 'process') {
+    document.getElementById('inputProcessVar').value = existing ? existing.varName : '';
+    document.getElementById('inputProcessExpr').value = existing ? existing.expr : '';
+  }
+  if (type === 'decision') {
+    document.getElementById('inputDecisionExpr').value = existing ? existing.expr : '';
+  }
+  document.getElementById('blockModal').classList.remove('hidden');
+}
+function setupBlockModal(){
+  const modal = document.getElementById('blockModal');
+  const close = () => modal.classList.add('hidden');
+  document.getElementById('closeBlockModal').addEventListener('click', close);
+  document.getElementById('blockModalOverlay').addEventListener('click', close);
+  document.querySelectorAll('input[name="ioType"]').forEach(r => r.addEventListener('change', () => toggleIoSubfields(r.value)));
+
+  document.getElementById('blockModalForm').addEventListener('submit', e => {
+    e.preventDefault();
+    if (!currentModalCtx) return;
+    const { type, path, idx, uid } = currentModalCtx;
+    const fd = {};
+    if (type === 'terminator') fd.subtype = (document.querySelector('input[name="terminatorSubtype"]:checked')||{}).value || 'mulai';
+    if (type === 'io') {
+      fd.ioType = (document.querySelector('input[name="ioType"]:checked')||{}).value || 'input';
+      if (fd.ioType === 'input') fd.varName = document.getElementById('inputVarName').value.trim() || 'x';
+      else fd.template = document.getElementById('inputTemplate').value.trim() || 'Hasil = {x}';
+    }
+    if (type === 'process') {
+      fd.varName = document.getElementById('inputProcessVar').value.trim() || 'x';
+      fd.expr = document.getElementById('inputProcessExpr').value.trim() || '0';
+    }
+    if (type === 'decision') fd.expr = document.getElementById('inputDecisionExpr').value.trim() || 'true';
+
+    if (uid) {
+      const list = resolveList(path);
+      const block = list[idx];
+      Object.assign(block, fd);
+      // clean stale opposite-ioType fields
+      if (type === 'io') { if (fd.ioType === 'input') delete block.template; else delete block.varName; }
+    } else {
+      const block = { __uid:newUid(), type, ...fd };
+      if (type === 'decision') { block.yes = []; block.no = []; }
+      resolveList(path).push(block);
+    }
+    modal.classList.add('hidden');
+    renderBuilderCanvas();
+  });
+}
+
+/* =========================================================================
+   MODULE 3: SIMULATOR
+   ========================================================================= */
+function renderSimDiagram(){
+  const el = document.getElementById('simDiagram');
+  const list = userFlows[currentCaseId].root;
+  if (!list.length) {
+    el.innerHTML = `<div class="text-center py-8">
+      <i data-lucide="layout-template" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+      <p class="text-xs text-slate-400 mb-3">Flowchart untuk studi kasus ini belum dibuat.</p>
+      <button id="goBuilderBtn" class="text-xs font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg">Buka Builder →</button>
+    </div>`;
+    lucide.createIcons();
+    document.getElementById('goBuilderBtn')?.addEventListener('click', () => switchView('builder'));
+    return;
+  }
+  el.innerHTML = renderUserList(list, [], true);
+  lucide.createIcons();
+}
+function setupSimulatorControls(){
+  document.getElementById('btnPlay').addEventListener('click', playSimulation);
+  document.getElementById('btnPause').addEventListener('click', pauseSimulation);
+  document.getElementById('btnStep').addEventListener('click', () => stepOnce(true));
+  document.getElementById('btnReset').addEventListener('click', resetSimulation);
+}
+function resetSimulation(){
+  const tree = userFlows[currentCaseId].root;
+  sim = { tree, vars:{}, address: tree.length ? [0] : null, playing:false, finished:false, steps:0 };
+  clearHighlights();
+  updateWatchWindow();
+  const log = document.getElementById('execLog');
+  if (log) log.innerHTML = `<p class="text-slate-500">// Log eksekusi akan muncul di sini...</p>`;
+  const statusEl = document.getElementById('simStatus');
+  if (statusEl) statusEl.textContent = tree.length ? 'Siap dijalankan' : 'Flowchart belum dibuat';
+  document.getElementById('btnPlay').disabled = false;
+  document.getElementById('btnPause').disabled = true;
+  if (currentView === 'simulator') renderSimDiagram();
+}
+function clearHighlights(){ document.querySelectorAll('[data-uid]').forEach(n => n.classList.remove('node-active')); }
+function highlightUid(uid){ clearHighlights(); document.querySelectorAll(`[data-uid="${uid}"]`).forEach(n => n.classList.add('node-active')); }
+function updateWatchWindow(){
+  const ww = document.getElementById('watchWindow');
+  if (!ww) return;
+  const keys = Object.keys(sim.vars);
+  if (!keys.length) { ww.innerHTML = `<p class="text-[11px] text-slate-300 italic p-3">Belum ada variabel...</p>`; return; }
+  ww.innerHTML = keys.map(k => `
+    <div class="flex items-center justify-between px-3 py-2 text-xs sm:text-sm">
+      <span class="font-mono text-slate-500">${escapeHtml(k)}</span>
+      <span class="font-mono font-semibold text-brand-600">${sim.vars[k]}</span>
+    </div>`).join('');
+}
+function logLine(text, kind){
+  const el = document.getElementById('execLog');
+  if (!el) return;
+  const colors = { info:'text-slate-300', ok:'text-brand-400', warn:'text-amber-400', out:'text-accent-300' };
+  if (el.querySelector('p.text-slate-500')) el.innerHTML = '';
+  const line = document.createElement('div');
+  line.className = colors[kind] || 'text-slate-300';
+  line.textContent = `▸ ${text}`;
+  el.appendChild(line);
+  el.scrollTop = el.scrollHeight;
+}
+function promptInput(label){
+  return new Promise(resolve => {
+    const modal = document.getElementById('inputModal');
+    const field = document.getElementById('inputModalField');
+    const form = document.getElementById('inputModalForm');
+    document.getElementById('inputModalLabel').textContent = label;
+    field.value = '';
+    modal.classList.remove('hidden');
+    setTimeout(() => field.focus(), 50);
+    function onSubmit(e){
+      e.preventDefault();
+      const val = parseFloat(field.value);
+      form.removeEventListener('submit', onSubmit);
+      modal.classList.add('hidden');
+      resolve(Number.isNaN(val) ? 0 : val);
+    }
+    form.addEventListener('submit', onSubmit);
+  });
+}
+async function stepOnce(manual){
+  if (!sim.tree.length) return false;
+  if (sim.finished || sim.address === null || sim.address === undefined) { finishSimulation(); return false; }
+  if (++sim.steps > 3000) { logLine('Batas langkah eksekusi tercapai (kemungkinan perulangan tak berhenti).', 'warn'); finishSimulation(); return false; }
+  const node = getNodeAt(sim.tree, sim.address);
+  if (!node) { finishSimulation(); return false; }
+  highlightUid(node.__uid);
+
+  if (node.type === 'terminator') {
+    logLine(node.subtype === 'mulai' ? 'Mulai eksekusi program' : 'Program selesai dieksekusi', 'info');
+    if (node.subtype === 'selesai') { sim.address = null; finishSimulation(); return false; }
+    sim.address = getNextAddress(sim.tree, sim.address);
+  } else if (node.type === 'io' && node.ioType === 'input') {
+    document.getElementById('simStatus').textContent = 'Menunggu input pengguna...';
+    const val = await promptInput(`Masukkan nilai untuk variabel "${node.varName}"`);
+    sim.vars[node.varName] = val;
+    logLine(`Input ${node.varName} = ${val}`, 'ok');
+    updateWatchWindow();
+    sim.address = getNextAddress(sim.tree, sim.address);
+  } else if (node.type === 'io') {
+    let text; try { text = renderTemplate(node.template, sim.vars); } catch(e){ text = `[Error: ${e.message}]`; }
+    logLine(`Output → ${text}`, 'out');
+    sim.address = getNextAddress(sim.tree, sim.address);
+  } else if (node.type === 'process') {
+    try { sim.vars[node.varName] = evalExpr(node.expr, sim.vars); logLine(`${node.varName} ← ${node.expr}  ⇒  ${sim.vars[node.varName]}`, 'ok'); updateWatchWindow(); }
+    catch(e){ logLine(`Error pada proses: ${e.message}`, 'warn'); sim.address = null; finishSimulation(); return false; }
+    sim.address = getNextAddress(sim.tree, sim.address);
+  } else if (node.type === 'decision') {
+    let result;
+    try { result = !!evalExpr(node.expr, sim.vars); }
+    catch(e){ logLine(`Error pada kondisi: ${e.message}`, 'warn'); sim.address = null; finishSimulation(); return false; }
+    logLine(`Cek kondisi "${node.expr}" → ${result ? 'YA' : 'TIDAK'}`, 'warn');
+    sim.address = branchStart(sim.tree, sim.address, result ? 'yes' : 'no');
+  } else if (node.type === 'connector') {
+    sim.address = connectorTarget(sim.address);
+  }
+
+  if (sim.address === null || sim.address === undefined) { finishSimulation(); return false; }
+  const statusEl = document.getElementById('simStatus');
+  statusEl.textContent = manual ? 'Mode langkah manual' : (sim.playing ? 'Simulasi berjalan...' : statusEl.textContent);
+  return true;
+}
+async function playSimulation(){
+  if (sim.finished || !sim.tree.length) return;
+  sim.playing = true;
+  document.getElementById('btnPlay').disabled = true;
+  document.getElementById('btnPause').disabled = false;
+  document.getElementById('simStatus').textContent = 'Simulasi berjalan...';
+  while (sim.playing && !sim.finished) {
+    const cont = await stepOnce(false);
+    if (!cont || !sim.playing) break;
+    await new Promise(r => setTimeout(r, 900));
+  }
+}
+function pauseSimulation(){
+  sim.playing = false;
+  document.getElementById('btnPlay').disabled = false;
+  document.getElementById('btnPause').disabled = true;
+  if (!sim.finished) document.getElementById('simStatus').textContent = 'Dijeda';
+}
+function finishSimulation(){
+  sim.finished = true;
+  sim.playing = false;
+  document.getElementById('btnPlay').disabled = true;
+  document.getElementById('btnPause').disabled = true;
+  document.getElementById('simStatus').textContent = '✓ Simulasi selesai';
+  logLine('— Selesai —', 'info');
+  markSectionVisited('simulator-done');
+}
+
+/* =========================================================================
+   MODULE 4: TRANSLATOR — generated dynamically from the user's own tree
+   ========================================================================= */
+function templateToPseudo(tpl){
+  const parts = String(tpl||'').split(/(\{[A-Za-z_][A-Za-z0-9_]*\})/g).filter(s => s !== '');
+  return parts.map(p => { const m = p.match(/^\{([A-Za-z_][A-Za-z0-9_]*)\}$/); return m ? m[1] : `"${p}"`; }).join(', ');
+}
+function templateToCpp(tpl){
+  const parts = String(tpl||'').split(/(\{[A-Za-z_][A-Za-z0-9_]*\})/g).filter(s => s !== '');
+  return parts.map(p => { const m = p.match(/^\{([A-Za-z_][A-Za-z0-9_]*)\}$/); return m ? m[1] : `"${p.replace(/"/g,'\\"')}"`; }).join(' << ');
+}
+function collectVars(list, set){
+  (list||[]).forEach(b => {
+    if (b.type === 'process') set.add(b.varName);
+    if (b.type === 'io' && b.ioType === 'input') set.add(b.varName);
+    if (b.type === 'decision') { collectVars(b.yes, set); collectVars(b.no, set); }
+  });
+}
+function genList(list, indent, lang){
+  const pad = lang === 'cpp' ? '    '.repeat(indent) : '  '.repeat(indent);
+  const lines = [];
+  for (let i=0;i<(list||[]).length;i++){
+    const b = list[i];
+    if (b.type === 'terminator') { if (lang === 'pseudo') lines.push(pad + (b.subtype === 'mulai' ? 'MULAI' : 'SELESAI')); continue; }
+    if (b.type === 'io' && b.ioType === 'input') { lines.push(pad + (lang === 'pseudo' ? `BACA ${b.varName}` : `cin >> ${b.varName};`)); continue; }
+    if (b.type === 'io') { lines.push(pad + (lang === 'pseudo' ? `TULIS ${templateToPseudo(b.template)}` : `cout << ${templateToCpp(b.template)} << endl;`)); continue; }
+    if (b.type === 'process') { lines.push(pad + (lang === 'pseudo' ? `${b.varName} <- ${b.expr}` : `${b.varName} = ${b.expr};`)); continue; }
+    if (b.type === 'connector') { continue; }
+    if (b.type === 'decision') {
+      const yesHasConn = b.yes.length && b.yes[b.yes.length-1].type === 'connector';
+      const noHasConn = !yesHasConn && b.no.length && b.no[b.no.length-1].type === 'connector';
+      if (yesHasConn) {
+        const body = b.yes.slice(0,-1);
+        lines.push(pad + (lang === 'pseudo' ? `SELAMA ${b.expr}` : `while (${b.expr}) {`));
+        lines.push(...genList(body, indent+1, lang));
+        lines.push(pad + (lang === 'pseudo' ? 'AKHIR SELAMA' : '}'));
+        lines.push(...genList(b.no, indent, lang));
+      } else if (noHasConn) {
+        const body = b.no.slice(0,-1);
+        const neg = lang === 'pseudo' ? `TIDAK (${b.expr})` : `!(${b.expr})`;
+        lines.push(pad + (lang === 'pseudo' ? `SELAMA ${neg}` : `while (${neg}) {`));
+        lines.push(...genList(body, indent+1, lang));
+        lines.push(pad + (lang === 'pseudo' ? 'AKHIR SELAMA' : '}'));
+        lines.push(...genList(b.yes, indent, lang));
+      } else {
+        lines.push(pad + (lang === 'pseudo' ? `JIKA ${b.expr} MAKA` : `if (${b.expr}) {`));
+        lines.push(...genList(b.yes, indent+1, lang));
+        if ((b.no||[]).length) { lines.push(pad + (lang === 'pseudo' ? 'SELAIN ITU' : '} else {')); lines.push(...genList(b.no, indent+1, lang)); }
+        lines.push(pad + (lang === 'pseudo' ? 'AKHIR JIKA' : '}'));
+      }
+      continue;
+    }
+  }
+  return lines;
+}
+function genPseudocode(tree){ return genList(tree, 0, 'pseudo').join('\n'); }
+function genCpp(tree){
+  const varsSet = new Set(); collectVars(tree, varsSet);
+  const lines = ['#include <iostream>', 'using namespace std;', '', 'int main() {'];
+  if (varsSet.size) lines.push('    double ' + [...varsSet].join(', ') + ';');
+  lines.push(...genList(tree, 1, 'cpp'));
+  lines.push('    return 0;', '}');
+  return lines.join('\n');
+}
+function setupCodeTabs(){
+  document.querySelectorAll('.code-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCodeTab = btn.dataset.codetab;
+      document.querySelectorAll('.code-tab').forEach(b => b.classList.remove('code-tab-active'));
+      btn.classList.add('code-tab-active');
+      renderTranslator();
+    });
+  });
+  document.getElementById('btnCopyCode').addEventListener('click', () => {
+    const code = document.querySelector('#codeOutput code').textContent;
+    navigator.clipboard?.writeText(code).then(() => showToast('Kode berhasil disalin ke clipboard!')).catch(() => showToast('Gagal menyalin kode.'));
+  });
+}
+function renderTranslator(){
+  const tree = userFlows[currentCaseId].root;
+  const codeEl = document.querySelector('#codeOutput code');
+  if (!tree.length) { codeEl.textContent = '// Susun flowchart terlebih dahulu di tab Builder untuk melihat kodenya di sini.'; return; }
+  codeEl.textContent = activeCodeTab === 'pseudo' ? genPseudocode(tree) : genCpp(tree);
+}
+
+/* =========================================================================
+   MODULE 5: QUIZ
+   ========================================================================= */
+function renderQuiz(){
+  const area = document.getElementById('quizArea');
+  if (quizState.done) {
+    const pct = Math.round((quizState.score/QUIZ.length)*100);
+    area.innerHTML = `
+      <div class="text-center py-4">
+        <div class="w-16 h-16 mx-auto rounded-full bg-brand-50 flex items-center justify-center mb-3">
+          <i data-lucide="${pct>=60?'trophy':'refresh-ccw'}" class="w-7 h-7 text-brand-600"></i>
+        </div>
+        <p class="font-display font-bold text-xl text-slate-800">${quizState.score} / ${QUIZ.length}</p>
+        <p class="text-slate-500 text-sm mt-1">${pct>=80?'Luar biasa! Pemahamanmu tentang flowchart sudah sangat baik.':pct>=60?'Bagus! Sedikit lagi untuk menguasai konsep flowchart.':'Yuk pelajari lagi Katalog Simbol dan Studi Kasus, lalu coba lagi.'}</p>
+        <button id="quizRetry" class="mt-4 inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Ulangi Kuis</button>
+      </div>`;
+    lucide.createIcons();
+    document.getElementById('quizRetry').addEventListener('click', () => { quizState = { index:0, score:0, answered:false, done:false }; renderQuiz(); });
+    markSectionVisited('kuis-done');
+    return;
+  }
+  const item = QUIZ[quizState.index];
+  area.innerHTML = `
+    <div class="flex items-center justify-between mb-3">
+      <span class="text-[11px] font-bold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">Soal ${quizState.index+1} / ${QUIZ.length}</span>
+      <span class="text-[11px] font-semibold text-slate-400">Skor: ${quizState.score}</span>
+    </div>
+    <p class="font-display font-semibold text-slate-800 text-sm sm:text-base mb-4">${item.q}</p>
+    <div id="quizOptions" class="space-y-2"></div>
+    <div id="quizFeedback" class="hidden mt-3 rounded-xl p-3.5 text-xs sm:text-sm"></div>
+    <button id="quizNext" class="hidden mt-4 inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl transition-colors">${quizState.index===QUIZ.length-1?'Lihat Skor Akhir':'Soal Berikutnya'} <i data-lucide="arrow-right" class="w-4 h-4"></i></button>`;
+  const opts = document.getElementById('quizOptions');
+  opts.innerHTML = item.opts.map((o,i) => `
+    <button data-opt="${i}" class="quiz-opt w-full text-left text-xs sm:text-sm font-medium px-3.5 py-2.5 rounded-xl border border-slate-200 hover:border-brand-300 hover:bg-brand-50 transition-colors flex items-center gap-2.5">
+      <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-[10px] font-bold text-slate-400 flex-shrink-0">${String.fromCharCode(65+i)}</span>
+      <span>${o}</span></button>`).join('');
+  opts.querySelectorAll('.quiz-opt').forEach(btn => btn.addEventListener('click', () => selectQuizAnswer(parseInt(btn.dataset.opt))));
+  lucide.createIcons();
+}
+function selectQuizAnswer(idx){
+  if (quizState.answered) return;
+  quizState.answered = true;
+  const item = QUIZ[quizState.index];
+  const correct = idx === item.correct;
+  if (correct) quizState.score++;
+  document.querySelectorAll('.quiz-opt').forEach((btn,i) => {
+    btn.classList.remove('hover:border-brand-300','hover:bg-brand-50');
+    btn.disabled = true;
+    if (i === item.correct) btn.classList.add('border-brand-400','bg-brand-50');
+    else if (i === idx) btn.classList.add('border-red-300','bg-red-50');
+  });
+  const fb = document.getElementById('quizFeedback');
+  fb.classList.remove('hidden');
+  fb.className = `mt-3 rounded-xl p-3.5 text-xs sm:text-sm ${correct?'bg-brand-50 text-brand-700 border border-brand-200':'bg-red-50 text-red-600 border border-red-200'}`;
+  fb.innerHTML = `<span class="font-bold">${correct?'✓ Benar!':'✕ Kurang tepat.'}</span> ${item.explain}`;
+  document.getElementById('quizNext').classList.remove('hidden');
+  document.getElementById('quizNext').addEventListener('click', () => {
+    if (quizState.index < QUIZ.length-1) { quizState.index++; renderQuiz(); }
+    else { quizState.done = true; renderQuiz(); }
+  }, { once:true });
+}
+
+/* =========================================================================
+   TOAST
+   ========================================================================= */
+let toastTimer = null;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 2800);
+}
+</script>
+</body>
+</html>
