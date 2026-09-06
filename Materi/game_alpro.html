@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ Quest — Media Pembelajaran Algoritma</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-code {
+      font-family: 'JetBrains+Mono', monospace;
+    }
+    .grid-cell-dot {
+      animation: pulse-scale 1.8s infinite ease-in-out;
+    }
+    .trail-dot {
+      animation: fade-trail 0.35s ease-out;
+    }
+    @keyframes pulse-scale {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+    }
+    @keyframes fade-trail {
+      from { transform: scale(0.2); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-900">
+
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 py-3 flex items-center justify-between shadow-sm">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('welcome')">
+      <div class="w-9 h-9 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-bold shadow-md shadow-indigo-100 text-base">
+        C++
+      </div>
+      <div>
+        <h1 class="font-bold text-slate-900 text-base leading-none">C++ Quest</h1>
+        <span class="text-xs text-slate-500">Algoritma & Control Flow</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 sm:gap-3">
+      <div id="header-level-badge" class="hidden sm:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600">
+        <span id="nav-chapter-title">Chapter 1 — Sequence</span>
+        <span class="text-slate-300">|</span>
+        <span id="nav-level-title" class="text-indigo-600 font-bold">Level 1 / 48</span>
+      </div>
+      <!-- Concept Card Button -->
+      <button onclick="openChapterConceptModal()" title="Konsep & Teori Bab Ini" class="flex items-center gap-1 px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-xs font-semibold transition active:scale-95">
+        <i data-lucide="book-open" class="w-3.5 h-3.5 text-amber-600"></i>
+        <span class="hidden md:inline">Konsep Bab</span>
+      </button>
+      <!-- Sound Mute Toggle -->
+      <button id="btn-sound-toggle" onclick="toggleAudioMute()" title="Nyalakan/Matikan Suara" class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs transition">
+        <i id="icon-sound" data-lucide="volume-2" class="w-4 h-4"></i>
+      </button>
+      <!-- Restart Level Button -->
+      <button onclick="resetCurrentLevel()" title="Restart Level Ini (Shortcut: R)" class="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-semibold transition active:scale-95">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+        <span class="hidden sm:inline">Restart</span>
+      </button>
+      <button onclick="switchView('level_select')" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700 transition">
+        Daftar Level (48)
+      </button>
+      <button onclick="resetAllProgress()" title="Reset Semua Progress" class="p-1.5 text-slate-400 hover:text-rose-600 transition rounded-lg">
+        <i data-lucide="trash-2" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+
+    <!-- VIEW 1: WELCOME SCREEN -->
+    <section id="view-welcome" class="bg-white border border-slate-200 rounded-2xl p-8 sm:p-12 shadow-sm text-center max-w-2xl mx-auto my-auto transition-all">
+      <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+        <i data-lucide="code" class="w-8 h-8"></i>
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-3">
+        Belajar Membaca Algoritma C++
+      </h2>
+      <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+        Kamu adalah komputer. Baca kode C++, pahami alurnya, dan telusuri instruksinya langkah demi langkah dengan mengontrol pergerakan dot pada grid.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button id="btn-start-adventure" onclick="startGame()" class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-200 transition flex items-center justify-center gap-2 active:scale-95">
+          <i data-lucide="play" class="w-4 h-4 fill-white"></i> Mulai Petualangan
+        </button>
+        <button onclick="switchView('level_select')" class="w-full sm:w-auto px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition flex items-center justify-center gap-2">
+          <i data-lucide="trophy" class="w-4 h-4 text-slate-500"></i> Pilih Level
+        </button>
+      </div>
+
+      <div class="mt-12 pt-6 border-t border-slate-100 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-slate-500 font-medium">
+        <span>⚡ 48 Level Progresif</span>
+        <span>🧩 6 Bab Pembelajaran</span>
+        <span>💾 Simpan Otomatis (localStorage)</span>
+      </div>
+    </section>
+
+    <!-- VIEW 2: LEVEL SELECTOR -->
+    <section id="view-level-select" class="hidden bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+      <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+        <div>
+          <h3 class="text-xl font-bold text-slate-900">Pilih Level</h3>
+          <p class="text-xs text-slate-500">6 Bab terstruktur: Sequence, Conditional, Loop, Array 1D, Array 2D, dan Function.</p>
+        </div>
+        <button onclick="switchView('game')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-semibold text-slate-700">
+          Kembali ke Game
+        </button>
+      </div>
+      <div id="levels-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto pr-1">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- VIEW 3: GAMEPLAY SCREEN -->
+    <!-- Mobile Order: 1. Code Editor, 2. Visual Grid, 3. Controls (1 Row) -->
+    <!-- Desktop Layout: Left: Grid & Controls | Right: Code Editor & RAM Watcher -->
+    <section id="view-game" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-start">
+      
+      <!-- 1. C++ CODE EDITOR & RAM WATCHER (Mobile: order-1 | Desktop: right col 7-12) -->
+      <div class="order-1 lg:order-none lg:col-span-6 lg:col-start-7 lg:row-start-1 flex flex-col gap-4">
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <i data-lucide="code" class="w-4 h-4 text-indigo-600"></i>
+              <span class="font-bold text-slate-900 text-sm">C++ Code Editor</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="level-title-badge" class="text-xs font-medium text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">
+                Level Title
+              </span>
+            </div>
+          </div>
+          <!-- Code Block -->
+          <div id="code-display" class="bg-slate-900 text-slate-200 p-3 sm:p-4 rounded-xl font-code text-xs sm:text-sm overflow-x-auto shadow-inner leading-relaxed max-h-[220px] sm:max-h-none">
+            <!-- Code lines injected dynamically -->
+          </div>
+        </div>
+
+        <!-- Quiz Notice Card (Only shown if current level is a quiz) -->
+        <div id="quiz-notice-card" class="hidden bg-amber-50 border border-amber-200 p-4 sm:p-5 rounded-2xl text-amber-900 text-xs sm:text-sm flex flex-col gap-3 shadow-sm">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0 text-amber-700">
+              <i data-lucide="crosshair" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="font-bold text-sm block mb-1 text-slate-900">Tantangan Analisis Posisi Akhir</span>
+              <p class="text-slate-600 text-xs leading-relaxed">
+                Telusuri kode C++ di atas dalam pikiranmu. Ke mana dot akan berpindah setelah seluruh program dieksekusi? Klik tombol di bawah lalu pilih petak pada grid!
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center justify-end gap-2 pt-2 border-t border-amber-200/60">
+            <button id="btn-start-pick" onclick="togglePickMode()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-2 active:scale-95">
+              <i data-lucide="pointer" class="w-4 h-4"></i>
+              <span>Klik Posisi pada Grid</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. VISUAL GRID AREA (Mobile: order-2 | Desktop: left col 1-6 row 1) -->
+      <div class="order-2 lg:order-none lg:col-span-6 lg:col-start-1 lg:row-start-1 bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col items-center justify-center min-h-[260px]">
+        <div class="flex items-center justify-between w-full mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Visual Grid Area</span>
+            <button onclick="resetCurrentLevel()" title="Reset Posisi Dot (R)" class="text-slate-400 hover:text-indigo-600 transition p-1 rounded-md">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="flex items-center gap-1.5 text-slate-500"><span class="w-2 h-2 rounded-full bg-indigo-300 inline-block"></span> Jejak</span>
+            <span class="flex items-center gap-1.5 font-medium"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span> Posisi Dot</span>
+          </div>
+        </div>
+
+        <!-- Interactive Mode Indicator -->
+        <div id="grid-instruction-badge" class="hidden mb-3 text-xs px-3 py-1.5 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-semibold flex items-center gap-1.5 animate-pulse">
+          <i data-lucide="crosshair" class="w-3.5 h-3.5 text-amber-600"></i>
+          <span>Mode Menjawab: Klik petak grid tujuan akhir di bawah!</span>
+        </div>
+
+        <!-- Dynamic Grid Container -->
+        <div id="game-grid" class="grid gap-2 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200 shadow-inner">
+          <!-- Dynamic Cells generated via JS -->
+        </div>
+      </div>
+
+      <!-- 3. KONTROL ARAH EKSEKUSI (Mobile: order-3 | Desktop: left col 1-6 row 2) -->
+      <div id="controls-card" class="order-3 lg:order-none lg:col-span-6 lg:col-start-1 lg:row-start-2 bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col gap-3">
+        <!-- Header Card: Selalu Tampil -->
+        <div class="flex items-center justify-between w-full">
+          <div class="flex items-center gap-2">
+            <i data-lucide="gamepad-2" class="w-4 h-4 text-indigo-600"></i>
+            <span class="text-xs sm:text-sm font-bold text-slate-800 tracking-tight">Kontrol Arah</span>
+          </div>
+          <!-- Tombol Toggle Pil Dinamis (Sembunyikan / Tampilkan Navigasi) -->
+          <button id="btn-toggle-nav" onclick="toggleNavControls()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-xs transition active:scale-95 bg-rose-500 hover:bg-rose-600 text-white">
+            <i id="btn-toggle-nav-icon" data-lucide="x" class="w-3.5 h-3.5"></i>
+            <span id="btn-toggle-nav-text">Sembunyikan</span>
+          </button>
+        </div>
+
+        <!-- Navigasi & Tombol Arah (Dapat Disembunyikan/Ditampilkan) -->
+        <div id="controls-nav-body" class="flex flex-col gap-3 pt-1">
+          <div class="flex items-center justify-end gap-1.5">
+            <button id="btn-undo-move" onclick="undoLastMove()" title="Urungkan 1 Langkah (Shortcut: Z)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition flex items-center gap-1 active:scale-95 disabled:opacity-40 disabled:pointer-events-none">
+              <i data-lucide="undo-2" class="w-3.5 h-3.5"></i>
+              <span>Undo</span>
+            </button>
+            <button onclick="resetCurrentLevel()" title="Ulangi Level (Shortcut: R)" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition flex items-center gap-1 active:scale-95">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>Reset</span>
+            </button>
+          </div>
+
+          <!-- Single-row compact directional buttons -->
+          <div class="flex items-center justify-center gap-2 sm:gap-3 w-full">
+            <button onclick="handleMoveInput('moveLeft')" aria-label="Arah Kiri" class="flex-1 max-w-[80px] h-12 sm:h-13 bg-slate-100 hover:bg-indigo-600 hover:text-white text-slate-700 rounded-xl flex items-center justify-center font-bold shadow-sm transition active:scale-95">
+              <i data-lucide="arrow-left" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </button>
+            <button onclick="handleMoveInput('moveUp')" aria-label="Arah Atas" class="flex-1 max-w-[80px] h-12 sm:h-13 bg-slate-100 hover:bg-indigo-600 hover:text-white text-slate-700 rounded-xl flex items-center justify-center font-bold shadow-sm transition active:scale-95">
+              <i data-lucide="arrow-up" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </button>
+            <button onclick="handleMoveInput('moveDown')" aria-label="Arah Bawah" class="flex-1 max-w-[80px] h-12 sm:h-13 bg-slate-100 hover:bg-indigo-600 hover:text-white text-slate-700 rounded-xl flex items-center justify-center font-bold shadow-sm transition active:scale-95">
+              <i data-lucide="arrow-down" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </button>
+            <button onclick="handleMoveInput('moveRight')" aria-label="Arah Kanan" class="flex-1 max-w-[80px] h-12 sm:h-13 bg-slate-100 hover:bg-indigo-600 hover:text-white text-slate-700 rounded-xl flex items-center justify-center font-bold shadow-sm transition active:scale-95">
+              <i data-lucide="arrow-right" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- CHAPTER CONCEPT MODAL -->
+  <div id="modal-concept" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-slate-100 text-left">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <i id="concept-modal-icon" data-lucide="book-open" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <span id="concept-modal-badge" class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Bab 1 — Sequence</span>
+            <h3 id="concept-modal-title" class="text-base font-bold text-slate-900 leading-tight">Konsep Runutan Alur</h3>
+          </div>
+        </div>
+        <button onclick="closeChapterConceptModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 mb-6 text-xs text-slate-600 leading-relaxed">
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <span class="font-bold text-slate-800 block mb-1 flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i> Analogi Nyata:
+          </span>
+          <p id="concept-modal-analogy">Komputer membaca kode persis seperti membaca buku resep masakan: langkah 1 dijalankan lebih dulu, disusul langkah 2, dan seterusnya secara berurutan dari atas ke bawah.</p>
+        </div>
+
+        <div>
+          <span class="font-bold text-slate-800 block mb-1">🔑 Inti Pemahaman:</span>
+          <p id="concept-modal-desc">Jangan melompati baris. Setiap instruksi pergerakan dot dieksekusi tepat sesuai baris kodenya.</p>
+        </div>
+
+        <div class="bg-indigo-50/60 p-3 rounded-xl border border-indigo-100 text-indigo-900 font-mono text-[11px]">
+          <span class="font-bold block mb-0.5 text-indigo-700">Contoh C++:</span>
+          <code id="concept-modal-code" class="block whitespace-pre">moveRight();\nmoveDown();</code>
+        </div>
+      </div>
+
+      <button onclick="closeChapterConceptModal()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow transition flex items-center justify-center gap-1.5 active:scale-95">
+        <span>Saya Paham, Lanjutkan Belajar!</span>
+        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ERROR MODAL -->
+  <div id="modal-error" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center">
+      <div class="w-12 h-12 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900 mb-1">Langkah Belum Tepat</h3>
+      <p id="error-modal-msg" class="text-xs text-slate-600 mb-4">
+        Arah gerakan tidak sesuai dengan urutan eksekusi algoritma C++. Coba perhatikan lagi kodenya!
+      </p>
+      <div id="error-hint-box" class="hidden bg-slate-50 border border-slate-200 p-3 rounded-xl text-left text-xs text-slate-700 mb-5 font-mono">
+        <span class="font-bold block text-slate-800 mb-0.5">💡 Petunjuk:</span>
+        <span id="error-hint-text">Perhatikan urutan baris kode.</span>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="closeErrorModal()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow transition">
+          Lanjutkan
+        </button>
+        <button onclick="resetCurrentLevel(); closeErrorModal();" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1.5">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Restart
+        </button>
+        <button onclick="showStepHint()" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">
+          Petunjuk
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS MODAL -->
+  <div id="modal-success" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center">
+      <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+        <i data-lucide="check-circle" class="w-6 h-6"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-900 mb-1">Level Selesai! 🎉</h3>
+      <p class="text-xs text-slate-600 mb-4">
+        Kamu berhasil menelusuri alur logika C++ dengan tepat.
+      </p>
+
+      <div class="bg-slate-50 p-3 rounded-xl mb-6 text-xs text-left space-y-1 font-medium text-slate-700 border border-slate-200">
+        <div class="flex justify-between">
+          <span>Bab Pembelajaran:</span>
+          <span id="success-chapter" class="font-bold text-slate-900">Sequence</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Jumlah Kesalahan:</span>
+          <span id="success-errors" class="font-bold text-rose-600">0</span>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="nextLevel()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow transition flex items-center justify-center gap-1.5">
+          Level Berikutnya <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+        <button onclick="closeSuccessModal(); switchView('level_select');" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">
+          Daftar Level
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="py-4 text-center text-xs text-slate-400 border-t border-slate-100">
+    C++ Quest — Media Pembelajaran Interaktif Algoritma & Control Flow
+  </footer>
+
+  <script>
+    let audioCtx = null;
+    let isAudioMuted = localStorage.getItem('cpp_quest_muted') === 'true';
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playSound(type) {
+      if (isAudioMuted) return;
+      try {
+        initAudioContext();
+        if (!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'step') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.exponentialRampToValueAtTime(780, now + 0.08);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'undo') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(320, now + 0.09);
+          gain.gain.setValueAtTime(0.10, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+          osc.start(now);
+          osc.stop(now + 0.09);
+        } else if (type === 'success') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const chordOsc = audioCtx.createOscillator();
+            const chordGain = audioCtx.createGain();
+            chordOsc.connect(chordGain);
+            chordGain.connect(audioCtx.destination);
+
+            chordOsc.type = 'triangle';
+            chordOsc.frequency.setValueAtTime(freq, now + idx * 0.07);
+            chordGain.gain.setValueAtTime(0.12, now + idx * 0.07);
+            chordGain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.28);
+            chordOsc.start(now + idx * 0.07);
+            chordOsc.stop(now + idx * 0.07 + 0.28);
+          });
+        } else if (type === 'error') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(160, now);
+          osc.frequency.exponentialRampToValueAtTime(90, now + 0.16);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+          osc.start(now);
+          osc.stop(now + 0.16);
+        }
+      } catch (err) {
+        console.warn("Audio playback error:", err);
+      }
+    }
+
+    function toggleAudioMute() {
+      isAudioMuted = !isAudioMuted;
+      localStorage.setItem('cpp_quest_muted', isAudioMuted);
+      updateAudioButtonUI();
+    }
+
+    function updateAudioButtonUI() {
+      const icon = document.getElementById('icon-sound');
+      if (isAudioMuted) {
+        icon.setAttribute('data-lucide', 'volume-x');
+        document.getElementById('btn-sound-toggle').classList.add('text-slate-400');
+        document.getElementById('btn-sound-toggle').classList.remove('text-slate-600');
+      } else {
+        icon.setAttribute('data-lucide', 'volume-2');
+        document.getElementById('btn-sound-toggle').classList.remove('text-slate-400');
+        document.getElementById('btn-sound-toggle').classList.add('text-slate-600');
+      }
+      lucide.createIcons();
+    }
+
+    const CHAPTER_CONCEPTS = {
+      "Chapter 1 — Sequence": {
+        badge: "Bab 1 — Sequence (Runutan)",
+        title: "Eksekusi Garis Lurus",
+        icon: "arrow-down-narrow-wide",
+        analogy: "Komputer membaca kode seperti kita membaca buku resep masakan: langkah 1 dijalankan lebih dulu, lalu langkah 2, berurutan dari atas ke bawah tanpa melompat.",
+        desc: "Setiap pemanggilan moveRight() atau moveDown() akan menggeser dot satu petak sesuai urutan penulisannya.",
+        code: `moveRight();\nmoveRight();\nmoveDown();`
+      },
+      "Chapter 2 — Conditional": {
+        badge: "Bab 2 — Conditional & Variabel",
+        title: "Percabangan Logika",
+        icon: "git-branch",
+        analogy: "Seperti lampu lalu lintas atau persimpangan jalan: 'Jika lampu hijau, maju. Jika tidak, berhenti.' Komputer memilih jalur berdasarkan kebenaran kondisi.",
+        desc: "Variabel menyimpan nilai di memori (RAM). Blok if hanya dijalankan jika hasil evaluasi kondisinya bernilai benar (true).",
+        code: `int x = 5;\nif (x > 3) {\n    moveRight();\n} else {\n    moveDown();\n}`
+      },
+      "Chapter 3 — Loop": {
+        badge: "Bab 3 — Perulangan (Loop)",
+        title: "Otomasi Tindakan Berulang",
+        icon: "repeat",
+        analogy: "Seperti seorang pelari yang mengitari lapangan sebanyak 3 putaran. Daripada menulis instruksi lari berulang kali, kita cukup memberitahu jumlah putarannya.",
+        desc: "Loop 'for' dan 'while' mengulang blok kode selama kondisinya masih terpenuhi, dengan penghitung loop (counter) yang bertambah tiap putaran.",
+        code: `for (int i = 0; i < 3; i++) {\n    moveRight();\n}`
+      },
+      "Chapter 4 — Array (1D)": {
+        badge: "Bab 4 — Array 1 Dimensi",
+        title: "Koleksi Data Berindeks",
+        icon: "layers",
+        analogy: "Bayangkan deretan loker bernomor. Ingat: komputer selalu mulai menghitung nomor loker dari indeks 0, bukan 1!",
+        desc: "Array menyimpan sekumpulan nilai. Elemen pertama diakses dengan arr[0], kedua dengan arr[1], dan seterusnya.",
+        code: `int rute[3] = {1, 1, 2};\n// rute[0] adalah 1\n// rute[2] adalah 2`
+      },
+      "Chapter 5 — Nested Loop & 2D": {
+        badge: "Bab 5 — Nested Loop & Matriks 2D",
+        title: "Matriks Baris & Kolom",
+        icon: "grid",
+        analogy: "Seperti papan catur atau denah bioskop: untuk menunjuk satu kursi tertentu, kita melihat nomor barisnya (i) lalu nomor kolomnya (j).",
+        desc: "Nested loop menjalankan loop di dalam loop. Indeks baris (i/r) mengontrol arah vertikal, indeks kolom (j/c) mengontrol arah horizontal.",
+        code: `for (int r = 0; r < 2; r++) {\n    for (int c = 0; c < 2; c++) {\n        moveRight();\n    }\n    moveDown();\n}`
+      },
+      "Chapter 6 — Function": {
+        badge: "Bab 6 — Prosedur & Function",
+        title: "Blok Kode Modular",
+        icon: "puzzle",
+        analogy: "Seperti tombol pintasan (shortcut) di remote TV. Daripada mengatur volume manual tiap saat, satu fungsi dapat dipanggil berulang kali kapan pun dibutuhkan.",
+        desc: "Fungsi membungkus kumpulan baris instruksi ke dalam satu nama bermakna, membuat program lebih rapi, terstruktur, dan mudah dibaca.",
+        code: `void langkahL() {\n    moveRight();\n    moveDown();\n}\n\nlangkahL();`
+      }
+    };
+
+    function openChapterConceptModal() {
+      const level = LEVELS_DATA.find(l => l.id === currentLevelId) || LEVELS_DATA[0];
+      const concept = CHAPTER_CONCEPTS[level.chapter] || CHAPTER_CONCEPTS["Chapter 1 — Sequence"];
+
+      document.getElementById('concept-modal-badge').textContent = concept.badge;
+      document.getElementById('concept-modal-title').textContent = concept.title;
+      document.getElementById('concept-modal-analogy').textContent = concept.analogy;
+      document.getElementById('concept-modal-desc').textContent = concept.desc;
+      document.getElementById('concept-modal-code').textContent = concept.code;
+
+      const iconEl = document.getElementById('concept-modal-icon');
+      iconEl.setAttribute('data-lucide', concept.icon);
+
+      document.getElementById('modal-concept').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeChapterConceptModal() {
+      document.getElementById('modal-concept').classList.add('hidden');
+    }
+
+    const LEVELS_DATA = [
+      // Chapter 1: Sequence (1-8)
+      {
+        id: 1, chapter: "Chapter 1 — Sequence", title: "Langkah Pertama",
+        code: `moveRight();\nmoveRight();`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 2, chapter: "Chapter 1 — Sequence", title: "Tiga Langkah Maju",
+        code: `moveRight();\nmoveRight();\nmoveRight();`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 3, chapter: "Chapter 1 — Sequence", title: "Belokan Pertama",
+        code: `moveRight();\nmoveDown();\nmoveRight();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 4, chapter: "Chapter 1 — Sequence", title: "Naik dan Turun",
+        code: `moveDown();\nmoveRight();\nmoveRight();\nmoveUp();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 5, chapter: "Chapter 1 — Sequence", title: "Tangga Sederhana",
+        code: `moveRight();\nmoveDown();\nmoveRight();\nmoveDown();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 6, chapter: "Chapter 1 — Sequence", title: "Rute Memutar",
+        code: `moveDown();\nmoveDown();\nmoveRight();\nmoveRight();\nmoveUp();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 7, chapter: "Chapter 1 — Sequence", title: "Analisis Alur Sequence 1",
+        code: `moveRight();\nmoveRight();\nmoveDown();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+      {
+        id: 8, chapter: "Chapter 1 — Sequence", title: "Analisis Alur Sequence 2",
+        code: `moveDown();\nmoveRight();\nmoveRight();\nmoveDown();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+
+      // Chapter 2: Conditional & Variable (9-16)
+      {
+        id: 9, chapter: "Chapter 2 — Conditional", title: "Percabangan If Sederhana",
+        code: `int x = 2;\nif (x == 2) {\n    moveRight();\n    moveRight();\n}`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 10, chapter: "Chapter 2 — Conditional", title: "If - Else Logika",
+        code: `int a = 5;\nif (a > 3) {\n    moveRight();\n} else {\n    moveDown();\n}`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 11, chapter: "Chapter 2 — Conditional", title: "Perubahan Nilai Counter",
+        code: `int counter = 0;\ncounter++;\nif (counter == 1) {\n    moveDown();\n    moveRight();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 12, chapter: "Chapter 2 — Conditional", title: "Kondisi Berantai Else If",
+        code: `int val = 10;\nif (val < 5) {\n    moveLeft();\n} else if (val == 10) {\n    moveRight();\n    moveRight();\n} else {\n    moveDown();\n}`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 13, chapter: "Chapter 2 — Conditional", title: "Evaluasi Dua Variabel",
+        code: `int x = 1;\nint y = 2;\nif (x + y == 3) {\n    moveRight();\n    moveDown();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 14, chapter: "Chapter 2 — Conditional", title: "Kondisi Boolean",
+        code: `bool flag = true;\nif (flag) {\n    moveRight();\n    moveRight();\n    moveDown();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 15, chapter: "Chapter 2 — Conditional", title: "Analisis Cabang 1",
+        code: `int x = 4;\nif (x >= 4) {\n    moveRight();\n    moveDown();\n    moveRight();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+      {
+        id: 16, chapter: "Chapter 2 — Conditional", title: "Analisis Cabang 2",
+        code: `int a = 3;\nint b = 2;\nif (a > b) {\n    moveDown();\n    moveRight();\n    moveRight();\n} else {\n    moveRight();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+
+      // Chapter 3: Loop (17-24)
+      {
+        id: 17, chapter: "Chapter 3 — Loop", title: "Perulangan For 3x",
+        code: `for (int i = 0; i < 3; i++) {\n    moveRight();\n}`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 18, chapter: "Chapter 3 — Loop", title: "Perulangan Diagonal",
+        code: `for (int i = 0; i < 2; i++) {\n    moveRight();\n    moveDown();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 19, chapter: "Chapter 3 — Loop", title: "Perulangan While",
+        code: `int step = 0;\nwhile (step < 2) {\n    moveRight();\n    step++;\n}`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 20, chapter: "Chapter 3 — Loop", title: "While Hitung Mundur",
+        code: `int n = 3;\nwhile (n > 0) {\n    moveLeft();\n    n--;\n}`,
+        grid: { width: 5, height: 3 }, start: { x: 3, y: 1 }, isQuiz: false
+      },
+      {
+        id: 21, chapter: "Chapter 3 — Loop", title: "Loop Bertingkat Siku",
+        code: `for (int r = 0; r < 2; r++) {\n    moveRight();\n    moveRight();\n    moveDown();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 22, chapter: "Chapter 3 — Loop", title: "Loop dengan Percabangan",
+        code: `for (int i = 0; i < 4; i++) {\n    if (i < 2) {\n        moveRight();\n    } else {\n        moveDown();\n    }\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 23, chapter: "Chapter 3 — Loop", title: "Analisis Loop For",
+        code: `for (int i = 0; i < 3; i++) {\n    moveRight();\n}\nmoveDown();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+      {
+        id: 24, chapter: "Chapter 3 — Loop", title: "Analisis Loop While",
+        code: `int k = 0;\nwhile (k < 2) {\n    moveDown();\n    moveRight();\n    k++;\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+
+      // Chapter 4: Array (1D) (25-32)
+      {
+        id: 25, chapter: "Chapter 4 — Array (1D)", title: "Akses Indeks Elemen",
+        code: `int arr[3] = {1, 2, 3};\nif (arr[0] == 1) {\n    moveRight();\n    moveRight();\n}`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 26, chapter: "Chapter 4 — Array (1D)", title: "Array sebagai Peta Arah",
+        code: `int rute[3] = {1, 2, 1};\nfor (int i = 0; i < 3; i++) {\n    if (rute[i] == 1) moveRight();\n    else moveDown();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 27, chapter: "Chapter 4 — Array (1D)", title: "Filter Nilai Array",
+        code: `int arr[3] = {2, 5, 8};\nfor (int i = 0; i < 3; i++) {\n    if (arr[i] > 4) moveRight();\n}`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 28, chapter: "Chapter 4 — Array (1D)", title: "Akses Indeks Akhir",
+        code: `int pos[2] = {1, 1};\nmoveRight();\nif (pos[1] == 1) moveDown();\nmoveRight();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 29, chapter: "Chapter 4 — Array (1D)", title: "Traversal Array Bertahap",
+        code: `int langkah[4] = {1, 0, 1, 0};\nfor (int i = 0; i < 4; i++) {\n    if (langkah[i] == 1) moveRight();\n    else moveDown();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 30, chapter: "Chapter 4 — Array (1D)", title: "Kondisi Ganjil Genap Array",
+        code: `int data[3] = {3, 1, 4};\nfor (int i = 0; i < 3; i++) {\n    if (data[i] % 2 != 0) moveRight();\n}`,
+        grid: { width: 5, height: 3 }, start: { x: 0, y: 1 }, isQuiz: false
+      },
+      {
+        id: 31, chapter: "Chapter 4 — Array (1D)", title: "Analisis Rute Array",
+        code: `int rute[3] = {2, 1, 2};\nfor (int i = 0; i < 3; i++) {\n    if (rute[i] == 1) moveRight();\n    else moveDown();\n}`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+      {
+        id: 32, chapter: "Chapter 4 — Array (1D)", title: "Analisis Akumulasi Array",
+        code: `int val[3] = {5, 10, 15};\nfor (int i = 0; i < 3; i++) {\n    if (val[i] >= 10) moveRight();\n}\nmoveDown();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+
+      // Chapter 5: Nested Loop & Array 2D (33-40)
+      {
+        id: 33, chapter: "Chapter 5 — Nested Loop & 2D", title: "Nested For Dasar",
+        code: `for (int i = 0; i < 2; i++) {\n    for (int j = 0; j < 2; j++) {\n        moveRight();\n    }\n    moveDown();\n}`,
+        grid: { width: 6, height: 4 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 34, chapter: "Chapter 5 — Nested Loop & 2D", title: "Pola Matriks Kolom",
+        code: `for (int r = 0; r < 2; r++) {\n    moveRight();\n    for (int c = 0; c < 2; c++) {\n        moveDown();\n    }\n}`,
+        grid: { width: 5, height: 6 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 35, chapter: "Chapter 5 — Nested Loop & 2D", title: "Akses Koordinat Matriks",
+        code: `if (matriks[0][1] == 1) {\n    moveRight();\n}\nif (matriks[1][1] == 1) {\n    moveDown();\n}`,
+        grid: { width: 2, height: 2 }, start: { x: 0, y: 0 },
+        matrix: [[0, 1], [0, 1]], isQuiz: false
+      },
+      {
+        id: 36, chapter: "Chapter 5 — Nested Loop & 2D", title: "Jalur Peta Matriks",
+        code: `if (grid[0][0] == 1) moveRight();\nif (grid[0][1] == 1) moveRight();\nif (grid[1][1] == 1) moveDown();`,
+        grid: { width: 3, height: 2 }, start: { x: 0, y: 0 },
+        matrix: [[1, 1, 0], [0, 1, 0]], isQuiz: false
+      },
+      {
+        id: 37, chapter: "Chapter 5 — Nested Loop & 2D", title: "Peta Koordinat Array 2D",
+        code: `if (peta[0][1] == 1) moveRight();\nif (peta[1][1] == 2) {\n    moveDown();\n    moveRight();\n}`,
+        grid: { width: 3, height: 2 }, start: { x: 0, y: 0 },
+        matrix: [[0, 1, 0], [0, 2, 1]], isQuiz: false
+      },
+      {
+        id: 38, chapter: "Chapter 5 — Nested Loop & 2D", title: "Nested Loop Traversal Matriks",
+        code: `for (int r = 0; r < 2; r++) {\n    for (int c = 0; c < 2; c++) {\n        if (matriks[r][c] == 1) moveRight();\n    }\n    moveDown();\n}`,
+        grid: { width: 4, height: 3 }, start: { x: 0, y: 0 },
+        matrix: [[1, 1], [1, 0]], isQuiz: false
+      },
+      {
+        id: 39, chapter: "Chapter 5 — Nested Loop & 2D", title: "Analisis Nested Loop",
+        code: `for (int r = 0; r < 2; r++) {\n    for (int c = 0; c < 2; c++) {\n        moveRight();\n    }\n    moveDown();\n}`,
+        grid: { width: 6, height: 4 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+      {
+        id: 40, chapter: "Chapter 5 — Nested Loop & 2D", title: "Analisis Matriks 2D",
+        code: `if (matriks[0][1] == 1) moveRight();\nif (matriks[1][1] == 2) moveDown();\nmoveRight();`,
+        grid: { width: 3, height: 2 }, start: { x: 0, y: 0 },
+        matrix: [[0, 1, 0], [0, 2, 0]], isQuiz: true
+      },
+
+      // Chapter 6: Function (41-48)
+      {
+        id: 41, chapter: "Chapter 6 — Function", title: "Mengenal Function",
+        code: `void maju() {\n    moveRight();\n    moveRight();\n}\n\nmaju();\nmoveDown();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 42, chapter: "Chapter 6 — Function", title: "Multi Function",
+        code: `void langkahKanan() {\n    moveRight();\n}\nvoid langkahBawah() {\n    moveDown();\n}\n\nlangkahKanan();\nlangkahBawah();\nlangkahKanan();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 43, chapter: "Chapter 6 — Function", title: "Function Berulang (Siku)",
+        code: `void siku() {\n    moveRight();\n    moveDown();\n}\n\nsiku();\nsiku();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 44, chapter: "Chapter 6 — Function", title: "Function dengan Loop",
+        code: `void loopKanan() {\n    for (int i = 0; i < 2; i++) {\n        moveRight();\n    }\n}\n\nloopKanan();\nmoveDown();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 45, chapter: "Chapter 6 — Function", title: "Komposisi Prosedur",
+        code: `void gerakL() {\n    moveRight();\n    moveDown();\n}\n\ngerakL();\nmoveRight();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 46, chapter: "Chapter 6 — Function", title: "Rute Berkelok Function",
+        code: `void langkahPanjang() {\n    moveDown();\n    moveDown();\n    moveRight();\n}\n\nlangkahPanjang();\nmoveRight();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: false
+      },
+      {
+        id: 47, chapter: "Chapter 6 — Function", title: "Analisis Function Siku",
+        code: `void belok() {\n    moveRight();\n    moveDown();\n}\n\nbelok();\nmoveRight();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      },
+      {
+        id: 48, chapter: "Chapter 6 — Function", title: "Master C++ Quest",
+        code: `void duaKanan() {\n    moveRight();\n    moveRight();\n}\nvoid duaBawah() {\n    moveDown();\n    moveDown();\n}\n\nduaKanan();\nduaBawah();`,
+        grid: { width: 5, height: 5 }, start: { x: 0, y: 0 }, isQuiz: true
+      }
+    ];
+
+    function parseCppCode(codeStr, level) {
+      let jsCode = codeStr
+        .replace(/(?:int|bool)\s+(\w+)\s*\[\s*\d*\s*\]\s*=\s*\{([^}]+)\};/g, 'let $1 = [$2];')
+        .replace(/\b(?:int|bool)\b/g, 'let')
+        .replace(/\bvoid\s+(\w+)\s*\(\s*\)/g, 'function $1()');
+
+      let moves = [];
+      let capturedVars = {};
+
+      const moveRight = () => moves.push('moveRight');
+      const moveLeft = () => moves.push('moveLeft');
+      const moveDown = () => moves.push('moveDown');
+      const moveUp = () => moves.push('moveUp');
+      const matriks = level && level.matrix ? level.matrix : [];
+      const grid = level && level.matrix ? level.matrix : [];
+      const peta = level && level.matrix ? level.matrix : [];
+
+      try {
+        const runner = new Function(
+          'moveRight', 'moveLeft', 'moveDown', 'moveUp', 'matriks', 'grid', 'peta',
+          `${jsCode}`
+        );
+        runner(moveRight, moveLeft, moveDown, moveUp, matriks, grid, peta);
+      } catch (err) {
+        console.error("Transpile error:", err, jsCode);
+      }
+
+      // Extract initial vars for RAM display
+      const varMatches = codeStr.matchAll(/(?:int|bool)\s+(\w+)(?:\[\d*\])?\s*=\s*([^;]+);/g);
+      for (const match of varMatches) {
+        const vName = match[1];
+        let rawVal = match[2].trim();
+        if (rawVal.startsWith('{') && rawVal.endsWith('}')) {
+          rawVal = `[${rawVal.slice(1, -1)}]`;
+        }
+        try {
+          capturedVars[vName] = eval(rawVal);
+        } catch {
+          capturedVars[vName] = rawVal;
+        }
+      }
+
+      return { moves, initialVars: capturedVars };
+    }
+
+    let currentLevelId = parseInt(localStorage.getItem('cpp_quest_level') || '1', 10);
+    let completedLevels = [];
+    try {
+      completedLevels = JSON.parse(localStorage.getItem('cpp_quest_completed') || '[]');
+    } catch { completedLevels = []; }
+
+    let dotPos = { x: 0, y: 0 };
+    let moveHistory = [];
+    let traceTrail = [];
+    let finalTargetPos = { x: 0, y: 0 };
+    let executionSteps = [];
+    let currentStepIndex = 0;
+    let errorsCount = 0;
+    let isLevelFinished = false;
+    let isPickModeActive = false;
+    let isNavVisible = localStorage.getItem('cpp_quest_nav_visible') !== null 
+      ? localStorage.getItem('cpp_quest_nav_visible') === 'true' 
+      : (window.innerWidth < 1024); // Default: terbuka di HP/tablet, tertutup di desktop
+
+    function saveState() {
+      localStorage.setItem('cpp_quest_level', currentLevelId);
+      localStorage.setItem('cpp_quest_completed', JSON.stringify(completedLevels));
+    }
+
+    function closeSuccessModal() {
+      const modal = document.getElementById('modal-success');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function switchView(viewName) {
+      // Pastikan semua modal tertutup saat berpindah halaman
+      closeSuccessModal();
+      document.getElementById('modal-error').classList.add('hidden');
+      document.getElementById('modal-concept').classList.add('hidden');
+
+      document.getElementById('view-welcome').classList.add('hidden');
+      document.getElementById('view-level-select').classList.add('hidden');
+      document.getElementById('view-game').classList.add('hidden');
+      document.getElementById('header-level-badge').classList.add('hidden');
+
+      if (viewName === 'welcome') {
+        document.getElementById('view-welcome').classList.remove('hidden');
+      } else if (viewName === 'level_select') {
+        renderLevelSelector();
+        document.getElementById('view-level-select').classList.remove('hidden');
+      } else if (viewName === 'game') {
+        document.getElementById('view-game').classList.remove('hidden');
+        document.getElementById('header-level-badge').classList.remove('hidden');
+        loadLevel(currentLevelId);
+      }
+      lucide.createIcons();
+    }
+
+    function startGame() {
+      switchView('game');
+      if (!localStorage.getItem('cpp_quest_intro_seen')) {
+        localStorage.setItem('cpp_quest_intro_seen', 'true');
+        openChapterConceptModal();
+      }
+    }
+
+    function loadLevel(levelId) {
+      const level = LEVELS_DATA.find(l => l.id === levelId) || LEVELS_DATA[0];
+      currentLevelId = level.id;
+      dotPos = { x: level.start.x, y: level.start.y };
+      
+      moveHistory = [{ x: dotPos.x, y: dotPos.y }];
+      traceTrail = [{ x: dotPos.x, y: dotPos.y }];
+
+      const parsed = parseCppCode(level.code, level);
+      executionSteps = parsed.moves;
+
+      currentStepIndex = 0;
+      errorsCount = 0;
+      isLevelFinished = false;
+      isPickModeActive = false;
+
+      let simX = level.start.x;
+      let simY = level.start.y;
+      executionSteps.forEach(cmd => {
+        if (cmd === 'moveRight') simX++;
+        if (cmd === 'moveLeft') simX--;
+        if (cmd === 'moveDown') simY++;
+        if (cmd === 'moveUp') simY--;
+      });
+      finalTargetPos = { x: simX, y: simY };
+
+      document.getElementById('nav-chapter-title').textContent = level.chapter;
+      document.getElementById('nav-level-title').textContent = `Level ${level.id} / 48`;
+      document.getElementById('level-title-badge').textContent = level.title;
+
+      const codeContainer = document.getElementById('code-display');
+      codeContainer.innerHTML = '';
+      const lines = level.code.split('\n');
+      lines.forEach((line, idx) => {
+        const lineEl = document.createElement('div');
+        lineEl.id = `code-line-${idx}`;
+        lineEl.className = 'flex items-center px-2 py-0.5 text-slate-300 rounded transition-colors';
+        lineEl.innerHTML = `
+          <span class="w-6 text-right pr-3 select-none text-slate-600 text-[11px]">${idx + 1}</span>
+          <span class="whitespace-pre flex-1">${escapeHtml(line)}</span>
+        `;
+        codeContainer.appendChild(lineEl);
+      });
+
+      const badgeInstruction = document.getElementById('grid-instruction-badge');
+      badgeInstruction.classList.add('hidden');
+
+      if (level.isQuiz) {
+        updatePickButtonState();
+      }
+
+      updateControlsCardVisibility();
+      updateUndoButtonState();
+      renderGrid();
+      saveState();
+      lucide.createIcons();
+    }
+
+    function toggleNavControls() {
+      isNavVisible = !isNavVisible;
+      localStorage.setItem('cpp_quest_nav_visible', isNavVisible);
+      updateControlsCardVisibility();
+    }
+
+    function updateControlsCardVisibility() {
+      const level = LEVELS_DATA.find(l => l.id === currentLevelId) || LEVELS_DATA[0];
+      const controlsCard = document.getElementById('controls-card');
+      const quizCard = document.getElementById('quiz-notice-card');
+      const navBody = document.getElementById('controls-nav-body');
+      const btnToggle = document.getElementById('btn-toggle-nav');
+      const btnToggleText = document.getElementById('btn-toggle-nav-text');
+      const btnToggleIcon = document.getElementById('btn-toggle-nav-icon');
+
+      if (!controlsCard) return;
+
+      if (level.isQuiz) {
+        controlsCard.classList.add('hidden');
+        if (quizCard) quizCard.classList.remove('hidden');
+        return;
+      }
+
+      if (quizCard) quizCard.classList.add('hidden');
+      controlsCard.classList.remove('hidden');
+
+      if (isNavVisible) {
+        navBody.classList.remove('hidden');
+        btnToggle.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-xs transition active:scale-95 bg-rose-500 hover:bg-rose-600 text-white";
+        btnToggleText.textContent = "Sembunyikan";
+        btnToggleIcon.setAttribute('data-lucide', 'x');
+      } else {
+        navBody.classList.add('hidden');
+        btnToggle.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold shadow-xs transition active:scale-95 bg-blue-600 hover:bg-blue-700 text-white";
+        btnToggleText.textContent = "Tampilkan Navigasi";
+        btnToggleIcon.setAttribute('data-lucide', 'gamepad-2');
+      }
+      lucide.createIcons();
+    }
+
+    function renderGrid() {
+      const level = LEVELS_DATA.find(l => l.id === currentLevelId) || LEVELS_DATA[0];
+      const gridContainer = document.getElementById('game-grid');
+      gridContainer.innerHTML = '';
+
+      const hasMatrix = Boolean(level.matrix);
+
+      const boardWrapper = document.createElement('div');
+      boardWrapper.className = 'flex flex-col items-center select-none';
+
+      if (hasMatrix) {
+        const matrixBanner = document.createElement('div');
+        matrixBanner.className = 'mb-3 px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-800 text-[11px] font-medium flex items-center gap-2';
+        matrixBanner.innerHTML = `
+          <i data-lucide="table" class="w-3.5 h-3.5 text-indigo-600"></i>
+          <span><strong>Array 2D:</strong> Indeks <em>i / r</em> = Baris (↓), Indeks <em>j / c</em> = Kolom (→)</span>
+        `;
+        boardWrapper.appendChild(matrixBanner);
+
+        const colHeaderRow = document.createElement('div');
+        colHeaderRow.className = 'flex items-center gap-2 mb-1 pl-8';
+        for (let x = 0; x < level.grid.width; x++) {
+          const colLabel = document.createElement('div');
+          colLabel.className = 'w-12 sm:w-14 text-center font-code text-[11px] font-bold text-slate-500';
+          colLabel.textContent = `j=${x}`;
+          colHeaderRow.appendChild(colLabel);
+        }
+        boardWrapper.appendChild(colHeaderRow);
+      }
+
+      const rowsContainer = document.createElement('div');
+      rowsContainer.className = 'flex flex-col gap-2';
+
+      for (let y = 0; y < level.grid.height; y++) {
+        const rowWrapper = document.createElement('div');
+        rowWrapper.className = 'flex items-center gap-2';
+
+        if (hasMatrix) {
+          const rowLabel = document.createElement('div');
+          rowLabel.className = 'w-6 text-right font-code text-[11px] font-bold text-slate-500 pr-1 shrink-0';
+          rowLabel.textContent = `i=${y}`;
+          rowWrapper.appendChild(rowLabel);
+        }
+
+        const cellsRow = document.createElement('div');
+        cellsRow.className = 'flex items-center gap-2';
+
+        for (let x = 0; x < level.grid.width; x++) {
+          const isDot = dotPos.x === x && dotPos.y === y;
+          const isTrail = !isDot && traceTrail.some(t => t.x === x && t.y === y);
+          const matrixVal = level.matrix && level.matrix[y] && level.matrix[y][x] !== undefined ? level.matrix[y][x] : null;
+
+          const cell = document.createElement('div');
+          let cellClasses = 'w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex flex-col items-center justify-center border transition-all duration-300 relative ';
+
+          if (isDot) {
+            cellClasses += 'bg-indigo-600 border-indigo-700 shadow-md shadow-indigo-200 scale-105 z-10';
+          } else if (level.isQuiz && isPickModeActive) {
+            cellClasses += 'bg-white hover:bg-amber-100 hover:border-amber-400 hover:shadow-md cursor-pointer border-slate-200 active:scale-95';
+          } else if (isTrail) {
+            cellClasses += 'bg-indigo-50/40 border-indigo-200/60';
+          } else {
+            cellClasses += 'bg-white border-slate-200';
+          }
+
+          cell.className = cellClasses;
+
+          if (isDot) {
+            if (matrixVal !== null) {
+              cell.innerHTML = `
+                <div class="w-3.5 h-3.5 bg-white rounded-full shadow-inner grid-cell-dot mb-0.5"></div>
+                <span class="text-[10px] font-code font-bold text-indigo-100 leading-none">[${matrixVal}]</span>
+              `;
+            } else {
+              cell.innerHTML = `<div class="w-4 h-4 bg-white rounded-full shadow-inner grid-cell-dot"></div>`;
+            }
+          } else if (isTrail) {
+            if (matrixVal !== null) {
+              cell.innerHTML = `
+                <div class="w-2.5 h-2.5 bg-indigo-400/80 rounded-full trail-dot mb-0.5"></div>
+                <span class="text-[10px] font-code font-bold text-slate-500 leading-none">${matrixVal}</span>
+              `;
+            } else {
+              cell.innerHTML = `<div class="w-2.5 h-2.5 bg-indigo-300/80 rounded-full trail-dot"></div>`;
+            }
+          } else {
+            if (matrixVal !== null) {
+              cell.innerHTML = `
+                <span class="text-xs font-code font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 shadow-2xs">${matrixVal}</span>
+              `;
+            } else {
+              cell.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-slate-200"></span>`;
+            }
+          }
+
+          if (level.isQuiz) {
+            cell.onclick = () => handleGridCellClick(x, y);
+          }
+
+          cellsRow.appendChild(cell);
+        }
+
+        rowWrapper.appendChild(cellsRow);
+        rowsContainer.appendChild(rowWrapper);
+      }
+
+      boardWrapper.appendChild(rowsContainer);
+      gridContainer.appendChild(boardWrapper);
+    }
+
+    function togglePickMode() {
+      isPickModeActive = !isPickModeActive;
+      updatePickButtonState();
+      renderGrid();
+    }
+
+    function updatePickButtonState() {
+      const btn = document.getElementById('btn-start-pick');
+      const badge = document.getElementById('grid-instruction-badge');
+      if (!btn) return;
+      if (isPickModeActive) {
+        btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Mode Klik Aktif — Silakan Pilih di Grid`;
+        btn.className = "px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-2 active:scale-95";
+        if (badge) badge.classList.remove('hidden');
+      } else {
+        btn.innerHTML = `<i data-lucide="pointer" class="w-4 h-4"></i> Klik Posisi pada Grid`;
+        btn.className = "px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-2 active:scale-95";
+        if (badge) badge.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    function handleGridCellClick(clickedX, clickedY) {
+      if (!isPickModeActive || isLevelFinished) return;
+
+      if (clickedX === finalTargetPos.x && clickedY === finalTargetPos.y) {
+        playSound('success');
+        dotPos = { x: clickedX, y: clickedY };
+        traceTrail.push({ x: clickedX, y: clickedY });
+        isPickModeActive = false;
+        renderGrid();
+        finishLevel();
+      } else {
+        playSound('error');
+        errorsCount++;
+        triggerError(`Posisi petak (${clickedX}, ${clickedY}) belum sesuai dengan hasil akhir algoritma C++. Perhatikan kembali instruksi program.`);
+      }
+    }
+
+    function handleMoveInput(expectedMoveCmd) {
+      if (isLevelFinished || executionSteps.length === 0) return;
+
+      const currentStep = executionSteps[currentStepIndex];
+      if (!currentStep) return;
+
+      if (currentStep === expectedMoveCmd) {
+        playSound('step');
+        moveHistory.push({ x: dotPos.x, y: dotPos.y });
+
+        if (expectedMoveCmd === 'moveRight') dotPos.x++;
+        if (expectedMoveCmd === 'moveLeft') dotPos.x--;
+        if (expectedMoveCmd === 'moveDown') dotPos.y++;
+        if (expectedMoveCmd === 'moveUp') dotPos.y--;
+
+        traceTrail.push({ x: dotPos.x, y: dotPos.y });
+
+        currentStepIndex++;
+        updateUndoButtonState();
+        renderGrid();
+
+        if (currentStepIndex >= executionSteps.length) {
+          if (dotPos.x === finalTargetPos.x && dotPos.y === finalTargetPos.y) {
+            playSound('success');
+            finishLevel();
+          } else {
+            playSound('error');
+            triggerError("Posisi akhir dot belum sesuai dengan sasaran program.");
+          }
+        }
+      } else {
+        playSound('error');
+        triggerError("Arah tombol tidak sesuai dengan instruksi baris C++ berikutnya.");
+      }
+    }
+
+    function undoLastMove() {
+      if (isLevelFinished || currentStepIndex === 0 || moveHistory.length <= 1) return;
+
+      playSound('undo');
+      moveHistory.pop();
+      const prevPos = moveHistory[moveHistory.length - 1];
+      dotPos = { x: prevPos.x, y: prevPos.y };
+
+      if (traceTrail.length > 1) traceTrail.pop();
+
+      currentStepIndex--;
+      updateUndoButtonState();
+      renderGrid();
+    }
+
+    function updateUndoButtonState() {
+      const undoBtn = document.getElementById('btn-undo-move');
+      if (undoBtn) {
+        undoBtn.disabled = currentStepIndex === 0 || isLevelFinished;
+      }
+    }
+
+    function triggerError(msg) {
+      errorsCount++;
+      document.getElementById('error-modal-msg').textContent = msg;
+      document.getElementById('error-hint-box').classList.add('hidden');
+      document.getElementById('modal-error').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function showStepHint() {
+      const level = LEVELS_DATA.find(l => l.id === currentLevelId);
+      const hintText = document.getElementById('error-hint-text');
+
+      if (level.isQuiz) {
+        hintText.textContent = `Perhatikan perulangan dan percabangan. Hitung total langkah dari titik awal (${level.start.x}, ${level.start.y}).`;
+      } else {
+        const step = executionSteps[currentStepIndex];
+        if (step) {
+          let dirIndo = { moveRight: 'Kanan (→)', moveLeft: 'Kiri (←)', moveUp: 'Atas (↑)', moveDown: 'Bawah (↓)' };
+          hintText.textContent = `Instruksi yang diminta saat ini adalah ${step} (Arah ${dirIndo[step] || step}).`;
+        } else {
+          hintText.textContent = `Perhatikan alur percabangan dan nilai variabel pada kode.`;
+        }
+      }
+      document.getElementById('error-hint-box').classList.remove('hidden');
+    }
+
+    function closeErrorModal() {
+      document.getElementById('modal-error').classList.add('hidden');
+    }
+
+    function finishLevel() {
+      isLevelFinished = true;
+      if (!completedLevels.includes(currentLevelId)) {
+        completedLevels.push(currentLevelId);
+      }
+      saveState();
+
+      const level = LEVELS_DATA.find(l => l.id === currentLevelId);
+      document.getElementById('success-chapter').textContent = level.chapter;
+      document.getElementById('success-errors').textContent = errorsCount;
+      document.getElementById('modal-success').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function nextLevel() {
+      document.getElementById('modal-success').classList.add('hidden');
+      if (currentLevelId < LEVELS_DATA.length) {
+        const nextLvl = LEVELS_DATA.find(l => l.id === currentLevelId + 1);
+        const currentLvl = LEVELS_DATA.find(l => l.id === currentLevelId);
+        
+        loadLevel(currentLevelId + 1);
+
+        if (nextLvl && currentLvl && nextLvl.chapter !== currentLvl.chapter) {
+          openChapterConceptModal();
+        }
+      } else {
+        switchView('welcome');
+      }
+    }
+
+    function resetCurrentLevel() {
+      const level = LEVELS_DATA.find(l => l.id === currentLevelId) || LEVELS_DATA[0];
+      dotPos = { x: level.start.x, y: level.start.y };
+      moveHistory = [{ x: dotPos.x, y: dotPos.y }];
+      traceTrail = [{ x: dotPos.x, y: dotPos.y }];
+      currentStepIndex = 0;
+      isLevelFinished = false;
+      isPickModeActive = false;
+
+      updateUndoButtonState();
+      renderGrid();
+      if (level.isQuiz) updatePickButtonState();
+      lucide.createIcons();
+    }
+
+    function resetAllProgress() {
+      localStorage.removeItem('cpp_quest_level');
+      localStorage.removeItem('cpp_quest_completed');
+      currentLevelId = 1;
+      completedLevels = [];
+      switchView('welcome');
+    }
+
+    function renderLevelSelector() {
+      const container = document.getElementById('levels-grid-container');
+      container.innerHTML = '';
+
+      LEVELS_DATA.forEach(lvl => {
+        const isDone = completedLevels.includes(lvl.id);
+        const isCurrent = currentLevelId === lvl.id;
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition cursor-pointer flex items-center justify-between ${
+          isCurrent 
+            ? 'border-indigo-600 bg-indigo-50/40 ring-1 ring-indigo-600' 
+            : isDone 
+              ? 'border-emerald-200 bg-emerald-50/20 hover:border-emerald-300' 
+              : 'border-slate-200 hover:border-slate-300 bg-white'
+        }`;
+
+        card.onclick = () => {
+          currentLevelId = lvl.id;
+          switchView('game');
+        };
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                #${lvl.id}
+              </span>
+              ${isDone ? `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 inline"></i>` : ''}
+              ${lvl.isQuiz ? `<span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.2 rounded font-bold">Tebak Posisi</span>` : ''}
+            </div>
+            <h4 class="font-semibold text-slate-900 text-sm">${lvl.title}</h4>
+            <span class="text-[11px] text-slate-500">${lvl.chapter}</span>
+          </div>
+          <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+        `;
+
+        container.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      const isGameVisible = !document.getElementById('view-game').classList.contains('hidden');
+      const isErrorOpen = !document.getElementById('modal-error').classList.contains('hidden');
+      const isSuccessOpen = !document.getElementById('modal-success').classList.contains('hidden');
+      const isConceptOpen = !document.getElementById('modal-concept').classList.contains('hidden');
+
+      if (isConceptOpen) {
+        if (e.key === 'Escape' || e.key === 'Enter') closeChapterConceptModal();
+        return;
+      }
+
+      if (isGameVisible && !isSuccessOpen && (e.key === 'r' || e.key === 'R')) {
+        resetCurrentLevel();
+        if (isErrorOpen) closeErrorModal();
+        return;
+      }
+
+      if (isGameVisible && !isSuccessOpen && (e.key === 'z' || e.key === 'Z')) {
+        undoLastMove();
+        return;
+      }
+
+      if (!isGameVisible || isErrorOpen || isSuccessOpen) return;
+
+      const currentLvl = LEVELS_DATA.find(l => l.id === currentLevelId);
+      if (currentLvl && currentLvl.isQuiz) return;
+
+      if (e.key === 'ArrowUp') handleMoveInput('moveUp');
+      if (e.key === 'ArrowDown') handleMoveInput('moveDown');
+      if (e.key === 'ArrowLeft') handleMoveInput('moveLeft');
+      if (e.key === 'ArrowRight') handleMoveInput('moveRight');
+    });
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    window.onload = () => {
+      updateAudioButtonUI();
+      lucide.createIcons();
+      if (localStorage.getItem('cpp_quest_level')) {
+        switchView('game');
+      } else {
+        switchView('welcome');
+      }
+    };
+
+    window.addEventListener('resize', () => {
+      updateControlsCardVisibility();
+    });
+  </script>
+</body>
+</html>
