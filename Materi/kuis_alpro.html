@@ -21,8 +21,11 @@
 
       --success-bg: #ecfdf5;
       --success-text: #059669;
+      --success-border: #10b981;
+      
       --danger-bg: #fef2f2;
       --danger-text: #dc2626;
+      --danger-border: #ef4444;
 
       --code-bg: #0f172a;
       --code-text: #f8fafc;
@@ -510,6 +513,7 @@
       min-width: 130px;
     }
 
+    /* Result Card & Dynamic Circle */
     .result-card {
       text-align: center;
       padding: 2.5rem 2rem;
@@ -530,19 +534,36 @@
       height: 140px;
       margin: 1.25rem auto;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-soft), #ffffff);
-      border: 4px solid var(--accent);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+    }
+
+    /* Warna Lingkaran & Angka Berdasarkan Kriteria Nilai */
+    .score-circle.success-mode {
+      background: linear-gradient(135deg, var(--success-bg), #ffffff);
+      border: 4px solid var(--success-border);
+    }
+
+    .score-circle.success-mode .score-number {
+      color: var(--success-text);
+    }
+
+    .score-circle.danger-mode {
+      background: linear-gradient(135deg, var(--danger-bg), #ffffff);
+      border: 4px solid var(--danger-border);
+    }
+
+    .score-circle.danger-mode .score-number {
+      color: var(--danger-text);
     }
 
     .score-number {
       font-size: 2.6rem;
       font-weight: 800;
-      color: var(--accent);
       line-height: 1;
     }
 
@@ -555,7 +576,6 @@
     .feedback-message {
       font-size: 1.6rem;
       font-weight: 800;
-      color: var(--text-main);
       margin-bottom: 1.5rem;
     }
 
@@ -572,7 +592,7 @@
     }
 
     .result-item-label {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       text-transform: uppercase;
       font-weight: 600;
@@ -580,9 +600,10 @@
     }
 
     .result-item-val {
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--text-main);
+      word-break: break-word;
     }
 
     .topics-tags-list {
@@ -666,6 +687,7 @@
         <span class="brand-badge">&lt;/&gt; C++</span>
         <div class="brand-text">
           <h1>C++ QUIZ GENERATOR</h1>
+          
         </div>
       </div>
 
@@ -828,12 +850,13 @@
         <span class="result-badge-status">HASIL EVALUASI</span>
         <h2 id="result-heading" style="font-size: 1.8rem; font-weight: 800;">QUIZ SELESAI</h2>
         
-        <div class="score-circle">
+        <!-- Score Circle Dinamis (Merah jika < 90, Hijau jika >= 90) -->
+        <div class="score-circle danger-mode" id="score-circle-container">
           <span class="score-number" id="result-score-val">0</span>
           <span class="score-max">DARI 100</span>
         </div>
 
-        <div class="feedback-message" id="result-feedback-text">Selamat Ya! 🎉</div>
+        <div class="feedback-message" id="result-feedback-text">Tetap Semangat! 💪</div>
 
         <div class="result-details-grid">
           <div>
@@ -852,9 +875,17 @@
             <div class="result-item-label">Jumlah Benar</div>
             <div class="result-item-val" id="result-correct-count">-</div>
           </div>
-          <div style="grid-column: span 2;">
+          <div>
             <div class="result-item-label">Waktu Pengerjaan</div>
             <div class="result-item-val" id="result-time-spent">-</div>
+          </div>
+          <div>
+            <div class="result-item-label">IP Siswa</div>
+            <div class="result-item-val" id="result-ip-val">Mendeteksi...</div>
+          </div>
+          <div style="grid-column: span 2;">
+            <div class="result-item-label">Tanggal & Jam Selesai (GMT+7)</div>
+            <div class="result-item-val" id="result-timestamp-val">-</div>
           </div>
           <div style="grid-column: span 2;">
             <div class="result-item-label">Topik Teruji</div>
@@ -907,13 +938,50 @@
       timerRemaining: 600,
       timerInterval: null,
       score: 0,
-      correctCount: 0
+      correctCount: 0,
+      userIP: '127.0.0.1 (Lokal)'
     };
 
     const sessionTracker = {
       usedKeys: new Set(),
       reset() { this.usedKeys.clear(); }
     };
+
+    /* Deteksi IP Pengguna dengan Graceful Fallback */
+    async function fetchUserIP() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+        const res = await fetch('https://api.ipify.org?format=json', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const data = await res.json();
+          state.userIP = data.ip || '127.0.0.1';
+        }
+      } catch (e) {
+        state.userIP = '127.0.0.1 (Offline)';
+      }
+      const el = document.getElementById('result-ip-val');
+      if (el) el.textContent = state.userIP;
+    }
+
+    /* Format Tanggal dan Jam dalam GMT+7 / WIB */
+    function getFormattedDateTimeGMT7() {
+      const now = new Date();
+      // Mengonversi waktu ke zona waktu Asia/Jakarta (GMT+7)
+      const options = {
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      };
+      const formatted = new Intl.DateTimeFormat('id-ID', options).format(now);
+      return `${formatted} WIB (GMT+7)`;
+    }
 
     function getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -1352,6 +1420,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    /* Timer dengan Jaminan Auto-Submit Otomatis */
     function startTimer() {
       stopTimer();
       state.timerRemaining = state.timerDuration;
@@ -1363,6 +1432,9 @@
 
         if (state.timerRemaining <= 0) {
           stopTimer();
+          state.timerRemaining = 0;
+          updateTimerDisplay();
+          // Simpan jawaban terakhir saat detik habis dan langsung submit otomatis
           saveCurrentAnswer();
           submitQuiz();
         }
@@ -1472,7 +1544,6 @@
         topicPill.classList.remove('hybrid');
       }
 
-      // Level badge sederhana
       document.getElementById('question-level-badge').textContent = LEVEL_NAMES[state.selectedLevel] || 'Level 1';
       document.getElementById('question-type-badge').textContent = (q.type === 'multiple-choice') ? 'Pilihan Ganda' : 'Isian Singkat';
       document.getElementById('question-text-content').textContent = q.question;
@@ -1622,7 +1693,7 @@
       state.correctCount = correct;
       state.score = correct * 10;
 
-      const timeSpentSecs = state.timerDuration - state.timerRemaining;
+      const timeSpentSecs = state.timerDuration - Math.max(0, state.timerRemaining);
       showResult(timeSpentSecs);
     }
 
@@ -1633,14 +1704,23 @@
       document.getElementById('result-level-val').textContent = LEVEL_NAMES[state.selectedLevel] || 'Level 1';
       document.getElementById('result-correct-count').textContent = `${state.correctCount} / 10 Soal`;
       document.getElementById('result-time-spent').textContent = formatTime(timeSpentSecs);
+      
+      // Tanggal & Jam GMT+7 dan IP
+      document.getElementById('result-timestamp-val').textContent = getFormattedDateTimeGMT7();
+      document.getElementById('result-ip-val').textContent = state.userIP;
 
+      // Styling Dinamis: Merah jika < 90, Hijau jika >= 90
+      const scoreCircle = document.getElementById('score-circle-container');
       const feedbackEl = document.getElementById('result-feedback-text');
+
       if (state.score >= 90) {
+        scoreCircle.className = 'score-circle success-mode';
         feedbackEl.textContent = 'Selamat Ya! 🎉';
-        feedbackEl.style.color = 'var(--accent)';
+        feedbackEl.style.color = 'var(--success-text)';
       } else {
+        scoreCircle.className = 'score-circle danger-mode';
         feedbackEl.textContent = 'Tetap Semangat! 💪';
-        feedbackEl.style.color = 'var(--text-main)';
+        feedbackEl.style.color = 'var(--danger-text)';
       }
 
       const tagsContainer = document.getElementById('result-topics-tags');
@@ -1722,6 +1802,7 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      fetchUserIP();
       setView('SETUP');
     });
   </script>
