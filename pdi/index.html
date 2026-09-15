@@ -1202,8 +1202,9 @@
           };
         } else if (isVideo) {
           return {
-            type: 'drive-video',
-            embedUrl: `https://drive.google.com/file/d/${fileId}/preview?autoplay=1`
+            type: 'direct-video',
+            videoUrl: `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0&confirm=t`,
+            driveFallbackEmbedUrl: `https://drive.google.com/file/d/${fileId}/preview`
           };
         } else {
           return {
@@ -1657,6 +1658,26 @@
           if (vidEl) {
             vidEl.onended = function() { nextSlide(); };
             vidEl.onerror = function() {
+              clearTimeout(mediaTimer);
+
+              if (parsed.driveFallbackEmbedUrl) {
+                // Streaming langsung gagal (mis. file berukuran besar) -> fallback ke iframe pratinjau Drive.
+                // Catatan: pada mode ini video TIDAK autoplay otomatis karena keterbatasan Google Drive,
+                // perlu disentuh sekali di layar sentuh/kiosk untuk mulai memutar.
+                container.innerHTML = `
+                  <div class="youtube-wrapper">
+                    <iframe 
+                      src="${parsed.driveFallbackEmbedUrl}" 
+                      allow="autoplay; encrypted-media; fullscreen" 
+                      allowfullscreen>
+                    </iframe>
+                  </div>`;
+                const fallbackDuration = parseDurationInMs(customDurRaw, 30000);
+                startProgressBar(fallbackDuration);
+                mediaTimer = setTimeout(() => { nextSlide(); }, fallbackDuration);
+                return;
+              }
+
               container.innerHTML = `
                 <div class="media-error-card">
                   <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
@@ -1668,23 +1689,6 @@
               mediaTimer = setTimeout(() => { nextSlide(); }, slideDuration);
             };
           }
-
-        } else if (parsed.type === 'drive-video') {
-          container.innerHTML = `
-            <div class="youtube-wrapper">
-              <iframe 
-                id="drive-video-iframe"
-                src="${parsed.embedUrl}" 
-                allow="autoplay; encrypted-media; fullscreen" 
-                allowfullscreen>
-              </iframe>
-            </div>`;
-
-          slideDuration = parseDurationInMs(customDurRaw, 30000);
-          startProgressBar(slideDuration);
-          mediaTimer = setTimeout(() => {
-            nextSlide();
-          }, slideDuration);
 
         } else if (parsed.type === 'tiktok') {
           container.innerHTML = `
