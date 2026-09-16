@@ -336,16 +336,12 @@
         // --- FUNGSI OBFUSCATOR KUSTOM ---
         function obfuscateCustomScript(code) {
             const b64 = btoa(unescape(encodeURIComponent(code)));
-            let shifted = "";
-            for(let i=0; i<b64.length; i++) {
-                shifted += String.fromCharCode(b64.charCodeAt(i) + 2); // Shift ASCII 2 langkah
-            }
+            const reversed = b64.split('').reverse().join('');
             return `
         // [CBT Engine - Encrypted & Obfuscated]
         (function(){
-            var d="${shifted}";
-            var r="";
-            for(var i=0;i<d.length;i++) r+=String.fromCharCode(d.charCodeAt(i)-2);
+            var d="${reversed}";
+            var r=d.split('').reverse().join('');
             var s=document.createElement('script');
             s.type='text/javascript';
             s.innerHTML=decodeURIComponent(escape(atob(r)));
@@ -387,20 +383,12 @@
             }
 
             const jsonStr = JSON.stringify(subjects);
-            const encodedUri = encodeURIComponent(jsonStr);
-            let encrypted = "";
-            for(let i=0; i<encodedUri.length; i++) encrypted += String.fromCharCode(encodedUri.charCodeAt(i) + 5);
-            const encryptedBase64 = btoa(encrypted);
+            const encryptedBase64 = btoa(encodeURIComponent(jsonStr)).split('').reverse().join('');
 
             // Menyusun seluruh Skrip Pengaman Ujian yang akan di-obfuscate
             const rawScriptCode = `
         const encData = "${encryptedBase64}";
-        const decRaw = atob(encData);
-        let shiftedStr = "";
-        for(let i=0; i<decRaw.length; i++) {
-            shiftedStr += String.fromCharCode(decRaw.charCodeAt(i) - 5);
-        }
-        const mapelList = JSON.parse(decodeURIComponent(shiftedStr));
+        const mapelList = JSON.parse(decodeURIComponent(atob(encData.split('').reverse().join(''))));
         
         let currentSubject = null;
         let timerInterval = null;
@@ -418,13 +406,17 @@
 
         window.renderLobby = function() {
             const select = document.getElementById('mapel-select');
+            // Bersihkan dropdown terlebih dahulu
+            select.innerHTML = '<option value="">-- Pilih Mata Pelajaran --</option>';
             mapelList.forEach(m => {
                 let opt = document.createElement('option');
                 opt.value = m.id;
                 opt.textContent = m.name;
                 select.appendChild(opt);
             });
-            setInterval(checkSelection, 1000);
+            // Hentikan interval lama jika ada agar tidak double
+            if(window.checkInt) clearInterval(window.checkInt);
+            window.checkInt = setInterval(checkSelection, 1000);
         }
 
         window.checkSelection = function() {
@@ -444,11 +436,15 @@
             currentSubject = m; 
 
             const now = getNow(); 
-            const startT = new Date(m.start).getTime();
-            const endT = new Date(m.end).getTime();
+            // Amankan parse tanggal dengan menambah :00 jika detik belum ada (Khusus untuk bug Safari/Mac)
+            const safeStart = m.start.length === 16 ? m.start + ":00" : m.start;
+            const safeEnd = m.end.length === 16 ? m.end + ":00" : m.end;
+            
+            const startT = new Date(safeStart).getTime();
+            const endT = new Date(safeEnd).getTime();
 
             info.style.display = 'block';
-            info.innerText = '📅 Jadwal: ' + new Date(m.start).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) + ' - ' + new Date(m.end).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit'});
+            info.innerText = '📅 Jadwal: ' + new Date(safeStart).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) + ' - ' + new Date(safeEnd).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit'});
             status.style.display = 'block';
 
             if(sessionStorage.getItem('done_' + m.id)) {
@@ -493,7 +489,9 @@
         }
 
         window.catatPelanggaran = function(alasan) {
-            if(!currentSubject || !isExamActive || isLocked) return;
+            // Toleransi: Abaikan semua pelanggaran jika siswa sedang dalam waktu tenggang (Force Submit)
+            if(!currentSubject || !isExamActive || isLocked || isForceSubmitting) return;
+            
             let v = parseInt(sessionStorage.getItem('v_' + currentSubject.id) || '0'); v++;
             sessionStorage.setItem('v_' + currentSubject.id, v);
             triggerViolationMedia();
@@ -611,23 +609,39 @@
         ${useAntiDevTools ? `setInterval(function() { if(isExamActive && !isLocked) { const before = new Date().getTime(); debugger; const after = new Date().getTime(); if (after - before > 100) catatPelanggaran("Membuka Developer Tools / Inspect Element"); } }, 1500);` : ""}
         ${useAntiNav ? `history.pushState(null, null, location.href); window.onpopstate = function () { if(isExamActive) { history.pushState(null, null, location.href); catatPelanggaran("Mencoba kembali (Tombol Back)"); } }; window.addEventListener('beforeunload', function (e) { if(isExamActive && !isLocked) { e.preventDefault(); e.returnValue = 'Ujian sedang berlangsung! Anda yakin ingin keluar?'; } });` : ""}
 
-        window.onload = async () => {
+        async function initApp() {
             const status = document.getElementById('status-message');
-            const btn = document.getElementById('btn-mulai');
             if(status) {
-                status.style.display = 'block'; status.innerText = "⏳ Sedang menyinkronkan waktu server GMT+7..."; status.style.color = "#f59e0b";
+                status.style.display = 'block'; 
+                status.innerText = "⏳ Sedang menyinkronkan waktu server..."; 
+                status.style.color = "#f59e0b";
             }
+            
+            // Batasi waktu tunggu (timeout) fetch API maksimal 3 detik agar tidak memblokir ujian
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            
             try {
-                const res = await fetch('https://worldtimeapi.org/api/timezone/Asia/Jakarta');
+                const res = await fetch('https://worldtimeapi.org/api/timezone/Asia/Jakarta', { signal: controller.signal });
                 const data = await res.json();
                 const serverUnix = new Date(data.datetime).getTime();
                 timeOffset = serverUnix - Date.now();
             } catch(e) {
                 console.warn("Gagal sinkronisasi API, fallback ke waktu lokal perangkat.");
+            } finally {
+                clearTimeout(timeoutId);
             }
+            
             if(status) status.innerText = "";
             renderLobby();
-        };
+        }
+
+        // Jalankan inisialisasi dengan aman tanpa mengandalkan window.onload (karena script dimasukkan dinamis via Obfuscator)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
         `;
 
             const finalObfuscatedScript = obfuscateCustomScript(rawScriptCode);
