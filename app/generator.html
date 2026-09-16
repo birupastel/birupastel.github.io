@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Gerbang Ujian Google Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        /* Custom scrollbar for text area */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="text-gray-800 min-h-screen flex flex-col">
+
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span class="font-bold text-xl tracking-tight">CBT Form Generator</span>
+                </div>
+                <div>
+                    <span class="text-sm font-medium bg-blue-700 px-3 py-1 rounded-full">Versi PC/Desktop</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-7xl">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Kolom Kiri: Form Input -->
+            <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-2 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Pengaturan Ujian</h2>
+                    <div class="flex space-x-2 mt-2 sm:mt-0">
+                        <button onclick="exportConfig()" class="text-xs flex items-center space-x-1 bg-green-100 hover:bg-green-200 text-green-700 py-1.5 px-3 rounded shadow-sm transition font-semibold" title="Simpan pengaturan ke file JSON">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <span>Export Config</span>
+                        </button>
+                        <button onclick="document.getElementById('importFile').click()" class="text-xs flex items-center space-x-1 bg-purple-100 hover:bg-purple-200 text-purple-700 py-1.5 px-3 rounded shadow-sm transition font-semibold" title="Muat pengaturan dari file JSON">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <span>Import Config</span>
+                        </button>
+                        <input type="file" id="importFile" class="hidden" accept=".json" onchange="importConfig(event)">
+                    </div>
+                </div>
+                
+                <div class="space-y-5">
+                    <div>
+                        <label for="examTitle" class="block text-sm font-semibold text-gray-700 mb-1">Judul Ujian</label>
+                        <input type="text" id="examTitle" placeholder="Contoh: Penilaian Akhir Semester Ganjil" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition" value="Ujian Online Sekolah">
+                    </div>
+
+                    <!-- MAPEL DINAMIS SECTION -->
+                    <div class="pt-4 border-t">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-lg font-semibold text-gray-800">Daftar Mata Pelajaran & Karantina</h3>
+                            <button onclick="addSubject()" class="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 py-1.5 px-3 rounded-md font-medium transition shadow-sm flex items-center space-x-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                <span>Tambah Mapel</span>
+                            </button>
+                        </div>
+                        <div id="subjectsContainer" class="space-y-4 max-h-[450px] overflow-y-auto pr-2 pb-2">
+                            <!-- Dynamic subject items will be injected here -->
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t">
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800">Fitur Keamanan (Anti-Curang)</h3>
+                        
+                        <label class="flex items-start space-x-3 cursor-pointer p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200">
+                            <div class="flex items-center h-5">
+                                <input id="featAntiTab" type="checkbox" checked class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-semibold text-gray-800">Fitur 1: Deteksi Pindah Tab & Keluar Layar</span>
+                                <span class="text-xs text-gray-500">Mengunci ke layar penuh dan memunculkan peringatan jika siswa membuka tab lain atau meminimalkan browser.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 cursor-pointer p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200 mt-3">
+                            <div class="flex items-center h-5">
+                                <input id="featAntiRightClick" type="checkbox" checked class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-semibold text-gray-800">Fitur 2: Blokir Klik Kanan & Copy-Paste</span>
+                                <span class="text-xs text-gray-500">Mencegah siswa melakukan Inspect Element (F12) dan menyalin teks (Ctrl+C, Ctrl+V).</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 cursor-pointer p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200 mt-3">
+                            <div class="flex items-center h-5">
+                                <input id="featAntiSplit" type="checkbox" checked class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-semibold text-gray-800">Fitur 3: Anti Split-Screen & Resizing</span>
+                                <span class="text-xs text-gray-500">Mendeteksi jika tinggi layar mengecil drastis (membuka aplikasi melayang/layar belah).</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 cursor-pointer p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200 mt-3">
+                            <div class="flex items-center h-5">
+                                <input id="featAntiDevTools" type="checkbox" checked class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-semibold text-gray-800">Fitur 4: Anti Developer Tools & Inspect</span>
+                                <span class="text-xs text-gray-500">Membekukan layar & mencatat pelanggaran jika siswa memaksa membuka Inspect Element (F12).</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 cursor-pointer p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200 mt-3">
+                            <div class="flex items-center h-5">
+                                <input id="featAntiNav" type="checkbox" checked class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-semibold text-gray-800">Fitur 5: Cegah Tombol Back & Refresh</span>
+                                <span class="text-xs text-gray-500">Memblokir tombol kembali (back) dan memunculkan peringatan saat mencoba refresh/tutup tab.</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start space-x-3 cursor-pointer p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition border border-gray-200 mt-3 border-l-4 border-l-red-500">
+                            <div class="flex items-center h-5">
+                                <input id="featTimeout" type="checkbox" checked class="w-5 h-5 text-red-600 border-gray-300 rounded focus:ring-red-500">
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-semibold text-gray-800">Fitur 6: Timer & Paksa Submit (Timeout)</span>
+                                <span class="text-xs text-gray-500">Hitung mundur durasi. Jika habis, layar ditimpa peringatan kedip untuk memaksa submit.</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="pt-6">
+                        <button onclick="generateCode()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 flex justify-center items-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                            <span>Generate File Ujian</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: Hasil Generate -->
+            <div class="bg-white rounded-xl shadow-md flex flex-col border border-gray-100 h-[600px] lg:h-auto">
+                <div class="flex justify-between items-center p-4 border-b bg-gray-50 rounded-t-xl">
+                    <h2 class="text-lg font-bold text-gray-800">Hasil Kode HTML</h2>
+                    <div class="flex space-x-2">
+                        <button onclick="copyToClipboard()" class="flex items-center space-x-1 text-sm bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 py-1.5 px-3 rounded-md transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            <span>Copy</span>
+                        </button>
+                        <button onclick="downloadCode()" class="flex items-center space-x-1 text-sm bg-green-600 hover:bg-green-700 text-white py-1.5 px-3 rounded-md shadow transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <span>Download .html</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-grow p-0 relative">
+                    <textarea id="outputCode" class="w-full h-full p-4 bg-gray-900 text-green-400 font-mono text-sm resize-none outline-none" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3 z-50 pointer-events-none">
+        <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="toastMessage" class="font-medium">Berhasil!</span>
+    </div>
+
+    <script>
+        let subjectCount = 0;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+        }
+
+        // --- FITUR AUTO SAVE & EXPORT/IMPORT ---
+        function getFormData() {
+            const subjects = [];
+            document.querySelectorAll('.subject-item').forEach((el) => {
+                subjects.push({
+                    name: el.querySelector('.subj-name').value,
+                    url: el.querySelector('.subj-url').value,
+                    start: el.querySelector('.subj-start').value,
+                    end: el.querySelector('.subj-end').value,
+                    duration: el.querySelector('.subj-duration').value,
+                    maxV: el.querySelector('.subj-max').value,
+                    passcode: el.querySelector('.subj-passcode').value,
+                    pin: el.querySelector('.subj-pin').value
+                });
+            });
+            return {
+                title: document.getElementById('examTitle').value,
+                features: {
+                    featAntiTab: document.getElementById('featAntiTab').checked,
+                    featAntiRightClick: document.getElementById('featAntiRightClick').checked,
+                    featAntiSplit: document.getElementById('featAntiSplit').checked,
+                    featAntiDevTools: document.getElementById('featAntiDevTools').checked,
+                    featAntiNav: document.getElementById('featAntiNav').checked,
+                    featTimeout: document.getElementById('featTimeout').checked
+                },
+                subjects: subjects
+            };
+        }
+
+        function applyFormData(data) {
+            if (!data) return;
+            if (data.title) document.getElementById('examTitle').value = data.title;
+            if (data.features) {
+                if (data.features.featAntiTab !== undefined) document.getElementById('featAntiTab').checked = data.features.featAntiTab;
+                if (data.features.featAntiRightClick !== undefined) document.getElementById('featAntiRightClick').checked = data.features.featAntiRightClick;
+                if (data.features.featAntiSplit !== undefined) document.getElementById('featAntiSplit').checked = data.features.featAntiSplit;
+                if (data.features.featAntiDevTools !== undefined) document.getElementById('featAntiDevTools').checked = data.features.featAntiDevTools;
+                if (data.features.featAntiNav !== undefined) document.getElementById('featAntiNav').checked = data.features.featAntiNav;
+                if (data.features.featTimeout !== undefined) document.getElementById('featTimeout').checked = data.features.featTimeout;
+            }
+            if (data.subjects && data.subjects.length > 0) {
+                document.getElementById('subjectsContainer').innerHTML = '';
+                subjectCount = 0;
+                data.subjects.forEach(subj => addSubject(subj));
+            }
+        }
+
+        function exportConfig() {
+            const dataStr = JSON.stringify(getFormData(), null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "config_cbt_ujian.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("Konfigurasi berhasil diexport!");
+        }
+
+        function importConfig(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    applyFormData(data);
+                    showToast("Konfigurasi berhasil dimuat!");
+                } catch (err) {
+                    alert("Format File JSON tidak valid!");
+                }
+                event.target.value = ''; 
+            };
+            reader.readAsText(file);
+        }
+
+        // Timer penyimpan otomatis ke localStorage setiap 3 detik
+        setInterval(() => {
+            const data = getFormData();
+            localStorage.setItem('cbt_draft', JSON.stringify(data));
+        }, 3000);
+
+
+        function addSubject(data = null) {
+            subjectCount++;
+            const id = subjectCount;
+            const div = document.createElement('div');
+            div.className = 'p-4 bg-gray-50 border border-gray-200 rounded-lg relative subject-item shadow-sm';
+            
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const localStart = new Date(now.getTime() - offset);
+            const startStr = localStart.toISOString().slice(0,16);
+            const localEnd = new Date(now.getTime() - offset + (2 * 60 * 60 * 1000));
+            const endStr = localEnd.toISOString().slice(0,16);
+
+            div.innerHTML = `
+                <button onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-red-100 hover:bg-red-200 rounded-full w-7 h-7 flex items-center justify-center font-bold text-xs transition" title="Hapus Mapel">✕</button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Mata Pelajaran</label>
+                        <input type="text" class="subj-name w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none text-sm" placeholder="Contoh: Matematika" value="${data ? data.name : 'Mata Pelajaran ' + id}">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Link Ujian (Google Form)</label>
+                        <input type="url" class="subj-url w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none text-sm" placeholder="https://docs.google.com/forms/..." value="${data ? data.url : 'https://docs.google.com/forms/d/e/1FAIpQLSeH2JtS0wM9yYtI_G8431H12j12345/viewform'}">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Waktu Mulai Akses</label>
+                        <input type="datetime-local" class="subj-start w-full px-3 py-2 border border-gray-300 rounded outline-none text-sm" value="${data ? data.start : startStr}">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Waktu Selesai Akses</label>
+                        <input type="datetime-local" class="subj-end w-full px-3 py-2 border border-gray-300 rounded outline-none text-sm" value="${data ? data.end : endStr}">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Durasi (Menit)</label>
+                        <input type="number" class="subj-duration w-full px-3 py-2 border border-gray-300 rounded outline-none text-sm" placeholder="90" value="${data ? data.duration : '90'}">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Maks Pelanggaran</label>
+                        <input type="number" class="subj-max w-full px-3 py-2 border border-gray-300 rounded outline-none text-sm" placeholder="3" value="${data ? data.maxV : '3'}">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Passcode Siswa</label>
+                        <input type="text" class="subj-passcode w-full px-3 py-2 border border-gray-300 rounded outline-none text-sm font-mono tracking-widest bg-blue-50" placeholder="Kosongkan jika bebas" value="${data ? data.passcode : ''}">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">PIN Pengawas (Buka Blokir)</label>
+                        <input type="text" class="subj-pin w-full px-3 py-2 border border-gray-300 rounded outline-none text-sm font-mono tracking-widest bg-yellow-50" placeholder="Contoh: 123456" value="${data ? data.pin : '123456'}">
+                    </div>
+                </div>
+            `;
+            document.getElementById('subjectsContainer').appendChild(div);
+        }
+
+        // --- FUNGSI OBFUSCATOR KUSTOM ---
+        function obfuscateCustomScript(code) {
+            const b64 = btoa(unescape(encodeURIComponent(code)));
+            let shifted = "";
+            for(let i=0; i<b64.length; i++) {
+                shifted += String.fromCharCode(b64.charCodeAt(i) + 2); // Shift ASCII 2 langkah
+            }
+            return `
+        // [CBT Engine - Encrypted & Obfuscated]
+        (function(){
+            var d="${shifted}";
+            var r="";
+            for(var i=0;i<d.length;i++) r+=String.fromCharCode(d.charCodeAt(i)-2);
+            var s=document.createElement('script');
+            s.type='text/javascript';
+            s.innerHTML=decodeURIComponent(escape(atob(r)));
+            document.head.appendChild(s);
+        })();`;
+        }
+
+        function generateCode() {
+            const title = document.getElementById('examTitle').value || "Ujian Online";
+            const useAntiTab = document.getElementById('featAntiTab').checked;
+            const useAntiRightClick = document.getElementById('featAntiRightClick').checked;
+            const useAntiSplit = document.getElementById('featAntiSplit').checked;
+            const useAntiDevTools = document.getElementById('featAntiDevTools').checked;
+            const useAntiNav = document.getElementById('featAntiNav').checked;
+            const useTimeout = document.getElementById('featTimeout').checked;
+
+            const subjects = [];
+            document.querySelectorAll('.subject-item').forEach((el, index) => {
+                let url = el.querySelector('.subj-url').value;
+                if(url.includes('?')) url = url.split('?')[0]; 
+                url += "?embedded=true";
+                
+                subjects.push({
+                    id: 'subj_' + index + '_' + Date.now().toString().slice(-4),
+                    name: el.querySelector('.subj-name').value,
+                    url: url,
+                    start: el.querySelector('.subj-start').value,
+                    end: el.querySelector('.subj-end').value,
+                    duration: parseInt(el.querySelector('.subj-duration').value) || 90,
+                    maxV: parseInt(el.querySelector('.subj-max').value) || 3,
+                    passcode: el.querySelector('.subj-passcode').value,
+                    pin: el.querySelector('.subj-pin').value || '1234'
+                });
+            });
+
+            if(subjects.length === 0) {
+                showToast("Harap tambahkan minimal 1 Mata Pelajaran!");
+                return;
+            }
+
+            const jsonStr = JSON.stringify(subjects);
+            const encodedUri = encodeURIComponent(jsonStr);
+            let encrypted = "";
+            for(let i=0; i<encodedUri.length; i++) encrypted += String.fromCharCode(encodedUri.charCodeAt(i) + 5);
+            const encryptedBase64 = btoa(encrypted);
+
+            // Menyusun seluruh Skrip Pengaman Ujian yang akan di-obfuscate
+            const rawScriptCode = `
+        const encData = "${encryptedBase64}";
+        const decRaw = atob(encData);
+        let shiftedStr = "";
+        for(let i=0; i<decRaw.length; i++) {
+            shiftedStr += String.fromCharCode(decRaw.charCodeAt(i) - 5);
+        }
+        const mapelList = JSON.parse(decodeURIComponent(shiftedStr));
+        
+        let currentSubject = null;
+        let timerInterval = null;
+        let durasiDetik = 0;
+        let isForceSubmitting = false;
+        let gracePeriod = 30;
+        
+        let isExamActive = false;
+        let isLocked = false;
+        let timeOffset = 0; // Waktu sinkronisasi server
+
+        function getNow() {
+            return Date.now() + timeOffset; // Gabungan waktu lokal + selisih server API
+        }
+
+        window.renderLobby = function() {
+            const select = document.getElementById('mapel-select');
+            mapelList.forEach(m => {
+                let opt = document.createElement('option');
+                opt.value = m.id;
+                opt.textContent = m.name;
+                select.appendChild(opt);
+            });
+            setInterval(checkSelection, 1000);
+        }
+
+        window.checkSelection = function() {
+            const select = document.getElementById('mapel-select');
+            const passcode = document.getElementById('student-passcode');
+            const btn = document.getElementById('btn-mulai');
+            const info = document.getElementById('schedule-info');
+            const status = document.getElementById('status-message');
+            
+            if(!select.value) {
+                passcode.disabled = true; passcode.value = ""; btn.disabled = true;
+                info.style.display = 'none'; status.style.display = 'none'; currentSubject = null;
+                return;
+            }
+
+            const m = mapelList.find(x => x.id === select.value);
+            currentSubject = m; 
+
+            const now = getNow(); 
+            const startT = new Date(m.start).getTime();
+            const endT = new Date(m.end).getTime();
+
+            info.style.display = 'block';
+            info.innerText = '📅 Jadwal: ' + new Date(m.start).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) + ' - ' + new Date(m.end).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit'});
+            status.style.display = 'block';
+
+            if(sessionStorage.getItem('done_' + m.id)) {
+                status.innerText = "❌ Anda sudah menyelesaikan ujian ini.";
+                status.style.color = "#ef4444"; passcode.disabled = true; btn.disabled = true;
+            } else if(now < startT) {
+                status.innerText = "⏳ Ujian belum dimulai.";
+                status.style.color = "#f59e0b"; passcode.disabled = true; btn.disabled = true;
+            } else if(now > endT) {
+                status.innerText = "⛔ Waktu akses ujian telah berakhir.";
+                status.style.color = "#ef4444"; passcode.disabled = true; btn.disabled = true;
+            } else {
+                status.innerText = "✅ Ujian tersedia. Masukkan Passcode.";
+                status.style.color = "#10b981"; passcode.disabled = false; btn.disabled = false;
+            }
+        }
+
+        window.validasiDanMulai = function() {
+            const passInput = document.getElementById('student-passcode').value;
+            if(!currentSubject) return;
+            if(currentSubject.passcode !== "" && passInput !== currentSubject.passcode) {
+                alert("Passcode Siswa SALAH!"); return;
+            }
+            mulaiUjian(currentSubject.id);
+        }
+
+        function triggerViolationMedia() {
+            try { if("vibrate" in navigator) navigator.vibrate([400, 200, 400, 200, 400]); } catch(e){}
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'square'; const now = ctx.currentTime;
+                osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(800, now+0.2);
+                osc.frequency.linearRampToValueAtTime(400, now+0.4); osc.frequency.linearRampToValueAtTime(800, now+0.6);
+                gain.gain.setValueAtTime(0.5, now); gain.gain.exponentialRampToValueAtTime(0.01, now+0.8);
+                osc.start(now); osc.stop(now+1);
+            } catch(e) { }
+        }
+
+        window.catatPelanggaran = function(alasan) {
+            if(!currentSubject || !isExamActive || isLocked) return;
+            let v = parseInt(sessionStorage.getItem('v_' + currentSubject.id) || '0'); v++;
+            sessionStorage.setItem('v_' + currentSubject.id, v);
+            triggerViolationMedia();
+
+            if(v >= currentSubject.maxV) {
+                isLocked = true;
+                if(document.getElementById('warning-overlay')) document.getElementById('warning-overlay').style.display = 'none';
+                document.getElementById('exam-wrapper').style.display = 'none';
+                document.getElementById('lock-screen').style.display = 'flex';
+                document.getElementById('lock-count').innerText = v;
+            } else {
+                if(document.getElementById('warning-overlay')) {
+                    document.getElementById('warning-overlay').style.display = 'flex';
+                    document.getElementById('pelanggaran-count').innerText = v;
+                    document.getElementById('pelanggaran-max').innerText = currentSubject.maxV;
+                    if(document.getElementById('pelanggaran-alasan') && alasan) document.getElementById('pelanggaran-alasan').innerText = "Alasan: " + alasan;
+                }
+            }
+        }
+
+        window.bukaBlokir = function() {
+            if(document.getElementById('pin-input').value === currentSubject.pin) {
+                sessionStorage.setItem('v_' + currentSubject.id, 0); 
+                isLocked = false;
+                document.getElementById('pin-input').value = "";
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('exam-wrapper').style.display = 'block';
+                mulaiFullscreen();
+            } else {
+                alert("PIN PENGAWAS SALAH!"); triggerViolationMedia();
+            }
+        }
+
+        window.kembaliKeUjian = function() {
+            if(document.getElementById('warning-overlay')) document.getElementById('warning-overlay').style.display = 'none';
+            mulaiFullscreen();
+        }
+
+        function mulaiFullscreen() {
+            let elem = document.documentElement;
+            try {
+                if (elem.requestFullscreen) elem.requestFullscreen();
+                else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+                else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+            } catch(e){}
+        }
+
+        function mulaiUjian(id) {
+            isExamActive = true; isLocked = false; mulaiFullscreen();
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('exam-container').style.display = 'flex';
+            document.getElementById('exam-iframe').src = currentSubject.url;
+            document.getElementById('subj-title-display').innerText = currentSubject.name;
+            
+            let v = parseInt(sessionStorage.getItem('v_' + currentSubject.id) || '0');
+            if(v >= currentSubject.maxV) catatPelanggaran(); 
+
+            let storedStart = sessionStorage.getItem('start_' + currentSubject.id);
+            let nowUnix = Math.floor(getNow() / 1000); 
+            
+            if(!storedStart) {
+                sessionStorage.setItem('start_' + currentSubject.id, nowUnix);
+                durasiDetik = currentSubject.duration * 60;
+            } else {
+                let elapsed = nowUnix - parseInt(storedStart);
+                durasiDetik = (currentSubject.duration * 60) - elapsed;
+                if(durasiDetik < 0) durasiDetik = 0;
+            }
+
+            if(${useTimeout}) mulaiTimer();
+            else document.getElementById('time-display').innerText = "Tanpa Batas";
+        }
+
+        function mulaiTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if(isExamActive && !isLocked) {
+                    if(durasiDetik > 0) {
+                        durasiDetik--;
+                        let m = Math.floor(durasiDetik / 60).toString().padStart(2, '0');
+                        let s = (durasiDetik % 60).toString().padStart(2, '0');
+                        document.getElementById('time-display').innerText = m + ":" + s;
+                    } else if(!isForceSubmitting) {
+                        isForceSubmitting = true;
+                        document.getElementById('time-display').innerText = "00:00";
+                        if(document.getElementById('force-submit-overlay')) document.getElementById('force-submit-overlay').style.display = 'block';
+                        
+                        const graceInterval = setInterval(() => {
+                            gracePeriod--;
+                            if(document.getElementById('grace-timer')) document.getElementById('grace-timer').innerText = gracePeriod;
+                            if(gracePeriod <= 0) {
+                                clearInterval(graceInterval); clearInterval(timerInterval);
+                                isExamActive = false; 
+                                document.getElementById('exam-wrapper').innerHTML = '<div style="display:flex; height:100%; flex-direction:column; align-items:center; justify-content:center; background:#1e293b; color:#ef4444; font-size:2rem; font-weight:bold; text-align:center; padding:20px;">WAKTU HABIS!<br><button onclick="selesaiUjian()" style="margin-top:20px; padding:12px 35px; border:none; border-radius:8px; font-weight:bold; background:#3b82f6; color:white; font-size:1.2rem; cursor:pointer;">Kembali ke Halaman Awal</button></div>';
+                                if(document.getElementById('force-submit-overlay')) document.getElementById('force-submit-overlay').style.display = 'none';
+                            }
+                        }, 1000);
+                    }
+                }
+            }, 1000);
+        }
+
+        window.selesaiUjian = function() {
+            if(currentSubject) {
+                if(confirm("Apakah Anda yakin ingin menyelesaikan ujian ini? Akses akan ditutup.")) {
+                    sessionStorage.setItem('done_' + currentSubject.id, 'true');
+                    isExamActive = false; location.reload(); 
+                }
+            } else { location.reload(); }
+        }
+
+        ${useAntiTab ? `document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden' && isExamActive && !isLocked) catatPelanggaran("Pindah Tab/Aplikasi"); }); function exitHandler() { if (!document.fullscreenElement && !document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) { if(isExamActive && !isLocked) catatPelanggaran("Keluar Mode Layar Penuh"); } } document.addEventListener('fullscreenchange', exitHandler); document.addEventListener('webkitfullscreenchange', exitHandler); document.addEventListener('mozfullscreenchange', exitHandler); document.addEventListener('MSFullscreenChange', exitHandler);` : ""}
+        ${useAntiRightClick ? `document.addEventListener('contextmenu', event => event.preventDefault()); document.addEventListener('keydown', event => { if (event.key === 'F12') event.preventDefault(); if (event.ctrlKey && ['c', 'v', 'u', 'p', 's', 'C', 'V', 'U', 'P', 'S'].includes(event.key)) event.preventDefault(); }); document.onselectstart = function() { return false; }` : ""}
+        ${useAntiSplit ? `let initialWidth = window.innerWidth; window.addEventListener('resize', () => { if(isExamActive && !isLocked) { const wHeight = window.innerHeight; const sHeight = window.screen.height; const wWidth = window.innerWidth; if (wWidth < (initialWidth * 0.8) || wHeight < (sHeight * 0.5)) catatPelanggaran("Layar Terbelah (Split-Screen) / Resolusi Berubah"); } });` : ""}
+        ${useAntiDevTools ? `setInterval(function() { if(isExamActive && !isLocked) { const before = new Date().getTime(); debugger; const after = new Date().getTime(); if (after - before > 100) catatPelanggaran("Membuka Developer Tools / Inspect Element"); } }, 1500);` : ""}
+        ${useAntiNav ? `history.pushState(null, null, location.href); window.onpopstate = function () { if(isExamActive) { history.pushState(null, null, location.href); catatPelanggaran("Mencoba kembali (Tombol Back)"); } }; window.addEventListener('beforeunload', function (e) { if(isExamActive && !isLocked) { e.preventDefault(); e.returnValue = 'Ujian sedang berlangsung! Anda yakin ingin keluar?'; } });` : ""}
+
+        window.onload = async () => {
+            const status = document.getElementById('status-message');
+            const btn = document.getElementById('btn-mulai');
+            if(status) {
+                status.style.display = 'block'; status.innerText = "⏳ Sedang menyinkronkan waktu server GMT+7..."; status.style.color = "#f59e0b";
+            }
+            try {
+                const res = await fetch('https://worldtimeapi.org/api/timezone/Asia/Jakarta');
+                const data = await res.json();
+                const serverUnix = new Date(data.datetime).getTime();
+                timeOffset = serverUnix - Date.now();
+            } catch(e) {
+                console.warn("Gagal sinkronisasi API, fallback ke waktu lokal perangkat.");
+            }
+            if(status) status.innerText = "";
+            renderLobby();
+        };
+        `;
+
+            const finalObfuscatedScript = obfuscateCustomScript(rawScriptCode);
+
+            const htmlWarningOverlay = useAntiTab || useAntiSplit ? `
+    <div id="warning-overlay">
+        <div class="warning-box">
+            <h1 style="margin-top:0;">PERINGATAN!</h1>
+            <p>Anda terdeteksi melakukan pelanggaran ujian.</p>
+            <p id="pelanggaran-alasan" style="color: #ef4444; font-weight: bold; margin-bottom: 5px;"></p>
+            <p style="font-size: 1.2rem; font-weight: bold; color: #ef4444;">Total Pelanggaran: <span id="pelanggaran-count">0</span> / <span id="pelanggaran-max">0</span></p>
+            <p>Jika batas tercapai, ujian akan dikunci dan memerlukan PIN Pengawas!</p>
+            <button id="btn-kembali" onclick="kembaliKeUjian()">Kembali ke Ujian</button>
+        </div>
+    </div>` : "";
+
+            const htmlForceSubmit = useTimeout ? `
+        <div id="force-submit-overlay">
+            <div class="blink-text-box">
+                <div style="font-size:1.8rem; margin-bottom:10px; font-weight:bold;">⚠️ WAKTU HABIS! ⚠️</div>
+                <p style="font-size:1rem; line-height:1.4;">Gulir ke bawah dan segera klik <b>KIRIM/SUBMIT</b>.</p>
+                <p style="margin-top:10px; font-size:1.1rem; color:#facc15;">
+                    Sesi ditutup permanen dalam <b id="grace-timer" style="font-size:1.5rem;">30</b> detik!
+                </p>
+            </div>
+        </div>` : "";
+
+            const template = `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title} - CBT</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif; background-color: #f8fafc; color: #334155; }
+        #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%); overflow-y: auto;}
+        .login-card { background: white; width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; }
+        .login-card h1 { font-size: 1.8rem; margin: 0 0 8px 0; color: #0f172a; }
+        .login-card p.subtitle { font-size: 0.95rem; color: #64748b; margin-bottom: 25px; line-height: 1.5; }
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: #475569; }
+        .form-group select, .form-group input { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.2s; box-sizing: border-box; font-family: inherit; background: #f8fafc;}
+        .form-group select:focus, .form-group input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); background: white;}
+        #schedule-info { font-size: 0.8rem; color: #3b82f6; margin-top: 8px; font-weight: 600; display: none; background: #eff6ff; padding: 8px; border-radius: 6px; border: 1px solid #bfdbfe;}
+        #status-message { font-size: 0.85rem; margin-top: 8px; font-weight: 600; display: none; }
+        .btn-start { width: 100%; background: #2563eb; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 10px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);}
+        .btn-start:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-1px);}
+        .btn-start:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; color: #64748b;}
+
+        #exam-container { display: none; flex-direction: column; width: 100%; height: 100%; background-color: white; }
+        #exam-header { background-color: #0f172a; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-family: monospace; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;}
+        #exam-wrapper { flex-grow: 1; position: relative; width: 100%; height: 100%; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; display: block; }
+
+        #warning-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+        .warning-box { background: white; padding: 30px; border-radius: 12px; text-align: center; max-width: 500px; border-top: 6px solid #ef4444; }
+        #btn-kembali { margin-top: 20px; background: #3b82f6; color: white; border: none; padding: 12px 30px; font-size: 1.1rem; border-radius: 6px; cursor: pointer; font-weight: bold;}
+        
+        #lock-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.98); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white; }
+        .lock-box { background: #1e293b; padding: 40px; border-radius: 15px; text-align: center; max-width: 450px; border: 4px solid #ef4444; box-shadow: 0 0 40px rgba(239, 68, 68, 0.4); }
+        .lock-box input { width: 90%; padding: 15px; margin: 25px 0; text-align: center; font-size: 1.8rem; letter-spacing: 10px; border-radius: 8px; border: none; outline: none; background: #334155; color: white; font-weight:bold; }
+        .lock-box button { background: #10b981; color: white; border: none; padding: 14px 40px; font-size: 1.2rem; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;}
+
+        #force-submit-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 9998; border: 8px solid rgba(239, 68, 68, 0.8); animation: pulse-border 1s infinite; }
+        @keyframes pulse-border { 0% { box-shadow: inset 0 0 0 0 rgba(239,68,68,0.7); } 50% { box-shadow: inset 0 0 30px 15px rgba(239,68,68,0.7); } 100% { box-shadow: inset 0 0 0 0 rgba(239,68,68,0.7); } }
+        .blink-text-box { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); background-color: rgba(220, 38, 38, 0.95); color: white; padding: 15px 30px; border-radius: 10px; text-align: center; text-shadow: 1px 1px 3px black; pointer-events: none; width: 85%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    </style>
+</head>
+<body ${useAntiRightClick ? 'oncontextmenu="return false"' : ''}>
+
+    <div id="login-screen">
+        <div class="login-card">
+            <h1>${title}</h1>
+            <p class="subtitle">Silakan pilih mata pelajaran dan masukkan passcode untuk memulai sesi ujian Anda.</p>
+            <div class="form-group">
+                <label>Mata Pelajaran</label>
+                <select id="mapel-select" onchange="checkSelection()">
+                    <option value="">-- Pilih Mata Pelajaran --</option>
+                </select>
+                <div id="schedule-info"></div>
+                <div id="status-message"></div>
+            </div>
+            <div class="form-group">
+                <label>Passcode Siswa</label>
+                <input type="password" id="student-passcode" placeholder="Masukkan Passcode" disabled>
+            </div>
+            <button id="btn-mulai" class="btn-start" onclick="validasiDanMulai()" disabled>Mulai Ujian</button>
+        </div>
+    </div>
+
+    <div id="exam-container">
+        <div id="exam-header">
+            <div style="display:flex; align-items:center;">
+                <span id="subj-title-display" style="margin-right:20px; font-size:1.1rem; color:#93c5fd; font-weight:bold; background:#1e293b; padding:4px 10px; border-radius:6px;"></span>
+                <div style="font-size: 1rem;">Sisa Waktu: <span id="time-display" style="color:#facc15; font-size: 1.3rem; margin-left:5px;">--:--</span></div>
+            </div>
+            <button onclick="selesaiUjian()" style="background:#ef4444; color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Keluar / Selesai</button>
+        </div>
+        <div id="exam-wrapper">
+            <iframe id="exam-iframe" src=""></iframe>
+${htmlForceSubmit}
+        </div>
+    </div>
+
+${htmlWarningOverlay}
+
+    <div id="lock-screen">
+        <div class="lock-box">
+            <svg style="width:64px; height:64px; color:#ef4444; margin:0 auto 10px auto;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z"></path></svg>
+            <h1 style="margin-top:0; color:#ef4444;">UJIAN DIBLOKIR!</h1>
+            <p style="font-size:1.1rem; margin-bottom:5px;">Anda telah melakukan <b id="lock-count">0</b> pelanggaran.</p>
+            <p style="font-size:0.9rem; opacity:0.8;">Masukkan PIN Pengawas untuk membuka kembali sesi ujian.</p>
+            <input type="password" id="pin-input" placeholder="PIN" autocomplete="off">
+            <button onclick="bukaBlokir()">Buka Akses Ujian</button>
+        </div>
+    </div>
+
+    <script>
+${finalObfuscatedScript}
+    <\/script>
+</body>
+</html>`;
+
+            document.getElementById('outputCode').value = template;
+            showToast("Kode berhasil di-generate!");
+        }
+
+        function copyToClipboard() {
+            const textarea = document.getElementById('outputCode');
+            if (!textarea.value) { showToast("Generate kode terlebih dahulu!"); return; }
+            textarea.select();
+            document.execCommand('copy'); 
+            showToast("Kode disalin ke clipboard!");
+            window.getSelection().removeAllRanges();
+        }
+
+        function downloadCode() {
+            const content = document.getElementById('outputCode').value;
+            if (!content) { showToast("Generate kode terlebih dahulu!"); return; }
+            const titleInput = document.getElementById('examTitle').value || "Ujian";
+            const fileName = titleInput.toLowerCase().replace(/[^a-z0-9]/g, '_') + "_index.html";
+            const blob = new Blob([content], { type: "text/html" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast("File HTML mulai diunduh!");
+        }
+
+        window.onload = () => {
+            const savedDraft = localStorage.getItem('cbt_draft');
+            if (savedDraft) {
+                try {
+                    const parsed = JSON.parse(savedDraft);
+                    applyFormData(parsed);
+                } catch(e) {
+                    addSubject(); 
+                }
+            } else {
+                addSubject(); 
+            }
+            generateCode();
+        };
+    </script>
+</body>
+</html>
