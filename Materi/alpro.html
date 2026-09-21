@@ -6,21 +6,18 @@
     <title>Multimedia Pembelajaran Array C++</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Animasi kustom untuk transisi yang mulus */
         @keyframes fadeIn { 
             from { opacity: 0; transform: translateY(10px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
         .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
         
-        /* Animasi Highlight Edit Array */
         @keyframes flashHighlight {
             0% { background-color: #4ade80; border-color: #16a34a; transform: scale(1.1); box-shadow: 0 0 15px rgba(34,197,94,0.6); }
             100% { background-color: #dbeafe; border-color: #3b82f6; transform: scale(1); }
         }
         .animate-flash { animation: flashHighlight 1s ease-out forwards; }
 
-        /* Kustom scrollbar untuk terminal (Tema Terang) */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f3f4f6; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
@@ -75,8 +72,9 @@
                     <!-- Kotak Array di-render via JS -->
                 </div>
 
-                <!-- Terminal (Tema Terang) -->
+                <!-- Terminal -->
                 <div class="bg-white rounded-2xl shadow-md border border-gray-200 flex flex-col h-[350px]">
+                    <!-- Header Terminal -->
                     <div class="bg-gray-50 px-4 py-2 rounded-t-2xl flex justify-between items-center border-b border-gray-200">
                         <div class="flex gap-2">
                             <div class="w-3 h-3 rounded-full bg-red-400"></div>
@@ -87,25 +85,26 @@
                         <button onclick="simulasi.reset()" title="Reset Simulator" class="text-gray-400 hover:text-blue-600 transition-colors" id="icon-refresh"></button>
                     </div>
                     
-                    <div id="terminal-logs" class="flex-1 overflow-y-auto p-4 font-mono text-sm space-y-2 custom-scrollbar">
-                        <!-- Log di-render via JS -->
-                    </div>
-
-                    <form id="terminal-form" class="border-t border-gray-200 p-2 flex bg-gray-50 rounded-b-2xl">
+                    <!-- Input Form (Diubah ke posisi atas agar mudah dilihat) -->
+                    <form id="terminal-form" class="border-b border-gray-200 p-2 flex bg-gray-50 shadow-sm z-10 relative">
                         <span class="text-blue-600 pl-3 py-2 font-mono font-bold mr-2">❯</span>
                         <input type="text" id="terminal-input" placeholder="Ketik sintaks di sini lalu tekan Enter..." class="flex-1 bg-transparent text-gray-800 font-mono outline-none placeholder-gray-400" autocomplete="off" spellcheck="false">
                         <button type="submit" id="terminal-submit" class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-1 rounded-lg text-sm font-medium transition-colors shadow-sm">Run</button>
                     </form>
+
+                    <!-- Riwayat Log -->
+                    <div id="terminal-logs" class="flex-1 overflow-y-auto p-4 font-mono text-sm space-y-2 custom-scrollbar bg-white rounded-b-2xl">
+                        <!-- Log di-render via JS -->
+                    </div>
                 </div>
                 
                 <!-- Helper Mode Custom -->
-                <div id="custom-helper" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-sm text-blue-800">
-                    <p><strong>Tips Simulator (Mode Custom):</strong></p>
-                    <ul class="list-disc pl-5 mt-1 space-y-1">
-                        <li>Inisialisasi angka: <code>int nilai[3] = {1, 2, 3};</code></li>
-                        <li>Inisialisasi string: <code>string nama[3] = {"Andi", "Budi", "Caca"};</code></li>
-                        <li>Dukung nested indeks: <code>nilai[nilai[0]] = 50;</code></li>
-                        <li>Gunakan <code>cout &lt;&lt; nilai[1];</code> untuk melihat output.</li>
+                <div id="custom-helper" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-b-2xl text-sm text-blue-800 shadow-sm mt-4">
+                    <p><strong>💡 Tips Simulator (Mode Custom):</strong></p>
+                    <ul class="list-disc pl-5 mt-1 space-y-1 text-gray-700">
+                        <li>Mendukung maksimal 2 array sekaligus! Bisa memindah nilai (Misal: <code class="bg-white px-1 rounded text-blue-600 font-bold">a[0] = b[1];</code>)</li>
+                        <li>Dukung inisialisasi: <code class="bg-white px-1 rounded text-blue-600 font-bold">int nilai[3] = {1, 2, 3};</code></li>
+                        <li>Dukung nested indeks: <code class="bg-white px-1 rounded text-blue-600 font-bold">nilai[nilai[0]] = 50;</code></li>
                     </ul>
                 </div>
             </div>
@@ -116,10 +115,6 @@
             <!-- Kuis di-render via JS -->
         </div>
     </main>
-
-    <footer class="text-center text-gray-400 text-sm pb-8 mt-auto">
-        Media Pembelajaran Informatika Kelas X - Array C++
-    </footer>
 
     <script>
         const ICONS = {
@@ -132,7 +127,6 @@
             refresh: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>`
         };
 
-        // Inject Icons
         document.getElementById('logo-icon').innerHTML = ICONS.book;
         document.getElementById('icon-materi').innerHTML = ICONS.book;
         document.getElementById('icon-simulasi').innerHTML = ICONS.play;
@@ -166,9 +160,9 @@
                         </div>
                         <h4 class="font-semibold mt-4">Contoh:</h4>
                         <ul class="space-y-2">
-                            <li><code class="bg-gray-100 px-2 py-1 rounded text-red-600">int nilai[5];</code> <br/>Membuat array bernama 'nilai' yang bisa menyimpan 5 bilangan bulat.</li>
-                            <li><code class="bg-gray-100 px-2 py-1 rounded text-red-600">string nama[10];</code> <br/>Membuat array bernama 'nama' untuk 10 data teks (string).</li>
-                            <li><code class="bg-gray-100 px-2 py-1 rounded text-red-600">float suhu[3];</code> <br/>Membuat array bernama 'suhu' untuk 3 bilangan desimal.</li>
+                            <li><code class="bg-gray-100 border border-gray-200 px-2 py-1 rounded text-blue-700 font-bold">int nilai[5];</code> <br/>Membuat array 'nilai' yang bisa menyimpan 5 bilangan bulat.</li>
+                            <li><code class="bg-gray-100 border border-gray-200 px-2 py-1 rounded text-blue-700 font-bold">string nama[10];</code> <br/>Membuat array 'nama' untuk 10 data teks (string).</li>
+                            <li><code class="bg-gray-100 border border-gray-200 px-2 py-1 rounded text-blue-700 font-bold">int a[3] = {1, 2, 3};</code> <br/>Membuat array sekaligus mengisinya (inisialisasi).</li>
                         </ul>
                     </div>`
             },
@@ -179,7 +173,7 @@
                         <p>Berapa banyak ruang yang diambil array di memori komputer? Jawabannya bergantung pada tipe data dan jumlah elemen.</p>
                         <p class="font-semibold text-center bg-gray-100 py-2 rounded border border-gray-300">Total Memori = Ukuran Tipe Data × Jumlah Elemen</p>
                         
-                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                        <div class="overflow-x-auto rounded-lg border border-gray-200 mt-4">
                             <table class="w-full text-left border-collapse text-sm">
                                 <thead>
                                     <tr class="bg-blue-50 border-b-2 border-blue-200 text-blue-900">
@@ -199,33 +193,25 @@
                                 </tbody>
                             </table>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">*Catatan: Ukuran memori tipe data <code>string</code> dapat bervariasi (dinamis) tergantung panjang teks dan kompilator (umumnya 24-32 byte).</p>
                     </div>`
             },
             {
                 title: "Mengakses & Memanipulasi Array",
                 content: `
                     <div class="space-y-4 text-gray-700">
-                        <p>Kita menggunakan <strong>indeks</strong> (di dalam kurung siku <code>[]</code>) untuk menunjuk kotak tertentu di dalam array. Ingat, indeks selalu mulai dari 0!</p>
+                        <p>Kita menggunakan <strong>indeks</strong> (di dalam kurung siku <code>[]</code>) untuk menunjuk kotak tertentu. Ingat, indeks selalu mulai dari 0!</p>
                         
                         <h4 class="font-semibold text-blue-700 border-b pb-1">1. Memberi Nilai (Manipulasi)</h4>
                         <div class="bg-blue-50 border border-blue-100 text-gray-800 p-3 rounded-lg font-mono text-sm">
                             int nilai[3];<br/>
                             <span class="text-green-700 font-semibold">nilai[0] = 75;</span> // Mengisi kotak pertama<br/>
-                            <span class="text-green-700 font-semibold">nilai[1] = 80;</span> // Mengisi kotak kedua<br/>
                             <span class="text-green-700 font-semibold">nilai[2] = nilai[0] + 5;</span> // Kotak ketiga = 75 + 5 = 80
                         </div>
 
-                        <h4 class="font-semibold text-blue-700 border-b pb-1 mt-4">2. Membaca/Menampilkan (cout)</h4>
+                        <h4 class="font-semibold text-blue-700 border-b pb-1 mt-4">2. Membaca/Menampilkan & Input Data</h4>
                         <div class="bg-blue-50 border border-blue-100 text-gray-800 p-3 rounded-lg font-mono text-sm">
                             // Menampilkan isi indeks ke-0<br/>
                             <span class="text-blue-700 font-semibold">cout &lt;&lt; nilai[0];</span> <br/><br/>
-                            // Menampilkan hasil penjumlahan<br/>
-                            <span class="text-blue-700 font-semibold">cout &lt;&lt; nilai[1] + nilai[2];</span>
-                        </div>
-
-                        <h4 class="font-semibold text-blue-700 border-b pb-1 mt-4">3. Meminta Input User (cin)</h4>
-                        <div class="bg-blue-50 border border-blue-100 text-gray-800 p-3 rounded-lg font-mono text-sm">
                             // Meminta user mengetik angka, lalu disimpan di indeks ke-0<br/>
                             <span class="text-orange-600 font-semibold">cin &gt;&gt; nilai[0];</span>
                         </div>
@@ -236,13 +222,13 @@
                 content: `
                     <div class="space-y-4 text-gray-700">
                         <p>Dalam C++, tidak ada pemeriksaan otomatis apakah indeks yang kamu panggil itu ada atau tidak. Jika kamu membuat array berisi 5 elemen (indeks 0 sampai 4), lalu kamu mencoba mengisi indeks ke-10, program <strong>mungkin tidak error saat dikompilasi</strong>, tetapi akan kacau saat dijalankan!</p>
-                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200 shadow-sm">
                             <h4 class="font-semibold text-red-800 mb-2">Contoh Error:</h4>
                             <div class="bg-red-100 border border-red-200 text-gray-800 p-3 rounded-lg font-mono text-sm mb-2">
                                 int data[3]; // Indeks valid: 0, 1, 2 <br/>
                                 <span class="text-red-700 font-semibold">data[5] = 100;</span> // ❌ INDEX OUT OF BOUNDS!
                             </div>
-                            <p class="text-sm text-red-900">Perilaku ini akan menimpa memori program lain dan menyebabkan aplikasi <em>crash</em> atau berjalan dengan bug. Simulasi kita sudah dilengkapi deteksi error ini, coba saja praktekkan!</p>
+                            <p class="text-sm text-red-900">Perilaku ini akan menimpa memori program lain dan menyebabkan aplikasi <em>crash</em>. Simulator kita sudah dilengkapi pencegah error ini untuk melatih kedisiplinanmu!</p>
                         </div>
                     </div>`
             }
@@ -251,232 +237,339 @@
         const parser = {
             evaluateExpr(exprStr, type) {
                 let s = exprStr.trim();
-                
-                if (type === 'string' || type === 'char') {
-                    if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
-                        return s.substring(1, s.length - 1);
-                    }
-                    return s; 
+                // Keamanan sederhana mencegah eksekusi DOM di sisi client
+                if (s.match(/window|document|alert|console|eval|setTimeout/i)) {
+                    throw new Error("Sintaks tidak diizinkan.");
                 }
-
-                s = s.replace(/\s+/g, '');
-                if (!/^[0-9+\-*/().]+$/.test(s)) throw new Error("Ekspresi matematika tidak valid.");
-                try { return Function(`'use strict'; return (${s})`)(); } 
-                catch (e) { throw new Error("Gagal menghitung ekspresi."); }
+                try { 
+                    // Menggunakan Function untuk menghitung matematika & penggabungan string yang aman
+                    let res = Function(`'use strict'; return (${s})`)(); 
+                    if (type === 'int') return Math.trunc(res); // Potong desimal untuk int
+                    if (type === 'float' || type === 'double') return Number(res);
+                    if (type === 'string') return String(res);
+                    if (type === 'char') return String(res).charAt(0);
+                    return res;
+                } 
+                catch (e) { 
+                    throw new Error("Gagal menghitung. Pastikan ekspresi valid (gunakan kutip untuk teks string)."); 
+                }
             },
 
-            resolveExpression(exprStr, arrState) {
+            resolveExpression(exprStr, ObjectStates, expectedType = 'int') {
                 let s = exprStr.trim();
-                if (!arrState) return this.evaluateExpr(s, 'int');
-
-                const arrName = arrState.name;
-                const accessRegex = new RegExp(`${arrName}\\[([^\\[\\]]+)\\]`);
-                
+                const accessRegex = /([a-zA-Z_]\w*)\[([^\[\]]+)\]/;
                 let match;
                 let safety = 0;
+                
                 while ((match = accessRegex.exec(s)) !== null && safety < 50) {
-                    const innerExpr = match[1];
+                    const arrName = match[1];
+                    const innerExpr = match[2];
+                    
+                    if (!ObjectStates[arrName]) throw new Error(`Array '${arrName}' belum dideklarasikan.`);
+                    
                     let indexVal;
                     try { indexVal = this.evaluateExpr(innerExpr, 'int'); } 
                     catch (e) { throw new Error(`Gagal menghitung indeks: [${innerExpr}]`); }
 
                     if (!Number.isInteger(indexVal)) throw new Error(`Indeks harus bilangan bulat, didapat: ${indexVal}`);
-                    if (indexVal < 0 || indexVal >= arrState.size) throw new Error(`Indeks ${indexVal} di luar batas array (0 - ${arrState.size - 1}). Index Out of Bounds!`);
+                    if (indexVal < 0 || indexVal >= ObjectStates[arrName].size) throw new Error(`Indeks ${indexVal} di luar batas array '${arrName}' (0 - ${ObjectStates[arrName].size - 1}).`);
                     
-                    const val = arrState.data[indexVal];
-                    if (val === null) throw new Error(`Elemen ${arrName}[${indexVal}] belum diinisialisasi (kosong).`);
-
-                    let replacedVal = (arrState.type === 'string' || arrState.type === 'char') ? `"${val}"` : val;
+                    const val = ObjectStates[arrName].data[indexVal];
+                    // Bungkus dengan tanda kutip jika tipe datanya string/char agar bisa digabungkan dengan +
+                    let replacedVal = (ObjectStates[arrName].type === 'string' || ObjectStates[arrName].type === 'char') ? `"${val}"` : val;
                     s = s.replace(match[0], replacedVal);
                     safety++;
                 }
-                if (safety >= 50) throw new Error("Terlalu banyak array bersarang (nested) atau loop berulang.");
+                if (safety >= 50) throw new Error("Terlalu banyak array bersarang (nested) atau loop.");
                 
-                return this.evaluateExpr(s, arrState.type);
+                return this.evaluateExpr(s, expectedType);
             },
 
-            execute(command, arrayState, options = { allowRedeclare: false }) {
+            execute(command, ObjectStates, options = { allowRedeclare: false, mode: 'custom' }) {
                 let cmd = command.trim();
                 if (!cmd.endsWith(';')) return { error: "Sintaks salah: Jangan lupa titik koma (;) di akhir." };
                 cmd = cmd.slice(0, -1).trim(); 
 
-                // 1. Deklarasi (dengan atau tanpa inisialisasi)
                 const declRegex = /^(int|float|double|char|string|bool)\s+([a-zA-Z_]\w*)\s*\[\s*(\d+)\s*\](?:\s*=\s*\{\s*([^}]+)\s*\})?$/;
                 const declMatch = cmd.match(declRegex);
+                
                 if (declMatch) {
-                    if (arrayState && !options.allowRedeclare) return { error: "Array sudah dideklarasikan. Refresh terminal untuk mereset." };
                     const type = declMatch[1];
+                    const arrName = declMatch[2];
                     const size = parseInt(declMatch[3]);
-                    if (size <= 0 || size > 15) return { error: "Ukuran array harus antara 1 - 15 (untuk simulasi ini)." };
                     
-                    let initialData = Array(size).fill(null);
+                    if (ObjectStates[arrName] && !options.allowRedeclare) return { error: `Array '${arrName}' sudah ada.` };
+                    if (Object.keys(ObjectStates).length >= 2 && !ObjectStates[arrName] && options.mode === 'custom') {
+                        return { error: "Maksimal 2 array yang dapat dibuat dalam Mode Custom. Silakan klik tombol Reset untuk mengulang." };
+                    }
+                    if (size <= 0 || size > 15) return { error: "Ukuran array harus antara 1 - 15." };
+                    
+                    let defaultVal = (type === 'string' || type === 'char') ? "" : 0;
+                    let initialData = Array(size).fill(defaultVal);
+
                     if (declMatch[4]) {
                         try {
                             const rawVals = declMatch[4].split(',').map(s => s.trim());
                             let vals = [];
-                            for(let i=0; i<rawVals.length; i++) {
-                                vals.push(this.evaluateExpr(rawVals[i], type));
-                            }
+                            for(let i=0; i<rawVals.length; i++) vals.push(this.evaluateExpr(rawVals[i], type));
                             if (vals.length > size) throw new Error("Jumlah data inisialisasi melebihi ukuran array.");
-                            vals.forEach((v, i) => initialData[i] = v);
+                            vals.forEach((v, i) => initialData[i] = v); 
                         } catch (e) {
                             return { error: `Gagal inisialisasi: ${e.message}` };
                         }
                     }
 
+                    const newArrayData = { type: type, name: arrName, size: size, data: initialData };
                     return {
-                        newArray: { type: type, name: declMatch[2], size: size, data: initialData },
-                        log: `Berhasil membuat array '${declMatch[2]}' berukuran ${size}${declMatch[4] ? ' beserta inisialisasi awalnya.' : '.'}`
+                        newStates: { ...ObjectStates, [arrName]: newArrayData },
+                        log: `Berhasil membuat array '${arrName}' berukuran ${size}${declMatch[4] ? ' beserta inisialisasi awalnya.' : '.'}`
                     };
                 }
 
-                if (!arrayState) return { error: "Deklarasikan array terlebih dahulu! (misal: int nilai[5];)" };
+                if (Object.keys(ObjectStates).length === 0) return { error: "Deklarasikan array terlebih dahulu! (misal: int nilai[5];)" };
 
-                // 2. Output (cout)
                 if (cmd.startsWith("cout")) {
                     const outRegex = /^cout\s*<<\s*(.+)$/;
                     const outMatch = cmd.match(outRegex);
                     if (outMatch) {
                         try {
-                            const result = this.resolveExpression(outMatch[1], arrayState);
+                            // Mencari tipe data untuk cout (ambil dari array pertama yang ada, atau anggap int jika kosong)
+                            const outputType = Object.values(ObjectStates).length > 0 ? Object.values(ObjectStates)[0].type : 'int';
+                            const result = this.resolveExpression(outMatch[1], ObjectStates, outputType);
                             return { log: `> Output: ${result}`, output: result };
                         } catch (err) { return { error: err.message }; }
                     } else { return { error: "Sintaks cout salah. Gunakan: cout << ekspresi;" }; }
                 }
 
-                // 3. Assignment
                 const eqIndex = cmd.indexOf('=');
                 if (eqIndex > -1) {
                     const lhs = cmd.substring(0, eqIndex).trim();
                     const rhs = cmd.substring(eqIndex + 1).trim();
-
-                    const lhsRegex = new RegExp(`^${arrayState.name}\\[(.+)\\]$`);
-                    const lhsMatch = lhs.match(lhsRegex);
+                    const lhsMatch = lhs.match(/^([a-zA-Z_]\w*)\[(.+)\]$/);
 
                     if (lhsMatch) {
-                        try {
-                            const targetIndex = this.resolveExpression(lhsMatch[1], { ...arrayState, type: 'int' });
-                            if (!Number.isInteger(targetIndex)) throw new Error(`Indeks tujuan bukan integer: ${targetIndex}`);
-                            if (targetIndex < 0 || targetIndex >= arrayState.size) throw new Error(`Indeks tujuan ${targetIndex} di luar batas. Index Out of Bounds!`);
+                        const arrName = lhsMatch[1];
+                        const indexExpr = lhsMatch[2];
+                        
+                        if (!ObjectStates[arrName]) return { error: `Array '${arrName}' tidak ditemukan.` };
 
-                            const valueToAssign = this.resolveExpression(rhs, arrayState);
-                            const newData = [...arrayState.data];
+                        try {
+                            const targetIndex = this.resolveExpression(indexExpr, ObjectStates, 'int');
+                            if (!Number.isInteger(targetIndex)) throw new Error(`Indeks tujuan bukan integer.`);
+                            if (targetIndex < 0 || targetIndex >= ObjectStates[arrName].size) throw new Error(`Indeks ${targetIndex} di luar batas array '${arrName}'. Out of Bounds!`);
+
+                            const valueToAssign = this.resolveExpression(rhs, ObjectStates, ObjectStates[arrName].type);
+                            const newData = [...ObjectStates[arrName].data];
                             newData[targetIndex] = valueToAssign;
 
+                            const newStates = { ...ObjectStates, [arrName]: { ...ObjectStates[arrName], data: newData } };
+                            
                             return {
-                                newArray: { ...arrayState, data: newData },
-                                log: `[Update] ${arrayState.name}[${targetIndex}] diisi nilai ${valueToAssign}`,
+                                newStates: newStates,
+                                log: `[Update] ${arrName}[${targetIndex}] diisi nilai ${valueToAssign}`,
+                                modifiedArray: arrName,
                                 modifiedIndex: targetIndex
                             };
                         } catch (err) { return { error: err.message }; }
-                    } else { return { error: `Sintaks penugasan salah. Pastikan format: ${arrayState.name}[indeks] = ekspresi;` }; }
+                    } else { return { error: `Sintaks penugasan salah. Pastikan format: nama_array[indeks] = ekspresi;` }; }
                 }
-
                 return { error: "Perintah tidak dikenali. Gunakan deklarasi, penugasan (=), atau cout." };
             }
         };
 
         const missionGenerator = {
             generate() {
-                const themes = [
-                    { name: 'umur', type: 'int', desc: 'data umur' },
-                    { name: 'skor', type: 'int', desc: 'poin permainan' },
-                    { name: 'stok', type: 'int', desc: 'jumlah stok barang' },
-                    { name: 'harga', type: 'int', desc: 'harga item' },
-                    { name: 'waktu', type: 'int', desc: 'waktu tempuh' },
-                    { name: 'jarak', type: 'int', desc: 'jarak tempuh' }
-                ];
-                const t = themes[Math.floor(Math.random() * themes.length)];
-                const arr = t.name;
+                const types = ['int', 'float', 'string'];
+                const selectedType = types[Math.floor(Math.random() * types.length)];
+                const size = Math.floor(Math.random() * 3) + 6; 
                 
-                // Mengacak ukuran array dan indeks yang dipakai tiap kali misi di-generate
-                const size = Math.floor(Math.random() * 4) + 5; // ukuran 5 sampai 8
-                const v1 = Math.floor(Math.random() * 10) + 5;
-                const v2 = Math.floor(Math.random() * 5) + 1;
-                
-                // Mengacak target indeks untuk dimanipulasi
-                const iA = Math.floor(Math.random() * (size - 2)); 
-                const iB = iA + 1;
-                const iC = iA + 2; 
+                const idxA = 0;
+                const idxB = 1;
+                const idxC = 2;
+                const idxD = 3;
 
-                // Mengacak nilai awal untuk Misi 6
-                const n_v1 = Math.floor(Math.random() * 10) * 10 + 10; // 10, 20, 30...
-                const n_v2 = n_v1 + 10;
-                const n_v3 = n_v2 + 10;
-                
-                return [
-                    {
-                        text: `Misi 1: Deklarasikan sebuah array bertipe ${t.type} untuk menampung ${t.desc} sebanyak ${size} elemen dengan nama '${arr}'.`,
-                        hint: `tipe_data nama_array[ukuran];`,
-                        check: (cmd, res) => res.newArray && res.newArray.name === arr && res.newArray.size === size
-                    },
-                    {
-                        text: `Misi 2: Isi array '${arr}' pada indeks ke ${iA} menjadi ${v1};`,
-                        hint: `nama_array[indeks] = nilai;`,
-                        check: (cmd, res) => res.newArray && res.newArray.data[iA] === v1
-                    },
-                    {
-                        text: `Misi 3: Isi array '${arr}' pada indeks ke ${iB} menjadi ${v2};`,
-                        hint: `nama_array[indeks] = nilai;`,
-                        check: (cmd, res) => res.newArray && res.newArray.data[iB] === v2
-                    },
-                    {
-                        text: `Misi 4: Isi array '${arr}' pada indeks ke ${iC} menjadi hasil penjumlahan antara indeks ke ${iA} dan indeks ke ${iB};`,
-                        hint: `nama_array[indeks_tujuan] = nama_array[indeks_A] + nama_array[indeks_B];`,
-                        check: (cmd, res) => res.newArray && res.newArray.data[iC] === (v1 + v2) && cmd.includes(`${arr}[${iA}]`) && cmd.includes(`${arr}[${iB}]`)
-                    },
-                    {
-                        text: `Misi 5: Tampilkan isi array '${arr}' indeks ke ${iC} menggunakan perintah cout;`,
-                        hint: `cout << nama_array[indeks];`,
-                        check: (cmd, res) => res.output !== undefined && res.output === (v1 + v2) && cmd.includes('cout') && cmd.includes(`[${iC}]`)
-                    },
-                    {
-                        text: `Misi 6: Deklarasi ulang sekaligus inisialisasi! Buat array baru bernama 'nilai' tipe int ukuran 3, langsung diisi dengan angka {${n_v1}, ${n_v2}, ${n_v3}}.`,
-                        hint: `tipe_data nama_array[ukuran] = {nilai1, nilai2, nilai3};`,
-                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.size === 3 && res.newArray.data[0] === n_v1 && res.newArray.data[2] === n_v3,
-                        allowRedeclare: true
-                    },
-                    {
-                        text: `Misi 7: Ubah isi array 'nilai' pada indeks ke 0 menjadi 1;`,
-                        hint: `nama_array[indeks] = nilai;`,
-                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.data[0] === 1
-                    },
-                    {
-                        text: `Misi 8: Latihan Indeks Bersarang (Nested)! Isi array 'nilai' pada indeks yang ditunjuk oleh (nilai indeks ke 0) dengan angka 99.`,
-                        hint: `nama_array[nama_array[indeks_sumber]] = nilai;`,
-                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.data[1] === 99 && cmd.replace(/\s/g,'').includes(`nilai[nilai[0]]`)
-                    },
-                    {
-                        text: `Misi 9: Isi array 'nilai' pada indeks hasil operasi matematika (0+2) menjadi hasil penjumlahan indeks ke 0 dan indeks ke 1;`,
-                        hint: `nama_array[operasi_matematika] = nama_array[indeks_A] + nama_array[indeks_B];`,
-                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.data[2] === (1 + 99) && cmd.replace(/\s/g,'').includes(`[0+2]`)
-                    },
-                    {
-                        text: `Misi 10: Tampilkan hasil perkalian (menggunakan *) antara indeks ke 1 dan indeks ke 2 dari array 'nilai'.`,
-                        hint: `cout << ekspresi_matematika;`,
-                        check: (cmd, res) => res.output !== undefined && res.output === (99 * (n_v2)) && cmd.includes('nilai[1]') && cmd.includes('*') && cmd.includes('nilai[2]')
-                    }
-                ];
+                let missions = [];
+
+                if (selectedType === 'int') {
+                    const themes = [
+                        { name: 'umur', desc: 'data umur siswa' },
+                        { name: 'skor', desc: 'poin permainan' },
+                        { name: 'stok', desc: 'jumlah stok barang' }
+                    ];
+                    const t = themes[Math.floor(Math.random() * themes.length)];
+                    const arr = t.name;
+                    const valA = idxB; // Kunci validasi untuk Nested M6
+                    const valB = Math.floor(Math.random() * 20) + 10; 
+                    
+                    const ops = ['+', '-', '*'];
+                    const op = ops[Math.floor(Math.random() * ops.length)];
+                    const opWord = op === '+' ? 'ditambah' : op === '-' ? 'dikurangi' : 'dikali';
+                    const resultM4 = op === '+' ? (valA + valB) : op === '-' ? (valA - valB) : (valA * valB);
+
+                    missions = [
+                        {
+                            text: `Misi 1: Deklarasikan sebuah array bernama '${arr}' untuk menampung ${size} buah ${t.desc}. (Tipe data bilangan bulat)`,
+                            hint: `tipe_data nama_array[ukuran];`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].size === size && res.newStates[arr].type === 'int',
+                            allowRedeclare: true
+                        },
+                        {
+                            text: `Misi 2: Isi array '${arr}' pada indeks ke ${idxA} dengan angka ${valA};`,
+                            hint: `nama_array[indeks] = nilai;`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].data[idxA] === valA
+                        },
+                        {
+                            text: `Misi 3: Isi array '${arr}' pada indeks ke ${idxB} dengan angka ${valB};`,
+                            hint: `nama_array[indeks] = nilai;`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].data[idxB] === valB
+                        },
+                        {
+                            text: `Misi 4: Isi array '${arr}' pada indeks ke ${idxC} dengan hasil dari indeks ke ${idxA} ${opWord} indeks ke ${idxB}.`,
+                            hint: `nama_array[tujuan] = nama_array[sumber1] ${op} nama_array[sumber2];`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].data[idxC] === resultM4 && cmd.includes(op) && cmd.includes(`${arr}[${idxA}]`) && cmd.includes(`${arr}[${idxB}]`)
+                        },
+                        {
+                            text: `Misi 5: Tampilkan (output) isi array '${arr}' indeks ke ${idxC} menggunakan perintah cout.`,
+                            hint: `cout << nama_array[indeks];`,
+                            check: (cmd, res) => res.output !== undefined && res.output === resultM4 && cmd.includes('cout') && cmd.includes(`[${idxC}]`)
+                        },
+                        {
+                            text: `Misi 6: (Tantangan Bersarang) Isi array '${arr}' pada indeks ke ${idxD} dengan nilai dari array indeks yang ditunjuk oleh indeks ke ${idxA}.`,
+                            hint: `nama_array[tujuan] = nama_array[nama_array[sumber]];`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].data[idxD] === valB && cmd.replace(/\s/g,'').includes(`${arr}[${arr}[${idxA}]]`)
+                        },
+                        {
+                            text: `Misi 7: Tampilkan hasil perhitungan indeks ke ${idxB} ditambah indeks ke ${idxD}.`,
+                            hint: `cout << nama_array[idxA] + nama_array[idxB];`,
+                            check: (cmd, res) => res.output !== undefined && res.output === (valB + valB) && cmd.includes('+')
+                        }
+                    ];
+                } 
+                else if (selectedType === 'float') {
+                    const themes = [
+                        { name: 'suhu', desc: 'suhu badan' },
+                        { name: 'berat', desc: 'berat badan (kg)' },
+                        { name: 'jarak', desc: 'jarak tempuh (km)' }
+                    ];
+                    const t = themes[Math.floor(Math.random() * themes.length)];
+                    const arr = t.name;
+                    const valA = parseFloat((Math.random() * 10 + 20).toFixed(1)); 
+                    const valB = parseFloat((Math.random() * 10 + 10).toFixed(1)); 
+                    
+                    const ops = ['+', '-', '*'];
+                    const op = ops[Math.floor(Math.random() * ops.length)];
+                    const opWord = op === '+' ? 'ditambah' : op === '-' ? 'dikurangi' : 'dikali';
+                    const resultM4 = op === '+' ? (valA + valB) : op === '-' ? (valA - valB) : (valA * valB);
+                    const resultM6 = valA / 2; // Hitungan khusus Misi 6 float
+
+                    missions = [
+                        {
+                            text: `Misi 1: Deklarasikan array bernama '${arr}' untuk menampung ${size} buah data ${t.desc}. (Tipe data bilangan desimal / float)`,
+                            hint: `tipe_data nama_array[ukuran];`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].size === size && res.newStates[arr].type === 'float',
+                            allowRedeclare: true
+                        },
+                        {
+                            text: `Misi 2: Isi array '${arr}' pada indeks ke ${idxA} dengan angka ${valA};`,
+                            hint: `nama_array[indeks] = nilai;`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && Math.abs(res.newStates[arr].data[idxA] - valA) < 0.001
+                        },
+                        {
+                            text: `Misi 3: Isi array '${arr}' pada indeks ke ${idxB} dengan angka ${valB};`,
+                            hint: `nama_array[indeks] = nilai;`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && Math.abs(res.newStates[arr].data[idxB] - valB) < 0.001
+                        },
+                        {
+                            text: `Misi 4: Isi array '${arr}' pada indeks ke ${idxC} dengan hasil dari indeks ke ${idxA} ${opWord} indeks ke ${idxB}.`,
+                            hint: `nama_array[tujuan] = nama_array[sumber1] ${op} nama_array[sumber2];`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && Math.abs(res.newStates[arr].data[idxC] - resultM4) < 0.001 && cmd.includes(op) && cmd.includes(`${arr}[${idxA}]`) && cmd.includes(`${arr}[${idxB}]`)
+                        },
+                        {
+                            text: `Misi 5: Tampilkan (output) isi array '${arr}' indeks ke ${idxC} menggunakan perintah cout.`,
+                            hint: `cout << nama_array[indeks];`,
+                            check: (cmd, res) => res.output !== undefined && Math.abs(res.output - resultM4) < 0.001 && cmd.includes('cout') && cmd.includes(`[${idxC}]`)
+                        },
+                        {
+                            text: `Misi 6: (Kalkulasi) Isi array '${arr}' pada indeks ke ${idxD} dengan nilai dari indeks ke ${idxA} dibagi 2.`,
+                            hint: `nama_array[tujuan] = nama_array[sumber] / 2;`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && Math.abs(res.newStates[arr].data[idxD] - resultM6) < 0.001 && cmd.includes('/')
+                        },
+                        {
+                            text: `Misi 7: Tampilkan hasil perhitungan indeks ke ${idxC} ditambah indeks ke ${idxD}.`,
+                            hint: `cout << nama_array[idxA] + nama_array[idxB];`,
+                            check: (cmd, res) => res.output !== undefined && Math.abs(res.output - (resultM4 + resultM6)) < 0.001 && cmd.includes('+')
+                        }
+                    ];
+                } 
+                else { // Skenario String
+                    const themes = [
+                        { name: 'nama', desc: 'nama siswa' },
+                        { name: 'kota', desc: 'nama kota' },
+                        { name: 'mapel', desc: 'mata pelajaran' }
+                    ];
+                    const t = themes[Math.floor(Math.random() * themes.length)];
+                    const arr = t.name;
+                    
+                    let valA, valB, staticText;
+                    if(arr === 'nama') { valA = "Andi"; valB = "Budi"; staticText = "Juara"; }
+                    else if(arr === 'kota') { valA = "Solo"; valB = "Bali"; staticText = "Indah"; }
+                    else { valA = "Fisika"; valB = "Kimia"; staticText = "Seru"; }
+
+                    missions = [
+                        {
+                            text: `Misi 1: Deklarasikan array bernama '${arr}' untuk menampung ${size} data ${t.desc}. (Tipe data teks / string)`,
+                            hint: `tipe_data nama_array[ukuran];`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].size === size && res.newStates[arr].type === 'string',
+                            allowRedeclare: true
+                        },
+                        {
+                            text: `Misi 2: Isi array '${arr}' pada indeks ke ${idxA} dengan teks "${valA}";`,
+                            hint: `nama_array[indeks] = "Teks"; (Ingat tanda kutip!)`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].data[idxA] === valA
+                        },
+                        {
+                            text: `Misi 3: Isi array '${arr}' pada indeks ke ${idxB} dengan teks "${valB}";`,
+                            hint: `nama_array[indeks] = "Teks";`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].data[idxB] === valB
+                        },
+                        {
+                            text: `Misi 4: Salin (Copy) isi dari indeks ke ${idxA} untuk dimasukkan ke dalam indeks ke ${idxC}.`,
+                            hint: `nama_array[tujuan] = nama_array[sumber];`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].data[idxC] === valA && cmd.includes(`${arr}[${idxA}]`)
+                        },
+                        {
+                            text: `Misi 5: Tampilkan (output) isi array '${arr}' indeks ke ${idxC} menggunakan perintah cout.`,
+                            hint: `cout << nama_array[indeks];`,
+                            check: (cmd, res) => res.output !== undefined && res.output === valA && cmd.includes('cout') && cmd.includes(`[${idxC}]`)
+                        },
+                        {
+                            text: `Misi 6: (Penggabungan String) Gabungkan isi dari indeks ke ${idxA} dan indeks ke ${idxB} (gunakan tanda +), simpan hasilnya ke indeks ke ${idxD}.`,
+                            hint: `nama_array[tujuan] = nama_array[sumber1] + nama_array[sumber2];`,
+                            check: (cmd, res) => res.newStates && res.newStates[arr] && res.newStates[arr].data[idxD] === (valA + valB) && cmd.includes('+')
+                        },
+                        {
+                            text: `Misi 7: Tampilkan gabungan dari indeks ke ${idxD} ditambah teks statis "${staticText}".`,
+                            hint: `cout << nama_array[indeks] + "TeksStatis";`,
+                            check: (cmd, res) => res.output !== undefined && res.output === (valA + valB + staticText) && cmd.includes('+') && cmd.includes(`"${staticText}"`)
+                        }
+                    ];
+                }
+
+                return missions;
             }
         };
 
         const simulasi = {
             mode: 'custom',
-            state: null,
-            logs: [{ type: 'info', text: "Selamat datang di Simulator Array! Ketik perintah bebas." }],
+            states: {},
+            logs: [{ type: 'info', text: "Selamat datang! Ketik perintah bebas." }],
             missions: [],
             missionIdx: 0,
             complete: false,
-            lastModifiedIndex: null,
+            lastModified: { arrName: null, index: null },
             showHint: false,
 
             init() {
-                const savedMisi = localStorage.getItem('array_cpp_mission_idx');
-                if (savedMisi !== null) {
-                    this.missionIdx = parseInt(savedMisi);
-                    if (this.missionIdx >= 10) this.missionIdx = 0;
-                }
-
                 this.missions = missionGenerator.generate();
                 document.getElementById('terminal-form').addEventListener('submit', (e) => {
                     e.preventDefault();
@@ -487,20 +580,20 @@
 
             setMode(newMode) {
                 this.mode = newMode;
-                this.state = null;
+                this.states = {};
                 this.complete = false;
-                this.lastModifiedIndex = null;
+                this.lastModified = { arrName: null, index: null };
                 this.showHint = false;
                 if (newMode === 'misi') {
-                    if (this.missionIdx >= this.missions.length) this.missionIdx = 0;
+                    this.missionIdx = 0;
                     this.missions = missionGenerator.generate();
-                    this.logs = [{ type: 'info', text: `✨ Mode Misi aktif! Melanjutkan ke Misi ${this.missionIdx + 1}.` }];
+                    this.logs = [{ type: 'info', text: `✨ Mode Misi aktif! Mulai dari Misi 1.` }];
                     document.getElementById('btn-mode-misi').className = "px-6 py-2 rounded-md font-medium text-sm transition-colors bg-blue-600 text-white shadow";
                     document.getElementById('btn-mode-custom').className = "px-6 py-2 rounded-md font-medium text-sm transition-colors text-gray-500 hover:text-gray-700";
                     document.getElementById('mission-card').classList.remove('hidden');
                     document.getElementById('custom-helper').classList.add('hidden');
                 } else {
-                    this.logs = [{ type: 'info', text: "🔧 Mode Custom aktif! Bebas bereksperimen." }];
+                    this.logs = [{ type: 'info', text: "🔧 Mode Custom aktif! Bebas bereksperimen, maksimal 2 Array." }];
                     document.getElementById('btn-mode-custom').className = "px-6 py-2 rounded-md font-medium text-sm transition-colors bg-blue-600 text-white shadow";
                     document.getElementById('btn-mode-misi').className = "px-6 py-2 rounded-md font-medium text-sm transition-colors text-gray-500 hover:text-gray-700";
                     document.getElementById('mission-card').classList.add('hidden');
@@ -512,12 +605,11 @@
             restartMissions() {
                 this.missionIdx = 0;
                 this.complete = false;
-                this.state = null;
-                this.lastModifiedIndex = null;
+                this.states = {}; 
+                this.lastModified = { arrName: null, index: null };
                 this.showHint = false;
-                localStorage.setItem('array_cpp_mission_idx', 0);
-                this.missions = missionGenerator.generate(); // Generate set soal yang baru dan unik
-                this.logs = [{ type: 'info', text: "✨ Skenario misi baru telah dibuat! Mulai dari awal." }];
+                this.missions = missionGenerator.generate();
+                this.logs = [{ type: 'info', text: "✨ Simulasi direset! Skenario misi baru telah dibuat." }];
                 
                 const inputEl = document.getElementById('terminal-input');
                 const submitBtn = document.getElementById('terminal-submit');
@@ -529,11 +621,11 @@
             },
 
             reset() {
-                this.state = null;
-                this.lastModifiedIndex = null;
-                this.logs = [{ type: 'info', text: "Simulator direset. Mulai dari deklarasi awal." }];
-                this.renderVisualizer();
-                this.renderLogs();
+                this.states = {};
+                this.lastModified = { arrName: null, index: null };
+                this.logs = [{ type: 'info', text: "Simulator direset. Mulai dari awal." }];
+                if(this.mode === 'misi') this.restartMissions();
+                else this.renderAll();
             },
 
             handleCommand() {
@@ -543,7 +635,7 @@
 
                 this.logs.push({ type: 'cmd', text: cmd });
                 inputEl.value = '';
-                this.lastModifiedIndex = null;
+                this.lastModified = { arrName: null, index: null };
 
                 let currentMisi = null;
                 let allowRedeclare = false;
@@ -553,35 +645,32 @@
                     allowRedeclare = !!currentMisi.allowRedeclare;
                 }
 
-                const result = parser.execute(cmd, this.state, { allowRedeclare });
+                const result = parser.execute(cmd, this.states, { allowRedeclare: allowRedeclare, mode: this.mode });
 
                 if (result.error) {
                     this.logs.push({ type: 'error', text: result.error });
                 } else {
                     if (this.mode === 'misi' && currentMisi) {
                         if (currentMisi.check(cmd, result)) {
-                            if (result.newArray) this.state = result.newArray;
-                            if (result.modifiedIndex !== undefined) this.lastModifiedIndex = result.modifiedIndex;
+                            if (result.newStates) this.states = result.newStates;
+                            if (result.modifiedIndex !== undefined) this.lastModified = { arrName: result.modifiedArray, index: result.modifiedIndex };
                             if (result.log) this.logs.push({ type: 'success', text: result.log });
                             
                             this.logs.push({ type: 'success', text: `✨ Misi ${this.missionIdx + 1} Selesai!` });
-                            this.showHint = false; // Reset hint (tutup konsep) untuk misi selanjutnya
+                            this.showHint = false;
                             
                             if (this.missionIdx + 1 < this.missions.length) {
                                 this.missionIdx++;
-                                localStorage.setItem('array_cpp_mission_idx', this.missionIdx);
                             } else {
                                 this.complete = true;
-                                this.missionIdx = 10;
-                                localStorage.setItem('array_cpp_mission_idx', this.missionIdx);
                                 this.logs.push({ type: 'success', text: `🎉 SELAMAT! Semua misi diselesaikan!` });
                             }
                         } else {
-                            this.logs.push({ type: 'error', text: `❌ Ditolak: Perintah valid secara sintaks, namun belum menjawab tujuan Misi ${this.missionIdx + 1}. Perhatikan konsepnya!` });
+                            this.logs.push({ type: 'error', text: `❌ Ditolak: Perintah valid secara sintaks, namun belum menjawab tujuan Misi ${this.missionIdx + 1}.` });
                         }
                     } else {
-                        if (result.newArray) this.state = result.newArray;
-                        if (result.modifiedIndex !== undefined) this.lastModifiedIndex = result.modifiedIndex;
+                        if (result.newStates) this.states = result.newStates;
+                        if (result.modifiedIndex !== undefined) this.lastModified = { arrName: result.modifiedArray, index: result.modifiedIndex };
                         if (result.log) this.logs.push({ type: 'success', text: result.log });
                     }
                 }
@@ -603,7 +692,7 @@
                 if (this.mode === 'misi' && this.complete) {
                     inputEl.disabled = true;
                     submitBtn.disabled = true;
-                    inputEl.placeholder = "Misi selesai!";
+                    inputEl.placeholder = "Semua misi selesai!";
                 } else {
                     inputEl.disabled = false;
                     submitBtn.disabled = false;
@@ -620,7 +709,7 @@
                     card.innerHTML = `
                         <div class="text-center animate-fadeIn py-2">
                             <h3 class="text-3xl font-bold mb-2">🎉 Luar Biasa!</h3>
-                            <p class="text-blue-100 mb-6">Kamu telah berhasil menyelesaikan ke-10 tantangan array dan menguasai dasar manipulasinya.</p>
+                            <p class="text-blue-100 mb-6">Kamu telah berhasil menyelesaikan ke-7 tantangan array.</p>
                             <button onclick="simulasi.restartMissions()" class="bg-white text-blue-800 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition-colors">
                                 Ulangi dengan Misi Berbeda
                             </button>
@@ -630,18 +719,21 @@
                     card.innerHTML = `
                         <div class="animate-fadeIn">
                             <div class="flex justify-between items-center mb-3">
-                                <span class="bg-blue-900/60 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border border-blue-500/30">Misi ${this.missionIdx + 1} / 10</span>
+                                <span class="bg-blue-900/60 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border border-blue-500/30">Misi ${this.missionIdx + 1} / 7</span>
+                                <div class="flex gap-2">
+                                    <button onclick="simulasi.restartMissions()" title="Reset Misi dari awal" class="text-xs bg-red-500/20 hover:bg-red-500/40 text-red-100 px-3 py-1 rounded-md transition-colors flex items-center gap-1 font-medium border border-red-500/30">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg> Reset
+                                    </button>
+                                    <button onclick="simulasi.toggleHint()" class="text-xs font-medium text-blue-200 hover:text-white flex items-center transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                        ${this.showHint ? 'Tutup Konsep' : 'Buka Konsep'}
+                                    </button>
+                                </div>
                             </div>
                             <h3 class="text-lg font-medium leading-relaxed mb-4">${m.text}</h3>
-                            <div class="mt-4">
-                                <button onclick="simulasi.toggleHint()" class="text-sm font-medium text-blue-200 hover:text-white flex items-center transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                                    ${this.showHint ? 'Sembunyikan Konsep' : 'Tampilkan Konsep Singkat'}
-                                </button>
-                                <div class="${this.showHint ? 'block animate-fadeIn' : 'hidden'} mt-3 bg-blue-900/40 p-3 rounded-xl border border-blue-500/30 text-sm">
-                                    <span class="text-blue-300 block mb-1 text-xs uppercase tracking-wider font-bold">💡 Konsep:</span>
-                                    <code class="font-mono text-green-300">${m.hint}</code>
-                                </div>
+                            <div class="${this.showHint ? 'block animate-fadeIn' : 'hidden'} mt-3 bg-blue-900/40 p-3 rounded-xl border border-blue-500/30 text-sm">
+                                <span class="text-blue-300 block mb-1 text-xs uppercase tracking-wider font-bold">💡 Konsep:</span>
+                                <code class="font-mono text-green-300 whitespace-pre-wrap">${m.hint}</code>
                             </div>
                         </div>`;
                 }
@@ -649,7 +741,9 @@
 
             renderVisualizer() {
                 const area = document.getElementById('visualizer-area');
-                if (!this.state) {
+                const stateKeys = Object.keys(this.states);
+
+                if (stateKeys.length === 0) {
                     area.innerHTML = `
                         <div class="text-gray-400 text-center animate-fadeIn">
                             <div class="text-4xl mb-2">📦</div>
@@ -658,41 +752,49 @@
                     return;
                 }
 
-                let boxesHTML = this.state.data.map((val, idx) => {
-                    const isHighlighted = idx === this.lastModifiedIndex;
-                    const baseStyle = val !== null ? 'bg-blue-100 border-blue-500 text-blue-900' : 'bg-gray-50 border-gray-300 text-gray-400';
-                    const animStyle = isHighlighted ? 'animate-flash' : '';
-                    let displayVal = val;
-                    if (val !== null && (this.state.type === 'string' || this.state.type === 'char')) {
-                        displayVal = `"${val}"`;
-                    }
-                    
-                    return `
-                    <div class="flex flex-col items-center">
-                        <div class="w-16 h-16 border-2 flex items-center justify-center text-xl font-bold rounded-lg shadow-sm transition-all duration-300 ${baseStyle} ${animStyle}">
-                            ${val !== null ? displayVal : 'null'}
-                        </div>
-                        <div class="mt-2 text-sm font-mono text-gray-500 bg-gray-100 px-2 rounded">[${idx}]</div>
-                    </div>
-                    `;
-                }).join('');
+                let html = `<div class="w-full animate-fadeIn flex flex-col gap-6">`;
 
-                area.innerHTML = `
-                    <div class="w-full animate-fadeIn">
-                        <div class="text-center font-mono text-lg font-bold text-blue-700 mb-4">
-                            ${this.state.type} ${this.state.name}[${this.state.size}]
+                stateKeys.forEach(key => {
+                    const arr = this.states[key];
+                    let boxesHTML = arr.data.map((val, idx) => {
+                        const isHighlighted = (this.lastModified.arrName === key && this.lastModified.index === idx);
+                        const baseStyle = 'bg-blue-100 border-blue-500 text-blue-900';
+                        const animStyle = isHighlighted ? 'animate-flash' : '';
+                        let displayVal = val;
+                        
+                        if (arr.type === 'string') displayVal = `"${val}"`;
+                        else if (arr.type === 'char') displayVal = `'${val}'`;
+                        
+                        return `
+                        <div class="flex flex-col items-center">
+                            <div class="min-w-[4rem] w-fit px-3 h-16 border-2 flex items-center justify-center text-xl font-bold rounded-lg shadow-sm transition-all duration-300 ${baseStyle} ${animStyle}">
+                                ${displayVal}
+                            </div>
+                            <div class="mt-2 text-sm font-mono text-gray-500 bg-gray-50 border border-gray-200 px-2 rounded">[${idx}]</div>
                         </div>
-                        <div class="flex justify-center gap-2 min-w-max px-4">
-                            ${boxesHTML}
-                        </div>
-                    </div>`;
+                        `;
+                    }).join('');
+
+                    html += `
+                        <div>
+                            <div class="text-center font-mono text-lg font-bold text-blue-700 mb-4">
+                                ${arr.type} ${arr.name}[${arr.size}]
+                            </div>
+                            <div class="flex justify-center gap-2 min-w-max px-4">
+                                ${boxesHTML}
+                            </div>
+                        </div>`;
+                });
+
+                html += `</div>`;
+                area.innerHTML = html;
             },
 
             renderLogs() {
                 const logsContainer = document.getElementById('terminal-logs');
                 logsContainer.innerHTML = this.logs.map(l => {
                     let color = '';
-                    if (l.type === 'cmd') color = 'text-gray-800 font-medium';
+                    if (l.type === 'cmd') color = 'text-gray-800 font-bold';
                     if (l.type === 'error') color = 'text-red-600';
                     if (l.type === 'success') color = 'text-green-600';
                     if (l.type === 'info') color = 'text-blue-600';
@@ -705,7 +807,6 @@
         const kuisGenerator = {
             generate() {
                 const questions = [];
-                // 1. Alokasi Memori
                 const types = [{ name: 'int', size: 4 }, { name: 'float', size: 4 }, { name: 'double', size: 8 }];
                 const t1 = types[Math.floor(Math.random() * types.length)];
                 const size1 = Math.floor(Math.random() * 10) + 5;
@@ -718,7 +819,6 @@
                     feedback: `Tipe data <code>${t1.name}</code> membutuhkan ${t1.size} byte per elemen. Karena ada ${size1} elemen, maka ${t1.size} x ${size1} = <strong>${ans1} byte</strong>.`
                 });
 
-                // 2. Elemen String
                 const namesPool = ["Siti", "Abdul", "Kevin", "Laura", "Daniel", "Salsa", "Budi", "Andi", "Lala", "Doni"];
                 const shuffledNames = [...namesPool].sort(() => Math.random() - 0.5).slice(0, 6);
                 const targetIndex2 = Math.floor(Math.random() * 6);
@@ -731,19 +831,17 @@
                     feedback: `Indeks array selalu dimulai dari <strong>0</strong>. Urutan indeks ke-${targetIndex2} jatuh pada teks <strong>"${ans2}"</strong>.`
                 });
 
-                // 3. Sintaks Penampilan
                 const val3 = Array.from({length: 6}, () => Math.floor(Math.random() * 50) + 20);
                 const targetIndex3 = Math.floor(Math.random() * 6);
                 const targetValue3 = val3[targetIndex3];
                 questions.push({
                     code: `int bb[6] = {${val3.join(',')}};`,
                     question: `Sintaks apa yang harus ditulis untuk menampilkan data angka ${targetValue3}?`,
-                    options: [`bb[${targetIndex3}]`, `bb[${targetIndex3+1}]`, `bb{${targetIndex3}}`, `bb(${targetIndex3})`].sort(() => Math.random() - 0.5),
-                    answer: `bb[${targetIndex3}]`,
-                    feedback: `Angka ${targetValue3} berada di urutan ke-${targetIndex3 + 1}, yang berarti indeksnya adalah <strong>${targetIndex3}</strong>. Akses array selalu menggunakan kurung siku <code>[]</code>.`
+                    options: [`cout << bb[${targetIndex3}];`, `cout << bb[${targetIndex3+1}];`, `bb[${targetIndex3}];`, `cin >> bb[${targetIndex3}];`].sort(() => Math.random() - 0.5),
+                    answer: `cout << bb[${targetIndex3}];`,
+                    feedback: `Untuk menampilkan output ke layar, kita harus menggunakan perintah <code>cout &lt;&lt;</code>. Angka ${targetValue3} berada di urutan ke-${targetIndex3 + 1}, yang berarti indeksnya adalah <strong>${targetIndex3}</strong>.`
                 });
 
-                // 4. Nested Array
                 let val4 = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5);
                 const startIdx4 = Math.floor(Math.random() * 6);
                 const l1 = val4[startIdx4];
@@ -757,7 +855,6 @@
                     feedback: `Selesaikan dari dalam: array[${startIdx4}] = ${l1}. Lalu array[${l1}] = ${l2}. Terakhir array[${l2}] menghasilkan <strong>${ans4}</strong>.`
                 });
 
-                // 5. Array Math
                 const val5 = Array.from({length: 6}, () => Math.floor(Math.random() * 10) + 1);
                 const i5_1 = Math.floor(Math.random() * 6);
                 let i5_2 = Math.floor(Math.random() * 6);
@@ -931,8 +1028,6 @@
 
             setTab(tabName) {
                 this.activeTab = tabName;
-                
-                // Toggle Buttons Styling
                 ['materi', 'simulasi', 'kuis'].forEach(t => {
                     const btn = document.getElementById(`btn-tab-${t}`);
                     if (t === tabName) {
@@ -942,13 +1037,11 @@
                     }
                 });
 
-                // Toggle Sections Visibility
                 document.getElementById('section-materi').className = tabName === 'materi' ? 'block animate-fadeIn' : 'hidden';
                 document.getElementById('section-simulasi').className = tabName === 'simulasi' ? 'block animate-fadeIn' : 'hidden';
                 document.getElementById('section-kuis').className = tabName === 'kuis' ? 'block animate-fadeIn' : 'hidden';
             },
 
-            // Materi Slider Logic
             nextSlide() {
                 if (this.currentSlide < materiSlides.length - 1) {
                     this.currentSlide++;
@@ -994,7 +1087,6 @@
             }
         };
 
-        // Mulai aplikasi setelah DOM selesai dimuat
         window.onload = () => app.init();
     </script>
 </body>
