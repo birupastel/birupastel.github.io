@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimedia Pembelajaran Array C++</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Animasi kustom untuk transisi yang mulus */
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
+        
+        /* Animasi Highlight Edit Array */
+        @keyframes flashHighlight {
+            0% { background-color: #4ade80; border-color: #16a34a; transform: scale(1.1); box-shadow: 0 0 15px rgba(34,197,94,0.6); }
+            100% { background-color: #dbeafe; border-color: #3b82f6; transform: scale(1); }
+        }
+        .animate-flash { animation: flashHighlight 1s ease-out forwards; }
+
+        /* Kustom scrollbar untuk terminal */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1f2937; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans selection:bg-blue-200 selection:text-blue-900 min-h-screen flex flex-col">
+
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-blue-700">
+                <div class="bg-blue-100 p-2 rounded-lg" id="logo-icon"></div>
+                <h1 class="font-bold text-xl tracking-tight hidden sm:block">Array<span class="text-gray-400 font-light">C++</span></h1>
+            </div>
+            
+            <nav class="flex bg-gray-100 p-1 rounded-xl">
+                <button onclick="app.setTab('materi')" id="btn-tab-materi" class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-blue-700 shadow-sm">
+                    <span id="icon-materi"></span> <span class="hidden sm:inline">Materi</span>
+                </button>
+                <button onclick="app.setTab('simulasi')" id="btn-tab-simulasi" class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all text-gray-500 hover:text-gray-800">
+                    <span id="icon-simulasi"></span> <span class="hidden sm:inline">Simulasi</span>
+                </button>
+                <button onclick="app.setTab('kuis')" id="btn-tab-kuis" class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all text-gray-500 hover:text-gray-800">
+                    <span id="icon-kuis"></span> <span class="hidden sm:inline">Kuis</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow relative">
+        <!-- Area Materi -->
+        <div id="section-materi" class="animate-fadeIn block"></div>
+
+        <!-- Area Simulasi -->
+        <div id="section-simulasi" class="hidden">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <!-- Mode Switcher -->
+                <div class="flex justify-center">
+                    <div class="bg-white rounded-lg p-1 shadow-sm border border-gray-200 inline-flex">
+                        <button onclick="simulasi.setMode('custom')" id="btn-mode-custom" class="px-6 py-2 rounded-md font-medium text-sm transition-colors bg-blue-600 text-white shadow">Mode Custom</button>
+                        <button onclick="simulasi.setMode('misi')" id="btn-mode-misi" class="px-6 py-2 rounded-md font-medium text-sm transition-colors text-gray-500 hover:text-gray-700">Mode Misi</button>
+                    </div>
+                </div>
+
+                <!-- Mission Card -->
+                <div id="mission-card" class="hidden bg-gradient-to-br from-blue-700 to-indigo-800 rounded-2xl shadow-md p-6 text-white relative overflow-hidden transition-all animate-fadeIn">
+                    <!-- Konten Misi di-render via JS -->
+                </div>
+
+                <!-- Visualizer -->
+                <div id="visualizer-area" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 min-h-[160px] flex flex-col justify-center items-center overflow-x-auto">
+                    <!-- Kotak Array di-render via JS -->
+                </div>
+
+                <!-- Terminal -->
+                <div class="bg-gray-900 rounded-2xl shadow-lg border border-gray-800 flex flex-col h-[350px]">
+                    <div class="bg-gray-800 px-4 py-2 rounded-t-2xl flex justify-between items-center border-b border-gray-700">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <span class="text-gray-400 text-xs font-mono">Terminal C++</span>
+                        <button onclick="simulasi.reset()" title="Reset Simulator" class="text-gray-400 hover:text-white transition-colors" id="icon-refresh"></button>
+                    </div>
+                    
+                    <div id="terminal-logs" class="flex-1 overflow-y-auto p-4 font-mono text-sm space-y-2 custom-scrollbar">
+                        <!-- Log di-render via JS -->
+                    </div>
+
+                    <form id="terminal-form" class="border-t border-gray-700 p-2 flex bg-gray-800 rounded-b-2xl">
+                        <span class="text-green-500 pl-3 py-2 font-mono mr-2">❯</span>
+                        <input type="text" id="terminal-input" placeholder="Ketik sintaks di sini lalu tekan Enter..." class="flex-1 bg-transparent text-white font-mono outline-none placeholder-gray-500" autocomplete="off" spellcheck="false">
+                        <button type="submit" id="terminal-submit" class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-1 rounded-lg text-sm font-medium transition-colors">Run</button>
+                    </form>
+                </div>
+                
+                <!-- Helper Mode Custom -->
+                <div id="custom-helper" class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg text-sm text-blue-800">
+                    <p><strong>Tips Simulator (Mode Custom):</strong></p>
+                    <ul class="list-disc pl-5 mt-1 space-y-1">
+                        <li>Inisialisasi angka: <code>int nilai[3] = {1, 2, 3};</code></li>
+                        <li>Inisialisasi string: <code>string nama[3] = {"Andi", "Budi", "Caca"};</code></li>
+                        <li>Dukung nested indeks: <code>nilai[nilai[0]] = 50;</code></li>
+                        <li>Gunakan <code>cout &lt;&lt; nilai[1];</code> untuk melihat output.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Area Kuis -->
+        <div id="section-kuis" class="hidden">
+            <!-- Kuis di-render via JS -->
+        </div>
+    </main>
+
+    <footer class="text-center text-gray-400 text-sm pb-8 mt-auto">
+        Media Pembelajaran Informatika Kelas X - Array C++
+    </footer>
+
+    <script>
+        const ICONS = {
+            book: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`,
+            play: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`,
+            pen: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"></path><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="m2 2 7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>`,
+            check: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`,
+            arrowRight: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`,
+            arrowLeft: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>`,
+            refresh: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>`
+        };
+
+        // Inject Icons
+        document.getElementById('logo-icon').innerHTML = ICONS.book;
+        document.getElementById('icon-materi').innerHTML = ICONS.book;
+        document.getElementById('icon-simulasi').innerHTML = ICONS.play;
+        document.getElementById('icon-kuis').innerHTML = ICONS.pen;
+        document.getElementById('icon-refresh').innerHTML = ICONS.refresh;
+
+        const materiSlides = [
+            {
+                title: "Konsep Array (Larik)",
+                content: `
+                    <div class="space-y-4 text-gray-700">
+                        <p>Bayangkan kamu memiliki rak sepatu dengan banyak sekat. Setiap sekat hanya bisa diisi oleh satu pasang sepatu, dan sekat-sekat tersebut berjejer rapi serta diberi nomor urut.</p>
+                        <p>Dalam pemrograman, <strong>Array (Larik)</strong> adalah struktur data yang mirip seperti rak sepatu tersebut. Array digunakan untuk menyimpan sekumpulan data yang memiliki <strong>tipe data yang sama</strong>, disimpan dalam blok memori yang berdekatan.</p>
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <h4 class="font-semibold text-blue-800 mb-2">Karakteristik Array:</h4>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li>Semua elemen bertipe data sama (misal: semuanya integer).</li>
+                                <li>Memiliki ukuran tetap (fixed size) setelah dideklarasikan.</li>
+                                <li>Elemen diakses menggunakan <strong>Indeks</strong>, yang selalu dimulai dari <strong>0</strong>.</li>
+                            </ul>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "Deklarasi Array dalam C++",
+                content: `
+                    <div class="space-y-4 text-gray-700">
+                        <p>Untuk membuat array di C++, kita perlu memberi tahu komputer: tipe data, nama array, dan ukurannya (jumlah elemen).</p>
+                        <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                            tipe_data nama_array[ukuran];
+                        </div>
+                        <h4 class="font-semibold mt-4">Contoh:</h4>
+                        <ul class="space-y-2">
+                            <li><code class="bg-gray-100 px-2 py-1 rounded text-red-600">int nilai[5];</code> <br/>Membuat array bernama 'nilai' yang bisa menyimpan 5 bilangan bulat.</li>
+                            <li><code class="bg-gray-100 px-2 py-1 rounded text-red-600">string nama[10];</code> <br/>Membuat array bernama 'nama' untuk 10 data teks (string).</li>
+                            <li><code class="bg-gray-100 px-2 py-1 rounded text-red-600">float suhu[3];</code> <br/>Membuat array bernama 'suhu' untuk 3 bilangan desimal.</li>
+                        </ul>
+                    </div>`
+            },
+            {
+                title: "Alokasi Memori Array",
+                content: `
+                    <div class="space-y-4 text-gray-700">
+                        <p>Berapa banyak ruang yang diambil array di memori komputer? Jawabannya bergantung pada tipe data dan jumlah elemen.</p>
+                        <p class="font-semibold text-center bg-gray-100 py-2 rounded border border-gray-300">Total Memori = Ukuran Tipe Data × Jumlah Elemen</p>
+                        
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-blue-50 border-b-2 border-blue-200 text-blue-900">
+                                        <th class="p-3">Tipe Data</th>
+                                        <th class="p-3">Ukuran/Elemen</th>
+                                        <th class="p-3">Contoh Deklarasi</th>
+                                        <th class="p-3">Total Alokasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b"><td class="p-3 font-mono">int</td><td class="p-3">4 byte</td><td class="p-3 font-mono">int a[5];</td><td class="p-3">5 × 4 = <strong>20 byte</strong></td></tr>
+                                    <tr class="border-b"><td class="p-3 font-mono">float</td><td class="p-3">4 byte</td><td class="p-3 font-mono">float b[10];</td><td class="p-3">10 × 4 = <strong>40 byte</strong></td></tr>
+                                    <tr class="border-b"><td class="p-3 font-mono">double</td><td class="p-3">8 byte</td><td class="p-3 font-mono">double c[3];</td><td class="p-3">3 × 8 = <strong>24 byte</strong></td></tr>
+                                    <tr class="border-b"><td class="p-3 font-mono">char</td><td class="p-3">1 byte</td><td class="p-3 font-mono">char d[8];</td><td class="p-3">8 × 1 = <strong>8 byte</strong></td></tr>
+                                    <tr class="border-b"><td class="p-3 font-mono">bool</td><td class="p-3">1 byte</td><td class="p-3 font-mono">bool e[5];</td><td class="p-3">5 × 1 = <strong>5 byte</strong></td></tr>
+                                    <tr class="bg-gray-50"><td class="p-3 font-mono">string</td><td class="p-3">~32 byte*</td><td class="p-3 font-mono">string f[3];</td><td class="p-3">3 × 32 = <strong>~96 byte</strong></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">*Catatan: Ukuran tipe data <code>string</code> dapat bervariasi (dinamis) tergantung panjang teks dan kompilator (umumnya 24-32 byte untuk struktur dasarnya).</p>
+                    </div>`
+            },
+            {
+                title: "Mengakses & Memanipulasi Array",
+                content: `
+                    <div class="space-y-4 text-gray-700">
+                        <p>Kita menggunakan <strong>indeks</strong> (di dalam kurung siku <code>[]</code>) untuk menunjuk kotak tertentu di dalam array. Ingat, indeks selalu mulai dari 0!</p>
+                        
+                        <h4 class="font-semibold text-blue-700 border-b pb-1">1. Memberi Nilai (Manipulasi)</h4>
+                        <div class="bg-gray-800 text-gray-100 p-3 rounded-lg font-mono text-sm">
+                            int nilai[3];<br/>
+                            <span class="text-green-400">nilai[0] = 75;</span> // Mengisi kotak pertama<br/>
+                            <span class="text-green-400">nilai[1] = 80;</span> // Mengisi kotak kedua<br/>
+                            <span class="text-green-400">nilai[2] = nilai[0] + 5;</span> // Kotak ketiga = 75 + 5 = 80
+                        </div>
+
+                        <h4 class="font-semibold text-blue-700 border-b pb-1 mt-4">2. Membaca/Menampilkan (cout)</h4>
+                        <div class="bg-gray-800 text-gray-100 p-3 rounded-lg font-mono text-sm">
+                            // Menampilkan isi indeks ke-0<br/>
+                            <span class="text-blue-300">cout &lt;&lt; nilai[0];</span> <br/><br/>
+                            // Menampilkan hasil penjumlahan<br/>
+                            <span class="text-blue-300">cout &lt;&lt; nilai[1] + nilai[2];</span>
+                        </div>
+
+                        <h4 class="font-semibold text-blue-700 border-b pb-1 mt-4">3. Meminta Input User (cin)</h4>
+                        <div class="bg-gray-800 text-gray-100 p-3 rounded-lg font-mono text-sm">
+                            // Meminta user mengetik angka, lalu disimpan di indeks ke-0<br/>
+                            <span class="text-yellow-400">cin &gt;&gt; nilai[0];</span>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "Bahaya: Index Out of Bounds",
+                content: `
+                    <div class="space-y-4 text-gray-700">
+                        <p>Dalam C++, tidak ada pemeriksaan otomatis apakah indeks yang kamu panggil itu ada atau tidak. Jika kamu membuat array berisi 5 elemen (indeks 0 sampai 4), lalu kamu mencoba mengisi indeks ke-10, program <strong>mungkin tidak error saat dikompilasi</strong>, tetapi akan kacau saat dijalankan!</p>
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                            <h4 class="font-semibold text-red-800 mb-2">Contoh Error:</h4>
+                            <div class="bg-gray-800 text-gray-100 p-3 rounded-lg font-mono text-sm mb-2">
+                                int data[3]; // Indeks valid: 0, 1, 2 <br/>
+                                <span class="text-red-400">data[5] = 100;</span> // ❌ INDEX OUT OF BOUNDS!
+                            </div>
+                            <p class="text-sm text-red-900">Perilaku ini akan menimpa memori program lain dan menyebabkan aplikasi <em>crash</em> atau berjalan dengan bug. Simulasi kita sudah dilengkapi deteksi error ini, coba saja praktekkan!</p>
+                        </div>
+                    </div>`
+            }
+        ];
+
+        const parser = {
+            evaluateExpr(exprStr, type) {
+                let s = exprStr.trim();
+                
+                if (type === 'string' || type === 'char') {
+                    if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+                        return s.substring(1, s.length - 1);
+                    }
+                    return s; 
+                }
+
+                s = s.replace(/\s+/g, '');
+                if (!/^[0-9+\-*/().]+$/.test(s)) throw new Error("Ekspresi matematika tidak valid.");
+                try { return Function(`'use strict'; return (${s})`)(); } 
+                catch (e) { throw new Error("Gagal menghitung ekspresi."); }
+            },
+
+            resolveExpression(exprStr, arrState) {
+                let s = exprStr.trim();
+                if (!arrState) return this.evaluateExpr(s, 'int');
+
+                const arrName = arrState.name;
+                const accessRegex = new RegExp(`${arrName}\\[([^\\[\\]]+)\\]`);
+                
+                let match;
+                let safety = 0;
+                while ((match = accessRegex.exec(s)) !== null && safety < 50) {
+                    const innerExpr = match[1];
+                    let indexVal;
+                    try { indexVal = this.evaluateExpr(innerExpr, 'int'); } 
+                    catch (e) { throw new Error(`Gagal menghitung indeks: [${innerExpr}]`); }
+
+                    if (!Number.isInteger(indexVal)) throw new Error(`Indeks harus bilangan bulat, didapat: ${indexVal}`);
+                    if (indexVal < 0 || indexVal >= arrState.size) throw new Error(`Indeks ${indexVal} di luar batas array (0 - ${arrState.size - 1}). Index Out of Bounds!`);
+                    
+                    const val = arrState.data[indexVal];
+                    if (val === null) throw new Error(`Elemen ${arrName}[${indexVal}] belum diinisialisasi (kosong).`);
+
+                    let replacedVal = (arrState.type === 'string' || arrState.type === 'char') ? `"${val}"` : val;
+                    s = s.replace(match[0], replacedVal);
+                    safety++;
+                }
+                if (safety >= 50) throw new Error("Terlalu banyak array bersarang (nested) atau loop berulang.");
+                
+                return this.evaluateExpr(s, arrState.type);
+            },
+
+            execute(command, arrayState, options = { allowRedeclare: false }) {
+                let cmd = command.trim();
+                if (!cmd.endsWith(';')) return { error: "Sintaks salah: Jangan lupa titik koma (;) di akhir." };
+                cmd = cmd.slice(0, -1).trim(); 
+
+                // 1. Deklarasi (dengan atau tanpa inisialisasi)
+                const declRegex = /^(int|float|double|char|string|bool)\s+([a-zA-Z_]\w*)\s*\[\s*(\d+)\s*\](?:\s*=\s*\{\s*([^}]+)\s*\})?$/;
+                const declMatch = cmd.match(declRegex);
+                if (declMatch) {
+                    if (arrayState && !options.allowRedeclare) return { error: "Array sudah dideklarasikan. Refresh terminal untuk mereset." };
+                    const type = declMatch[1];
+                    const size = parseInt(declMatch[3]);
+                    if (size <= 0 || size > 15) return { error: "Ukuran array harus antara 1 - 15 (untuk simulasi ini)." };
+                    
+                    let initialData = Array(size).fill(null);
+                    if (declMatch[4]) {
+                        try {
+                            const rawVals = declMatch[4].split(',').map(s => s.trim());
+                            let vals = [];
+                            for(let i=0; i<rawVals.length; i++) {
+                                vals.push(this.evaluateExpr(rawVals[i], type));
+                            }
+                            if (vals.length > size) throw new Error("Jumlah data inisialisasi melebihi ukuran array.");
+                            vals.forEach((v, i) => initialData[i] = v);
+                        } catch (e) {
+                            return { error: `Gagal inisialisasi: ${e.message}` };
+                        }
+                    }
+
+                    return {
+                        newArray: { type: type, name: declMatch[2], size: size, data: initialData },
+                        log: `Berhasil membuat array '${declMatch[2]}' berukuran ${size}${declMatch[4] ? ' beserta inisialisasi awalnya.' : '.'}`
+                    };
+                }
+
+                if (!arrayState) return { error: "Deklarasikan array terlebih dahulu! (misal: int nilai[5];)" };
+
+                // 2. Output (cout)
+                if (cmd.startsWith("cout")) {
+                    const outRegex = /^cout\s*<<\s*(.+)$/;
+                    const outMatch = cmd.match(outRegex);
+                    if (outMatch) {
+                        try {
+                            const result = this.resolveExpression(outMatch[1], arrayState);
+                            return { log: `> Output: ${result}`, output: result };
+                        } catch (err) { return { error: err.message }; }
+                    } else { return { error: "Sintaks cout salah. Gunakan: cout << ekspresi;" }; }
+                }
+
+                // 3. Assignment
+                const eqIndex = cmd.indexOf('=');
+                if (eqIndex > -1) {
+                    const lhs = cmd.substring(0, eqIndex).trim();
+                    const rhs = cmd.substring(eqIndex + 1).trim();
+
+                    const lhsRegex = new RegExp(`^${arrayState.name}\\[(.+)\\]$`);
+                    const lhsMatch = lhs.match(lhsRegex);
+
+                    if (lhsMatch) {
+                        try {
+                            const targetIndex = this.resolveExpression(lhsMatch[1], { ...arrayState, type: 'int' });
+                            if (!Number.isInteger(targetIndex)) throw new Error(`Indeks tujuan bukan integer: ${targetIndex}`);
+                            if (targetIndex < 0 || targetIndex >= arrayState.size) throw new Error(`Indeks tujuan ${targetIndex} di luar batas. Index Out of Bounds!`);
+
+                            const valueToAssign = this.resolveExpression(rhs, arrayState);
+                            const newData = [...arrayState.data];
+                            newData[targetIndex] = valueToAssign;
+
+                            return {
+                                newArray: { ...arrayState, data: newData },
+                                log: `[Update] ${arrayState.name}[${targetIndex}] diisi nilai ${valueToAssign}`,
+                                modifiedIndex: targetIndex
+                            };
+                        } catch (err) { return { error: err.message }; }
+                    } else { return { error: `Sintaks penugasan salah. Pastikan format: ${arrayState.name}[indeks] = ekspresi;` }; }
+                }
+
+                return { error: "Perintah tidak dikenali. Gunakan deklarasi, penugasan (=), atau cout." };
+            }
+        };
+
+        const missionGenerator = {
+            generate() {
+                const themes = [
+                    { name: 'umur', type: 'int', desc: 'data umur', total: Math.floor(Math.random() * 20) + 10 },
+                    { name: 'skor', type: 'int', desc: 'poin pemain', total: Math.floor(Math.random() * 20) + 10 },
+                    { name: 'stok', type: 'int', desc: 'jumlah stok', total: Math.floor(Math.random() * 20) + 10 }
+                ];
+                const t = themes[Math.floor(Math.random() * themes.length)];
+                const arr = t.name;
+                const size = 6; 
+
+                const v1 = Math.floor(Math.random() * 10) + 5;
+                const v2 = Math.floor(Math.random() * 5) + 1;
+                
+                return [
+                    {
+                        text: `Misi 1: Deklarasikan sebuah array untuk menampung ${t.desc} dari ${size} siswa. (Karena bilang bulat, gunakan tipe data ${t.type} dengan nama array '${arr}')`,
+                        hint: `tipe_data nama_array[ukuran];`,
+                        check: (cmd, res) => res.newArray && res.newArray.name === arr && res.newArray.size === size
+                    },
+                    {
+                        text: `Misi 2: Isi array '${arr}' pada indeks ke 2 menjadi ${v1};`,
+                        hint: `nama_array[indeks] = nilai;`,
+                        check: (cmd, res) => res.newArray && res.newArray.data[2] === v1
+                    },
+                    {
+                        text: `Misi 3: Isi array '${arr}' pada indeks ke 3 menjadi ${v2};`,
+                        hint: `nama_array[indeks] = nilai;`,
+                        check: (cmd, res) => res.newArray && res.newArray.data[3] === v2
+                    },
+                    {
+                        text: `Misi 4: Isi array '${arr}' pada indeks ke 4 menjadi hasil penjumlahan antara indeks ke 2 dan indeks ke 3;`,
+                        hint: `nama_array[indeks_tujuan] = nama_array[indeks_A] + nama_array[indeks_B];`,
+                        check: (cmd, res) => res.newArray && res.newArray.data[4] === (v1 + v2) && cmd.includes(`${arr}[2]`) && cmd.includes(`${arr}[3]`)
+                    },
+                    {
+                        text: `Misi 5: Tampilkan isi array '${arr}' indeks ke 4 menggunakan perintah cout;`,
+                        hint: `cout << nama_array[indeks];`,
+                        check: (cmd, res) => res.output !== undefined && res.output === (v1 + v2) && cmd.includes('cout') && cmd.includes('[4]')
+                    },
+                    {
+                        text: `Misi 6: Deklarasi ulang sekaligus inisialisasi! Buat array baru bernama 'nilai' tipe int ukuran 3, langsung diisi dengan angka {10, 20, 30}.`,
+                        hint: `tipe_data nama_array[ukuran] = {nilai1, nilai2, nilai3};`,
+                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.size === 3 && res.newArray.data[0] === 10,
+                        allowRedeclare: true
+                    },
+                    {
+                        text: `Misi 7: Ubah isi array 'nilai' pada indeks ke 0 menjadi 1;`,
+                        hint: `nama_array[indeks] = nilai;`,
+                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.data[0] === 1
+                    },
+                    {
+                        text: `Misi 8: Latihan Indeks Bersarang (Nested)! Isi array 'nilai' pada indeks yang ditunjuk oleh (nilai indeks ke 0) dengan angka 99.`,
+                        hint: `nama_array[nama_array[indeks_sumber]] = nilai;`,
+                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.data[1] === 99 && cmd.replace(/\s/g,'').includes(`nilai[nilai[0]]`)
+                    },
+                    {
+                        text: `Misi 9: Isi array 'nilai' pada indeks hasil operasi matematika (0+2) menjadi hasil penjumlahan indeks ke 0 dan indeks ke 1;`,
+                        hint: `nama_array[operasi_matematika] = nama_array[indeks_A] + nama_array[indeks_B];`,
+                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.data[2] === (1 + 99) && cmd.replace(/\s/g,'').includes(`[0+2]`)
+                    },
+                    {
+                        text: `Misi 10: Tampilkan hasil perkalian (menggunakan *) antara indeks ke 1 dan indeks ke 2 dari array 'nilai'.`,
+                        hint: `cout << ekspresi_matematika;`,
+                        check: (cmd, res) => res.output !== undefined && res.output === (99 * 100) && cmd.includes('nilai[1]') && cmd.includes('*') && cmd.includes('nilai[2]')
+                    }
+                ];
+            }
+        };
+
+        const simulasi = {
+            mode: 'custom',
+            state: null,
+            logs: [{ type: 'info', text: "Selamat datang di Simulator Array! Ketik perintah bebas." }],
+            missions: [],
+            missionIdx: 0,
+            complete: false,
+            lastModifiedIndex: null,
+
+            init() {
+                const savedMisi = localStorage.getItem('array_cpp_mission_idx');
+                if (savedMisi !== null) {
+                    this.missionIdx = parseInt(savedMisi);
+                    if (this.missionIdx >= 10) this.missionIdx = 0;
+                }
+
+                this.missions = missionGenerator.generate();
+                document.getElementById('terminal-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleCommand();
+                });
+                this.renderAll();
+            },
+
+            setMode(newMode) {
+                this.mode = newMode;
+                this.state = null;
+                this.complete = false;
+                this.lastModifiedIndex = null;
+                if (newMode === 'misi') {
+                    if (this.missionIdx >= this.missions.length) this.missionIdx = 0;
+                    this.missions = missionGenerator.generate();
+                    this.logs = [{ type: 'info', text: `✨ Mode Misi aktif! Melanjutkan ke Misi ${this.missionIdx + 1}.` }];
+                    document.getElementById('btn-mode-misi').className = "px-6 py-2 rounded-md font-medium text-sm transition-colors bg-blue-600 text-white shadow";
+                    document.getElementById('btn-mode-custom').className = "px-6 py-2 rounded-md font-medium text-sm transition-colors text-gray-500 hover:text-gray-700";
+                    document.getElementById('mission-card').classList.remove('hidden');
+                    document.getElementById('custom-helper').classList.add('hidden');
+                } else {
+                    this.logs = [{ type: 'info', text: "🔧 Mode Custom aktif! Bebas bereksperimen." }];
+                    document.getElementById('btn-mode-custom').className = "px-6 py-2 rounded-md font-medium text-sm transition-colors bg-blue-600 text-white shadow";
+                    document.getElementById('btn-mode-misi').className = "px-6 py-2 rounded-md font-medium text-sm transition-colors text-gray-500 hover:text-gray-700";
+                    document.getElementById('mission-card').classList.add('hidden');
+                    document.getElementById('custom-helper').classList.remove('hidden');
+                }
+                this.renderAll();
+            },
+
+            reset() {
+                this.state = null;
+                this.lastModifiedIndex = null;
+                this.logs = [{ type: 'info', text: "Simulator direset. Mulai dari deklarasi awal." }];
+                this.renderVisualizer();
+                this.renderLogs();
+            },
+
+            handleCommand() {
+                const inputEl = document.getElementById('terminal-input');
+                const cmd = inputEl.value;
+                if (!cmd.trim()) return;
+
+                this.logs.push({ type: 'cmd', text: cmd });
+                inputEl.value = '';
+                this.lastModifiedIndex = null;
+
+                let currentMisi = null;
+                let allowRedeclare = false;
+                
+                if (this.mode === 'misi' && !this.complete) {
+                    currentMisi = this.missions[this.missionIdx];
+                    allowRedeclare = !!currentMisi.allowRedeclare;
+                }
+
+                const result = parser.execute(cmd, this.state, { allowRedeclare });
+
+                if (result.error) {
+                    this.logs.push({ type: 'error', text: result.error });
+                } else {
+                    if (this.mode === 'misi' && currentMisi) {
+                        if (currentMisi.check(cmd, result)) {
+                            if (result.newArray) this.state = result.newArray;
+                            if (result.modifiedIndex !== undefined) this.lastModifiedIndex = result.modifiedIndex;
+                            if (result.log) this.logs.push({ type: 'success', text: result.log });
+                            
+                            this.logs.push({ type: 'success', text: `✨ Misi ${this.missionIdx + 1} Selesai!` });
+                            
+                            if (this.missionIdx + 1 < this.missions.length) {
+                                this.missionIdx++;
+                                localStorage.setItem('array_cpp_mission_idx', this.missionIdx);
+                            } else {
+                                this.complete = true;
+                                this.missionIdx = 10;
+                                localStorage.setItem('array_cpp_mission_idx', this.missionIdx);
+                                this.logs.push({ type: 'success', text: `🎉 SELAMAT! Semua misi diselesaikan!` });
+                            }
+                        } else {
+                            this.logs.push({ type: 'error', text: `❌ Ditolak: Perintah valid secara sintaks, namun belum menjawab tujuan Misi ${this.missionIdx + 1}. Perhatikan konsepnya!` });
+                        }
+                    } else {
+                        if (result.newArray) this.state = result.newArray;
+                        if (result.modifiedIndex !== undefined) this.lastModifiedIndex = result.modifiedIndex;
+                        if (result.log) this.logs.push({ type: 'success', text: result.log });
+                    }
+                }
+                this.renderAll();
+            },
+
+            renderAll() {
+                this.renderMissionCard();
+                this.renderVisualizer();
+                this.renderLogs();
+                
+                const inputEl = document.getElementById('terminal-input');
+                const submitBtn = document.getElementById('terminal-submit');
+                if (this.mode === 'misi' && this.complete) {
+                    inputEl.disabled = true;
+                    submitBtn.disabled = true;
+                    inputEl.placeholder = "Misi selesai!";
+                } else {
+                    inputEl.disabled = false;
+                    submitBtn.disabled = false;
+                    inputEl.placeholder = "Ketik sintaks di sini lalu tekan Enter...";
+                    inputEl.focus();
+                }
+            },
+
+            renderMissionCard() {
+                const card = document.getElementById('mission-card');
+                if (this.mode !== 'misi') return;
+
+                if (this.complete) {
+                    card.innerHTML = `
+                        <div class="text-center animate-fadeIn py-2">
+                            <h3 class="text-3xl font-bold mb-2">🎉 Luar Biasa!</h3>
+                            <p class="text-blue-100 mb-6">Kamu telah berhasil menyelesaikan ke-10 tantangan array dan menguasai dasar manipulasinya.</p>
+                            <button onclick="simulasi.missionIdx=0; localStorage.setItem('array_cpp_mission_idx',0); simulasi.setMode('misi')" class="bg-white text-blue-800 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition-colors">
+                                Ulangi dengan Misi Berbeda
+                            </button>
+                        </div>`;
+                } else {
+                    const m = this.missions[this.missionIdx];
+                    card.innerHTML = `
+                        <div class="animate-fadeIn">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="bg-blue-900/60 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border border-blue-500/30">Misi ${this.missionIdx + 1} / 10</span>
+                            </div>
+                            <h3 class="text-lg font-medium leading-relaxed mb-4">${m.text}</h3>
+                            <div class="bg-blue-900/40 p-3 rounded-xl border border-blue-500/30 text-sm">
+                                <span class="text-blue-300 block mb-1 text-xs uppercase tracking-wider font-bold">💡 Konsep:</span>
+                                <code class="font-mono text-green-300">${m.hint}</code>
+                            </div>
+                        </div>`;
+                }
+            },
+
+            renderVisualizer() {
+                const area = document.getElementById('visualizer-area');
+                if (!this.state) {
+                    area.innerHTML = `
+                        <div class="text-gray-400 text-center animate-fadeIn">
+                            <div class="text-4xl mb-2">📦</div>
+                            <p>Array belum dibuat.<br/>Ketik deklarasi di terminal bawah.</p>
+                        </div>`;
+                    return;
+                }
+
+                let boxesHTML = this.state.data.map((val, idx) => {
+                    const isHighlighted = idx === this.lastModifiedIndex;
+                    const baseStyle = val !== null ? 'bg-blue-100 border-blue-500 text-blue-900' : 'bg-gray-50 border-gray-300 text-gray-400';
+                    const animStyle = isHighlighted ? 'animate-flash' : '';
+                    let displayVal = val;
+                    if (val !== null && (this.state.type === 'string' || this.state.type === 'char')) {
+                        displayVal = `"${val}"`;
+                    }
+                    
+                    return `
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 border-2 flex items-center justify-center text-xl font-bold rounded-lg shadow-sm transition-all duration-300 ${baseStyle} ${animStyle}">
+                            ${val !== null ? displayVal : 'null'}
+                        </div>
+                        <div class="mt-2 text-sm font-mono text-gray-500 bg-gray-100 px-2 rounded">[${idx}]</div>
+                    </div>
+                    `;
+                }).join('');
+
+                area.innerHTML = `
+                    <div class="w-full animate-fadeIn">
+                        <div class="text-center font-mono text-lg font-bold text-blue-700 mb-4">
+                            ${this.state.type} ${this.state.name}[${this.state.size}]
+                        </div>
+                        <div class="flex justify-center gap-2 min-w-max px-4">
+                            ${boxesHTML}
+                        </div>
+                    </div>`;
+            },
+
+            renderLogs() {
+                const logsContainer = document.getElementById('terminal-logs');
+                logsContainer.innerHTML = this.logs.map(l => {
+                    let color = '';
+                    if (l.type === 'cmd') color = 'text-white';
+                    if (l.type === 'error') color = 'text-red-400';
+                    if (l.type === 'success') color = 'text-green-400';
+                    if (l.type === 'info') color = 'text-blue-300';
+                    return `<div class="${color}">${l.type === 'cmd' ? '<span class="text-green-500 mr-2">❯</span>' : ''}${l.text}</div>`;
+                }).join('');
+                logsContainer.scrollTop = logsContainer.scrollHeight;
+            }
+        };
+
+        const kuisGenerator = {
+            generate() {
+                const questions = [];
+                // 1. Alokasi Memori
+                const types = [{ name: 'int', size: 4 }, { name: 'float', size: 4 }, { name: 'double', size: 8 }];
+                const t1 = types[Math.floor(Math.random() * types.length)];
+                const size1 = Math.floor(Math.random() * 10) + 5;
+                const ans1 = t1.size * size1;
+                questions.push({
+                    code: `${t1.name} data[${size1}];`,
+                    question: `Berapa alokasi memori pada array data tersebut dalam hitungan byte?`,
+                    options: [ans1.toString(), (ans1 + t1.size).toString(), (size1).toString(), (ans1 / 2).toString()].sort(() => Math.random() - 0.5),
+                    answer: ans1.toString(),
+                    feedback: `Tipe data <code>${t1.name}</code> membutuhkan ${t1.size} byte per elemen. Karena ada ${size1} elemen, maka ${t1.size} x ${size1} = <strong>${ans1} byte</strong>.`
+                });
+
+                // 2. Elemen String
+                const namesPool = ["Siti", "Abdul", "Kevin", "Laura", "Daniel", "Salsa", "Budi", "Andi", "Lala", "Doni"];
+                const shuffledNames = [...namesPool].sort(() => Math.random() - 0.5).slice(0, 6);
+                const targetIndex2 = Math.floor(Math.random() * 6);
+                const ans2 = shuffledNames[targetIndex2];
+                questions.push({
+                    code: `string nama[6] = {"${shuffledNames.join('", "')}"};`,
+                    question: `Elemen nama[${targetIndex2}] berisi teks (string) apa?`,
+                    options: [ans2, shuffledNames[(targetIndex2+1)%6], shuffledNames[(targetIndex2+2)%6], shuffledNames[(targetIndex2+3)%6]].sort(() => Math.random() - 0.5),
+                    answer: ans2,
+                    feedback: `Indeks array selalu dimulai dari <strong>0</strong>. Urutan indeks ke-${targetIndex2} jatuh pada teks <strong>"${ans2}"</strong>.`
+                });
+
+                // 3. Sintaks Penampilan
+                const val3 = Array.from({length: 6}, () => Math.floor(Math.random() * 50) + 20);
+                const targetIndex3 = Math.floor(Math.random() * 6);
+                const targetValue3 = val3[targetIndex3];
+                questions.push({
+                    code: `int bb[6] = {${val3.join(',')}};`,
+                    question: `Sintaks apa yang harus ditulis untuk menampilkan data angka ${targetValue3}?`,
+                    options: [`bb[${targetIndex3}]`, `bb[${targetIndex3+1}]`, `bb{${targetIndex3}}`, `bb(${targetIndex3})`].sort(() => Math.random() - 0.5),
+                    answer: `bb[${targetIndex3}]`,
+                    feedback: `Angka ${targetValue3} berada di urutan ke-${targetIndex3 + 1}, yang berarti indeksnya adalah <strong>${targetIndex3}</strong>. Akses array selalu menggunakan kurung siku <code>[]</code>.`
+                });
+
+                // 4. Nested Array
+                let val4 = [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5);
+                const startIdx4 = Math.floor(Math.random() * 6);
+                const l1 = val4[startIdx4];
+                const l2 = val4[l1];
+                const ans4 = val4[l2];
+                questions.push({
+                    code: `int array[6] = {${val4.join(',')}};`,
+                    question: `Apa output dari kode program cout << array[array[array[${startIdx4}]]]; ?`,
+                    options: [ans4.toString(), val4[startIdx4].toString(), l1.toString(), l2.toString()].filter((v,i,a)=>a.indexOf(v)===i).concat(["-1","10","0"]).slice(0,4).sort(() => Math.random() - 0.5),
+                    answer: ans4.toString(),
+                    feedback: `Selesaikan dari dalam: array[${startIdx4}] = ${l1}. Lalu array[${l1}] = ${l2}. Terakhir array[${l2}] menghasilkan <strong>${ans4}</strong>.`
+                });
+
+                // 5. Array Math
+                const val5 = Array.from({length: 6}, () => Math.floor(Math.random() * 10) + 1);
+                const i5_1 = Math.floor(Math.random() * 6);
+                let i5_2 = Math.floor(Math.random() * 6);
+                while(i5_1 === i5_2) i5_2 = Math.floor(Math.random() * 6);
+                const ans5 = val5[i5_1] + val5[i5_2];
+                questions.push({
+                    code: `int array[6] = {${val5.join(',')}};`,
+                    question: `Apa output dari kode program cout << array[${i5_1}] + array[${i5_2}]; ?`,
+                    options: [ans5.toString(), (ans5+1).toString(), (ans5-1).toString(), (val5[i5_1]*val5[i5_2]).toString()].sort(() => Math.random() - 0.5),
+                    answer: ans5.toString(),
+                    feedback: `Nilai array[${i5_1}] adalah ${val5[i5_1]}. Nilai array[${i5_2}] adalah ${val5[i5_2]}. Jumlahnya: ${val5[i5_1]} + ${val5[i5_2]} = <strong>${ans5}</strong>.`
+                });
+                return questions;
+            }
+        };
+
+        const kuis = {
+            questions: [],
+            currentIdx: 0,
+            score: 0,
+            showResult: false,
+            selectedOpt: null,
+            isAnswered: false,
+            highScore: 0,
+
+            init() {
+                const savedScore = localStorage.getItem('array_cpp_highscore');
+                if (savedScore !== null) this.highScore = parseInt(savedScore);
+                this.questions = kuisGenerator.generate();
+                this.render();
+            },
+
+            handleAnswer(opt) {
+                if (this.isAnswered) return;
+                this.selectedOpt = opt;
+                this.isAnswered = true;
+                
+                if (opt === this.questions[this.currentIdx].answer) {
+                    this.score += 20;
+                }
+
+                this.render(); 
+            },
+
+            lanjutSoal() {
+                if (this.currentIdx + 1 < this.questions.length) {
+                    this.currentIdx++;
+                    this.selectedOpt = null;
+                    this.isAnswered = false;
+                } else {
+                    this.showResult = true;
+                    if (this.score > this.highScore) {
+                        this.highScore = this.score;
+                        localStorage.setItem('array_cpp_highscore', this.highScore);
+                    }
+                }
+                this.render();
+            },
+
+            restart() {
+                this.questions = kuisGenerator.generate();
+                this.currentIdx = 0;
+                this.score = 0;
+                this.showResult = false;
+                this.selectedOpt = null;
+                this.isAnswered = false;
+                this.render();
+            },
+
+            render() {
+                const container = document.getElementById('section-kuis');
+                
+                if (this.showResult) {
+                    const isNewHighScore = this.score === this.highScore && this.score > 0;
+                    container.innerHTML = `
+                        <div class="max-w-xl mx-auto bg-white p-8 rounded-2xl shadow-sm text-center border border-gray-100 animate-fadeIn">
+                            <div class="text-6xl mb-4">${this.score >= 80 ? '🎉' : this.score >= 60 ? '👍' : '📚'}</div>
+                            <h2 class="text-3xl font-bold mb-2">Kuis Selesai!</h2>
+                            <p class="text-gray-600 mb-2">Nilai kamu adalah:</p>
+                            <div class="text-6xl font-black mb-4 ${this.score >= 80 ? 'text-green-500' : this.score >= 60 ? 'text-blue-500' : 'text-red-500'}">
+                                ${this.score}
+                            </div>
+                            ${isNewHighScore ? `<div class="inline-block bg-yellow-100 text-yellow-800 px-4 py-1 rounded-full text-sm font-bold mb-6">🏆 Rekor Tertinggi Baru!</div>` : `<div class="text-gray-500 text-sm mb-6">Skor Tertinggi saat ini: ${this.highScore}</div>`}
+                            <br/>
+                            <button onclick="kuis.restart()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-xl transition-all shadow-md hover:shadow-lg">
+                                Coba Lagi dengan Soal Baru
+                            </button>
+                        </div>`;
+                    return;
+                }
+
+                const currentQ = this.questions[this.currentIdx];
+                let progressBars = this.questions.map((_, i) => 
+                    `<div class="h-2 w-8 rounded-full ${i < this.currentIdx ? 'bg-green-400' : i === this.currentIdx ? 'bg-blue-500' : 'bg-gray-200'}"></div>`
+                ).join('');
+
+                let optionsHTML = currentQ.options.map(opt => {
+                    let btnStyle = "bg-white border-gray-200 hover:border-blue-500 hover:bg-blue-50 text-gray-700";
+                    let checkIcon = "";
+                    if (this.isAnswered) {
+                        if (opt === currentQ.answer) {
+                            btnStyle = "bg-green-100 border-green-500 text-green-800";
+                            checkIcon = ICONS.check;
+                        } else if (opt === this.selectedOpt) {
+                            btnStyle = "bg-red-100 border-red-500 text-red-800";
+                        } else {
+                            btnStyle = "bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed";
+                        }
+                    }
+
+                    const safeOpt = opt.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    
+                    return `
+                        <button ${this.isAnswered ? 'disabled' : ''} onclick="kuis.handleAnswer('${safeOpt}')" 
+                                class="w-full text-left px-5 py-4 rounded-xl border-2 font-medium transition-all duration-200 flex justify-between items-center ${btnStyle}">
+                            <span>${opt}</span>
+                            <span>${checkIcon}</span>
+                        </button>`;
+                }).join('');
+
+                let feedbackHTML = '';
+                if (this.isAnswered) {
+                    const isCorrect = this.selectedOpt === currentQ.answer;
+                    feedbackHTML = `
+                        <div class="mt-6 p-4 rounded-xl animate-fadeIn ${isCorrect ? 'bg-green-50 border border-green-200' : 'bg-orange-50 border border-orange-200'}">
+                            <h4 class="font-bold mb-1 ${isCorrect ? 'text-green-800' : 'text-orange-800'}">
+                                ${isCorrect ? '✅ Benar!' : '❌ Kurang Tepat!'}
+                            </h4>
+                            <p class="text-sm text-gray-700">${currentQ.feedback}</p>
+                            <div class="mt-4 text-right">
+                                <button onclick="kuis.lanjutSoal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium shadow-sm">
+                                    Selanjutnya ${ICONS.arrowRight}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML = `
+                    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-fadeIn">
+                        <div class="bg-gray-50 p-4 border-b border-gray-100 flex justify-between items-center">
+                            <span class="font-semibold text-gray-700">Soal ${this.currentIdx + 1} dari 5</span>
+                            <div class="flex items-center gap-4">
+                                <span class="text-sm font-medium text-gray-500">Skor: <span class="text-blue-600 font-bold">${this.score}</span></span>
+                                <div class="flex gap-1">${progressBars}</div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-600 mb-4 text-sm">Perhatikan potongan kode program berikut:</p>
+                            <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-6 overflow-x-auto shadow-inner">
+                                ${currentQ.code}
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-800 mb-6">${currentQ.question}</h3>
+                            <div class="space-y-3">${optionsHTML}</div>
+                            ${feedbackHTML}
+                        </div>
+                    </div>`;
+            }
+        };
+
+        const app = {
+            activeTab: 'materi',
+            currentSlide: 0,
+
+            init() {
+                this.renderMateri();
+                simulasi.init();
+                kuis.init();
+                this.setTab('materi');
+            },
+
+            setTab(tabName) {
+                this.activeTab = tabName;
+                
+                // Toggle Buttons Styling
+                ['materi', 'simulasi', 'kuis'].forEach(t => {
+                    const btn = document.getElementById(`btn-tab-${t}`);
+                    if (t === tabName) {
+                        btn.className = "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-blue-700 shadow-sm";
+                    } else {
+                        btn.className = "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all text-gray-500 hover:text-gray-800";
+                    }
+                });
+
+                // Toggle Sections Visibility
+                document.getElementById('section-materi').className = tabName === 'materi' ? 'block animate-fadeIn' : 'hidden';
+                document.getElementById('section-simulasi').className = tabName === 'simulasi' ? 'block animate-fadeIn' : 'hidden';
+                document.getElementById('section-kuis').className = tabName === 'kuis' ? 'block animate-fadeIn' : 'hidden';
+            },
+
+            // Materi Slider Logic
+            nextSlide() {
+                if (this.currentSlide < materiSlides.length - 1) {
+                    this.currentSlide++;
+                    this.renderMateri();
+                }
+            },
+            prevSlide() {
+                if (this.currentSlide > 0) {
+                    this.currentSlide--;
+                    this.renderMateri();
+                }
+            },
+            
+            renderMateri() {
+                const container = document.getElementById('section-materi');
+                const slide = materiSlides[this.currentSlide];
+                
+                const dots = materiSlides.map((_, idx) => 
+                    `<div class="w-2 h-2 rounded-full ${idx === this.currentSlide ? 'bg-blue-600' : 'bg-gray-300'}"></div>`
+                ).join('');
+
+                container.innerHTML = `
+                    <div class="max-w-3xl mx-auto">
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="bg-blue-600 p-6 text-white">
+                                <h2 class="text-2xl font-bold">${slide.title}</h2>
+                                <p class="text-blue-200 text-sm mt-1">Slide ${this.currentSlide + 1} dari ${materiSlides.length}</p>
+                            </div>
+                            <div class="p-6 min-h-[350px]">
+                                ${slide.content}
+                            </div>
+                            <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                                <button onclick="app.prevSlide()" class="flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${this.currentSlide === 0 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-100'}" ${this.currentSlide === 0 ? 'disabled' : ''}>
+                                    ${ICONS.arrowLeft} <span class="ml-2 hidden sm:inline">Sebelumnya</span>
+                                </button>
+                                <div class="flex gap-2">${dots}</div>
+                                <button onclick="app.nextSlide()" class="flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${this.currentSlide === materiSlides.length - 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-100'}" ${this.currentSlide === materiSlides.length - 1 ? 'disabled' : ''}>
+                                    <span class="mr-2 hidden sm:inline">Selanjutnya</span> ${ICONS.arrowRight}
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        };
+
+        // Mulai aplikasi setelah DOM selesai dimuat
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
