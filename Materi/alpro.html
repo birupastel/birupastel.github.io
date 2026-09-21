@@ -20,11 +20,11 @@
         }
         .animate-flash { animation: flashHighlight 1s ease-out forwards; }
 
-        /* Kustom scrollbar untuk terminal */
+        /* Kustom scrollbar untuk terminal (Tema Terang) */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #1f2937; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f3f4f6; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans selection:bg-blue-200 selection:text-blue-900 min-h-screen flex flex-col">
@@ -75,26 +75,26 @@
                     <!-- Kotak Array di-render via JS -->
                 </div>
 
-                <!-- Terminal -->
-                <div class="bg-gray-900 rounded-2xl shadow-lg border border-gray-800 flex flex-col h-[350px]">
-                    <div class="bg-gray-800 px-4 py-2 rounded-t-2xl flex justify-between items-center border-b border-gray-700">
+                <!-- Terminal (Tema Terang) -->
+                <div class="bg-white rounded-2xl shadow-md border border-gray-200 flex flex-col h-[350px]">
+                    <div class="bg-gray-50 px-4 py-2 rounded-t-2xl flex justify-between items-center border-b border-gray-200">
                         <div class="flex gap-2">
-                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
                         </div>
-                        <span class="text-gray-400 text-xs font-mono">Terminal C++</span>
-                        <button onclick="simulasi.reset()" title="Reset Simulator" class="text-gray-400 hover:text-white transition-colors" id="icon-refresh"></button>
+                        <span class="text-gray-500 text-xs font-mono font-medium">Terminal C++</span>
+                        <button onclick="simulasi.reset()" title="Reset Simulator" class="text-gray-400 hover:text-blue-600 transition-colors" id="icon-refresh"></button>
                     </div>
                     
                     <div id="terminal-logs" class="flex-1 overflow-y-auto p-4 font-mono text-sm space-y-2 custom-scrollbar">
                         <!-- Log di-render via JS -->
                     </div>
 
-                    <form id="terminal-form" class="border-t border-gray-700 p-2 flex bg-gray-800 rounded-b-2xl">
-                        <span class="text-green-500 pl-3 py-2 font-mono mr-2">❯</span>
-                        <input type="text" id="terminal-input" placeholder="Ketik sintaks di sini lalu tekan Enter..." class="flex-1 bg-transparent text-white font-mono outline-none placeholder-gray-500" autocomplete="off" spellcheck="false">
-                        <button type="submit" id="terminal-submit" class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-1 rounded-lg text-sm font-medium transition-colors">Run</button>
+                    <form id="terminal-form" class="border-t border-gray-200 p-2 flex bg-gray-50 rounded-b-2xl">
+                        <span class="text-blue-600 pl-3 py-2 font-mono font-bold mr-2">❯</span>
+                        <input type="text" id="terminal-input" placeholder="Ketik sintaks di sini lalu tekan Enter..." class="flex-1 bg-transparent text-gray-800 font-mono outline-none placeholder-gray-400" autocomplete="off" spellcheck="false">
+                        <button type="submit" id="terminal-submit" class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-1 rounded-lg text-sm font-medium transition-colors shadow-sm">Run</button>
                     </form>
                 </div>
                 
@@ -161,7 +161,7 @@
                 content: `
                     <div class="space-y-4 text-gray-700">
                         <p>Untuk membuat array di C++, kita perlu memberi tahu komputer: tipe data, nama array, dan ukurannya (jumlah elemen).</p>
-                        <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                        <div class="bg-blue-50 border border-blue-100 text-blue-800 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                             tipe_data nama_array[ukuran];
                         </div>
                         <h4 class="font-semibold mt-4">Contoh:</h4>
@@ -199,7 +199,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">*Catatan: Ukuran tipe data <code>string</code> dapat bervariasi (dinamis) tergantung panjang teks dan kompilator (umumnya 24-32 byte untuk struktur dasarnya).</p>
+                        <p class="text-xs text-gray-500 mt-2">*Catatan: Ukuran memori tipe data <code>string</code> dapat bervariasi (dinamis) tergantung panjang teks dan kompilator (umumnya 24-32 byte).</p>
                     </div>`
             },
             {
@@ -209,25 +209,25 @@
                         <p>Kita menggunakan <strong>indeks</strong> (di dalam kurung siku <code>[]</code>) untuk menunjuk kotak tertentu di dalam array. Ingat, indeks selalu mulai dari 0!</p>
                         
                         <h4 class="font-semibold text-blue-700 border-b pb-1">1. Memberi Nilai (Manipulasi)</h4>
-                        <div class="bg-gray-800 text-gray-100 p-3 rounded-lg font-mono text-sm">
+                        <div class="bg-blue-50 border border-blue-100 text-gray-800 p-3 rounded-lg font-mono text-sm">
                             int nilai[3];<br/>
-                            <span class="text-green-400">nilai[0] = 75;</span> // Mengisi kotak pertama<br/>
-                            <span class="text-green-400">nilai[1] = 80;</span> // Mengisi kotak kedua<br/>
-                            <span class="text-green-400">nilai[2] = nilai[0] + 5;</span> // Kotak ketiga = 75 + 5 = 80
+                            <span class="text-green-700 font-semibold">nilai[0] = 75;</span> // Mengisi kotak pertama<br/>
+                            <span class="text-green-700 font-semibold">nilai[1] = 80;</span> // Mengisi kotak kedua<br/>
+                            <span class="text-green-700 font-semibold">nilai[2] = nilai[0] + 5;</span> // Kotak ketiga = 75 + 5 = 80
                         </div>
 
                         <h4 class="font-semibold text-blue-700 border-b pb-1 mt-4">2. Membaca/Menampilkan (cout)</h4>
-                        <div class="bg-gray-800 text-gray-100 p-3 rounded-lg font-mono text-sm">
+                        <div class="bg-blue-50 border border-blue-100 text-gray-800 p-3 rounded-lg font-mono text-sm">
                             // Menampilkan isi indeks ke-0<br/>
-                            <span class="text-blue-300">cout &lt;&lt; nilai[0];</span> <br/><br/>
+                            <span class="text-blue-700 font-semibold">cout &lt;&lt; nilai[0];</span> <br/><br/>
                             // Menampilkan hasil penjumlahan<br/>
-                            <span class="text-blue-300">cout &lt;&lt; nilai[1] + nilai[2];</span>
+                            <span class="text-blue-700 font-semibold">cout &lt;&lt; nilai[1] + nilai[2];</span>
                         </div>
 
                         <h4 class="font-semibold text-blue-700 border-b pb-1 mt-4">3. Meminta Input User (cin)</h4>
-                        <div class="bg-gray-800 text-gray-100 p-3 rounded-lg font-mono text-sm">
+                        <div class="bg-blue-50 border border-blue-100 text-gray-800 p-3 rounded-lg font-mono text-sm">
                             // Meminta user mengetik angka, lalu disimpan di indeks ke-0<br/>
-                            <span class="text-yellow-400">cin &gt;&gt; nilai[0];</span>
+                            <span class="text-orange-600 font-semibold">cin &gt;&gt; nilai[0];</span>
                         </div>
                     </div>`
             },
@@ -238,9 +238,9 @@
                         <p>Dalam C++, tidak ada pemeriksaan otomatis apakah indeks yang kamu panggil itu ada atau tidak. Jika kamu membuat array berisi 5 elemen (indeks 0 sampai 4), lalu kamu mencoba mengisi indeks ke-10, program <strong>mungkin tidak error saat dikompilasi</strong>, tetapi akan kacau saat dijalankan!</p>
                         <div class="bg-red-50 p-4 rounded-lg border border-red-200">
                             <h4 class="font-semibold text-red-800 mb-2">Contoh Error:</h4>
-                            <div class="bg-gray-800 text-gray-100 p-3 rounded-lg font-mono text-sm mb-2">
+                            <div class="bg-red-100 border border-red-200 text-gray-800 p-3 rounded-lg font-mono text-sm mb-2">
                                 int data[3]; // Indeks valid: 0, 1, 2 <br/>
-                                <span class="text-red-400">data[5] = 100;</span> // ❌ INDEX OUT OF BOUNDS!
+                                <span class="text-red-700 font-semibold">data[5] = 100;</span> // ❌ INDEX OUT OF BOUNDS!
                             </div>
                             <p class="text-sm text-red-900">Perilaku ini akan menimpa memori program lain dan menyebabkan aplikasi <em>crash</em> atau berjalan dengan bug. Simulasi kita sudah dilengkapi deteksi error ini, coba saja praktekkan!</p>
                         </div>
@@ -379,47 +379,61 @@
         const missionGenerator = {
             generate() {
                 const themes = [
-                    { name: 'umur', type: 'int', desc: 'data umur', total: Math.floor(Math.random() * 20) + 10 },
-                    { name: 'skor', type: 'int', desc: 'poin pemain', total: Math.floor(Math.random() * 20) + 10 },
-                    { name: 'stok', type: 'int', desc: 'jumlah stok', total: Math.floor(Math.random() * 20) + 10 }
+                    { name: 'umur', type: 'int', desc: 'data umur' },
+                    { name: 'skor', type: 'int', desc: 'poin permainan' },
+                    { name: 'stok', type: 'int', desc: 'jumlah stok barang' },
+                    { name: 'harga', type: 'int', desc: 'harga item' },
+                    { name: 'waktu', type: 'int', desc: 'waktu tempuh' },
+                    { name: 'jarak', type: 'int', desc: 'jarak tempuh' }
                 ];
                 const t = themes[Math.floor(Math.random() * themes.length)];
                 const arr = t.name;
-                const size = 6; 
-
+                
+                // Mengacak ukuran array dan indeks yang dipakai tiap kali misi di-generate
+                const size = Math.floor(Math.random() * 4) + 5; // ukuran 5 sampai 8
                 const v1 = Math.floor(Math.random() * 10) + 5;
                 const v2 = Math.floor(Math.random() * 5) + 1;
                 
+                // Mengacak target indeks untuk dimanipulasi
+                const iA = Math.floor(Math.random() * (size - 2)); 
+                const iB = iA + 1;
+                const iC = iA + 2; 
+
+                // Mengacak nilai awal untuk Misi 6
+                const n_v1 = Math.floor(Math.random() * 10) * 10 + 10; // 10, 20, 30...
+                const n_v2 = n_v1 + 10;
+                const n_v3 = n_v2 + 10;
+                
                 return [
                     {
-                        text: `Misi 1: Deklarasikan sebuah array untuk menampung ${t.desc} dari ${size} siswa. (Karena bilang bulat, gunakan tipe data ${t.type} dengan nama array '${arr}')`,
+                        text: `Misi 1: Deklarasikan sebuah array bertipe ${t.type} untuk menampung ${t.desc} sebanyak ${size} elemen dengan nama '${arr}'.`,
                         hint: `tipe_data nama_array[ukuran];`,
                         check: (cmd, res) => res.newArray && res.newArray.name === arr && res.newArray.size === size
                     },
                     {
-                        text: `Misi 2: Isi array '${arr}' pada indeks ke 2 menjadi ${v1};`,
+                        text: `Misi 2: Isi array '${arr}' pada indeks ke ${iA} menjadi ${v1};`,
                         hint: `nama_array[indeks] = nilai;`,
-                        check: (cmd, res) => res.newArray && res.newArray.data[2] === v1
+                        check: (cmd, res) => res.newArray && res.newArray.data[iA] === v1
                     },
                     {
-                        text: `Misi 3: Isi array '${arr}' pada indeks ke 3 menjadi ${v2};`,
+                        text: `Misi 3: Isi array '${arr}' pada indeks ke ${iB} menjadi ${v2};`,
                         hint: `nama_array[indeks] = nilai;`,
-                        check: (cmd, res) => res.newArray && res.newArray.data[3] === v2
+                        check: (cmd, res) => res.newArray && res.newArray.data[iB] === v2
                     },
                     {
-                        text: `Misi 4: Isi array '${arr}' pada indeks ke 4 menjadi hasil penjumlahan antara indeks ke 2 dan indeks ke 3;`,
+                        text: `Misi 4: Isi array '${arr}' pada indeks ke ${iC} menjadi hasil penjumlahan antara indeks ke ${iA} dan indeks ke ${iB};`,
                         hint: `nama_array[indeks_tujuan] = nama_array[indeks_A] + nama_array[indeks_B];`,
-                        check: (cmd, res) => res.newArray && res.newArray.data[4] === (v1 + v2) && cmd.includes(`${arr}[2]`) && cmd.includes(`${arr}[3]`)
+                        check: (cmd, res) => res.newArray && res.newArray.data[iC] === (v1 + v2) && cmd.includes(`${arr}[${iA}]`) && cmd.includes(`${arr}[${iB}]`)
                     },
                     {
-                        text: `Misi 5: Tampilkan isi array '${arr}' indeks ke 4 menggunakan perintah cout;`,
+                        text: `Misi 5: Tampilkan isi array '${arr}' indeks ke ${iC} menggunakan perintah cout;`,
                         hint: `cout << nama_array[indeks];`,
-                        check: (cmd, res) => res.output !== undefined && res.output === (v1 + v2) && cmd.includes('cout') && cmd.includes('[4]')
+                        check: (cmd, res) => res.output !== undefined && res.output === (v1 + v2) && cmd.includes('cout') && cmd.includes(`[${iC}]`)
                     },
                     {
-                        text: `Misi 6: Deklarasi ulang sekaligus inisialisasi! Buat array baru bernama 'nilai' tipe int ukuran 3, langsung diisi dengan angka {10, 20, 30}.`,
+                        text: `Misi 6: Deklarasi ulang sekaligus inisialisasi! Buat array baru bernama 'nilai' tipe int ukuran 3, langsung diisi dengan angka {${n_v1}, ${n_v2}, ${n_v3}}.`,
                         hint: `tipe_data nama_array[ukuran] = {nilai1, nilai2, nilai3};`,
-                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.size === 3 && res.newArray.data[0] === 10,
+                        check: (cmd, res) => res.newArray && res.newArray.name === 'nilai' && res.newArray.size === 3 && res.newArray.data[0] === n_v1 && res.newArray.data[2] === n_v3,
                         allowRedeclare: true
                     },
                     {
@@ -440,7 +454,7 @@
                     {
                         text: `Misi 10: Tampilkan hasil perkalian (menggunakan *) antara indeks ke 1 dan indeks ke 2 dari array 'nilai'.`,
                         hint: `cout << ekspresi_matematika;`,
-                        check: (cmd, res) => res.output !== undefined && res.output === (99 * 100) && cmd.includes('nilai[1]') && cmd.includes('*') && cmd.includes('nilai[2]')
+                        check: (cmd, res) => res.output !== undefined && res.output === (99 * (n_v2)) && cmd.includes('nilai[1]') && cmd.includes('*') && cmd.includes('nilai[2]')
                     }
                 ];
             }
@@ -454,6 +468,7 @@
             missionIdx: 0,
             complete: false,
             lastModifiedIndex: null,
+            showHint: false,
 
             init() {
                 const savedMisi = localStorage.getItem('array_cpp_mission_idx');
@@ -475,6 +490,7 @@
                 this.state = null;
                 this.complete = false;
                 this.lastModifiedIndex = null;
+                this.showHint = false;
                 if (newMode === 'misi') {
                     if (this.missionIdx >= this.missions.length) this.missionIdx = 0;
                     this.missions = missionGenerator.generate();
@@ -490,6 +506,25 @@
                     document.getElementById('mission-card').classList.add('hidden');
                     document.getElementById('custom-helper').classList.remove('hidden');
                 }
+                this.renderAll();
+            },
+
+            restartMissions() {
+                this.missionIdx = 0;
+                this.complete = false;
+                this.state = null;
+                this.lastModifiedIndex = null;
+                this.showHint = false;
+                localStorage.setItem('array_cpp_mission_idx', 0);
+                this.missions = missionGenerator.generate(); // Generate set soal yang baru dan unik
+                this.logs = [{ type: 'info', text: "✨ Skenario misi baru telah dibuat! Mulai dari awal." }];
+                
+                const inputEl = document.getElementById('terminal-input');
+                const submitBtn = document.getElementById('terminal-submit');
+                inputEl.disabled = false;
+                submitBtn.disabled = false;
+                inputEl.value = '';
+                
                 this.renderAll();
             },
 
@@ -530,6 +565,7 @@
                             if (result.log) this.logs.push({ type: 'success', text: result.log });
                             
                             this.logs.push({ type: 'success', text: `✨ Misi ${this.missionIdx + 1} Selesai!` });
+                            this.showHint = false; // Reset hint (tutup konsep) untuk misi selanjutnya
                             
                             if (this.missionIdx + 1 < this.missions.length) {
                                 this.missionIdx++;
@@ -550,6 +586,11 @@
                     }
                 }
                 this.renderAll();
+            },
+
+            toggleHint() {
+                this.showHint = !this.showHint;
+                this.renderMissionCard();
             },
 
             renderAll() {
@@ -580,7 +621,7 @@
                         <div class="text-center animate-fadeIn py-2">
                             <h3 class="text-3xl font-bold mb-2">🎉 Luar Biasa!</h3>
                             <p class="text-blue-100 mb-6">Kamu telah berhasil menyelesaikan ke-10 tantangan array dan menguasai dasar manipulasinya.</p>
-                            <button onclick="simulasi.missionIdx=0; localStorage.setItem('array_cpp_mission_idx',0); simulasi.setMode('misi')" class="bg-white text-blue-800 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition-colors">
+                            <button onclick="simulasi.restartMissions()" class="bg-white text-blue-800 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition-colors">
                                 Ulangi dengan Misi Berbeda
                             </button>
                         </div>`;
@@ -592,9 +633,15 @@
                                 <span class="bg-blue-900/60 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border border-blue-500/30">Misi ${this.missionIdx + 1} / 10</span>
                             </div>
                             <h3 class="text-lg font-medium leading-relaxed mb-4">${m.text}</h3>
-                            <div class="bg-blue-900/40 p-3 rounded-xl border border-blue-500/30 text-sm">
-                                <span class="text-blue-300 block mb-1 text-xs uppercase tracking-wider font-bold">💡 Konsep:</span>
-                                <code class="font-mono text-green-300">${m.hint}</code>
+                            <div class="mt-4">
+                                <button onclick="simulasi.toggleHint()" class="text-sm font-medium text-blue-200 hover:text-white flex items-center transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    ${this.showHint ? 'Sembunyikan Konsep' : 'Tampilkan Konsep Singkat'}
+                                </button>
+                                <div class="${this.showHint ? 'block animate-fadeIn' : 'hidden'} mt-3 bg-blue-900/40 p-3 rounded-xl border border-blue-500/30 text-sm">
+                                    <span class="text-blue-300 block mb-1 text-xs uppercase tracking-wider font-bold">💡 Konsep:</span>
+                                    <code class="font-mono text-green-300">${m.hint}</code>
+                                </div>
                             </div>
                         </div>`;
                 }
@@ -645,11 +692,11 @@
                 const logsContainer = document.getElementById('terminal-logs');
                 logsContainer.innerHTML = this.logs.map(l => {
                     let color = '';
-                    if (l.type === 'cmd') color = 'text-white';
-                    if (l.type === 'error') color = 'text-red-400';
-                    if (l.type === 'success') color = 'text-green-400';
-                    if (l.type === 'info') color = 'text-blue-300';
-                    return `<div class="${color}">${l.type === 'cmd' ? '<span class="text-green-500 mr-2">❯</span>' : ''}${l.text}</div>`;
+                    if (l.type === 'cmd') color = 'text-gray-800 font-medium';
+                    if (l.type === 'error') color = 'text-red-600';
+                    if (l.type === 'success') color = 'text-green-600';
+                    if (l.type === 'info') color = 'text-blue-600';
+                    return `<div class="${color}">${l.type === 'cmd' ? '<span class="text-blue-600 font-bold mr-2">❯</span>' : ''}${l.text}</div>`;
                 }).join('');
                 logsContainer.scrollTop = logsContainer.scrollHeight;
             }
@@ -860,7 +907,7 @@
                         </div>
                         <div class="p-6">
                             <p class="text-gray-600 mb-4 text-sm">Perhatikan potongan kode program berikut:</p>
-                            <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm mb-6 overflow-x-auto shadow-inner">
+                            <div class="bg-blue-50 border border-blue-100 text-blue-900 p-4 rounded-lg font-mono text-sm mb-6 overflow-x-auto shadow-inner">
                                 ${currentQ.code}
                             </div>
                             <h3 class="text-lg font-medium text-gray-800 mb-6">${currentQ.question}</h3>
