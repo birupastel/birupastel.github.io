@@ -22,6 +22,12 @@
                     <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     <span class="font-bold text-xl tracking-tight">CBT Cloud - Admin</span>
                 </div>
+                <div id="nav-actions" class="hide flex items-center">
+                    <button onclick="gantiPinAdmin()" class="flex items-center space-x-1 text-sm bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded text-gray-300 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                        <span>Ubah PIN Portal</span>
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
@@ -182,6 +188,10 @@
                     else el.classList.add('hide');
                 }
             });
+            
+            const navActions = document.getElementById('nav-actions');
+            if(viewId !== 'view-login' && navActions) navActions.classList.remove('hide');
+            else if(navActions) navActions.classList.add('hide');
         }
 
         window.closeModal = function(id) { document.getElementById(id).classList.add('hide'); }
@@ -201,11 +211,30 @@
 
         window.loginAdmin = function() {
             const pin = document.getElementById('admin-pin').value;
-            if(pin === '123456') { // Ganti password default ini sesuai keinginan Anda
+            const savedPin = localStorage.getItem('cbt_admin_pin') || '123456';
+            
+            if(pin === savedPin) {
                 document.getElementById('login-error').classList.add('hide');
                 loadDashboard();
             } else {
                 document.getElementById('login-error').classList.remove('hide');
+            }
+        }
+
+        window.gantiPinAdmin = function() {
+            const currentSavedPin = localStorage.getItem('cbt_admin_pin') || '123456';
+            const verify = prompt("Masukkan PIN Portal lama Anda untuk konfirmasi:");
+            
+            if(verify === currentSavedPin) {
+                const newPin = prompt("Masukkan PIN Portal BARU (Maks 10 karakter):");
+                if(newPin && newPin.trim().length >= 4) {
+                    localStorage.setItem('cbt_admin_pin', newPin.trim());
+                    showToast("PIN Portal berhasil diubah!", "success");
+                } else if(newPin) {
+                    showToast("Batal: PIN baru terlalu pendek (Min. 4 karakter).", "error");
+                }
+            } else if (verify !== null) {
+                showToast("Batal: PIN lama salah!", "error");
             }
         }
 
@@ -295,10 +324,12 @@
 
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', examId);
+                
+                // Gunakan email login saat ini sebagai identitas 'creator' pembuat soal
                 await setDoc(docRef, {
                     title: title, url: url, start: start, end: end, 
                     duration: duration, maxV: maxV, passcode: passcode, pin: pin,
-                    creator: localTeacherId, updatedAt: new Date().toISOString()
+                    creator: currentUser.email, updatedAt: new Date().toISOString()
                 });
                 showToast(`Ujian ${examId} berhasil disimpan!`);
                 loadDashboard();
