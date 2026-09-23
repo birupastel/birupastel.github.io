@@ -2,122 +2,231 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penilaian Harian Kimia Bab 3 - CBT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portal Ujian</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif; background-color: #f8fafc; color: #334155; }
-        #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%); overflow-y: auto;}
-        .login-card { background: white; width: 100%; max-width: 450px; padding: 40px 30px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; }
-        .login-card h1 { font-size: 1.8rem; margin: 0 0 8px 0; color: #0f172a; }
-        .login-card p.subtitle { font-size: 0.95rem; color: #64748b; margin-bottom: 25px; line-height: 1.5; }
-        .form-group { text-align: left; margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: #475569; }
-        .form-group select, .form-group input { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; outline: none; transition: all 0.2s; box-sizing: border-box; font-family: inherit; background: #f8fafc;}
-        .form-group select:focus, .form-group input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); background: white;}
-        #schedule-info { font-size: 0.8rem; color: #3b82f6; margin-top: 8px; font-weight: 600; display: none; background: #eff6ff; padding: 8px; border-radius: 6px; border: 1px solid #bfdbfe;}
-        #status-message { font-size: 0.85rem; margin-top: 8px; font-weight: 600; display: none; }
-        .btn-start { width: 100%; background: #2563eb; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 10px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);}
-        .btn-start:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-1px);}
-        .btn-start:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; color: #64748b;}
-
-        #exam-container { display: none; flex-direction: column; width: 100%; height: 100%; background-color: white; }
-        #exam-header { background-color: #0f172a; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-family: monospace; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;}
-        #exam-wrapper { flex-grow: 1; position: relative; width: 100%; height: 100%; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; display: block; }
-
-        #warning-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
-        .warning-box { background: white; padding: 30px; border-radius: 12px; text-align: center; max-width: 500px; border-top: 6px solid #ef4444; }
-        #btn-kembali { margin-top: 20px; background: #3b82f6; color: white; border: none; padding: 12px 30px; font-size: 1.1rem; border-radius: 6px; cursor: pointer; font-weight: bold;}
-        
-        #lock-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.98); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        .lock-box { background: #1e293b; padding: 40px; border-radius: 15px; text-align: center; max-width: 450px; border: 4px solid #ef4444; box-shadow: 0 0 40px rgba(239, 68, 68, 0.4); }
-        .lock-box input { width: 90%; padding: 15px; margin: 25px 0; text-align: center; font-size: 1.8rem; letter-spacing: 10px; border-radius: 8px; border: none; outline: none; background: #334155; color: white; font-weight:bold; }
-        .lock-box button { background: #10b981; color: white; border: none; padding: 14px 40px; font-size: 1.2rem; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;}
-
-        #force-submit-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 9998; border: 8px solid rgba(239, 68, 68, 0.8); animation: pulse-border 1s infinite; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc; 
+            overflow-x: hidden; 
+            touch-action: manipulation;
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+            -webkit-touch-callout: none; /* iOS Safari */
+        }
+        .hide { display: none !important; }
+        .blink-border { border: 8px solid rgba(239, 68, 68, 0.8); animation: pulse-border 1s infinite; }
         @keyframes pulse-border { 0% { box-shadow: inset 0 0 0 0 rgba(239,68,68,0.7); } 50% { box-shadow: inset 0 0 30px 15px rgba(239,68,68,0.7); } 100% { box-shadow: inset 0 0 0 0 rgba(239,68,68,0.7); } }
-        .blink-text-box { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); background-color: rgba(220, 38, 38, 0.95); color: white; padding: 15px 30px; border-radius: 10px; text-align: center; text-shadow: 1px 1px 3px black; pointer-events: none; width: 85%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #exam-iframe-container { height: calc(100vh - 60px); width: 100%; position: relative; }
+        #exam-iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
-<body oncontextmenu="return false">
+<body class="text-gray-800 antialiased h-screen flex flex-col" oncontextmenu="return false">
 
-    <div id="login-screen">
-        <div class="login-card">
-            <h1>Penilaian Harian Kimia Bab 3</h1>
-            <p class="subtitle">Silakan pilih mata pelajaran dan masukkan passcode untuk memulai sesi ujian Anda.</p>
-            <div class="form-group">
-                <label>Mata Pelajaran</label>
-                <select id="mapel-select" onchange="checkSelection()">
-                    <option value="">-- Pilih Mata Pelajaran --</option>
-                </select>
-                <div id="schedule-info"></div>
-                <div id="status-message"></div>
+    
+    <div id="network-status" class="fixed top-0 left-0 w-full bg-red-600 text-white text-center py-2 text-sm font-bold z-[1000] transform -translate-y-full transition-transform duration-300 shadow-md flex justify-center items-center space-x-2">
+        <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414"></path></svg>
+        <span>KONEKSI INTERNET TERPUTUS! Jangan klik tombol SUBMIT.</span>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav id="main-nav" class="bg-blue-700 text-white shadow-md z-50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3 cursor-pointer">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+                    <span class="font-bold text-xl tracking-tight">Portal Siswa</span>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Passcode Siswa</label>
-                <input type="password" id="student-passcode" placeholder="Masukkan Passcode" disabled>
+        </div>
+    </nav>
+
+    <!-- VIEW: SISWA LOGIN & IDENTITAS -->
+    <main id="view-siswa-login" class="flex-grow flex items-center justify-center p-4 fade-in">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
+            <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
-            <button id="btn-mulai" class="btn-start" onclick="validasiDanMulai()" disabled>Mulai Ujian</button>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Masuk Ujian</h2>
+            <p class="text-sm text-gray-500 mb-6">Lengkapi identitas dan masukkan Kode Ujian.</p>
+            
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="s-nama" placeholder="Tulis nama lengkapmu" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">NIS / No. Absen</label>
+                    <input type="text" id="s-nis" placeholder="Misal: 10029" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <hr class="my-2 border-gray-200">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Kode Ujian</label>
+                    <input type="text" id="s-kode" placeholder="KODE DARI GURU" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-center font-bold text-xl uppercase tracking-widest bg-gray-50">
+                </div>
+                <button onclick="cariUjianSiswa()" id="btn-cari-ujian" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200">
+                    Cari & Masuk Lobi
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- VIEW: SISWA LOBBY -->
+    <main id="view-siswa-lobby" class="flex-grow flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 to-blue-100 hide fade-in">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center border-t-4 border-indigo-500">
+            <h1 id="lobby-mapel" class="text-2xl font-bold text-gray-800 mb-1">Nama Ujian</h1>
+            <p class="text-xs text-gray-500 mb-2 bg-gray-100 inline-block px-3 py-1 rounded-full border border-gray-200">Kode: <span id="lobby-kode-badge" class="font-bold text-gray-700"></span></p>
+            
+            <div class="mb-4">
+                <p class="text-sm text-gray-700 font-semibold">Selamat datang,</p>
+                <p id="lobby-nama-badge" class="text-lg font-bold text-indigo-700"></p>
+            </div>
+
+            <div id="lobby-schedule-box" class="bg-indigo-50 border border-indigo-100 rounded-lg p-3 mb-6 text-sm">
+                <p class="text-indigo-800 font-semibold mb-1">📅 Jadwal Akses:</p>
+                <p id="lobby-time-info" class="text-indigo-600 font-medium"></p>
+                <p id="lobby-duration-info" class="text-xs text-indigo-500 mt-1"></p>
+            </div>
+
+            <div id="lobby-status-msg" class="text-sm font-bold mb-4 py-2 px-3 rounded-lg hide"></div>
+
+            <div id="lobby-passcode-area" class="mb-6 hide">
+                <label class="block text-sm font-semibold text-gray-700 mb-1 text-left">Passcode Keamanan</label>
+                <input type="password" id="s-passcode" placeholder="Masukkan Passcode" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-center tracking-widest bg-gray-50">
+            </div>
+
+            <button onclick="validasiDanMulai()" id="btn-mulai-ujian" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 opacity-50 cursor-not-allowed" disabled>
+                Mulai Kerjakan
+            </button>
+        </div>
+    </main>
+
+    <!-- VIEW: EXAM ACTIVE (IFRAME) -->
+    <div id="view-exam-active" class="flex-col w-full h-screen bg-white hide z-50 fixed inset-0">
+        <div class="bg-gray-900 text-white px-4 py-3 flex justify-between items-center shadow-lg z-10 relative">
+            <div class="flex items-center space-x-3">
+                <span id="exam-top-title" class="font-bold text-sm bg-gray-800 px-3 py-1 rounded border border-gray-700 text-blue-300 truncate max-w-[150px] md:max-w-xs">Mapel</span>
+                <span class="text-xs text-red-400 font-semibold hidden md:inline">Pelanggaran: <span id="exam-v-count">0</span>/<span id="exam-v-max">0</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5 leading-none">Sisa Waktu</p>
+                    <p id="exam-timer" class="text-lg font-mono font-bold text-yellow-400 leading-none">--:--</p>
+                </div>
+                <button onclick="konfirmasiSelesai()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1.5 px-3 rounded transition shadow">
+                    Selesai
+                </button>
+            </div>
+        </div>
+        <div id="exam-iframe-container" class="relative bg-gray-50">
+            <iframe id="exam-iframe" src="" allowfullscreen></iframe>
+            
+            <div id="force-submit-overlay" class="absolute inset-0 pointer-events-none hide blink-border z-40">
+                <div class="absolute top-[15%] left-1/2 transform -translate-x-1/2 bg-red-600/95 text-white p-4 rounded-xl text-center shadow-2xl w-11/12 max-w-lg pointer-events-none">
+                    <h2 class="text-2xl font-black mb-2">⚠️ WAKTU HABIS ⚠️</h2>
+                    <p class="text-sm">Silakan gulir ke bawah dan segera klik tombol <b>KIRIM/SUBMIT</b>.</p>
+                    <p class="mt-2 text-yellow-300 font-medium">Form akan ditutup permanen dalam <b id="grace-timer" class="text-xl">30</b> detik!</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="exam-container">
-        <div id="exam-header">
-            <div style="display:flex; align-items:center;">
-                <span id="subj-title-display" style="margin-right:20px; font-size:1.1rem; color:#93c5fd; font-weight:bold; background:#1e293b; padding:4px 10px; border-radius:6px;"></span>
-                <div style="font-size: 1rem;">Sisa Waktu: <span id="time-display" style="color:#facc15; font-size: 1.3rem; margin-left:5px;">--:--</span></div>
+    <!-- OVERLAY: Peringatan Pelanggaran -->
+    <div id="warning-overlay" class="fixed inset-0 bg-black/90 z-[100] flex-col items-center justify-center p-4 hide">
+        <div class="bg-white p-6 rounded-2xl text-center max-w-md w-full border-t-8 border-red-500 shadow-2xl">
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-black">!</div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">PERINGATAN PELANGGARAN!</h2>
+            <p class="text-sm text-gray-600 mb-4">Tindakan Anda telah dicatat oleh sistem pengawas (Cloud).</p>
+            <div class="bg-red-50 border border-red-100 rounded-lg p-3 mb-4">
+                <p class="text-xs text-red-500 uppercase font-semibold mb-1">Alasan Pemicu:</p>
+                <p id="pelanggaran-alasan" class="text-sm text-red-700 font-bold">Pindah Tab</p>
             </div>
-            <button onclick="selesaiUjian()" style="background:#ef4444; color:white; border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:bold; font-size:0.9rem; transition:0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Keluar / Selesai</button>
-        </div>
-        <div id="exam-wrapper">
-            <iframe id="exam-iframe" src=""></iframe>
-
-        <div id="force-submit-overlay">
-            <div class="blink-text-box">
-                <div style="font-size:1.8rem; margin-bottom:10px; font-weight:bold;">⚠️ WAKTU HABIS! ⚠️</div>
-                <p style="font-size:1rem; line-height:1.4;">Gulir ke bawah dan segera klik <b>KIRIM/SUBMIT</b>.</p>
-                <p style="margin-top:10px; font-size:1.1rem; color:#facc15;">
-                    Sesi ditutup permanen dalam <b id="grace-timer" style="font-size:1.5rem;">30</b> detik!
-                </p>
-            </div>
-        </div>
+            <p class="text-lg font-bold text-red-600 mb-6">Total: <span id="pelanggaran-count-ui">0</span> / <span id="pelanggaran-max-ui">0</span></p>
+            <button onclick="kembaliKeUjian()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg">Saya Mengerti, Kembali ke Ujian</button>
         </div>
     </div>
 
-
-    <div id="warning-overlay">
-        <div class="warning-box">
-            <h1 style="margin-top:0;">PERINGATAN!</h1>
-            <p>Anda terdeteksi melakukan pelanggaran ujian.</p>
-            <p id="pelanggaran-alasan" style="color: #ef4444; font-weight: bold; margin-bottom: 5px;"></p>
-            <p style="font-size: 1.2rem; font-weight: bold; color: #ef4444;">Total Pelanggaran: <span id="pelanggaran-count">0</span> / <span id="pelanggaran-max">0</span></p>
-            <p>Jika batas tercapai, ujian akan dikunci dan memerlukan PIN Pengawas!</p>
-            <button id="btn-kembali" onclick="kembaliKeUjian()">Kembali ke Ujian</button>
+    <!-- OVERLAY: Ujian Terkunci (Butuh PIN) -->
+    <div id="lock-overlay" class="fixed inset-0 bg-gray-900/98 z-[110] flex-col items-center justify-center p-4 hide">
+        <div class="bg-gray-800 p-8 rounded-2xl text-center max-w-md w-full border-2 border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.3)]">
+            <h2 class="text-2xl font-black text-red-500 mb-2">UJIAN DIBLOKIR</h2>
+            <p class="text-gray-300 text-sm mb-6">Batas pelanggaran terlampaui. Minta Pengawas untuk membuka akses.</p>
+            <label class="block text-xs font-semibold text-gray-400 mb-2 text-left uppercase tracking-wider">PIN Guru / Pengawas</label>
+            <input type="password" id="pin-unlock-input" placeholder="Masukkan PIN" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-center font-bold tracking-[0.5em] mb-4">
+            <button onclick="bukaBlokir()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg">Buka Akses Ujian</button>
         </div>
     </div>
 
-    <div id="lock-screen">
-        <div class="lock-box">
-            <svg style="width:64px; height:64px; color:#ef4444; margin:0 auto 10px auto;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z"></path></svg>
-            <h1 style="margin-top:0; color:#ef4444;">UJIAN DIBLOKIR!</h1>
-            <p style="font-size:1.1rem; margin-bottom:5px;">Anda telah melakukan <b id="lock-count">0</b> pelanggaran.</p>
-            <p style="font-size:0.9rem; opacity:0.8;">Masukkan PIN Pengawas untuk membuka kembali sesi ujian.</p>
-            <input type="password" id="pin-input" placeholder="PIN" autocomplete="off">
-            <button onclick="bukaBlokir()">Buka Akses Ujian</button>
-        </div>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3 z-[200] pointer-events-none">
+        <span id="toast-msg" class="font-medium text-sm">Notifikasi</span>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // [CBT Engine - Encrypted & Obfuscated]
-        (function(){
-            var d="=ACIgACIgACIK0HIgACIgACIgowOpgCcwFEdp5WagACIgACIgACIgACIKsHIlNHblBSfgACIgACIgAiC7kCcwFEdp5WagwyJkVGZh9GT05WZ052bD10TEdCKyVmblR3cpxEduVmdFRGZh5CduVWb1N2bkBCIgACIgACIgACIgowegkyJn5WakF2bsdCI90TPgUGdhR3U5RWYlJnL05WZtV3YvRGKgYWagACIgACIgAiCpI3b0F2YzVnZi9EIhlmdgMXatFmbpRGIuF2arV3ch1WakBCdwlmcjNHIh5WZyF2aoACZh9Gbu9mL39GZul2dg4WYrxWYk5WYn5WZtBSYw5WY0Bibh1WYg4WYn5WZkBSazF2cpxWYpNXaulGIuF2auFGbhpEIv8CIgACIgACIgogC9BCIgACIgACIKsTKoknYi9GTyVGZuVmcgACIgACIgACIgACIKsjIiASPgQHelRlcl5mbp5yc1RXY0NHIpMXd0FGdzhiZpBCIgACIgACIgACIgoAIgACIgACIgACIgAiC9BCIgACIgACIgACIgowOpQWS0V3bl1Wa0hCd19WZtlGVyFWZsNGIgACIgACIgACIgACIgACIKsHI5xGbh5WamBSfgACIgACIgACIgACIKsTKi4Cdht2ZuFmclBHIsF2avxGI1R3ahdHIltGIrNWYixGbhZGIskEUBBSazF2cp52bytmbpNHIsF2ZhdkIo4mchdnLlx2bz52bjBCIgACIgACIgACIgACIgAiC7BSKlhCajRXYjBSfgACIgACIgACIgACIKsTKoc3bu5SZ0FGRg0CI4lmbVJXZ2JXZzBSPgQXZzZmZPVWbpRHIgACIgACIgACIgACIgACIKsTKoUWbpRFdldmLpUWbpRXZ0FGZuEGdhRGKlRXYEBydl5GI9ACep5WVyVmdyV2cgQ3cu92YgACIgACIgACIgACIgACIgowOpgibvNnauMXZyBCdpF2dhBSPgEGdhRGI0NnbvNGIgACIgACIgACIgACIgACIKsTK9BCbh52ZpNnLyVGbs9mc052bjBiOsFmbnl2cgsHIscSY0JXYrFmSvEWazF0Ll52b6VWbpR3LpBXYvcmcv5SawFWZtlGdkxmcvd3LvozcwRHdodCKoNGdlZGI0lWY3FGI9AyclJHI0NnbvNGIgACIgACIgACIgACIgACIKsHI5JHdg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9Wa0F2YvxGI7U2csFmZg0DIlZXa0NWQtFGeFNXagACIgACIgACIgACIgACIgACIgAiC7kyJlVnc0dCIsQWauQ3YlpmY1NFduVmcyV3YgsCIn8VZu9GZngSblRXS0V2cuU2ZhJ3b0Nlbvl2czV2cgACIgACIgACIgACIgACIgACIgAiC7BSKpIiLwVHd1RXakBibhtWYgMXZztWQg8TaulGIuFWaqVHIuF2apF2clxWZ55WZtBibpdmbpBibptWY5BSYk5WQggWYrFGcBJCKtJXam52bjhiZpBCIgACIgACIgACIgACIgAiC7BSK0NWZqJWdTRnblJnc1NGKmlGIgACIgACIgACIgAiC7BSKo42bpR3YuVnZg0DIuFWaqVVahNXZsV2cuc3bk5Wa3BCIgACIgACIKoQfgACIgACIgAiC7kCMwATMgwSfgACIgACIgACIgACIK0HIgACIgACIgACIgACIgACIK0HIgACIgACIgACIgACIgACIgACIgowOpADMwEDIs0HIgACIgACIgACIgACIgACIgACIgACIgAiC9BCIgACIgACIgACIgACIgACIgACIgACIgACIgAiC7cSZu9mbnASPgkXYsB3cpRmLlxWe0NnLpcSehxmclZ3btQXatJWdz1SZjJ3bmdCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIpkyJ5FGbyVmdv1Cdp1mY1NXLlNmcvZ2JoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZoYWagACIgACIgACIgACIgACIgACIgACIgACIgACIgACIgAiC7ciP2lGZvwjPu9Gd0VnYvwDbhdXQg4WYtFGbhhEIltGIpxWYi1WZL5jI7IXZ05WavBnOy92cyV3YgsTblJnMuEjOlpXaz1Cdu9mZgsTZ0lGa3pjcvx2bjByO2YmM4I2MjoDZuV3byd2ajFmYgsDZs9mY6QHanlWZ31Cdu9mZgsDewhjOzVXakFmctIXZkJ3biByOl52bupjclRmcvJGI7gHc1MDI4BnMxozZulGZkFGcgsDewBjM6A3b01ibpdmch1mI9UGb5R3cgISKo4WYppWVpF2clxWZzJSPrNWasNmbvBibvRHd1JGP+InY8EyUJJUQIBSVUtUQX5jI7gHcwIjOn5WakRWYwByOyVGduV2Y642ZpxWYtQHelRHI7QGbvJmO0h2ZpV2dtQnbvZGI70WZyJjOlpXaz1Cdu9mZgsDN0QDNmV2I6I3bs92YgsjYzkjMlFzI6Qmb19mcnt2YhJGI7IXZ05WZjpDduVGdu92YtknZpR3c1pGI7IXZ05WZjpzctVGdp1ibnlGbhByOu1Wds92Y642bpR3YlJXak1CelxmZgsTJwATM6QHanlWZoByO4VGbmpTehxGczlGZi0TZslHdzBidpRGPnASPgwUTUhkcl5mbp5SKnIXZwBXYydXLtFGeldCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgACIgACIgACIgACIgACIgACIgACIgoAI7U2csFmZg0DIlZXa0NWQtFGeFNXagACIgACIgACIgACIgACIgACIgACIgACIgACIgACIgAiC7kCbhZnclRnbJJXZtlGdowWY2JXZ05WSyFWZsNGI7kCbhZnclRnbJV2YhJ3ZowWY2JXZ05WSyFWZsNGIgACIgACIgACIgACIgACIgACIgACIgACIgACIgACIgowegkCMg0DPgQ2bpJXZQV2YhJ3ZoYWagACIgACIgACIgACIgACIgACIgACIgACIgACIgowOk9WayVGUlNWYydGI9ACd4VGVyVmbulmLpcicl1Wa01SZjFmcndCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIpkyJyVWbpRXLlNWYyd2JoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZoYWagACIgACIgACIgACIgACIgACIgACIgACIgACIgowOt0CZvlmclBVZjFmcnBCIgACIgACIgACIgACIgACIgACIgACIgACIgAiC7BiP9ASKogCbhZnclRnbJRXZzBSPgwWY2JXZ05WSlNWYydGI0NnbvNGIgACIgACIgACIgACIgACIgACIgACIgAiCgACIgACIgACIgACIgACIgACIgACIgACIKszJrN2bsJ2Jg0DI5FGbwNXak5SZslHdz5SKnkXYsJXZ29WL0lWbiV3ctU2Yy9mZngCZJlnQ05WZtVGbFRXZn5CduVWb1N2bkBSKpcSehxmclZ3btQXatJWdz1SZjJ3bmdCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGKmlGIgACIgACIgACIgACIgACIgACIgACIgAiC7ICMwoDMwICI9ACd4VGVyVmbulmLpcSehxGczlGZtUWbpR3JoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZgACIgACIgACIgACIgACIgACIgACIgACIKsTZ1JHdg0DIn5Wa0RXatJWdTV2Yy9mRzlGIgACIgACIgACIgACIgACIgACIgACIgAiC7BSKn5Wa0RXatJWdTV2Yy9mRzlWIoYWagU2csVGI9BCIgACIgACIgACIgACIgACIgACIKszcgsCIiojIgsCItBSPgQHelRlcl5mbp5SKnkXYsB3cpRWLl1Wa0dCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgACIgACIgACIgACIgAiC7kyJwcCIsIDK0JXY0NFZhBnLpgyZulmc0N1b05SKwYDIlAyapRXZEl2chJXdkhCI9AycgQXZsBCIgACIgACIgACIgACIgACIgACIgACIgowOpcCMnACLygCdyFGdTRWYw5SKocmbpJHdT9GdukCM2AyLgsWa0VGRpNXYyVHZoI3bvxmZugGdh1EI9ASbgQXZsBCIgACIgACIgACIgACIgACIgACIgACIgowOt0yapRXZEl2chJXdkBCIgACIgACIgACIgACIgACIgACIgACIgowegkCMg4DIrlGdlRUazFmc1RGKmlGIgACIgACIgACIgACIgACIgACIgowegkCZlt2Yvx0cpFCImYCIlZXa0NWQtFGeFNXaoYWagACIgACIgACIgACIgACIgoweg4TPgkCKowWY2JXZ05WS0V2cg0DIsFmdyVGdulkcl1Wa0BCIgACIgACIgACIgowOpwWY2JXZ05WSyVWbpRHKsFmdyVGdulkchVGbjBCIgACIgACIgACIgowegkCKyVWbpRVahxWdtBibvlGdj5WdmBCIgACIgACIKoQfgACIgACIgAiC7IychRXYCBSYw5WYUJCI9ACd4VGVyVmbulmLpcSehxGczlGZtUWbpR3JoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZgU2csVGIgACIgACIgACIgAiC7kCKyVWbpRVahxWdtBSKlVnc0hiZpBCIgACIgACIgACIgogC9BCIgACIgACIgACIgowOwASPgsWa0VGRpNXYyVHZgkCMgwDIrlGdlRUazFmc1RGKmlGIgACIgACIgACIgACIgACIKsDZlNHchxWZg0CIpAjNgoCIu9Wa0Fmc1RmL0NWZqJWdTRnblJnc1NGKg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dXLtFGeldCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgACIgACIKszJl52budCI9ASehxGczlGZuUGb5R3cukyJuVWZyN2cts2Yvx2JoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZgACIgACIgACIgACIgACIgowOiICI9ASZ1xWY25SKnQXdw5Wat4WawdCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgACIgACIKsTZzxWYmBSPgQWZrN2bMNXagACIgACIgACIgACIgACIgoAI7kCMgwCZp5CdjVmaiV3U05WZyJXdjByKgcyX2dCKtVGdJRXZz5SZnFmcvR3Uu9WazNXZzBCIgACIgACIgACIgACIgAiC7BSKulGcuQ3YlpmY1NFduVmcyV3Yg0TP9ASZ1xWY25SKnQXdw5Wat4WawdCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGKmlGIgACIgACIgACIgAiC7BSKo42bpR3YuVnZg0DIyl2avxmQhtWdi5ydvRmbpdHIgACIgACIgogC9BCIgACIgACIK0HIgACIgACIgACIgAiC9BCIgACIgACIgACIgACIgAiC74WYzFGbhByKgICI64WYzFGbBJCI9ACd4VGVyVmbulmLpcibhNXYsFWLuFmchd2ZuFGblB3JoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZgkibhNXYsFGImYCIpcibhNXYsFWLuFmchd2ZuFGblB3JoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZoYWagACIgACIgACIgACIgACIgACIgAiC7YFeh1mL0NWZqJWdTRnblJnc1NGI9ACd4VGVyVmbulmLpcCeh1WLuFmchd2ZuFGblB3JoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZgACIgACIgACIgACIgACIgACIgAiC7YHI9ACd4VGVyVmbulmLpcCduV3bj1ibhJXYndmbhxWZwdCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgACIgACIgACIgowOngXZsZ2Jg0DI5FGbwNXak5SZslHdz5SKnkXYsJXZ29WLn5WauJXY3dCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGIgACIgACIgACIgACIgACIgACIgowegkSKnkXYsJXZ29WLn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RHIgACIgACIgACIgAiC9tXKlhCajRXYjBSfgsTKdBDM0ACLwAjMgwCMwQDIsADMyACLwADNbhSZ0FmcilmduI3b0F2ZpZXYuBSKy9GdhdWa2Fmbg4WagISZ0FmcilmdigiZpByegknc0BCIgACIgACIgACIgowegkCKhlGZl1kbvlGdhx2bpZlcld2ZpJHdg42bpR3YuVnZgACIgACIgAiCK0HIgACIgACIgowOpQWauQ3YlpmY1NFduVmcyV3Yo4WYppWVpFGb11GIgACIgACIgACIgAiC9BCIgACIgACIgACIgowOuJXd0VmcgsTKiECSBxUQTBSY3NXaTBSZk92YzNXYQJCK0JXZsFGIgACIgACIgACIgACIgACIKsHIpUGZvN2czFGcuQ3YlpmY1NFduVmcyV3Yg0TPhACd1BnbJN3chBHImYCIiICI90TIgUGZvN2czFGcuQ3YlpmY1NFduVmcyV3YoYWagACIgACIgACIgACIKsjbyVHdlJHIpQ3YlpmY1NFduVmcyV3YhgiZpBCIgACIgACIgACIgowOlVHbhZnLpcSZk92YzNXYw1CduVGZ1R3cngCZJlnQ05WZtVGbFRXZn5CduVWb1N2bkBSPgQXdw5WSzNXYwBCdz52bjBCIgACIgACIgACIgowegkCKu9Wa0Nmb1ZGI9ASahxWdN5WYEl2chRWasFmduc3bk5Wa3BCIgACIgACIKoQfgACIgACIgAiC9BCIgACIgACIgACIgowOlNHbhZGI9ACZlxmYhNXak5ib0JGI7U2csFmZg0DIkVGbiF2cpRmLlR2bjN3chBHI7ISM4kjYwEzIiASPgI3bs92YuUGb5R3cuMXd0FGdzBCIgACIgACIgACIgACIgAiC7IiLlR2bjN3chBFIuF2arV3ch1EIuEWakV2cyVGdg4WYppWVgUIniLCI9ACd4VGVyVmbulmLzVHdhR3cgACIgACIgACIgACIgACIgowegU2csVGI9BCIgACIgACIgACIgowOlVnc0BSPgQWZsJWYzlGZu4GdiByOlVnc0BSPgQWZsJWYzlGZuUGZvN2czFGcgsjI0QDN0YWZjICI9Aicvx2bj5SZslHdz5yc1RXY0NHIgACIgACIgACIgACIgACIKsjIuIXaotWYyVmYggWYsVGdg4WYppWdgMXZztWYgUHdrF2VgQ5miLCI9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Q3cu92YgACIgACIgACIgACIKsTKnUGZvN2czFGctQnblRWd0N3JoQWS5JEduVWblxWR0V2ZuQnbl1Wdj9GZg0DIlR2bjN3chBHI0NnbvNGIgACIgACIgACIgAiC7kyJ0NWZsV2ctwWZwFWbngCZJlnQ05WZtVGbFRXZn5CduVWb1N2bkBSPgQ3YlxWZzBCdz52bjBCIgACIgACIgACIgowegkCKu9Wa0Nmb1ZGI9AibvlGdjVGblN1ajVGaj5ydvRmbpdHIgACIgACIgogC9BCIgACIgACIKsTKwADMxACLu9Wa0NWZsV2UrNWZoNGKsFmdyVGdulEdlNHI9ACdul0ajVGaj5ydvRmbpdHIgACIgACIgACIgAiC7kCdul0ajVGaj5ydvRmbpdHKsFmdyVGdulkchVGbjBSK05WSrNWZoNmL39GZul2doYWagACIgACIgACIgACIKUGbiV3bkByahRWa0BichdWYgEGZhBSYrlmagEWbhxGIsFmdyVGdulGIuF2apRnblhEIv8CIgACIgACIgACIgAiC7kSfgACIgACIgACIgACIKsTK0B3boQGbph2Qk5WZwBXYuQ3YlxWZzBCIgACIgACIgACIgACIgAiC7UWbh5mLtBSPgQnblRnbvNEd4VGduQHcvBCIgACIgACIgACIgACIgAiC7QWau0GI9ASZ1xWY25Cdw9GIgACIgACIgACIgACIgACIKsTKn42bpRHcvdCK05WZtVGbFVGdhVmcj5CduVWb1N2bkBSPgQHcvBCdlxGIgACIgACIgACIgACIgACIKsHI+0DIthCajFWRy9mZuQ3cpxEblBXYtBCIgACIgACIgACIgowOn4jbvlGdw92L80SLg4WYyFmahxWZQBSY0FWTggWaslGUg0SL+IiI9UWdsFmdg42bpRHcvxzJg0DIM1EVIJXZu5WauQ3YlxWZzBCIgACIgACIgACIgoQdsVHahRGIolmYlxmclRHIud3bkB3byRGIuF2aol2cyVmQg8yLgACIgACIgACIgACIKsTKnQ3YlxWZz1CblBXYtdCKklUeCRnbl1WZsVEdldmL05WZtV3YvRGI9ACdjVGblNHI0NnbvNGIgACIgACIgACIgAiC7BSKo42bpR3YuVnZg0DI5JmYvxkclRmblJnL39GZul2dgACIgACIgAiCK0HIgACIgACIgoQSQFEIyVmdyV2cggWazlGblNHIrACbht2bsBSd0tWY3Bibhdmb1JWYHByLvAyO0V2cmZ2Tl1Wa0ByKgkCK39mbuUGdhREIuJXd0VmcgACIgACIgACIgACIKsHIpgydv5EdldGIu9Wa0Nmb1ZGIgACIgACIgogCyVmdyV2cgk2chNXau9mcr5WazBSd0tWYXByLvAyOwASPgQXZzZmZPVWbpRHI0VGbgACIgACIgAiC7U2csFmZg0DIkV2aj9GTzlGI0VGbgACIgACIgAiC7U2csFmZg0DIlZXa0NWQtFGeFNXagQXZsBCIgACIgACIKACIgACIgACIKsDMzASPgQ2bpJXZQV2YhJ3ZgQXZsBCIgACIgACIKsTZzxWYmBSPgcmbpRHdp1mY1NVZjJ3bGNXagQXZsBCIgACIgACIKsDMg0DIrlGdlRUazFmc1RGI0VGbgACIgACIgAiC7wGb15GI9ACbhZnclRnbJJXZtlGdgQXZsBCIgACIgACIKsDbsVnbg0DI0NWZqJWdTRnblJnc1NGI0VGbgACIgACIgAiCgACIgACIgAiC7kSKpkyJngibp9maukCKlNnclZXZy5SKncCK0lGbwNnLhRXYENmblhiYvRXYoQnbl52bw12bDlkUVVGZvNWZkhSZzJXYw5iTPNlSg0DI0NXaMxWZwFWbgQ3cu92YgACIgACIgAiC7IiSUZ1QKRFZDpEVJlXYXFFbNpWSs1EMFxWTqpkekdlSxhleCZmTENWNNlWV51UaVlXU5VVeN1WNoJ2VVxWTqlEbNBTRs1kaKxUYXFDcZNVV51kRop0UTBTMKRVS3V1RGJnWYFFbNpmQCpEVJlnSUpERKRVS5RGWKNnSUlUeKRlTCpEVJlXYIJFMjhUTs1EMFxWTrlFbNtmWtJ2MKR3Y5VjbidUVs10aaVFZEpUShVFZrJmaS5WWtxmNTpHat90UVpnUtZFdZ1mVrp1RWtmSU5URkhkSxo1UVlXTpVVeRlXV51kbOBTWYpEMKRVS5pEVOJkSUlUeNpWQ55Uawc3TTBTeNFTU41UeVpXUUVUMKRVS5pEVKRkSUlUeadVNrpEVJlnSU5kQKRVS51kaBlnTpBzdPNFM51UMRhnTTVleRRVQ3pEVJlnSUpERKRVS5pFSWlXWYJFciJDNs1kaJxWTwUUNNNUV5FVeVlXTtFDalZUWs1kaJxWTwUkeKRlSEpEVJl3YHZkejJjT2p1RVxWTqlEbNBTRs1kaK5mYykzaadlWtJ2MKBjSUlUeKRlSEpEVJl3YHxWdKRVS5pEVOJkSUlUeNRVS65kenVjSUlUeKRFZFpEVKRkSUR2QKRVS5F2VRxWTqlEbNBTRs1kaKpHZXpUcYpnRm5ERjVTTpVVeNlWV5FVeVlXTtVDaidVVs1kaJxWTwUEbNpmSMF2VxAXWTVVeNZEaKN1UwEjSUl0dVdkRypFWRxWTqJ0QKRVS5pEVKRkSUlUekhlSzpEVJlnSU5kQKRVS5FGSSBzYI1EbNBTRs10aZxWTrpVbiNjS0NWe14mYHVFbNtmW2klMKFGZY5EMkhkWFRlaaF3VYJ1dPNVV6JVbWRXWtZ1aadkVrpEVOVEZIpUMaNVV51UaVlXU5VVeN5mTwkFWKBjSUlUeKRlTCpEVJlXTqFUeOlGM390UwkXTxEFeNlXV6FFVFFjSUlUeKRlSEpEVJlnWXVzaKRVS5pEVOJkSUlUeNpWQ55Uawc3TTBTeNFTU450UVpXUUF0dKRVS5pEVKRkSUlUeahkV5lFWSBnYyQDbNpWSs1EMFVTTDVVeRlXV51UbxgWZGlFbNpWSs1EMFpnSUpERKRVS5N2RGp3Yy4kdadUVs1kaJxWTwUEbNpmSuJmM5s2YHZVejJTO1pEVJlnSUpERKRVS5N2RsVnSUlUeKRlTCpEVJlXTUlkeOp3Z1oEVJlnSURWRKRlVFJCI9ASY0FGRj5WZgQ3cu92YgACIgACIgAiC";
-            var r=d.split('').reverse().join('');
-            var s=document.createElement('script');
-            s.type='text/javascript';
-            s.innerHTML=decodeURIComponent(escape(atob(r)));
-            document.head.appendChild(s);
-        })();
-    </script>
-</body>
-</html>
+        const appId = 'cbt-sekolahku-v1'; 
+        
+        // --- PASTE FIREBASE CONFIG ANDA DI SINI ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtq4sKkPuXX0pU4HgqkR-qZsya174ddxM",
+            authDomain: "cbt-sekolahku-1d0b2.firebaseapp.com",
+            projectId: "cbt-sekolahku-1d0b2",
+            storageBucket: "cbt-sekolahku-1d0b2.firebasestorage.app",
+            messagingSenderId: "687374876508",
+            appId: "1:687374876508:web:3a6e17a250d215d5630b99"
+        };
+        // ------------------------------------------
+        
+        let app, auth, db, currentUser;
+        
+        let activeExamData = null;
+        let isExamActive = false;
+        let isLocked = false;
+        let isForceSubmitting = false;
+        let examTimerInterval = null;
+        let lobbyCheckInterval = null;
+        let durasiDetik = 0;
+        let gracePeriod = 30;
+        let timeOffset = 0; 
+
+        window.showToast = function(msg, type='info') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            if(type==='error') toast.classList.replace('bg-gray-800', 'bg-red-600');
+            else toast.classList.replace('bg-red-600', 'bg-gray-800');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+        }
+
+        window.showView = function(viewId) {
+            ['view-siswa-login', 'view-siswa-lobby', 'view-exam-active'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    if(id === viewId) el.classList.remove('hide');
+                    else el.classList.add('hide');
+                }
+            });
+            if(viewId !== 'view-siswa-lobby' && lobbyCheckInterval) clearInterval(lobbyCheckInterval);
+        }
+
+        async function initFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                await signInAnonymously(auth);
+                currentUser = auth.currentUser;
+                
+                // Isi otomatis jika sebelumnya sudah pernah login di browser ini
+                if(localStorage.getItem('cbt_nama')) document.getElementById('s-nama').value = localStorage.getItem('cbt_nama');
+                if(localStorage.getItem('cbt_nis')) document.getElementById('s-nis').value = localStorage.getItem('cbt_nis');
+            } catch (e) {
+                showToast("
