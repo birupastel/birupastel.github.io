@@ -81,8 +81,8 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Mata Pelajaran</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Kode Ujian</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Judul / Mata Pelajaran</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Jadwal Akses</th>
                             <th class="px-6 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Manajemen</th>
                         </tr>
@@ -119,7 +119,12 @@
                     <span class="w-3 h-3 bg-red-500 rounded-full mr-3 pulse-dot"></span>
                     Live Monitor: <span id="monitor-title" class="ml-2 text-blue-600">Nama Ujian</span>
                 </h1>
-                <p class="text-sm text-gray-500 mt-1">Memantau aktivitas dan pelanggaran siswa secara real-time.</p>
+                <p class="text-sm text-gray-500 mt-1 flex items-center space-x-2">
+                    <span>Data diperbarui secara Real-Time.</span>
+                    <button onclick="refreshLiveMonitor()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-300 px-2 py-0.5 rounded text-xs transition shadow-sm flex items-center">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Segarkan
+                    </button>
+                </p>
             </div>
             <div class="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 mt-4 sm:mt-0 flex space-x-4 text-sm font-medium">
                 <div class="text-center"><span id="stat-online" class="block text-xl text-green-600 font-bold">0</span> Online</div>
@@ -232,7 +237,9 @@
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, where, orderBy, limit, startAfter, getDocs, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        
+        // ==========================================
+        // GANTI DENGAN FIREBASE CONFIG ANDA SENDIRI
+        // ==========================================
         const appId = 'cbt-sekolahku-v1'; 
         const firebaseConfig = {
             apiKey: "AIzaSyBtq4sKkPuXX0pU4HgqkR-qZsya174ddxM",
@@ -242,7 +249,7 @@
             messagingSenderId: "687374876508",
             appId: "1:687374876508:web:3a6e17a250d215d5630b99"
         };
-        
+        // ==========================================
         
         let app, auth, db, provider;
         let currentUser = null;
@@ -435,9 +442,10 @@
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div class="flex items-center justify-center space-x-2">
                                 <button onclick="openLiveMonitor('${exam.id}', '${exam.title.replace(/'/g, "\\'")}')" class="text-green-600 hover:text-green-900 bg-green-50 px-3 py-1.5 rounded-lg flex items-center shadow-sm" title="Live Monitoring">
-                                    <svg class="w-4 h-4 mr-1 pulse-dot" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> Pantau
+                                    <svg class="w-4 h-4 mr-1 pulse-dot" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Pantau
                                 </button>
                                 <button onclick="editExam('${exam.id}', true)" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1.5 rounded-lg" title="Salin Ujian">Salin</button>
+                                <button onclick="resetKodeUjian('${exam.id}')" class="text-pink-600 hover:text-pink-900 bg-pink-50 px-3 py-1.5 rounded-lg" title="Ganti Kode Ujian Baru">Reset Kode</button>
                                 <button onclick="editExam('${exam.id}')" class="text-blue-600 hover:text-blue-900 bg-blue-50 px-3 py-1.5 rounded-lg" title="Edit Data">Edit</button>
                                 <button onclick="confirmAction('${exam.id}')" class="text-orange-600 hover:text-orange-900 bg-orange-50 px-3 py-1.5 rounded-lg" title="Arsipkan/Hapus">Arsip</button>
                             </div>
@@ -487,9 +495,43 @@
         }
 
         // ==========================================
+        // 2B. FITUR RESET KODE UJIAN
+        // ==========================================
+        window.resetKodeUjian = async function(oldId) {
+            if(!confirm(`Yakin ingin mereset/mengganti kode ujian ${oldId}?\nKode lama akan disembunyikan (arsip) dan siswa akan mendapatkan KODE ACAK BARU.`)) return;
+            
+            try {
+                const oldRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', oldId);
+                const oldSnap = await getDoc(oldRef);
+                
+                if (oldSnap.exists()) {
+                    const data = oldSnap.data();
+                    
+                    // Generate ID Baru
+                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                    let newId = ''; for(let i=0; i<6; i++) newId += chars.charAt(Math.floor(Math.random() * chars.length));
+                    
+                    // 1. Simpan Data ke ID Baru
+                    const newRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', newId);
+                    await setDoc(newRef, { ...data, updatedAt: new Date().toISOString() });
+                    
+                    // 2. Soft-Delete (Arsipkan) ID Lama
+                    await updateDoc(oldRef, { isArchived: true });
+                    
+                    showToast(`Berhasil! Kode lama diarsipkan. Kode BARU: ${newId}`, 'success');
+                    loadDashboard(0);
+                }
+            } catch(e) { showToast("Gagal mereset kode ujian.", "error"); }
+        }
+
+        // ==========================================
         // 3. FITUR "LIVE MONITORING"
         // ==========================================
+        let currentMonitorId = null;
+        let currentMonitorTitle = null;
+
         window.openLiveMonitor = function(examId, title) {
+            currentMonitorId = examId; currentMonitorTitle = title;
             showView('view-live-monitor');
             document.getElementById('monitor-title').innerText = title;
             document.getElementById('live-monitor-list').innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-gray-400 text-sm">Menghubungkan ke Real-time Database...</td></tr>';
@@ -547,6 +589,12 @@
             }, (error) => {
                 document.getElementById('live-monitor-list').innerHTML = '<tr><td colspan="5" class="px-6 py-6 text-center text-red-500 text-sm font-bold">Gagal memuat Live Monitor. Pastikan Rules Firebase Anda benar.</td></tr>';
             });
+        }
+
+        window.refreshLiveMonitor = function() {
+            if(activeLiveMonitorUnsubscribe) activeLiveMonitorUnsubscribe();
+            if(currentMonitorId) openLiveMonitor(currentMonitorId, currentMonitorTitle);
+            showToast("Memuat ulang data terkini...", "info");
         }
 
         window.closeLiveMonitor = function() {
