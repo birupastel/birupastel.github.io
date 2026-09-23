@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Ujian - CBT Cloud</title>
+    <title>Portal Ujian</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* CSS ANTI-AI: Mematikan kemampuan blok/sorot teks */
+        
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #f1f5f9; 
@@ -50,18 +50,18 @@
             
             <div class="space-y-4 text-left">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Lengkap</label>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Lengkap Sesuai Absen</label>
                     <input type="text" id="s-nama" placeholder="Contoh: Budi Santoso" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-semibold text-gray-700">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-600 mb-1">No. Absen</label>
-                    <input type="number" id="s-nis" placeholder="Contoh: 12" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-gray-700">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nomor Daftar Hadir</label>
+                    <input type="number" id="s-nis" placeholder="CONTOH: 12" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-gray-700">
                 </div>
                 <div class="pt-2">
                     <input type="text" id="s-kode" placeholder="KODE UJIAN" class="w-full px-4 py-3 border-2 border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none text-center font-bold text-2xl tracking-widest bg-blue-50 uppercase">
                 </div>
                 <button onclick="cariUjianSiswa()" id="btn-cari-ujian" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition">
-                    Proses
+                    Cari & Masuk Lobi
                 </button>
             </div>
         </div>
@@ -332,8 +332,8 @@
 
             // MENGGUNAKAN LOCAL STORAGE (Anti Restart HP)
             if(localStorage.getItem('done_' + activeExamData.id)) {
-                msg.innerText = "❌ Anda sudah menyelesaikan ujian ini.";
-                msg.className = "text-sm font-bold mb-4 py-2 px-3 rounded-lg bg-red-100 text-red-700 border border-red-200";
+                msg.innerHTML = `❌ Anda sudah menyelesaikan ujian ini.<br><button onclick="mintaResetSelesai()" class="mt-2 text-xs bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-1.5 rounded border border-red-300 transition">Buka Kembali Akses (Butuh PIN Pengawas)</button>`;
+                msg.className = "text-sm font-bold mb-4 py-3 px-3 rounded-lg bg-red-50 border border-red-200 text-red-600";
                 btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
             } else if(now < startT) {
                 msg.innerText = "⏳ Ujian belum dimulai. Silakan tunggu...";
@@ -356,6 +356,19 @@
                 if(passInput !== activeExamData.passcode) { showToast("Passcode salah!", "error"); return; }
             }
             mulaiUjianEksekusi();
+        }
+
+        window.mintaResetSelesai = function() {
+            const pin = prompt("PERINGATAN: Membuka akses kembali akan mereset timer. \n\nMinta Pengawas memasukkan PIN Ujian:");
+            if(pin === activeExamData.pin) {
+                localStorage.removeItem('done_' + activeExamData.id);
+                localStorage.removeItem('start_' + activeExamData.id);
+                localStorage.removeItem('v_' + activeExamData.id);
+                showToast("Akses di-reset! Silakan klik 'Mulai Kerjakan'.", "success");
+                checkJadwalInterval(); // Segarkan tombol lobi
+            } else if (pin) {
+                showToast("PIN Pengawas Salah!", "error");
+            }
         }
 
         async function startLiveSync() {
@@ -537,6 +550,8 @@
         }
 
         window.selesaiUjianFinal = async function() {
+            closeModal('finish-modal'); // PERBAIKAN: Menutup pop-up saat klik Ya
+            
             if(activeExamData) {
                 localStorage.setItem('done_' + activeExamData.id, 'true');
                 await pingLiveServer(true); // Kirim status selesai (isFinished: true) ke guru
