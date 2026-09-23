@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Guru</title>
+    <title>Portal Guru - CBT Cloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -22,10 +22,10 @@
                     <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     <span class="font-bold text-xl tracking-tight">CBT Cloud - Admin</span>
                 </div>
-                <div id="nav-actions" class="hide flex items-center">
-                    <button onclick="gantiPinAdmin()" class="flex items-center space-x-1 text-sm bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded text-gray-300 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-                        <span>Ubah PIN Portal</span>
+                <div id="nav-actions" class="hide flex items-center space-x-4">
+                    <span id="user-email-display" class="text-sm text-gray-300 font-medium"></span>
+                    <button onclick="logoutGuru()" class="flex items-center space-x-1 text-sm bg-red-900 hover:bg-red-800 px-3 py-1.5 rounded text-white transition shadow">
+                        <span>Logout</span>
                     </button>
                 </div>
             </div>
@@ -33,12 +33,18 @@
     </nav>
 
     <main id="view-login" class="flex-grow flex items-center justify-center p-4 fade-in">
-        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Kunci Pengaman</h2>
-            <p class="text-sm text-gray-500 mb-6">Masukkan PIN Admin untuk mengakses Portal Guru.</p>
-            <input type="password" id="admin-pin" placeholder="Contoh: 123456" class="w-full px-4 py-3 mb-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-center font-bold tracking-widest bg-gray-50">
-            <button onclick="loginAdmin()" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 px-4 rounded-lg shadow-md transition">Masuk Dashboard</button>
-            <p class="text-xs text-red-500 mt-3 hide" id="login-error">PIN Salah!</p>
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center border border-gray-100">
+            <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-100">
+                <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z"></path></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Login Portal Guru</h2>
+            <p class="text-sm text-gray-500 mb-6">Akses hanya diizinkan bagi Guru yang terdaftar di database sekolah.</p>
+            
+            <button onclick="loginGoogle()" class="w-full bg-white hover:bg-gray-50 text-gray-800 font-bold py-3 px-4 rounded-lg shadow-md border border-gray-200 transition flex items-center justify-center space-x-3">
+                <svg class="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/><path d="M1 1h22v22H1z" fill="none"/></svg>
+                <span>Masuk dengan Akun Google</span>
+            </button>
+            <p class="text-xs text-red-500 mt-4 hide font-semibold" id="login-error"></p>
         </div>
     </main>
 
@@ -47,6 +53,7 @@
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">Daftar Ujian Aktif</h1>
                 <p class="text-sm text-gray-500">Kelola dan pantau ujian CBT Cloud Anda</p>
+                <span id="role-badge" class="inline-block mt-2 px-2 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded">Memuat Role...</span>
             </div>
             <button onclick="showCreateExamForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition flex items-center space-x-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -61,12 +68,13 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Kode Ujian</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Mata Pelajaran</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Pembuat</th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Jadwal Akses</th>
                             <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="guru-exam-list" class="bg-white divide-y divide-gray-200">
-                        <tr><td colspan="4" class="px-6 py-10 text-center text-gray-400 text-sm">Memuat data...</td></tr>
+                        <tr><td colspan="5" class="px-6 py-10 text-center text-gray-400 text-sm">Memuat data...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -143,15 +151,13 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
-        // SETTING CLOUD FIREBASE MILIK ANDA SENDIRI
+        // GANTI DENGAN FIREBASE CONFIG ANDA SENDIRI
         // ==========================================
         const appId = 'cbt-sekolahku-v1'; 
-        
-        // PASTE-kan firebaseConfig dari Firebase Console Anda di bawah ini:
         const firebaseConfig = {
             apiKey: "AIzaSyBtq4sKkPuXX0pU4HgqkR-qZsya174ddxM",
             authDomain: "cbt-sekolahku-1d0b2.firebaseapp.com",
@@ -162,15 +168,12 @@
         };
         // ==========================================
         
-        let app, auth, db, currentUser;
+        let app, auth, db, provider;
+        let currentUser = null;
+        let userRole = null; 
         let deleteTargetId = null;
 
-        let localTeacherId = localStorage.getItem('cbt_teacher_id');
-        if(!localTeacherId) {
-            localTeacherId = 'guru_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('cbt_teacher_id', localTeacherId);
-        }
-
+        // UI Helpers
         window.showToast = function(msg, type='info') {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
@@ -196,53 +199,78 @@
 
         window.closeModal = function(id) { document.getElementById(id).classList.add('hide'); }
 
-        async function initFirebase() {
-            try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                await signInAnonymously(auth);
-                currentUser = auth.currentUser;
-                console.log("Portal Guru Terhubung ke Cloud!");
-            } catch (e) {
-                console.error(e); showToast("Gagal terhubung ke Cloud server.", "error");
-            }
+        // Initialize Firebase
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            provider = new GoogleAuthProvider();
+            console.log("Firebase App Initialized.");
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    console.log("Terdeteksi login:", user.email);
+                    currentUser = user;
+                    document.getElementById('user-email-display').innerText = user.email;
+                    
+                    // Cek jabatan pengguna di database
+                    try {
+                        const roleDoc = await getDoc(doc(db, 'artifacts', appId, 'roles', user.email));
+                        if(roleDoc.exists()) {
+                            userRole = roleDoc.data().role; // "admin" atau "guru"
+                            document.getElementById('role-badge').innerText = `Role Anda: ${userRole.toUpperCase()}`;
+                            document.getElementById('login-error').classList.add('hide');
+                            loadDashboard();
+                        } else {
+                            // Jika email tidak ada di database 'roles'
+                            throw new Error("Akses Ditolak: Email tidak terdaftar sebagai Guru/Admin.");
+                        }
+                    } catch (e) {
+                        console.error(e);
+                        document.getElementById('login-error').innerText = e.message || "Gagal memverifikasi akses.";
+                        document.getElementById('login-error').classList.remove('hide');
+                        await signOut(auth); // Tendang keluar
+                    }
+                } else {
+                    currentUser = null;
+                    userRole = null;
+                    showView('view-login');
+                }
+            });
+
+        } catch (e) {
+            console.error("Firebase init failed:", e);
+            showToast("Gagal memuat sistem Cloud.", "error");
         }
 
-        window.loginAdmin = function() {
-            const pin = document.getElementById('admin-pin').value;
-            const savedPin = localStorage.getItem('cbt_admin_pin') || '123456';
-            
-            if(pin === savedPin) {
+        window.loginGoogle = async function() {
+            try {
                 document.getElementById('login-error').classList.add('hide');
-                loadDashboard();
-            } else {
+                showToast("Membuka login Google...", "info");
+                await signInWithPopup(auth, provider);
+                showToast("Login berhasil! Memverifikasi akses...", "success");
+            } catch(e) {
+                console.error("Login Pop-up Error:", e);
+                document.getElementById('login-error').innerText = `Gagal Login: ${e.message}`;
                 document.getElementById('login-error').classList.remove('hide');
             }
         }
 
-        window.gantiPinAdmin = function() {
-            const currentSavedPin = localStorage.getItem('cbt_admin_pin') || '123456';
-            const verify = prompt("Masukkan PIN Portal lama Anda untuk konfirmasi:");
-            
-            if(verify === currentSavedPin) {
-                const newPin = prompt("Masukkan PIN Portal BARU (Maks 10 karakter):");
-                if(newPin && newPin.trim().length >= 4) {
-                    localStorage.setItem('cbt_admin_pin', newPin.trim());
-                    showToast("PIN Portal berhasil diubah!", "success");
-                } else if(newPin) {
-                    showToast("Batal: PIN baru terlalu pendek (Min. 4 karakter).", "error");
-                }
-            } else if (verify !== null) {
-                showToast("Batal: PIN lama salah!", "error");
+        window.logoutGuru = async function() {
+            try {
+                await signOut(auth);
+                showToast("Berhasil logout.");
+                showView('view-login');
+            } catch(e) {
+                console.error(e); showToast("Gagal logout.", "error");
             }
         }
 
         async function loadDashboard() {
-            if(!currentUser) { showToast("Menghubungkan ke Cloud...", "info"); return; }
+            if(!currentUser || !userRole) return;
             showView('view-guru');
             const tbody = document.getElementById('guru-exam-list');
-            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-6 text-center text-gray-400 text-sm">Memuat data dari cloud...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-6 text-center text-gray-400 text-sm">Memuat data dari cloud...</td></tr>';
             
             try {
                 const examsRef = collection(db, 'artifacts', appId, 'public', 'data', 'exams');
@@ -251,13 +279,16 @@
                 
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    if(data.creator === localTeacherId) {
+                    // Jika Admin: Tampilkan semua. Jika Guru: Tampilkan miliknya saja.
+                    if (userRole === 'admin' || data.creator === currentUser.email) {
                         const start = new Date(data.start).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
                         const end = new Date(data.end).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit'});
+                        
                         html += `
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 font-mono text-sm font-bold rounded-md bg-blue-100 text-blue-800">${docSnap.id}</span></td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">${data.title}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-600">${data.creator}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${start} - ${end}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button onclick="editExam('${docSnap.id}')" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
@@ -268,10 +299,10 @@
                     }
                 });
                 
-                if(html === '') html = '<tr><td colspan="4" class="px-6 py-10 text-center text-gray-500 text-sm font-medium">Belum ada ujian. Klik "Buat Ujian Baru".</td></tr>';
+                if(html === '') html = '<tr><td colspan="5" class="px-6 py-10 text-center text-gray-500 text-sm font-medium">Belum ada ujian. Klik "Buat Ujian Baru".</td></tr>';
                 tbody.innerHTML = html;
             } catch (e) {
-                console.error(e); tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-6 text-center text-red-500 text-sm">Gagal memuat data.</td></tr>';
+                console.error(e); tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-6 text-center text-red-500 text-sm">Gagal memuat data. Periksa koneksi/aturan.</td></tr>';
             }
         }
 
@@ -323,18 +354,23 @@
             btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
 
             try {
+                // Saat Edit: Pastikan creator aslinya tidak tertimpa jika Admin yang mengedit
+                let creatorEmail = currentUser.email;
+                if (document.getElementById('edit-exam-id').value && userRole === 'admin') {
+                     const existingDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'exams', examId));
+                     if(existingDoc.exists()) creatorEmail = existingDoc.data().creator;
+                }
+
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', examId);
-                
-                // Gunakan email login saat ini sebagai identitas 'creator' pembuat soal
                 await setDoc(docRef, {
                     title: title, url: url, start: start, end: end, 
                     duration: duration, maxV: maxV, passcode: passcode, pin: pin,
-                    creator: currentUser.email, updatedAt: new Date().toISOString()
+                    creator: creatorEmail, updatedAt: new Date().toISOString()
                 });
                 showToast(`Ujian ${examId} berhasil disimpan!`);
                 loadDashboard();
             } catch(e) {
-                console.error(e); showToast("Gagal menyimpan ke cloud.", "error");
+                console.error(e); showToast("Gagal menyimpan ke cloud. Periksa hak akses (Rules).", "error");
             } finally {
                 btn.innerHTML = originalText; btn.disabled = false;
             }
@@ -374,10 +410,8 @@
                 showToast("Ujian dihapus!");
                 closeModal('delete-modal');
                 loadDashboard();
-            } catch(e) { showToast("Gagal menghapus", "error"); }
+            } catch(e) { showToast("Akses ditolak: Anda tidak bisa menghapus ini.", "error"); }
         }
-
-        initFirebase();
     </script>
 </body>
 </html>
