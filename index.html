@@ -1,545 +1,474 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informatika Mudah</title>
-    
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portal Ujian - CBT Cloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts: Plus Jakarta Sans (Modern & Geometric) -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #F3F4F6; /* Light Gray Background */
-        }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        /* Card Animation */
-        .card-item {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 1;
-            transform: scale(1);
-        }
-        /* Class khusus untuk menyembunyikan item (filtered out atau beda page) */
-        .card-item.hidden-item {
-            display: none; 
-            opacity: 0;
-            transform: scale(0.95);
-        }
-
-        /* Filter Button Active State */
-        .filter-btn.active {
-            background-color: #1e293b; /* Slate-800 */
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; overflow-x: hidden; touch-action: manipulation; }
+        .hide { display: none !important; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .blink-border { animation: pulse-border 1s infinite; }
+        @keyframes pulse-border { 0% { box-shadow: inset 0 0 0 0 rgba(239,68,68,0.7); } 50% { box-shadow: inset 0 0 30px 15px rgba(239,68,68,0.7); } 100% { box-shadow: inset 0 0 0 0 rgba(239,68,68,0.7); } }
+        #exam-iframe-container { height: calc(100vh - 60px); width: 100%; position: relative; }
     </style>
 </head>
-<body class="text-slate-600 antialiased flex flex-col min-h-screen">
+<body class="text-gray-800 antialiased h-screen flex flex-col" oncontextmenu="return false">
 
-    <!-- Top Navigation (Minimalist) -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 bg-opacity-80 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center text-white text-sm font-bold">
-                    IF
+    <nav id="main-nav" class="bg-blue-700 text-white shadow-md z-50 relative">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-center h-16 items-center">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+                    <span class="font-bold text-xl tracking-tight">Portal Ujian Siswa</span>
                 </div>
-                <span class="font-bold text-slate-800 tracking-tight">Informatika<span class="text-indigo-500">Lab</span></span>
             </div>
         </div>
     </nav>
 
-    <!-- Header / Hero Section -->
-    <header class="bg-white pt-16 pb-12 px-4 sm:px-6 lg:px-8 border-b border-slate-100">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">
-                Media Pembelajaran Interaktif
-            </h1>
-            <p class="text-lg text-slate-500 mb-8 max-w-2xl mx-auto">
-                Pilih topik di bawah ini untuk memulai simulasi. Belajar konsep kompleks menjadi lebih visual dan mudah dipahami.
-            </p>
-
-            <!-- Search Bar (Clean) -->
-            <div class="relative max-w-md mx-auto mb-10 group">
-                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </div>
-                <input type="text" id="searchInput" 
-                    class="block w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition shadow-sm"
-                    placeholder="Cari materi (misal: Biner, RSA, Router)...">
-            </div>
-
-            <!-- Filter Tabs (The "Modern" Part) -->
-            <div class="flex flex-wrap justify-center gap-2" id="filterContainer">
-                <button class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="all">
-                    Semua
-                </button>
-                <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="jaringan">
-                    <i class="fa-solid fa-network-wired mr-1.5 text-blue-500"></i> Jaringan
-                </button>
-                <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="kriptografi">
-                    <i class="fa-solid fa-key mr-1.5 text-emerald-500"></i> Kriptografi
-                </button>
-                <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="dp">
-                    <i class="fa-solid fa-layer-group mr-1.5 text-purple-500"></i> Dynamic Prog.
-                </button>
-                <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition" data-filter="binary">
-                    <i class="fa-solid fa-microchip mr-1.5 text-orange-500"></i> Binary War
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content Grid -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow">
-        
-        <!-- Grid Container -->
-        <div id="learningGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            <!-- ================= JARINGAN ================= -->
-            <a href="simulasi/5.2_Topologi_Jaringan.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-sitemap"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Topologi & Packet Switching</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi interaktif mengenal topologi (star, bus, mesh, dan ring serta cara kerjanya) dan pergerakan paket data antar router dalam sebuah jaringan luas.</p>
-                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/5.3_Model_Jaringan.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-layer-group"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Model Jaringan</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi interaktif proses enkapsulasi dan dekapsulasi data melalui lapisan header (Port, IP, dan MAC) untuk memahami alur komunikasi antar perangkat.</p>
-                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/5.4_Deteksi_Error.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Deteksi Error</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Eksperimen perhitungan Checksum dan CRC untuk memverifikasi integritas data serta simulasi deteksi kerusakan bit selama proses transmisi.</p>
-                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/5.5_Sinyal.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-wave-square"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Pensinyalan</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Visualisasi konversi data biner ke sinyal analog dan digital menggunakan teknik encoding (Unipolar, Polar, Bipolar) serta uji ketahanan terhadap noise.</p>
-                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/5.6_Simulasi_Firewall.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Simulasi Firewall</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi konfigurasi aturan keamanan jaringan (Allow/Deny) berbasis IP dan Port untuk menyaring lalu lintas data secara real-time.</p>
-                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/5.7_Simulator_Jaringan Dasar.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-globe"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">Simulator Jaringan Dasar</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Rancang bangun topologi jaringan, manajemen pengalamatan IP (Network & Host ID), dan uji konektivitas antar perangkat menggunakan perintah Ping.</p>
-                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/5.8_DNS_Simulator.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="jaringan">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-globe"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Network</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition">DNS Lookup Simulator</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi alur penerjemahan nama domain ke IP Address melalui hirarki DNS Server (Root, TLD, Authoritative) dan fungsi mekanisme caching.</p>
-                <div class="flex items-center text-blue-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <!-- ================= KRIPTOGRAFI ================= -->
-            <a href="simulasi/2.0.1_Kriptografi.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="kriptografi">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-lock"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Crypto</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition">Konsep Dasar</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Pengenalan enkripsi, dekripsi, plaintext, dan ciphertext secara visual.</p>
-                <div class="flex items-center text-emerald-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/2.0.2_Caesar_Chipper.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="kriptografi">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-rotate"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Crypto</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition">Caesar Cipher</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Algoritma klasik menggeser huruf alfabet. Cobalah memecahkan kodenya.</p>
-                <div class="flex items-center text-emerald-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/2.0.3_Polyalphabetic_Chiper.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="kriptografi">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-table-cells"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Crypto</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition">Polyalphabetic</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Enkripsi yang lebih kompleks menggunakan Vigenère square.</p>
-                <div class="flex items-center text-emerald-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <!-- ================= DYNAMICS PROGRAMMING ================= -->
-            <a href="simulasi/4.1_Jalan_Pulang.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="dp">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-route"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Algorithm</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition">Jalan Pulang</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Menentukan banyaknya rute terpendek dalam sebuah grid.</p>
-                <div class="flex items-center text-purple-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/4.2_Kodok_Lompat.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="dp">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-frog"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Algorithm</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition">Kodok Lompat</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Optimasi biaya lompatan menggunakan Dynamic Programming.</p>
-                <div class="flex items-center text-purple-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/4.3_Populasi.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="dp">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-chart-line"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Algorithm</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition">Populasi</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Simulasi pertumbuhan populasi dengan konsep rekursif/iteratif.</p>
-                <div class="flex items-center text-purple-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/4.4_Rampok_Rumah.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="dp">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-house-chimney-crack"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Algorithm</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition">Perampok Rumah</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">House Robber Problem: Memaksimalkan hasil curian tanpa alarm berbunyi.</p>
-                <div class="flex items-center text-purple-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/1.6_WordPath.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="dp">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-house-chimney-crack"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Algorithm</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-purple-600 transition">Word Path</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Word Path : Menemukan banyaknya susunan kata yang mungkin</p>
-                <div class="flex items-center text-purple-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <!-- ================= BINARY WAR ================= -->
-            <a href="simulasi/3.1_Latihan_Biner.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="binary">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-brands fa-watchman-monitoring"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Binary</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition">Latihan Biner</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Belajar konversi bilangan desimal ke biner step-by-step.</p>
-                <div class="flex items-center text-orange-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <a href="simulasi/5.1_Binary_Board.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="binary">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-chess-board"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Binary</span>
-                </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition">Binary Board</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Tantangan kecepatan berhitung biner dalam format boardgame</p>
-                <div class="flex items-center text-orange-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
+    <main id="view-login" class="flex-grow flex items-center justify-center p-4 fade-in">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-100 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Masuk Ujian</h2>
+            <p class="text-sm text-gray-500 mb-6">Masukkan Kode Ujian dari Guru Anda.</p>
             
-            <a href="simulasi/3.2_Kuis_Biner.html" class="card-item group block bg-white rounded-2xl p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-slate-100" data-category="binary">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-                        <i class="fa-solid fa-gamepad"></i>
-                    </div>
-                    <span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 text-xs font-semibold uppercase tracking-wide">Binary</span>
+            <div class="space-y-4 text-left">
+                <div>
+                    <input type="text" id="s-kode" placeholder="KODE UJIAN" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-center font-bold text-2xl tracking-widest bg-gray-50 uppercase">
                 </div>
-                <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition">Kuis & Game</h3>
-                <p class="text-sm text-slate-500 leading-relaxed mb-4">Tantangan kecepatan berhitung biner dalam format gamifikasi.</p>
-                <div class="flex items-center text-orange-600 text-sm font-semibold mt-auto">
-                    Mulai Simulasi <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
-                </div>
-            </a>
-
-            <!-- Empty State (Hidden by default) -->
-            <div id="noResults" class="hidden col-span-full py-12 text-center">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-slate-400 mb-4">
-                    <i class="fa-solid fa-folder-open text-2xl"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-slate-700">Tidak ditemukan</h3>
-                <p class="text-slate-500">Coba kata kunci lain atau ubah filter.</p>
-            </div>
-
-            <!-- Pagination Controls -->
-            <div id="paginationControls" class="hidden col-span-full flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 pt-8 border-t border-slate-200">
-                <button id="prevBtn" class="px-5 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-slate-600 transition shadow-sm">
-                    <i class="fa-solid fa-chevron-left mr-2"></i> Sebelumnya
-                </button>
-                
-                <span id="pageIndicator" class="text-sm text-slate-600 font-medium bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
-                    Halaman <span id="currentPageSpan" class="font-bold text-indigo-600">1</span> dari <span id="totalPagesSpan" class="font-bold">1</span>
-                </span>
-                
-                <button id="nextBtn" class="px-5 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-slate-600 transition shadow-sm">
-                    Selanjutnya <i class="fa-solid fa-chevron-right ml-2"></i>
+                <button onclick="cariUjianSiswa()" id="btn-cari-ujian" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition">
+                    Cari & Masuk Lobi
                 </button>
             </div>
-
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-sm text-slate-500">
-                &copy; 2025
-            </p>
-            <div class="flex gap-4 text-slate-400">
-                <a href="#" class="hover:text-slate-600 transition"><i class="fa-brands fa-github text-lg"></i></a>
-                <a href="#" class="hover:text-slate-600 transition"><i class="fa-brands fa-instagram text-lg"></i></a>
+    <main id="view-lobby" class="flex-grow flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 to-blue-100 hide fade-in">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center border-t-4 border-indigo-500">
+            <h1 id="lobby-mapel" class="text-2xl font-bold text-gray-800 mb-1">Nama Ujian</h1>
+            <p class="text-xs text-gray-500 mb-4 bg-gray-100 inline-block px-3 py-1 rounded-full border border-gray-200">Kode: <span id="lobby-kode-badge" class="font-bold text-gray-700"></span></p>
+            
+            <div class="bg-indigo-50 border border-indigo-100 rounded-lg p-3 mb-6 text-sm">
+                <p class="text-indigo-800 font-semibold mb-1">📅 Jadwal Akses:</p>
+                <p id="lobby-time-info" class="text-indigo-600 font-medium"></p>
+                <p id="lobby-duration-info" class="text-xs text-indigo-500 mt-1"></p>
+            </div>
+
+            <div id="lobby-status-msg" class="text-sm font-bold mb-4 py-2 px-3 rounded-lg hide"></div>
+
+            <div id="lobby-passcode-area" class="mb-6 hide">
+                <label class="block text-sm font-semibold text-gray-700 mb-1 text-left">Passcode Ujian</label>
+                <input type="password" id="s-passcode" placeholder="Masukkan Passcode" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-center tracking-widest bg-gray-50">
+            </div>
+
+            <button onclick="validasiDanMulai()" id="btn-mulai-ujian" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition opacity-50 cursor-not-allowed" disabled>
+                Mulai Kerjakan
+            </button>
+        </div>
+    </main>
+
+    <div id="view-exam" class="flex-col w-full h-screen bg-white hide z-50 fixed inset-0">
+        <div class="bg-gray-900 text-white px-4 py-3 flex justify-between items-center shadow-lg z-10 relative">
+            <div class="flex items-center space-x-3">
+                <span id="exam-top-title" class="font-bold text-sm bg-gray-800 px-3 py-1 rounded border border-gray-700 text-blue-300 truncate max-w-[150px] md:max-w-xs">Mapel</span>
+                <span class="text-xs text-red-400 font-semibold">Pelanggaran: <span id="exam-v-count">0</span>/<span id="exam-v-max">0</span></span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-right">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5 leading-none">Sisa Waktu</p>
+                    <p id="exam-timer" class="text-lg font-mono font-bold text-yellow-400 leading-none">--:--</p>
+                </div>
+                <button onclick="showFinishModal()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1.5 px-3 rounded transition">
+                    Selesai
+                </button>
             </div>
         </div>
-    </footer>
-
-    <!-- Logic Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const cards = Array.from(document.querySelectorAll('.card-item')); // Convert NodeList to Array for easier handling
-            const searchInput = document.getElementById('searchInput');
-            const noResults = document.getElementById('noResults');
+        <div id="exam-iframe-container" class="relative bg-gray-50">
+            <iframe id="exam-iframe" src="" class="w-full h-full border-none" allowfullscreen></iframe>
             
-            // Pagination Elements
-            const paginationControls = document.getElementById('paginationControls');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const currentPageSpan = document.getElementById('currentPageSpan');
-            const totalPagesSpan = document.getElementById('totalPagesSpan');
+            <div id="force-submit-overlay" class="absolute inset-0 bg-transparent hide blink-border z-40" style="pointer-events: none;">
+                <div class="absolute top-[10%] left-1/2 transform -translate-x-1/2 bg-red-600/95 text-white p-4 rounded-xl text-center shadow-2xl w-11/12 max-w-lg">
+                    <h2 class="text-2xl font-black mb-2">⚠️ WAKTU HABIS ⚠️</h2>
+                    <p class="text-sm">Silakan klik tombol <b>KIRIM/SUBMIT</b> di formulir Anda sekarang.</p>
+                    <p class="mt-2 text-yellow-300 font-medium">Sesi akan ditutup permanen dalam <b id="grace-timer" class="text-xl">30</b> detik!</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            // Config
-            const ITEMS_PER_PAGE = 6;
-            let currentFilter = 'all';
-            let currentSearch = '';
-            let currentPage = 1;
-            let visibleCards = []; // Store currently matching cards
+    <!-- OVERLAY: Pelanggaran -->
+    <div id="warning-overlay" class="fixed inset-0 bg-black/90 z-[100] flex-col items-center justify-center p-4 hide">
+        <div class="bg-white p-6 rounded-2xl text-center max-w-md w-full border-t-8 border-red-500 shadow-2xl">
+            <div class="text-5xl mb-4">🚫</div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">PELANGGARAN!</h2>
+            <div class="bg-red-50 rounded-lg p-3 mb-4">
+                <p class="text-xs text-red-500 uppercase font-semibold">Alasan:</p>
+                <p id="pelanggaran-alasan" class="text-sm text-red-700 font-bold">Pindah Tab / Aplikasi</p>
+            </div>
+            <p class="text-lg font-bold text-red-600 mb-6">Total: <span id="pelanggaran-count-ui">0</span> / <span id="pelanggaran-max-ui">0</span></p>
+            <button onclick="kembaliKeUjian()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg">Saya Mengerti, Kembali</button>
+        </div>
+    </div>
 
-            // Initialize
-            applyFilters();
+    <!-- OVERLAY: Terkunci (Butuh PIN) -->
+    <div id="lock-overlay" class="fixed inset-0 bg-gray-900/98 z-[110] flex-col items-center justify-center p-4 hide">
+        <div class="bg-gray-800 p-8 rounded-2xl text-center max-w-md w-full border-2 border-red-500">
+            <h2 class="text-2xl font-black text-red-500 mb-2">UJIAN DIBLOKIR</h2>
+            <p class="text-gray-300 text-sm mb-6">Batas pelanggaran terlampaui. Minta Pengawas untuk membuka akses.</p>
+            <input type="password" id="pin-unlock-input" placeholder="PIN Pengawas" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-red-500 outline-none text-center font-bold tracking-[0.5em] mb-4">
+            <button onclick="bukaBlokir()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg">Buka Akses</button>
+        </div>
+    </div>
 
-            // Filter Click Event
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active', 'bg-slate-800', 'text-white'));
-                    filterBtns.forEach(b => b.classList.add('bg-white', 'text-slate-600'));
-                    
-                    btn.classList.add('active');
-                    btn.classList.remove('bg-white', 'text-slate-600');
+    <!-- MODAL: Selesai Ujian -->
+    <div id="finish-modal" class="fixed inset-0 bg-black/60 z-[120] flex items-center justify-center hide p-4">
+        <div class="bg-white rounded-xl p-6 max-w-sm w-full text-center">
+            <h3 class="text-xl font-bold text-red-600 mb-2">Selesai Ujian?</h3>
+            <p class="text-sm text-gray-600 mb-6">Pastikan Anda sudah menekan tombol Submit/Kirim pada formulir sebelum keluar.</p>
+            <div class="flex space-x-3">
+                <button onclick="closeModal('finish-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 rounded-lg">Batal</button>
+                <button onclick="selesaiUjianFinal()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg">Ya, Keluar</button>
+            </div>
+        </div>
+    </div>
 
-                    currentFilter = btn.getAttribute('data-filter');
-                    currentPage = 1; // Reset to page 1 on filter change
-                    applyFilters();
-                });
-            });
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3 z-[200] pointer-events-none">
+        <span id="toast-msg" class="font-medium text-sm">Notifikasi</span>
+    </div>
 
-            // Search Input Event
-            searchInput.addEventListener('input', (e) => {
-                currentSearch = e.target.value.toLowerCase();
-                currentPage = 1; // Reset to page 1 on search
-                applyFilters();
-            });
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-            // Pagination Click Events
-            prevBtn.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderPagination();
-                    // Scroll to top of grid slightly for better UX
-                    document.getElementById('learningGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // ==========================================
+        // SETTING CLOUD FIREBASE MILIK ANDA SENDIRI (SAMA DENGAN PORTAL GURU)
+        // ==========================================
+        const appId = 'cbt-sekolahku-v1'; 
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtq4sKkPuXX0pU4HgqkR-qZsya174ddxM",
+            authDomain: "cbt-sekolahku-1d0b2.firebaseapp.com",
+            projectId: "cbt-sekolahku-1d0b2",
+            storageBucket: "cbt-sekolahku-1d0b2.firebasestorage.app",
+            messagingSenderId: "687374876508",
+            appId: "1:687374876508:web:3a6e17a250d215d5630b99"
+        };
+        // ==========================================
+        
+        let app, auth, db, currentUser;
+        
+        let activeExamData = null;
+        let isExamActive = false;
+        let isLocked = false;
+        let isForceSubmitting = false;
+        let examTimerInterval = null;
+        let lobbyCheckInterval = null;
+        let durasiDetik = 0;
+        let gracePeriod = 30;
+        let timeOffset = 0;
+
+        // UI Helpers
+        window.showToast = function(msg, type='info') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            if(type==='error') toast.classList.replace('bg-gray-800', 'bg-red-600');
+            else toast.classList.replace('bg-red-600', 'bg-gray-800');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+        }
+
+        window.showView = function(viewId) {
+            ['view-login', 'view-lobby', 'view-exam'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    if(id === viewId) el.classList.remove('hide');
+                    else el.classList.add('hide');
                 }
             });
+            if(viewId !== 'view-lobby' && lobbyCheckInterval) clearInterval(lobbyCheckInterval);
+        }
 
-            nextBtn.addEventListener('click', () => {
-                const totalPages = Math.ceil(visibleCards.length / ITEMS_PER_PAGE);
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderPagination();
-                    document.getElementById('learningGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
+        window.showFinishModal = function() { document.getElementById('finish-modal').classList.remove('hide'); }
+        window.closeModal = function(id) { document.getElementById(id).classList.add('hide'); }
 
-            function applyFilters() {
-                // 1. Filter Logic: Determine which cards match criteria
-                visibleCards = cards.filter(card => {
-                    const category = card.getAttribute('data-category');
-                    const title = card.querySelector('h3').innerText.toLowerCase();
-                    const desc = card.querySelector('p').innerText.toLowerCase();
-                    
-                    const matchesFilter = currentFilter === 'all' || category === currentFilter;
-                    const matchesSearch = title.includes(currentSearch) || desc.includes(currentSearch);
-
-                    return matchesFilter && matchesSearch;
-                });
-
-                // 2. Hide all cards initially
-                cards.forEach(card => card.classList.add('hidden-item'));
-
-                // 3. Handle No Results
-                if (visibleCards.length === 0) {
-                    noResults.classList.remove('hidden');
-                    paginationControls.classList.add('hidden');
-                } else {
-                    noResults.classList.add('hidden');
-                    // 4. Render Pagination View
-                    renderPagination();
-                }
+        async function initFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                await signInAnonymously(auth);
+                currentUser = auth.currentUser;
+            } catch (e) {
+                showToast("Gagal terhubung ke Cloud server.", "error");
             }
+        }
 
-            function renderPagination() {
-                const totalPages = Math.ceil(visibleCards.length / ITEMS_PER_PAGE);
+        async function syncServerTime() {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                const res = await fetch('https://worldtimeapi.org/api/timezone/Asia/Jakarta', { signal: controller.signal });
+                const data = await res.json();
+                timeOffset = new Date(data.datetime).getTime() - Date.now();
+                clearTimeout(timeoutId);
+            } catch(e) { timeOffset = 0; }
+        }
+        function getNow() { return Date.now() + timeOffset; }
+
+        window.cariUjianSiswa = async function() {
+            if(!currentUser) { showToast("Sistem belum siap. Tunggu sebentar.", "error"); return; }
+            
+            const kode = document.getElementById('s-kode').value.trim().toUpperCase();
+            if(!kode) { showToast("Masukkan kode ujian!", "error"); return; }
+
+            const btn = document.getElementById('btn-cari-ujian');
+            const orig = btn.innerText;
+            btn.innerText = "Mencari..."; btn.disabled = true;
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', kode);
+                const docSnap = await getDoc(docRef);
                 
-                // Ensure currentPage is valid
-                if (currentPage > totalPages) currentPage = 1;
-                
-                // Calculate slice indices
-                const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-                const endIndex = startIndex + ITEMS_PER_PAGE;
-
-                // Show cards for current page only
-                // First hide all matching cards (to reset view from previous page)
-                visibleCards.forEach(card => card.classList.add('hidden-item'));
-                
-                // Then show the specific slice
-                const pageCards = visibleCards.slice(startIndex, endIndex);
-                pageCards.forEach(card => card.classList.remove('hidden-item'));
-
-                // Update UI Controls
-                if (totalPages > 1) {
-                    paginationControls.classList.remove('hidden');
-                    currentPageSpan.textContent = currentPage;
-                    totalPagesSpan.textContent = totalPages;
-
-                    // Button States
-                    prevBtn.disabled = currentPage === 1;
-                    nextBtn.disabled = currentPage === totalPages;
+                if (docSnap.exists()) {
+                    activeExamData = docSnap.data();
+                    activeExamData.id = kode; 
+                    renderLobbySiswa();
                 } else {
-                    // Hide pagination if only 1 page
-                    paginationControls.classList.add('hidden');
+                    showToast("Kode Ujian tidak ditemukan!", "error");
                 }
+            } catch(e) {
+                showToast("Terjadi kesalahan jaringan.", "error");
+            } finally {
+                btn.innerText = orig; btn.disabled = false;
             }
+        }
+
+        function renderLobbySiswa() {
+            showView('view-lobby');
+            document.getElementById('lobby-mapel').innerText = activeExamData.title;
+            document.getElementById('lobby-kode-badge').innerText = activeExamData.id;
+            
+            const startStr = activeExamData.start.length === 16 ? activeExamData.start + ":00" : activeExamData.start;
+            const endStr = activeExamData.end.length === 16 ? activeExamData.end + ":00" : activeExamData.end;
+            const stF = new Date(startStr).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+            const enF = new Date(endStr).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit'});
+            
+            document.getElementById('lobby-time-info').innerText = `${stF} WIB s.d ${enF} WIB`;
+            document.getElementById('lobby-duration-info').innerText = `Durasi Pengerjaan: ${activeExamData.duration} Menit`;
+            
+            if(activeExamData.passcode) document.getElementById('lobby-passcode-area').classList.remove('hide');
+            else document.getElementById('lobby-passcode-area').classList.add('hide');
+
+            if(lobbyCheckInterval) clearInterval(lobbyCheckInterval);
+            checkJadwalInterval();
+            lobbyCheckInterval = setInterval(checkJadwalInterval, 1000);
+        }
+
+        function checkJadwalInterval() {
+            if(!activeExamData) return;
+            const now = getNow();
+            const startT = new Date(activeExamData.start.length === 16 ? activeExamData.start + ":00" : activeExamData.start).getTime();
+            const endT = new Date(activeExamData.end.length === 16 ? activeExamData.end + ":00" : activeExamData.end).getTime();
+            
+            const btn = document.getElementById('btn-mulai-ujian');
+            const msg = document.getElementById('lobby-status-msg');
+            msg.classList.remove('hide');
+
+            if(sessionStorage.getItem('done_' + activeExamData.id)) {
+                msg.innerText = "❌ Anda sudah menyelesaikan ujian ini.";
+                msg.className = "text-sm font-bold mb-4 py-2 px-3 rounded-lg bg-red-100 text-red-700 border border-red-200";
+                btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else if(now < startT) {
+                msg.innerText = "⏳ Ujian belum dimulai. Silakan tunggu...";
+                msg.className = "text-sm font-bold mb-4 py-2 px-3 rounded-lg bg-yellow-100 text-yellow-700 border border-yellow-200";
+                btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else if(now > endT) {
+                msg.innerText = "⛔ Waktu akses ujian telah berakhir.";
+                msg.className = "text-sm font-bold mb-4 py-2 px-3 rounded-lg bg-red-100 text-red-700 border border-red-200";
+                btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                msg.innerText = "✅ Ujian tersedia. Silakan masuk.";
+                msg.className = "text-sm font-bold mb-4 py-2 px-3 rounded-lg bg-green-100 text-green-700 border border-green-200";
+                btn.disabled = false; btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        window.validasiDanMulai = function() {
+            if(activeExamData.passcode) {
+                const passInput = document.getElementById('s-passcode').value;
+                if(passInput !== activeExamData.passcode) { showToast("Passcode salah!", "error"); return; }
+            }
+            mulaiUjianEksekusi();
+        }
+
+        function triggerViolationMedia() {
+            try { if("vibrate" in navigator) navigator.vibrate([400, 200, 400]); } catch(e){}
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'square'; const now = ctx.currentTime;
+                osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(800, now+0.2);
+                gain.gain.setValueAtTime(0.5, now); gain.gain.exponentialRampToValueAtTime(0.01, now+0.8);
+                osc.start(now); osc.stop(now+1);
+            } catch(e) { }
+        }
+
+        window.catatPelanggaran = function(alasan) {
+            if(!activeExamData || !isExamActive || isLocked || isForceSubmitting) return;
+            
+            let v = parseInt(sessionStorage.getItem('v_' + activeExamData.id) || '0'); v++;
+            sessionStorage.setItem('v_' + activeExamData.id, v);
+            triggerViolationMedia();
+
+            document.getElementById('exam-v-count').innerText = v;
+
+            if(v >= activeExamData.maxV) {
+                isLocked = true;
+                document.getElementById('warning-overlay').classList.add('hide');
+                document.getElementById('lock-overlay').classList.remove('hide');
+                document.getElementById('lock-overlay').style.display = 'flex';
+            } else {
+                document.getElementById('warning-overlay').classList.remove('hide');
+                document.getElementById('warning-overlay').style.display = 'flex';
+                document.getElementById('pelanggaran-count-ui').innerText = v;
+                document.getElementById('pelanggaran-max-ui').innerText = activeExamData.maxV;
+                if(alasan) document.getElementById('pelanggaran-alasan').innerText = alasan;
+            }
+        }
+
+        window.bukaBlokir = function() {
+            if(document.getElementById('pin-unlock-input').value === activeExamData.pin) {
+                sessionStorage.setItem('v_' + activeExamData.id, 0); 
+                document.getElementById('exam-v-count').innerText = "0";
+                isLocked = false;
+                document.getElementById('pin-unlock-input').value = "";
+                document.getElementById('lock-overlay').classList.add('hide');
+                document.getElementById('lock-overlay').style.display = 'none';
+                mulaiFullscreen();
+            } else {
+                showToast("PIN Pengawas Salah!", "error"); triggerViolationMedia();
+            }
+        }
+
+        window.kembaliKeUjian = function() {
+            document.getElementById('warning-overlay').classList.add('hide');
+            document.getElementById('warning-overlay').style.display = 'none';
+            mulaiFullscreen();
+        }
+
+        function mulaiFullscreen() {
+            let elem = document.documentElement;
+            try {
+                if (elem.requestFullscreen) elem.requestFullscreen();
+                else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+            } catch(e){}
+        }
+
+        function mulaiUjianEksekusi() {
+            isExamActive = true; isLocked = false; mulaiFullscreen();
+            if(lobbyCheckInterval) clearInterval(lobbyCheckInterval);
+            
+            showView('view-exam');
+            document.getElementById('exam-iframe').src = activeExamData.url;
+            document.getElementById('exam-top-title').innerText = activeExamData.title;
+            document.getElementById('exam-v-max').innerText = activeExamData.maxV;
+            
+            let v = parseInt(sessionStorage.getItem('v_' + activeExamData.id) || '0');
+            document.getElementById('exam-v-count').innerText = v;
+            if(v >= activeExamData.maxV) catatPelanggaran();
+
+            let storedStart = sessionStorage.getItem('start_' + activeExamData.id);
+            let nowUnix = Math.floor(getNow() / 1000); 
+            
+            if(!storedStart) {
+                sessionStorage.setItem('start_' + activeExamData.id, nowUnix);
+                durasiDetik = activeExamData.duration * 60;
+            } else {
+                let elapsed = nowUnix - parseInt(storedStart);
+                durasiDetik = (activeExamData.duration * 60) - elapsed;
+                if(durasiDetik < 0) durasiDetik = 0;
+            }
+            mulaiTimerEksekusi();
+        }
+
+        function mulaiTimerEksekusi() {
+            if(examTimerInterval) clearInterval(examTimerInterval);
+            examTimerInterval = setInterval(() => {
+                if(isExamActive && !isLocked) {
+                    if(durasiDetik > 0) {
+                        durasiDetik--;
+                        let m = Math.floor(durasiDetik / 60).toString().padStart(2, '0');
+                        let s = (durasiDetik % 60).toString().padStart(2, '0');
+                        document.getElementById('exam-timer').innerText = m + ":" + s;
+                    } else if(!isForceSubmitting) {
+                        isForceSubmitting = true;
+                        document.getElementById('exam-timer').innerText = "00:00";
+                        document.getElementById('force-submit-overlay').classList.remove('hide');
+                        
+                        const graceInterval = setInterval(() => {
+                            gracePeriod--;
+                            document.getElementById('grace-timer').innerText = gracePeriod;
+                            if(gracePeriod <= 0) {
+                                clearInterval(graceInterval); clearInterval(examTimerInterval);
+                                isExamActive = false; 
+                                document.getElementById('exam-iframe-container').innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center bg-gray-900 text-white p-6 text-center"><h1 class="text-4xl font-black text-red-500 mb-4">WAKTU HABIS!</h1><p class="mb-8 text-gray-300">Sesi ujian telah ditutup permanen.</p><button onclick="selesaiUjianFinal()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-bold">Kembali ke Beranda</button></div>';
+                            }
+                        }, 1000);
+                    }
+                }
+            }, 1000);
+        }
+
+        window.selesaiUjianFinal = function() {
+            if(activeExamData) sessionStorage.setItem('done_' + activeExamData.id, 'true');
+            isExamActive = false;
+            window.location.reload(); 
+        }
+
+        document.addEventListener('visibilitychange', function() { 
+            if (document.visibilityState === 'hidden' && isExamActive && !isLocked) catatPelanggaran("Pindah Tab/Aplikasi"); 
+        }); 
+        
+        let initialWidth = window.innerWidth; 
+        window.addEventListener('resize', () => { 
+            if(isExamActive && !isLocked) { 
+                const wHeight = window.innerHeight; const sHeight = window.screen.height; const wWidth = window.innerWidth; 
+                if (wWidth < (initialWidth * 0.7) || wHeight < (sHeight * 0.5)) catatPelanggaran("Layar Terbelah (Split-Screen)"); 
+            } 
         });
+
+        document.addEventListener('contextmenu', event => { if(isExamActive) event.preventDefault(); }); 
+        document.addEventListener('keydown', event => { 
+            if(!isExamActive) return;
+            if (event.key === 'F12') { event.preventDefault(); catatPelanggaran("Inspect Element (F12)"); }
+            if (event.ctrlKey && ['c', 'v', 'u', 'p', 's'].includes(event.key.toLowerCase())) {
+                event.preventDefault(); catatPelanggaran("Shortcut Keyboard Ilegal");
+            }
+        }); 
+        document.onselectstart = function() { return isExamActive ? false : true; }
+        
+        setInterval(function() { 
+            if(isExamActive && !isLocked) { 
+                const before = new Date().getTime(); 
+                debugger; 
+                const after = new Date().getTime(); 
+                if (after - before > 100) catatPelanggaran("Membuka Developer Tools"); 
+            } 
+        }, 1500);
+
+        history.pushState(null, null, location.href); 
+        window.onpopstate = function () { 
+            if(isExamActive) { history.pushState(null, null, location.href); catatPelanggaran("Tombol Back ditekan"); } 
+        };
+
+        syncServerTime();
+        initFirebase();
     </script>
 </body>
 </html>
-
