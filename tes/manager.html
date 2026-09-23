@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Guru - CBT Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .hide { display: none !important; }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="text-gray-800 antialiased h-screen flex flex-col">
+
+    <nav class="bg-gray-900 text-white shadow-md z-50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('view-guru')">
+                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span class="font-bold text-xl tracking-tight">CBT Cloud - Admin</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="view-login" class="flex-grow flex items-center justify-center p-4 fade-in">
+        <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Kunci Pengaman</h2>
+            <p class="text-sm text-gray-500 mb-6">Masukkan PIN Admin untuk mengakses Portal Guru.</p>
+            <input type="password" id="admin-pin" placeholder="Contoh: 123456" class="w-full px-4 py-3 mb-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-center font-bold tracking-widest bg-gray-50">
+            <button onclick="loginAdmin()" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 px-4 rounded-lg shadow-md transition">Masuk Dashboard</button>
+            <p class="text-xs text-red-500 mt-3 hide" id="login-error">PIN Salah!</p>
+        </div>
+    </main>
+
+    <main id="view-guru" class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full hide fade-in">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Daftar Ujian Aktif</h1>
+                <p class="text-sm text-gray-500">Kelola dan pantau ujian CBT Cloud Anda</p>
+            </div>
+            <button onclick="showCreateExamForm()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>Buat Ujian Baru</span>
+            </button>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Kode Ujian</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Mata Pelajaran</th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Jadwal Akses</th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guru-exam-list" class="bg-white divide-y divide-gray-200">
+                        <tr><td colspan="4" class="px-6 py-10 text-center text-gray-400 text-sm">Memuat data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <main id="view-guru-form" class="flex-grow p-4 md:p-8 max-w-4xl mx-auto w-full hide fade-in">
+        <button onclick="showView('view-guru')" class="text-blue-600 hover:text-blue-800 text-sm font-medium mb-4 flex items-center space-x-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span>Kembali ke Dashboard</span>
+        </button>
+        
+        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <h2 id="form-title" class="text-xl font-bold text-gray-800 border-b pb-4 mb-6">Pengaturan Ujian</h2>
+            <input type="hidden" id="edit-exam-id" value="">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nama Mata Pelajaran</label>
+                    <input type="text" id="g-mapel" placeholder="Contoh: PTS Matematika Kelas XII" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Link Ujian (Google Form)</label>
+                    <input type="url" id="g-url" placeholder="https://docs.google.com/forms/..." class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Waktu Mulai Akses</label>
+                    <input type="datetime-local" id="g-start" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Waktu Selesai Akses</label>
+                    <input type="datetime-local" id="g-end" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Durasi Ujian (Menit)</label>
+                    <input type="number" id="g-duration" placeholder="90" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Toleransi Pelanggaran (Maks)</label>
+                    <input type="number" id="g-maxv" placeholder="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Passcode Siswa (Opsional)</label>
+                    <input type="text" id="g-passcode" placeholder="Kosongkan jika bebas" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none bg-blue-50">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">PIN Pengawas (Buka Blokir)</label>
+                    <input type="text" id="g-pin" placeholder="123456" class="w-full px-4 py-2 border border-gray-300 rounded-lg outline-none bg-yellow-50">
+                </div>
+            </div>
+
+            <button onclick="saveExamToCloud()" id="btn-save-cloud" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200">
+                Simpan & Aktifkan Ujian ke Cloud
+            </button>
+        </div>
+    </main>
+
+    <!-- Modal Hapus -->
+    <div id="delete-modal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center hide fade-in p-4">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Hapus Ujian?</h3>
+            <p class="text-sm text-gray-600 mb-6">Ujian <span id="del-kode" class="font-bold text-red-600"></span> akan dihapus permanen dari Cloud.</p>
+            <div class="flex space-x-3">
+                <button onclick="closeModal('delete-modal')" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 rounded-lg">Batal</button>
+                <button onclick="executeDelete()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3 z-[200] pointer-events-none">
+        <span id="toast-msg" class="font-medium text-sm">Notifikasi</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // SETTING CLOUD FIREBASE MILIK ANDA SENDIRI
+        // ==========================================
+        const appId = 'cbt-sekolahku-v1'; 
+        
+        // PASTE-kan firebaseConfig dari Firebase Console Anda di bawah ini:
+        const firebaseConfig = {
+            apiKey: "AIzaSyBtq4sKkPuXX0pU4HgqkR-qZsya174ddxM",
+            authDomain: "cbt-sekolahku-1d0b2.firebaseapp.com",
+            projectId: "cbt-sekolahku-1d0b2",
+            storageBucket: "cbt-sekolahku-1d0b2.firebasestorage.app",
+            messagingSenderId: "687374876508",
+            appId: "1:687374876508:web:3a6e17a250d215d5630b99"
+        };
+        // ==========================================
+        
+        let app, auth, db, currentUser;
+        let deleteTargetId = null;
+
+        let localTeacherId = localStorage.getItem('cbt_teacher_id');
+        if(!localTeacherId) {
+            localTeacherId = 'guru_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('cbt_teacher_id', localTeacherId);
+        }
+
+        window.showToast = function(msg, type='info') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            if(type==='error') toast.classList.replace('bg-gray-800', 'bg-red-600');
+            else toast.classList.replace('bg-red-600', 'bg-gray-800');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+        }
+
+        window.showView = function(viewId) {
+            ['view-login', 'view-guru', 'view-guru-form'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    if(id === viewId) el.classList.remove('hide');
+                    else el.classList.add('hide');
+                }
+            });
+        }
+
+        window.closeModal = function(id) { document.getElementById(id).classList.add('hide'); }
+
+        async function initFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                await signInAnonymously(auth);
+                currentUser = auth.currentUser;
+                console.log("Portal Guru Terhubung ke Cloud!");
+            } catch (e) {
+                console.error(e); showToast("Gagal terhubung ke Cloud server.", "error");
+            }
+        }
+
+        window.loginAdmin = function() {
+            const pin = document.getElementById('admin-pin').value;
+            if(pin === '123456') { // Ganti password default ini sesuai keinginan Anda
+                document.getElementById('login-error').classList.add('hide');
+                loadDashboard();
+            } else {
+                document.getElementById('login-error').classList.remove('hide');
+            }
+        }
+
+        async function loadDashboard() {
+            if(!currentUser) { showToast("Menghubungkan ke Cloud...", "info"); return; }
+            showView('view-guru');
+            const tbody = document.getElementById('guru-exam-list');
+            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-6 text-center text-gray-400 text-sm">Memuat data dari cloud...</td></tr>';
+            
+            try {
+                const examsRef = collection(db, 'artifacts', appId, 'public', 'data', 'exams');
+                const snapshot = await getDocs(examsRef);
+                let html = '';
+                
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if(data.creator === localTeacherId) {
+                        const start = new Date(data.start).toLocaleString('id-ID', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+                        const end = new Date(data.end).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit'});
+                        html += `
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 font-mono text-sm font-bold rounded-md bg-blue-100 text-blue-800">${docSnap.id}</span></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-bold">${data.title}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${start} - ${end}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button onclick="editExam('${docSnap.id}')" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                                    <button onclick="confirmDelete('${docSnap.id}')" class="text-red-600 hover:text-red-900">Hapus</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+                
+                if(html === '') html = '<tr><td colspan="4" class="px-6 py-10 text-center text-gray-500 text-sm font-medium">Belum ada ujian. Klik "Buat Ujian Baru".</td></tr>';
+                tbody.innerHTML = html;
+            } catch (e) {
+                console.error(e); tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-6 text-center text-red-500 text-sm">Gagal memuat data.</td></tr>';
+            }
+        }
+
+        window.showCreateExamForm = function() {
+            document.getElementById('edit-exam-id').value = '';
+            document.getElementById('g-mapel').value = '';
+            document.getElementById('g-url').value = '';
+            
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const localStart = new Date(now.getTime() - offset);
+            document.getElementById('g-start').value = localStart.toISOString().slice(0,16);
+            const localEnd = new Date(now.getTime() - offset + (2 * 60 * 60 * 1000));
+            document.getElementById('g-end').value = localEnd.toISOString().slice(0,16);
+            
+            document.getElementById('g-duration').value = '90';
+            document.getElementById('g-maxv').value = '3';
+            document.getElementById('g-passcode').value = '';
+            document.getElementById('g-pin').value = '123456';
+            document.getElementById('form-title').innerText = "Buat Ujian Baru";
+            
+            showView('view-guru-form');
+        }
+
+        window.saveExamToCloud = async function() {
+            if(!currentUser) return;
+            const title = document.getElementById('g-mapel').value.trim();
+            let url = document.getElementById('g-url').value.trim();
+            const start = document.getElementById('g-start').value;
+            const end = document.getElementById('g-end').value;
+            const duration = parseInt(document.getElementById('g-duration').value) || 90;
+            const maxV = parseInt(document.getElementById('g-maxv').value) || 3;
+            const passcode = document.getElementById('g-passcode').value.trim();
+            const pin = document.getElementById('g-pin').value.trim() || '123456';
+            let examId = document.getElementById('edit-exam-id').value;
+
+            if(!title || !url || !start || !end) { showToast("Mohon lengkapi judul, link, dan jadwal!", "error"); return; }
+
+            if(url.includes('?')) url = url.split('?')[0]; 
+            url += "?embedded=true";
+
+            if(!examId) {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                examId = ''; for(let i=0; i<6; i++) examId += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            const btn = document.getElementById('btn-save-cloud');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Menyimpan...'; btn.disabled = true;
+
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', examId);
+                await setDoc(docRef, {
+                    title: title, url: url, start: start, end: end, 
+                    duration: duration, maxV: maxV, passcode: passcode, pin: pin,
+                    creator: localTeacherId, updatedAt: new Date().toISOString()
+                });
+                showToast(`Ujian ${examId} berhasil disimpan!`);
+                loadDashboard();
+            } catch(e) {
+                console.error(e); showToast("Gagal menyimpan ke cloud.", "error");
+            } finally {
+                btn.innerHTML = originalText; btn.disabled = false;
+            }
+        }
+
+        window.editExam = async function(examId) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', examId);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('edit-exam-id').value = examId;
+                    document.getElementById('g-mapel').value = data.title;
+                    document.getElementById('g-url').value = data.url.replace('?embedded=true', '');
+                    document.getElementById('g-start').value = data.start;
+                    document.getElementById('g-end').value = data.end;
+                    document.getElementById('g-duration').value = data.duration;
+                    document.getElementById('g-maxv').value = data.maxV;
+                    document.getElementById('g-passcode').value = data.passcode || '';
+                    document.getElementById('g-pin').value = data.pin;
+                    document.getElementById('form-title').innerText = `Edit Ujian: ${examId}`;
+                    showView('view-guru-form');
+                }
+            } catch(e) { showToast("Gagal mengambil data", "error"); }
+        }
+
+        window.confirmDelete = function(examId) {
+            deleteTargetId = examId;
+            document.getElementById('del-kode').innerText = examId;
+            document.getElementById('delete-modal').classList.remove('hide');
+        }
+
+        window.executeDelete = async function() {
+            if(!deleteTargetId) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'exams', deleteTargetId));
+                showToast("Ujian dihapus!");
+                closeModal('delete-modal');
+                loadDashboard();
+            } catch(e) { showToast("Gagal menghapus", "error"); }
+        }
+
+        initFirebase();
+    </script>
+</body>
+</html>
