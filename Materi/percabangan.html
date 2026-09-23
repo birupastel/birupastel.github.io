@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#f7f9fc">
+<title>Decision Lab C++ — Algoritma Percabangan</title>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--ink:#182235;--muted:#687386;--line:#e3e8f0;--blue:#3568e8;--blue2:#edf3ff;--green:#15803d;--green2:#ebf8ef;--red:#c2413b;--red2:#fff0ee;--amber:#a96300;--amber2:#fff7df;--dark:#172033;--shadow:0 12px 34px rgba(31,45,72,.08);--mono:Consolas,"Liberation Mono",monospace}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#fcfdff,#f6f8fb 45%,#fafbfc);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.9);backdrop-filter:blur(15px);border-bottom:1px solid rgba(227,232,240,.9)}.top-inner{max-width:1200px;margin:auto;padding:11px 18px;display:flex;gap:16px;align-items:center}.brand{display:flex;align-items:center;gap:10px;min-width:max-content}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#3568e8,#74a5ff);display:grid;place-items:center;color:#fff;font-weight:900}.brand b{font-size:15px}.brand small{display:block;color:var(--muted);font-size:10px;margin-top:2px}.nav{display:flex;gap:5px;overflow:auto;scrollbar-width:none;flex:1}.nav::-webkit-scrollbar{display:none}.nav button{border:0;background:transparent;padding:9px 11px;border-radius:11px;color:#5f6a7d;font-size:13px;font-weight:800;white-space:nowrap}.nav button.active,.nav button:hover{background:var(--blue2);color:var(--blue)}.overall{min-width:115px}.overall small{display:flex;justify-content:space-between;color:var(--muted);font-size:9px;font-weight:900}.bar{height:7px;background:#edf0f5;border-radius:99px;overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#3568e8,#7ea9ff);border-radius:99px;transition:.3s}
+main{max-width:1200px;margin:auto;padding:26px 18px 72px}section{display:none;animation:fade .22s ease}section.active{display:block}@keyframes fade{from{opacity:.55;transform:translateY(4px)}to{opacity:1;transform:none}}.section-head{display:flex;justify-content:space-between;gap:16px;align-items:end;margin:4px 0 17px}.section-head h2{font-size:28px;margin:0 0 4px}.section-head p{margin:0;color:var(--muted);line-height:1.5}.badge{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;background:var(--blue2);color:var(--blue);font-size:11px;font-weight:900;white-space:nowrap}.eyebrow{display:inline-flex;padding:6px 9px;border-radius:999px;background:var(--blue2);color:var(--blue);font-size:11px;font-weight:900;letter-spacing:.25px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 7px 20px rgba(31,42,68,.04)}.muted{color:var(--muted)}
+.btn{border:0;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:850;transition:.18s}.btn:hover{transform:translateY(-1px)}.btn.primary{background:var(--blue);color:#fff;box-shadow:0 8px 18px rgba(53,104,232,.18)}.btn.secondary{background:#eef2f6;color:#344054}.btn.ghost{background:#fff;border:1px solid var(--line);color:#445067}.btn.success{background:var(--green);color:#fff}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.code{font-family:var(--mono);white-space:pre-wrap;background:var(--dark);color:#dce7ff;border-radius:15px;padding:16px;font-size:13px;line-height:1.68;overflow:auto}.code .active-line{display:block;background:#294c91;margin:0 -7px;padding:0 7px;border-left:3px solid #8ab2ff}.field label{display:block;color:#697386;font-size:10px;font-weight:900;letter-spacing:.45px;text-transform:uppercase;margin:0 0 6px}.field input,.field select,.field textarea{width:100%;border:1px solid #dce3ec;background:#fbfcfe;border-radius:11px;padding:10px 11px;color:var(--ink);outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:#94b0ec;box-shadow:0 0 0 3px rgba(53,104,232,.08)}
+/* learning */
+.lesson{min-height:410px;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;padding:28px}.lesson h2{font-size:clamp(27px,4vw,40px);letter-spacing:-.8px;margin:11px 0 10px}.lesson p{font-size:15px;line-height:1.7;color:var(--muted)}.lesson-visual{background:#f8faff;border:1px solid #e7edf7;border-radius:18px;min-height:300px;padding:20px;display:grid;place-items:center}.slide-dots{display:flex;gap:7px;justify-content:center;margin:13px 0}.slide-dots button{width:8px;height:8px;border:0;border-radius:99px;background:#d8dfe9;padding:0}.slide-dots button.active{width:25px;background:var(--blue)}.slide-footer{display:flex;justify-content:space-between;align-items:center}.slide-count{color:var(--muted);font-size:12px;font-weight:800}.strategy{display:grid;gap:8px;width:100%}.strategy>div{display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 11px}.strategy b{width:29px;height:29px;border-radius:9px;background:var(--blue2);color:var(--blue);display:grid;place-items:center}.strategy span{font-size:13px;line-height:1.45;color:#445067}.skill-map{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.skill{background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px}.skill-top{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:850}.skill-top span:last-child{color:var(--muted)}.skill .bar{height:6px;margin-top:8px}
+/* visual tabs */
+.subtabs{display:flex;gap:7px;background:#eef2f7;border-radius:14px;padding:5px;width:max-content;max-width:100%;overflow:auto;margin-bottom:17px}.subtabs button{border:0;background:transparent;padding:9px 12px;border-radius:10px;color:#687386;font-weight:850;font-size:12px;white-space:nowrap}.subtabs button.active{background:#fff;color:var(--blue);box-shadow:0 3px 10px rgba(30,45,70,.08)}.panel{display:none}.panel.active{display:block}.visual-card{background:#fff;border:1px solid var(--line);border-radius:21px;padding:21px;box-shadow:0 7px 20px rgba(31,42,68,.04)}.operator-layout{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(350px,1.15fr);gap:26px;align-items:center}.compact-row{display:grid;grid-template-columns:105px 90px 105px;gap:8px;margin-top:17px}.compact-row input,.compact-row select{text-align:center;padding:9px}.result-box{min-height:205px;border:1px dashed #cdd8e8;border-radius:17px;background:linear-gradient(145deg,#f7faff,#fff);display:grid;place-items:center;text-align:center;padding:20px}.result-box .expr{font-family:var(--mono);font-size:28px;font-weight:900}.result-box strong{font-size:38px}.true{color:var(--green)}.false{color:var(--red)}
+.drill-shell{max-width:760px;margin:auto}.drill-stage{text-align:center;background:linear-gradient(145deg,#f8faff,#fff);border:1px solid var(--line);border-radius:18px;padding:26px}.qmeta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:11px;font-weight:850;margin-bottom:9px}.drill-expression{font-family:var(--mono);font-size:clamp(30px,6vw,47px);font-weight:900;margin:9px 0 21px}.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{border:1px solid var(--line);background:#fff;border-radius:13px;padding:13px;text-align:left;color:#344054;font-weight:800}.choice:hover{border-color:#9fb7e9;background:#f7faff}.choice.center{text-align:center;font-size:16px}.explain-box{margin-top:14px;background:#f6f8fb;border-radius:13px;padding:12px;color:#4f5b6d;line-height:1.55;font-size:13px}
+/* diagrams */
+.visualizer{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:18px;align-items:stretch}.viz-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px}.viz-code-shell{background:var(--dark);border:1px solid #25334d;border-radius:16px;overflow:hidden;box-shadow:0 12px 26px rgba(23,32,51,.12)}.viz-code-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 13px;background:#111a2b;border-bottom:1px solid rgba(255,255,255,.08);color:#9fb2d1;font-size:10px;font-weight:900;letter-spacing:.45px;text-transform:uppercase}.viz-code-dots{display:flex;gap:5px}.viz-code-dots i{width:7px;height:7px;border-radius:50%;background:#52627c}.viz-code-body{padding:10px 0 11px;font-family:var(--mono);font-size:13px;line-height:1.7;overflow:auto}.viz-code-line{display:grid;grid-template-columns:37px minmax(max-content,1fr);min-height:23px;align-items:center;border-left:3px solid transparent;color:#dce7ff;transition:.18s}.viz-code-line .ln{padding:0 9px 0 6px;text-align:right;color:#657796;user-select:none;font-size:10px}.viz-code-line .src{white-space:pre;padding-right:14px}.viz-code-line.is-active{background:#243e70;border-left-color:#8ab2ff}.viz-code-line.is-active .ln{color:#bdd0f6}.flowbox{min-height:355px;background:#fbfcfe;border:1px solid var(--line);border-radius:17px;padding:18px;display:grid;place-items:center}.tree{width:min(100%,520px);display:grid;justify-items:center;gap:8px}.fnode{min-width:160px;max-width:230px;width:max-content;text-align:center;padding:10px 12px;border:1px solid #d7e0eb;border-radius:11px;background:#fff;font-family:var(--mono);font-size:12px}.fnode.active{background:#edf4ff;border-color:#7aa2f4;box-shadow:0 0 0 4px #edf4ff}.fnode.good{background:#effaf2;border-color:#9ed7ad}.fnode.bad{background:#fff2f0;border-color:#efb4ae}.down{height:27px;width:2px;background:#b5c1d2;position:relative}.down:after{content:"▼";position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);font-size:11px;color:#8897aa}.branches{display:grid;grid-template-columns:1fr 1fr;gap:18px;width:100%}.branch{display:grid;justify-items:center;gap:6px}.branch-label{font-size:10px;font-weight:900;color:#657186;text-align:center}.branch-label:after{content:"↓";display:block;font-size:18px;color:#97a3b6}.subtree{width:100%;display:grid;justify-items:center;gap:7px}.status{margin-top:10px;min-height:42px;background:#f6f8fb;border-radius:11px;padding:10px 12px;color:#566176;font-size:13px;line-height:1.5}
+/* boundary */
+.boundary-layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:18px}.boundary-case{background:#f8faff;border:1px solid #e4eaf4;border-radius:16px;padding:18px}.boundary-case h3{margin:9px 0 7px}.boundary-case p{color:var(--muted);line-height:1.6}.boundary-table{width:100%;border-collapse:collapse;font-size:13px}.boundary-table th,.boundary-table td{border-bottom:1px solid var(--line);padding:10px;text-align:left}.boundary-table th{color:var(--muted);font-size:10px;text-transform:uppercase}.boundary-table select{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px;width:100%}.boundary-table tr.ok{background:#f0faf3}.boundary-table tr.no{background:#fff4f2}
+/* builder & logic */
+.builder-shell{max-width:900px;margin:auto}.builder-mode-switch{display:flex;gap:5px;width:max-content;max-width:100%;padding:5px;background:#eef2f7;border-radius:13px;margin-bottom:18px}.builder-mode-switch button{border:0;background:transparent;border-radius:9px;padding:9px 13px;color:#667085;font-size:12px;font-weight:850}.builder-mode-switch button.active{background:#fff;color:var(--blue);box-shadow:0 3px 10px rgba(31,45,72,.08)}.builder-view{display:none}.builder-view.active{display:block}.builder-stage{background:linear-gradient(145deg,#fbfcff,#f6f9ff);border:1px solid #e0e7f2;border-radius:18px;padding:20px}.builder-stage h3{font-size:22px;margin:10px 0 6px}.builder-bridge{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:center;margin:18px 0 10px}.bridge-marker{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid var(--line);color:var(--blue);font-size:10px;font-weight:950;box-shadow:0 5px 12px rgba(31,45,72,.06)}.builder-zone{min-height:78px;border:1px dashed #9fb4d4;border-radius:14px;background:#fff;padding:12px;display:flex;gap:7px;flex-wrap:wrap;align-items:center;position:relative;box-shadow:inset 0 -7px 0 #edf3ff}.builder-zone.empty:after{content:'Susun blok dari kiri ke kanan';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#98a2b3;font-size:12px;font-weight:750;white-space:nowrap}.token-bank-wrap{margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}.token-bank-label{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#667085;font-size:11px;font-weight:850;margin-bottom:9px}.token-bank{display:flex;gap:8px;flex-wrap:wrap}.token{border:1px solid #cdd8ea;background:#fff;border-radius:10px;padding:9px 11px;font-family:var(--mono);font-weight:850;color:#344054;box-shadow:0 3px 8px rgba(31,45,72,.04);transition:.16s}.token:hover{transform:translateY(-1px);border-color:#91ace3;background:#f8faff}.token.used{opacity:.28;transform:none;pointer-events:none}.built-token{border:0;background:#eaf1ff;color:#2356c5;border-radius:9px;padding:8px 10px;font-family:var(--mono);font-weight:900;box-shadow:0 3px 8px rgba(53,104,232,.08)}.built-token:hover{background:#dfeaff}.builder-note{margin-top:9px;color:#7a8597;font-size:11px}.reverse-card{max-width:700px;margin:auto;background:#f8faff;border:1px solid var(--line);border-radius:17px;padding:20px}.reverse-card .code{font-size:18px;text-align:center}.logic-shell{max-width:970px;margin:auto}.logic-head{text-align:center;max-width:650px;margin:0 auto 17px}.logic-head h3{font-size:24px;margin:9px 0 6px}.logic-op-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:16px}.logic-op-card{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px;text-align:left;color:#344054;transition:.16s}.logic-op-card:hover{border-color:#aac0ec;transform:translateY(-1px)}.logic-op-card.active{background:#f1f5ff;border-color:#8caaeb;box-shadow:0 0 0 3px #edf3ff}.logic-op-card b{font-family:var(--mono);font-size:18px;color:var(--blue)}.logic-op-card span{display:block;color:var(--muted);font-size:10px;margin-top:3px}.logic-circuit{display:grid;grid-template-columns:minmax(130px,1fr) 82px minmax(130px,1fr) 34px minmax(180px,1.15fr);gap:10px;align-items:center;background:linear-gradient(145deg,#fafcff,#f4f7fc);border:1px solid var(--line);border-radius:18px;padding:17px}.logic-input-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;transition:.2s}.logic-input-card.is-disabled{opacity:.3;filter:grayscale(.5)}.logic-input-card small{display:block;color:#7a8597;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}.switch-btn{width:100%;border:1px solid #efb5b0;background:#fff4f2;color:var(--red);border-radius:11px;padding:12px;font-weight:950}.switch-btn.on{background:var(--green2);color:var(--green);border-color:#b6dec0}.logic-gate{height:64px;border-radius:16px;background:var(--dark);color:#fff;display:grid;place-items:center;font-family:var(--mono);font-size:22px;font-weight:950;box-shadow:0 8px 18px rgba(23,32,51,.14)}.logic-gate small{display:block;font-family:inherit;font-size:8px;color:#9eb0cd;letter-spacing:.6px;margin-top:-14px}.logic-arrow{font-size:22px;text-align:center;color:#9aa8ba}.logic-result-card{min-height:92px;border:1px solid #d6dfec;background:#fff;border-radius:15px;display:grid;place-items:center;text-align:center;padding:12px}.logic-result-card .expr{font-family:var(--mono);font-size:14px;font-weight:850;color:#566176}.logic-result-card strong{font-size:28px}.logic-context{display:grid;grid-template-columns:1.2fr .8fr;gap:10px;margin-top:11px}.logic-example,.logic-truth{border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px;font-size:12px;line-height:1.55;color:#566176}.logic-example code{font-family:var(--mono);color:#234fba;background:#eef3ff;padding:2px 5px;border-radius:5px}.truth-mini{display:grid;gap:5px;margin-top:8px}.truth-row{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:center;font-family:var(--mono);font-size:10px}.truth-pill{padding:5px 7px;border-radius:7px;text-align:center;background:#f4f6f9}.truth-pill.t{background:var(--green2);color:var(--green)}.truth-pill.f{background:var(--red2);color:var(--red)}
+/* activities */
+.activity-shell{max-width:860px;margin:auto}.activity-top{display:flex;align-items:center;gap:11px;margin-bottom:13px}.activity-progress{flex:1;height:8px;background:#edf1f6;border-radius:99px;overflow:hidden}.activity-progress i{display:block;height:100%;background:var(--blue);border-radius:99px;transition:.3s}.score-chip{background:var(--dark);color:#fff;border-radius:11px;padding:8px 11px;font-size:11px;font-weight:850;white-space:nowrap}.activity-card{padding:23px}.activity-card .code{font-size:13px}.finish-card{text-align:center;padding:34px 22px}.finish-mark{width:66px;height:66px;margin:0 auto 14px;border-radius:20px;background:var(--green2);color:var(--green);display:grid;place-items:center;font-size:30px;font-weight:900}.finish-card h3{font-size:25px;margin:0 0 7px}.finish-card p{color:var(--muted);line-height:1.65;max-width:580px;margin:0 auto 18px}.finish-score{display:inline-flex;gap:8px;align-items:center;background:#f7f9fc;border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-weight:850;margin-bottom:18px}.options{display:grid;gap:8px;margin-top:13px}.option{display:flex;gap:9px;align-items:center;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 12px;text-align:left;color:#344054;font-weight:750}.option:hover{background:#f8faff;border-color:#a9bde7}.trace-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:12px}.trace-table th,.trace-table td{border:1px solid var(--line);padding:8px}.trace-table th{background:#f7f9fc}.trace-table input,.trace-table select{width:100%;border:1px solid #dce3ec;border-radius:8px;padding:7px;background:#fff}.bugline{display:block;padding:3px 7px;border-radius:6px;white-space:pre;cursor:pointer}.bugline:hover{background:rgba(255,255,255,.08)}.bugline.picked{background:rgba(255,204,94,.17);border-left:3px solid #ffd36b}
+/* coding */
+.mission-picker{display:flex;gap:9px;overflow:auto;margin-bottom:15px;padding:2px 1px 5px}.mission-card{flex:0 0 170px;border:1px solid var(--line);background:#fff;border-radius:15px;padding:12px;cursor:pointer;transition:.18s;position:relative}.mission-card:hover{transform:translateY(-2px);border-color:#b5c6e7}.mission-card.active{border-color:#8dacee;background:#f2f6ff;box-shadow:0 0 0 3px #edf3ff}.mission-card input{position:absolute;opacity:0}.mission-card small{display:block;color:var(--blue);font-size:9px;font-weight:900;letter-spacing:.5px;margin-bottom:6px}.mission-card strong{font-size:13px;line-height:1.3}.mission-card em{display:block;color:var(--muted);font-size:10px;font-style:normal;margin-top:5px}.coding-levels{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}.level-btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px;text-align:left}.level-btn.active{border-color:#8dacEE;background:#f2f6ff}.level-btn b{display:block;font-size:12px}.level-btn span{font-size:10px;color:var(--muted)}.mission-layout{display:grid;grid-template-columns:.75fr 1.25fr;gap:15px}.problem-box{background:#fff;border:1px solid var(--line);border-radius:19px;padding:20px}.problem-box h3{font-size:21px;margin:10px 0 7px}.problem-box p{color:var(--muted);line-height:1.6}.io{display:grid;grid-template-columns:1fr 1fr;gap:8px}.io>div{background:#f7f9fc;border-radius:11px;padding:10px}.io small{font-size:9px;color:var(--muted);font-weight:900;text-transform:uppercase}.io pre{margin:5px 0 8px;font-family:var(--mono);font-size:12px}.editor{width:100%;min-height:365px;resize:vertical;background:var(--dark);color:#dce7ff;border:0;border-radius:15px;padding:16px;font-family:var(--mono);font-size:13px;line-height:1.65;outline:none}.condition-fields{display:grid;gap:10px}.condition-entry{display:grid;grid-template-columns:1fr 1.3fr;gap:9px;align-items:center;background:#f8faff;border:1px solid var(--line);padding:10px;border-radius:12px}.terminal{margin-top:12px;background:#0f1726;color:#cfe0ff;border-radius:13px;padding:13px;min-height:64px;white-space:pre-wrap;font-family:var(--mono);font-size:12px}.tests{display:grid;gap:7px;margin-top:9px}.test{display:grid;grid-template-columns:54px 1fr auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px;font-size:11px}.test.pass{background:#f0faf3;border-color:#c6e6cf}.test.fail{background:#fff4f2;border-color:#efc3be}.why-accepted{margin-top:10px;background:#eef8f1;border:1px solid #cce7d3;border-radius:12px;padding:12px;color:#236837;font-size:12px;line-height:1.55}
+/* explore */
+.quest-shell{max-width:870px;margin:auto}.quest-stage{background:linear-gradient(135deg,#fff,#f3f7ff);border:1px solid var(--line);border-radius:21px;padding:23px;box-shadow:var(--shadow)}.quest-scene{display:flex;gap:14px;align-items:flex-start}.quest-icon{width:55px;height:55px;border-radius:17px;background:#eaf0ff;display:grid;place-items:center;font-size:26px;flex:0 0 55px}.quest-stage h3{font-size:22px;margin:2px 0 6px}.quest-stage p{margin:0;color:var(--muted);line-height:1.6}.quest-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:17px}.quest-option{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;text-align:left;font-family:var(--mono);font-weight:750;color:#344054}.simulation{margin-top:15px;border-top:1px solid var(--line);padding-top:13px}.sim-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.sim-card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:9px;font-size:11px}.sim-card b{display:block;margin-bottom:4px}.advanced-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.compare-code{display:grid;grid-template-columns:1fr 1fr;gap:10px}.discussion-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.discussion-card h3{margin:0 0 8px}.discussion-card p{line-height:1.6;color:#445067}.teacher-note{display:none;margin-top:10px;background:#fff7df;border:1px solid #f0d99b;border-radius:11px;padding:10px;color:#77500b;font-size:12px;line-height:1.55}.teacher-note.show{display:block}
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(16,24,40,.43);z-index:100;display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(4px)}.modal-bg.show{display:flex}.modal{width:min(560px,100%);background:#fff;border-radius:22px;padding:22px;box-shadow:0 30px 80px rgba(16,24,40,.24);animation:pop .18s ease}@keyframes pop{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}.modal-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:22px;font-weight:900;margin-bottom:11px}.modal-icon.ok{background:var(--green2);color:var(--green)}.modal-icon.no{background:var(--red2);color:var(--red)}.modal h3{font-size:21px;margin:0 0 6px}.modal p{color:var(--muted);line-height:1.6;margin:0}.modal-extra{margin-top:13px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.mini-options{display:grid;gap:7px}.mini-options button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px;text-align:left;color:#445067}.mini-options button:hover{background:#f7faff}.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#172033;color:#fff;padding:10px 14px;border-radius:11px;opacity:0;pointer-events:none;transition:.25s;z-index:120;font-size:12px}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:920px){.operator-layout,.boundary-layout,.mission-layout,.advanced-grid{grid-template-columns:1fr}.skill-map{grid-template-columns:1fr 1fr}.visualizer{grid-template-columns:1fr}.editor{min-height:310px}.coding-levels{grid-template-columns:1fr 1fr}.discussion-grid{grid-template-columns:1fr}.compare-code{grid-template-columns:1fr 1fr}.logic-circuit{grid-template-columns:1fr 72px 1fr}.logic-arrow{display:none}.logic-result-card{grid-column:1/-1}.logic-context{grid-template-columns:1fr}}
+@media(max-width:760px){.lesson{grid-template-columns:1fr;min-height:0;padding:20px}.lesson-visual{min-height:220px}.overall{display:none}.brand small{display:none}.top-inner{gap:8px}.quest-options,.choice-grid{grid-template-columns:1fr}.sim-grid{grid-template-columns:1fr}.compact-row{grid-template-columns:1fr 85px 1fr}.viz-toolbar{grid-template-columns:1fr}.condition-entry{grid-template-columns:1fr}.activity-card{padding:17px}}
+@media(max-width:520px){main{padding:18px 12px 60px}.section-head h2{font-size:24px}.skill-map{grid-template-columns:1fr 1fr}.compact-row{grid-template-columns:1fr 78px 1fr;gap:6px}.coding-levels{grid-template-columns:1fr 1fr}.compare-code{grid-template-columns:1fr}.modal-actions{display:grid;grid-template-columns:1fr 1fr}.mission-card{flex-basis:155px}.fnode{min-width:130px}.branches{gap:8px}.lesson{padding:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar"><div class="top-inner"><div class="brand"><div class="logo">if</div><div><b>Decision Lab C++</b><small>Algoritma Percabangan</small></div></div><nav class="nav" id="nav"></nav><div class="overall"><small><span>PROGRES</span><span id="overallText">0%</span></small><div class="bar"><i id="overallBar" style="width:0"></i></div></div></div></header>
+<main>
+<section id="belajar" class="active">
+  <div class="section-head"><div><h2>Belajar Percabangan</h2><p>Konsep inti percabangan C++ dalam enam slide.</p></div><span class="badge" id="learnBadge">Slide 1 / 6</span></div>
+  <div class="card lesson" id="learnSlide"></div><div class="slide-dots" id="learnDots"></div><div class="slide-footer"><button class="btn secondary" id="learnPrev" onclick="moveLearn(-1)">← Sebelumnya</button><span class="slide-count" id="learnCount"></span><button class="btn primary" id="learnNext" onclick="moveLearn(1)">Berikutnya →</button></div>
+  <div class="skill-map" id="skillMap"></div>
+</section>
+<section id="visual">
+  <div class="section-head"><div><h2>Visualisasi</h2><p>Eksperimen kondisi, batas, dan alur keputusan.</p></div><span class="badge">Interaktif</span></div>
+  <div class="subtabs" id="visualTabs">
+    <button class="active" onclick="showPanel('visual','operator',this)">Operator</button><button onclick="showPanel('visual','predict',this)">Prediksi</button><button onclick="showPanel('visual','decision',this)">Alur Keputusan</button><button onclick="showPanel('visual','boundary',this)">Uji Batas</button><button onclick="showPanel('visual','builder',this)">Bangun Kondisi</button><button onclick="showPanel('visual','logic',this)">Logika</button>
+  </div>
+  <div class="panel active" data-group="visual" id="visual-operator"><div class="visual-card operator-layout"><div><span class="eyebrow">EKSPERIMEN KONDISI</span><h3 style="font-size:22px;margin:10px 0 5px">Bandingkan dua nilai</h3><p class="muted">Ubah nilai dan operator, lalu lihat hasil evaluasinya.</p><div class="compact-row"><div class="field"><label>Nilai A</label><input id="valA" type="number" value="70"></div><div class="field"><label>Operator</label><select id="op"><option>&gt;</option><option>&lt;</option><option>&gt;=</option><option>&lt;=</option><option>==</option><option>!=</option></select></div><div class="field"><label>Nilai B</label><input id="valB" type="number" value="70"></div></div><div class="actions"><button class="btn primary" onclick="calcCondition()">Evaluasi</button><button class="btn ghost" onclick="randomCondition()">Acak</button></div></div><div class="result-box" id="condResult"></div></div></div>
+  <div class="panel" data-group="visual" id="visual-predict"><div class="visual-card drill-shell"><div class="qmeta"><span>Prediksi → Jalankan → Jelaskan</span><span id="predictScore">0 / 0 benar</span></div><div id="predictCard"></div></div></div>
+  <div class="panel" data-group="visual" id="visual-decision"><div class="visual-card"><div class="viz-toolbar"><div class="field"><label>Kasus</label><select id="vizMode" onchange="resetViz()"><option value="umbrella">Bawa Payung? — if</option><option value="lamp">Lampu Otomatis — if else</option><option value="temperature">Kategori Suhu — else if</option></select></div><div class="field"><label>Masukan</label><input id="vizInput" value="1"></div></div><div class="visualizer"><div><div class="viz-code-shell" id="vizCode"></div><div class="actions"><button class="btn secondary" onclick="resetViz()">↺ Ulangi</button><button class="btn primary" onclick="nextViz()">Langkah Berikutnya ▶</button></div><div class="status" id="vizStatus"></div></div><div class="flowbox" id="vizFlow"></div></div></div></div>
+  <div class="panel" data-group="visual" id="visual-boundary"><div class="visual-card boundary-layout"><div class="boundary-case" id="boundaryCase"></div><div><table class="boundary-table" id="boundaryTable"><thead><tr><th>Nilai uji</th><th>Prediksi output</th><th>Hasil</th></tr></thead><tbody id="boundaryRows"></tbody></table><div class="actions" id="boundaryActions"><button class="btn primary" onclick="checkBoundary()">Periksa Uji Batas</button><button class="btn secondary" id="boundaryNext" onclick="nextBoundary()">Kasus Berikutnya →</button></div></div></div></div>
+  <div class="panel" data-group="visual" id="visual-builder"><div class="visual-card builder-shell"><div class="builder-mode-switch" id="builderModeSwitch"><button id="builderModeBuild" class="active" onclick="setBuilderMode('build')">Susun Kondisi</button><button id="builderModeReverse" onclick="setBuilderMode('reverse')">Terjemahkan Kondisi</button></div><div class="builder-view active" id="builderViewBuild"><div class="builder-stage"><span class="eyebrow">BAHASA → C++</span><h3 id="builderTitle"></h3><p class="muted" id="builderText"></p><div class="builder-bridge"><span class="bridge-marker">IDE</span><div class="builder-zone empty" id="buildZone"></div><span class="bridge-marker">C++</span></div><div class="token-bank-wrap"><div class="token-bank-label"><span>Blok tersedia — pilih yang diperlukan</span><span>Beberapa blok adalah pengecoh</span></div><div class="token-bank" id="tokenBank"></div></div><div class="builder-note">Klik blok di area susunan untuk mengembalikannya. Urutan blok tersedia selalu diacak.</div><div class="actions"><button class="btn ghost" onclick="clearBuild()">Reset Susunan</button><button class="btn primary" onclick="checkBuild()">Periksa</button><button class="btn secondary" id="builderNextBuild" onclick="nextBuild()">Soal Berikutnya →</button></div></div></div><div class="builder-view" id="builderViewReverse"><div class="reverse-card"><span class="eyebrow">C++ → BAHASA</span><h3 style="margin:10px 0 7px">Apa arti kondisi ini?</h3><div class="code" id="reverseCode"></div><div class="options" id="reverseOptions"></div><div class="actions"><button class="btn secondary" id="builderNextReverse" onclick="nextBuild()">Soal Berikutnya →</button></div></div></div><div id="builderFinish" style="display:none"></div></div></div>
+  <div class="panel" data-group="visual" id="visual-logic"><div class="visual-card logic-shell"><div class="logic-head"><span class="eyebrow">OPERATOR LOGIKA</span><h3>Rangkai kondisi seperti gerbang keputusan</h3><p class="muted">Pilih operator, ubah nilai kondisi, lalu amati hasil akhirnya.</p></div><div class="logic-op-picker"><button class="logic-op-card active" id="logicOpAnd" onclick="setLogicOp('&&')"><b>&amp;&amp;</b><span>AND · kedua kondisi harus TRUE</span></button><button class="logic-op-card" id="logicOpOr" onclick="setLogicOp('||')"><b>||</b><span>OR · cukup salah satu TRUE</span></button><button class="logic-op-card" id="logicOpNot" onclick="setLogicOp('!')"><b>!</b><span>NOT · membalik nilai kondisi</span></button></div><div class="logic-circuit"><div class="logic-input-card"><small>Kondisi A</small><button id="logicA" class="switch-btn on" onclick="toggleLogic('A')">TRUE</button></div><div class="logic-gate" id="logicGate">&amp;&amp;<small>AND</small></div><div class="logic-input-card" id="logicBWrap"><small>Kondisi B</small><button id="logicB" class="switch-btn" onclick="toggleLogic('B')">FALSE</button></div><div class="logic-arrow">→</div><div class="logic-result-card" id="logicResult"></div></div><div class="logic-context"><div class="logic-example" id="logicExample"></div><div class="logic-truth" id="logicTruth"></div></div></div></div>
+</section>
+<section id="tracing">
+  <div class="section-head"><div><h2>Tracing Lab</h2><p>Membaca output, jalur eksekusi, dan perubahan nilai variabel.</p></div><span class="badge" id="traceBadge">12 latihan</span></div>
+  <div class="activity-shell"><div class="activity-top"><div class="activity-progress"><i id="traceProgress" style="width:8%"></i></div><div class="score-chip" id="traceScore">Benar 0</div></div><div class="card activity-card" id="traceCard"></div></div>
+</section>
+<section id="bug">
+  <div class="section-head"><div><h2>Bug Hunter</h2><p>Mendiagnosis kesalahan sintaks, operator, batas, dan logika.</p></div><span class="badge">10 program</span></div>
+  <div class="activity-shell"><div class="activity-top"><div class="activity-progress"><i id="bugProgress" style="width:10%"></i></div><div class="score-chip" id="bugScore">Ditemukan 0</div></div><div class="card activity-card" id="bugCard"></div></div>
+</section>
+<section id="coding">
+  <div class="section-head"><div><h2>Coding Mission</h2><p>Dari melengkapi kondisi sampai menulis program C++ dari nol.</p></div><span class="badge">6 misi × 4 level</span></div>
+  <div class="mission-picker" id="missionPicker"></div><div class="coding-levels" id="codingLevels"></div><div class="mission-layout"><div class="problem-box" id="missionProblem"></div><div class="card" style="padding:14px"><div id="codingWorkspace"></div><div class="terminal" id="terminal">Pilih level latihan.</div><div class="tests" id="testList"></div><div id="acceptedWhy"></div></div></div>
+</section>
+<section id="explore">
+  <div class="section-head"><div><h2>Eksplorasi</h2><p>Menerapkan percabangan pada situasi baru dan membandingkan strategi.</p></div><span class="badge">Lanjutan</span></div>
+  <div class="subtabs"><button class="active" onclick="showPanel('explore','quest',this)">Decision Quest</button><button onclick="showPanel('explore','nested',this)">Nested if</button><button onclick="showPanel('explore','compare',this)">Bandingkan Program</button><button onclick="showPanel('explore','discussion',this)">Diskusi Guru</button></div>
+  <div class="panel active" data-group="explore" id="explore-quest"><div class="quest-shell"><div class="activity-top"><div class="activity-progress"><i id="questProgress" style="width:12%"></i></div><div class="score-chip" id="questScore">Skor 0</div></div><div class="quest-stage" id="questStage"></div></div></div>
+  <div class="panel" data-group="explore" id="explore-nested"><div class="visual-card advanced-grid"><div><span class="eyebrow">LEVEL LANJUTAN</span><h3 style="font-size:22px;margin:10px 0 7px">Nested <code>if</code></h3><p class="muted">Sebuah keputusan dapat berada di dalam keputusan lain. Kondisi dalam hanya diperiksa jika jalur luar mengarah ke sana.</p><div class="code">if (usernameBenar == 1) {
+    if (passwordBenar == 1) {
+        cout &lt;&lt; "Login berhasil";
+    }
+    else {
+        cout &lt;&lt; "Password salah";
+    }
+}
+else {
+    cout &lt;&lt; "Username salah";
+}</div></div><div><div class="field"><label>usernameBenar (0/1)</label><input id="nestedUser" type="number" min="0" max="1" value="1"></div><div class="field" style="margin-top:9px"><label>passwordBenar (0/1)</label><input id="nestedPass" type="number" min="0" max="1" value="0"></div><div class="actions"><button class="btn primary" onclick="runNested()">Jalankan</button></div><div class="result-box" style="min-height:175px;margin-top:10px" id="nestedResult"></div></div></div></div>
+  <div class="panel" data-group="explore" id="explore-compare"><div class="visual-card"><div class="qmeta"><span id="compareNo">Perbandingan 1</span><span>Apakah kedua program selalu menghasilkan perilaku yang sama?</span></div><div class="compare-code"><div class="code" id="compareA"></div><div class="code" id="compareB"></div></div><div class="choice-grid" style="margin-top:12px"><button class="choice center" onclick="answerCompare(true)">Selalu sama</button><button class="choice center" onclick="answerCompare(false)">Bisa berbeda</button></div></div></div>
+  <div class="panel" data-group="explore" id="explore-discussion"><div class="discussion-grid" id="discussionGrid"></div></div>
+</section>
+</main></div>
+<div class="toast" id="toast"></div>
+<div class="modal-bg" id="modalBg" onclick="if(event.target===modalBg)closeModal()"><div class="modal"><div class="modal-icon" id="modalIcon">✓</div><h3 id="modalTitle"></h3><p id="modalText"></p><div class="modal-extra" id="modalExtra"></div><div class="modal-actions"><button class="btn secondary" onclick="closeModal()">Close</button><button class="btn primary" id="modalNext" onclick="modalNextAction()">Next →</button></div></div></div>
+<script>
+const tabs=[['belajar','Belajar'],['visual','Visualisasi'],['tracing','Tracing'],['bug','Bug Hunter'],['coding','Coding'],['explore','Eksplorasi']];
+const state={completed:new Set(['belajar']),learn:0,predict:0,predictFinished:false,predictCorrect:0,predictTotal:0,boundary:0,boundaryFinished:false,builder:0,builderFinished:false,builderBuilt:[],builderPool:[],builderMode:'build',reverseAnswered:false,logicA:true,logicB:false,logicOp:'&&',trace:0,traceFinished:false,traceAnswers:{},traceExplainPending:null,bug:0,bugFinished:false,bugAnswers:{},bugCategoryPending:null,mission:0,codingLevel:0,missionPassed:{},quest:0,questFinished:false,questCorrect:0,questAnswered:{},compare:0,compareFinished:false,skills:{condition:new Set(),tracing:new Set(),debug:new Set(),coding:new Set()}};
+let modalContext='',modalPayload=null;
+function $(id){return document.getElementById(id)}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function initNav(){$('nav').innerHTML=tabs.map(([id,l],i)=>`<button data-id="${id}" class="${i===0?'active':''}" onclick="go('${id}')">${l}</button>`).join('')}
+function go(id){document.querySelectorAll('main section').forEach(s=>s.classList.toggle('active',s.id===id));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));state.completed.add(id);updateOverall();scrollTo({top:0,behavior:'smooth'})}
+function updateOverall(){const p=Math.round(state.completed.size/tabs.length*100);$('overallText').textContent=p+'%';$('overallBar').style.width=p+'%';renderSkillMap()}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1600)}
+function showPanel(group,name,btn){document.querySelectorAll(`[data-group="${group}"]`).forEach(p=>p.classList.toggle('active',p.id===`${group}-${name}`));btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===btn))}
+function markSkill(skill,key){state.skills[skill].add(key);if(skill==='coding'&&state.skills.coding.size>=24)state.completed.add('coding');if(skill==='debug'&&state.skills.debug.size>=10)state.completed.add('bug');if(skill==='tracing'&&state.skills.tracing.size>=12)state.completed.add('tracing');renderSkillMap();updateOverall()}
+function skillPct(skill,max){return Math.min(100,Math.round(state.skills[skill].size/max*100))}
+function renderSkillMap(){if(!$('skillMap'))return;const data=[['Kondisi',skillPct('condition',12)],['Tracing',skillPct('tracing',12)],['Debugging',skillPct('debug',10)],['Coding',skillPct('coding',24)]];$('skillMap').innerHTML=data.map(([n,p])=>`<div class="skill"><div class="skill-top"><span>${n}</span><span>${p}%</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`).join('')}
+function compare(a,o,b){if(o==='>')return a>b;if(o==='<')return a<b;if(o==='>=')return a>=b;if(o==='<=')return a<=b;if(o==='==')return a==b;if(o==='!=')return a!=b;return false}
+/* learn */
+const learnSlides=[
+{k:'01 · IDE DASAR',title:'Komputer juga perlu membuat keputusan',text:'Percabangan digunakan ketika program harus memilih tindakan berdasarkan kondisi. Setiap kondisi dievaluasi menjadi TRUE atau FALSE.',visual:`<div class="tree"><div class="fnode">Apakah hujan?</div><div class="down"></div><div class="branches"><div class="branch"><div class="branch-label">TRUE</div><div class="fnode good">Bawa payung</div></div><div class="branch"><div class="branch-label">FALSE</div><div class="fnode">Tidak perlu</div></div></div></div>`},
+{k:'02 · KONDISI',title:'Kondisi adalah pertanyaan yang dapat diuji',text:'Contoh: nilai > 70, umur >= 17, atau x == 0. Operator yang berbeda dapat mengubah hasil pada nilai batas.',visual:`<div class="result-box" style="width:100%"><div><div class="expr">75 &gt; 70</div><strong class="true">TRUE ✓</strong><p class="muted">Karena 75 memang lebih besar dari 70.</p></div></div>`},
+{k:'03 · IF',title:'if: jalankan blok ketika kondisi TRUE',text:'Jika kondisi FALSE dan tidak ada else, program melewati blok tersebut dan melanjutkan ke perintah berikutnya.',visual:`<div class="code" style="width:100%">if (hujan == 1) {   
+    cout &lt;&lt; "Bawa payung"; 
+}</div>`},
+{k:'04 · IF ELSE',title:'if–else: pilih tepat satu dari dua jalan',text:'Gunakan ketika ada dua kemungkinan yang saling berlawanan. Jika kondisi if FALSE, blok else dijalankan.',visual:`<div class="code" style="width:100%">if (cahaya &lt; 40) {   
+    cout &lt;&lt; "NYALA"; 
+} 
+else {
+    cout &lt;&lt; "MATI"; 
+}</div>`},
+{k:'05 · ELSE IF',title:'else if: ketika kemungkinan lebih dari dua',text:'Kondisi diperiksa dari atas ke bawah. Begitu satu kondisi TRUE, cabang di bawahnya tidak diperiksa lagi.',visual:`<div class="code" style="width:100%">if (suhu &gt;= 30){
+    cout &lt;&lt; "panas";
+}
+else if (suhu &gt;= 20){
+    cout &lt;&lt; "nyaman";
+}
+else{
+    cout &lt;&lt; "dingin";
+}</div>`},
+{k:'06 · STRATEGI',title:'Cara menyelesaikan soal percabangan',text:'Pisahkan proses memahami masalah dan proses menulis sintaks. Dengan begitu kesalahan logika lebih mudah ditemukan.',visual:`<div class="strategy"><div><b>1</b><span>Tentukan <strong>input</strong> yang dibaca program.</span></div><div><b>2</b><span>Cari kata keputusan, misalnya <strong>lebih dari</strong>, <strong>minimal</strong>, atau <strong>selain itu</strong>.</span></div><div><b>3</b><span>Tulis <strong>kondisi</strong> yang sesuai.</span></div><div><b>4</b><span>Uji <strong>nilai batas</strong> agar operator tidak keliru.</span></div><div><b>5</b><span>Setelah logikanya benar, baru tulis <strong>kode C++</strong>.</span></div></div>`}
+];
+function renderLearn(){const x=learnSlides[state.learn];$('learnSlide').innerHTML=`<div><span class="eyebrow">${x.k}</span><h2>${x.title}</h2><p>${x.text}</p></div><div class="lesson-visual">${x.visual}</div>`;$('learnDots').innerHTML=learnSlides.map((_,i)=>`<button class="${i===state.learn?'active':''}" onclick="state.learn=${i};renderLearn()"></button>`).join('');$('learnBadge').textContent=`Slide ${state.learn+1} / ${learnSlides.length}`;$('learnCount').textContent=`${state.learn+1} dari ${learnSlides.length}`;$('learnPrev').disabled=state.learn===0;$('learnNext').textContent=state.learn===learnSlides.length-1?'Ke Visualisasi →':'Berikutnya →'}
+function moveLearn(d){if(state.learn===learnSlides.length-1&&d>0){go('visual');return}state.learn=Math.max(0,Math.min(learnSlides.length-1,state.learn+d));renderLearn()}
+/* operator */
+function calcCondition(){const a=Number($('valA').value),b=Number($('valB').value),o=$('op').value,r=compare(a,o,b);$('condResult').innerHTML=`<div><div class="expr">${a} ${escapeHtml(o)} ${b}</div><strong class="${r?'true':'false'}">${r?'TRUE ✓':'FALSE ✕'}</strong><p class="muted">${r?'Kondisi benar.':'Kondisi salah.'}</p></div>`;markSkill('condition','operator')}
+function randomCondition(){$('valA').value=Math.floor(Math.random()*21)-5;$('valB').value=Math.floor(Math.random()*21)-5;calcCondition()}
+/* predict-run-explain */
+const predictQs=[
+{expr:'70 > 70',result:false,why:['Karena 70 sama dengan 70, bukan lebih besar.','Karena semua bilangan bulat menghasilkan FALSE.','Karena operator > sama dengan >=.'],ansWhy:0},
+{expr:'17 >= 17',result:true,why:['Karena >= memasukkan nilai batas 17.','Karena 17 selalu lebih besar dari dirinya.','Karena >= hanya berarti lebih besar.'],ansWhy:0},
+{expr:'5 != 5',result:false,why:['Karena kedua nilai sama, sehingga “tidak sama dengan” salah.','Karena != selalu TRUE.','Karena 5 adalah bilangan ganjil.'],ansWhy:0},
+{expr:'-3 < 0',result:true,why:['Karena bilangan negatif lebih kecil dari nol.','Karena -3 adalah bilangan positif.','Karena < berarti lebih besar.'],ansWhy:0},
+{expr:'8 % 2 == 0',result:true,why:['Karena sisa pembagian 8 oleh 2 adalah 0.','Karena 8 / 2 adalah 0.','Karena semua operator modulo menghasilkan TRUE.'],ansWhy:0},
+{expr:'3 >= 4',result:false,why:['Karena 3 lebih kecil dari 4.','Karena >= sama dengan !=.','Karena 4 bukan bilangan bulat.'],ansWhy:0}
+];
+function renderPredict(){
+  $('predictScore').textContent=`${state.predictCorrect} / ${state.predictTotal} benar`;
+  if(state.predictFinished){
+    $('predictCard').innerHTML=`<div class="finish-card"><div class="finish-mark">✓</div><h3>Latihan Prediksi selesai</h3><p>Kamu sudah menyelesaikan seluruh ${predictQs.length} soal. Latihan berhenti di sini dan tidak kembali ke soal pertama.</p><div class="finish-score">${state.predictCorrect} benar dari ${state.predictTotal} jawaban</div><div class="actions" style="justify-content:center"><button class="btn secondary" onclick="restartPredict()">↺ Ulangi dari awal</button></div></div>`;
+    return;
+  }
+  const q=predictQs[state.predict];
+  $('predictCard').innerHTML=`<div class="drill-stage"><div class="qmeta"><span>Soal ${state.predict+1} / ${predictQs.length}</span><span>Langkah 1 · Prediksi</span></div><div class="drill-expression">${escapeHtml(q.expr)}</div><div class="choice-grid"><button class="choice center" onclick="predictAnswer(true)">TRUE ✓</button><button class="choice center" onclick="predictAnswer(false)">FALSE ✕</button></div></div>`;
+}
+function predictAnswer(v){if(state.predictFinished)return;const q=predictQs[state.predict],ok=v===q.result;state.predictTotal++;if(ok)state.predictCorrect++;markSkill('condition','predict'+state.predict);openModal(ok,ok?'Prediksi tepat':'Prediksi belum tepat',`Langkah 2 · Jalankan: ekspresi ${q.expr} menghasilkan ${q.result?'TRUE':'FALSE'}.`,'predictExplain',{q,index:state.predict});$('modalExtra').innerHTML=`<div class="explain-box"><b>Langkah 3 · Jelaskan.</b> Pilih alasan yang paling tepat.</div><div class="mini-options" style="margin-top:8px">${q.why.map((w,i)=>`<button onclick="answerPredictWhy(${i})">${escapeHtml(w)}</button>`).join('')}</div>`;$('modalNext').disabled=true}
+function answerPredictWhy(i){const q=modalPayload.q,ok=i===q.ansWhy;$('modalExtra').innerHTML=`<div class="explain-box"><b>${ok?'Alasan tepat.':'Belum tepat.'}</b> ${escapeHtml(q.why[q.ansWhy])}</div>`;$('modalNext').disabled=false;if(ok)markSkill('condition','explain'+state.predict)}
+function finishPredict(){state.predictFinished=true;renderPredict();updateOverall()}
+function advancePredict(){if(state.predict>=predictQs.length-1)finishPredict();else{state.predict++;renderPredict()}}
+function restartPredict(){state.predict=0;state.predictFinished=false;state.predictCorrect=0;state.predictTotal=0;renderPredict()}
+/* decision visualizer */
+const vizExamples={
+umbrella:{input:'1',code:['int hujan;','cin >> hujan;','if (hujan == 1) {','    cout << "Bawa payung";','}']},
+lamp:{input:'25',code:['int cahaya;','cin >> cahaya;','if (cahaya < 40) {','    cout << "NYALA";','}','else {','    cout << "MATI";','}']},
+temperature:{input:'26',code:['int suhu;','cin >> suhu;','if (suhu >= 30){','    cout << "panas";','}','else if (suhu >= 20){','    cout << "nyaman";','}','else{','    cout << "dingin";','}']}}
+let vizStep=0;
+function vizCode(active=-1){const ex=vizExamples[$('vizMode').value];$('vizCode').innerHTML=`<div class="viz-code-head"><span>C++ · Alur Keputusan</span><span class="viz-code-dots"><i></i><i></i><i></i></span></div><div class="viz-code-body">${ex.code.map((l,i)=>`<div class="viz-code-line ${i===active?'is-active':''}"><span class="ln">${i+1}</span><span class="src">${escapeHtml(l)||' '}</span></div>`).join('')}</div>`}
+function vizFlow(active=''){const m=$('vizMode').value,n=escapeHtml($('vizInput').value);if(m==='umbrella')$('vizFlow').innerHTML=`<div class="tree"><div class="fnode ${active==='input'?'active':''}">hujan = ${n}</div><div class="down"></div><div class="fnode ${active==='c1'?'active':''}">hujan == 1 ?</div><div class="branches"><div class="branch"><div class="branch-label">TRUE</div><div class="fnode ${active==='yes'?'good':''}">Bawa payung</div></div><div class="branch"><div class="branch-label">FALSE</div><div class="fnode ${active==='no'?'bad':''}">Selesai</div></div></div></div>`;else if(m==='lamp')$('vizFlow').innerHTML=`<div class="tree"><div class="fnode ${active==='input'?'active':''}">cahaya = ${n}</div><div class="down"></div><div class="fnode ${active==='c1'?'active':''}">cahaya &lt; 40 ?</div><div class="branches"><div class="branch"><div class="branch-label">TRUE</div><div class="fnode ${active==='yes'?'good':''}">NYALA</div></div><div class="branch"><div class="branch-label">FALSE</div><div class="fnode ${active==='no'?'good':''}">MATI</div></div></div></div>`;else $('vizFlow').innerHTML=`<div class="tree"><div class="fnode ${active==='input'?'active':''}">suhu = ${n}</div><div class="down"></div><div class="fnode ${active==='c1'?'active':''}">suhu &gt;= 30 ?</div><div class="branches"><div class="branch"><div class="branch-label">TRUE</div><div class="fnode ${active==='hot'?'good':''}">panas</div></div><div class="branch"><div class="branch-label">FALSE</div><div class="subtree"><div class="fnode ${active==='c2'?'active':''}">suhu &gt;= 20 ?</div><div class="branches"><div class="branch"><div class="branch-label">TRUE</div><div class="fnode ${active==='comfort'?'good':''}">nyaman</div></div><div class="branch"><div class="branch-label">FALSE</div><div class="fnode ${active==='cold'?'good':''}">dingin</div></div></div></div></div></div></div>`}
+function resetViz(){vizStep=0;const ex=vizExamples[$('vizMode').value];$('vizInput').value=ex.input;vizCode();vizFlow();$('vizStatus').textContent='Mulai dari input, lalu ikuti kondisi yang diperiksa.'}
+function nextViz(){const m=$('vizMode').value,n=Number($('vizInput').value);if(Number.isNaN(n)){toast('Masukkan angka.');return}let seq;if(m==='umbrella')seq=[()=>{vizCode(1);vizFlow('input');$('vizStatus').textContent=`Input: hujan = ${n}`},()=>{vizCode(2);vizFlow('c1');$('vizStatus').textContent=`${n} == 1 → ${n===1?'TRUE':'FALSE'}`},()=>{const ok=n===1;vizCode(ok?3:-1);vizFlow(ok?'yes':'no');$('vizStatus').textContent=ok?'Blok if dijalankan: Bawa payung.':'Blok if dilewati.'}];else if(m==='lamp')seq=[()=>{vizCode(1);vizFlow('input');$('vizStatus').textContent=`Input: cahaya = ${n}`},()=>{vizCode(2);vizFlow('c1');$('vizStatus').textContent=`${n} < 40 → ${n<40?'TRUE':'FALSE'}`},()=>{const ok=n<40;vizCode(ok?3:6);vizFlow(ok?'yes':'no');$('vizStatus').textContent=`Output: ${ok?'NYALA':'MATI'}.`}];else seq=[()=>{vizCode(1);vizFlow('input');$('vizStatus').textContent=`Input: suhu = ${n}`},()=>{vizCode(2);vizFlow('c1');$('vizStatus').textContent=`${n} >= 30 → ${n>=30?'TRUE':'FALSE'}`},()=>{if(n>=30){vizCode(3);vizFlow('hot');$('vizStatus').textContent='Kondisi pertama TRUE → panas.';vizStep=99}else{vizCode(5);vizFlow('c2');$('vizStatus').textContent=`Lanjut: ${n} >= 20 → ${n>=20?'TRUE':'FALSE'}`}},()=>{if(n>=20){vizCode(6);vizFlow('comfort');$('vizStatus').textContent='Kondisi kedua TRUE → nyaman.'}else{vizCode(9);vizFlow('cold');$('vizStatus').textContent='Semua kondisi FALSE → dingin.'}}];if(vizStep===99||vizStep>=seq.length)vizStep=0;seq[vizStep]();vizStep++;markSkill('condition','viz'+m)}
+/* boundary */
+const boundaryCases=[
+{title:'Nilai Lulus',rule:'Lulus jika nilai lebih dari 70.',cond:'nilai > 70',values:[69,70,71],outs:['Tidak ada output','Tidak ada output','Lulus'],choices:['Lulus','Tidak ada output']},
+{title:'Minimal Umur',rule:'Boleh masuk jika umur minimal 17 tahun.',cond:'umur >= 17',values:[16,17,18],outs:['Tidak boleh','Boleh','Boleh'],choices:['Boleh','Tidak boleh']},
+{title:'Baterai Rendah',rule:'Low Battery jika baterai kurang dari atau sama dengan 20%.',cond:'baterai <= 20',values:[19,20,21],outs:['Low Battery','Low Battery','Normal'],choices:['Low Battery','Normal']},
+{title:'Kategori A',rule:'Nilai A dimulai dari 90.',cond:'nilai >= 90',values:[89,90,91],outs:['Bukan A','A','A'],choices:['A','Bukan A']}
+];
+function renderBoundary(){
+  if(state.boundaryFinished){
+    $('boundaryCase').style.gridColumn='1 / -1';
+    $('boundaryCase').innerHTML=`<div class="finish-card"><div class="finish-mark">✓</div><h3>Uji Batas selesai</h3><p>Seluruh ${boundaryCases.length} kasus nilai batas sudah dikerjakan. Tidak ada kasus yang diulang otomatis.</p><div class="actions" style="justify-content:center"><button class="btn secondary" onclick="restartBoundary()">↺ Ulangi dari awal</button></div></div>`;
+    $('boundaryTable').style.display='none';$('boundaryActions').style.display='none';return;
+  }
+  $('boundaryCase').style.gridColumn='';$('boundaryTable').style.display='table';$('boundaryActions').style.display='flex';
+  const q=boundaryCases[state.boundary];$('boundaryCase').innerHTML=`<span class="eyebrow">UJI BATAS</span><h3>${q.title}</h3><p>${q.rule}</p><div class="code">${escapeHtml(q.cond)}</div><p class="muted">Tiga nilai dipilih tepat di sekitar batas keputusan.</p>`;$('boundaryRows').innerHTML=q.values.map((v,i)=>`<tr id="brow${i}"><td><b>${v}</b></td><td><select id="bout${i}"><option value="">— pilih —</option>${q.choices.map(c=>`<option>${c}</option>`).join('')}</select></td><td id="bresult${i}">—</td></tr>`).join('');$('boundaryNext').textContent=state.boundary===boundaryCases.length-1?'Selesai ✓':'Kasus Berikutnya →';
+}
+function checkBoundary(){if(state.boundaryFinished)return;const q=boundaryCases[state.boundary];let good=0;q.values.forEach((_,i)=>{const v=$('bout'+i).value,ok=v===q.outs[i];$('brow'+i).className=ok?'ok':'no';$('bresult'+i).textContent=ok?'✓ Tepat':`✕ ${q.outs[i]}`;if(ok)good++});if(good===3){markSkill('condition','boundary'+state.boundary);openModal(true,'Uji batas tepat',`Nilai tepat di bawah, tepat pada, dan tepat di atas batas membantu membedakan operator seperti > dan >=.`,'boundary',{index:state.boundary})}else openModal(false,'Masih ada yang keliru',`Fokus pada arti operator ${q.cond}. Nilai yang tepat berada pada batas sering menjadi pembeda.`,'boundary',{index:state.boundary})}
+function finishBoundary(){state.boundaryFinished=true;renderBoundary();updateOverall()}
+function advanceBoundary(){if(state.boundary>=boundaryCases.length-1)finishBoundary();else{state.boundary++;renderBoundary()}}
+function nextBoundary(){advanceBoundary()}
+function restartBoundary(){state.boundary=0;state.boundaryFinished=false;renderBoundary()}
+/* condition builder */
+const builders=[
+{text:'Umur minimal 17 tahun.',tokens:['umur','>=','17'],traps:['>','==','18'],answer:'umur >= 17',rev:'nilai > 70',revOpts:['nilai lebih dari 70','nilai minimal 70','nilai sama dengan 70'],revAns:0},
+{text:'Baterai kurang dari atau sama dengan 20.',tokens:['baterai','<=','20'],traps:['<','>=','25'],answer:'baterai <= 20',rev:'stok == 0',revOpts:['stok kosong','stok lebih dari nol','stok minimal nol'],revAns:0},
+{text:'Nilai tidak sama dengan 0.',tokens:['nilai','!=','0'],traps:['==','>','1'],answer:'nilai != 0',rev:'umur < 12',revOpts:['umur kurang dari 12','umur maksimal 12 termasuk 12','umur lebih dari 12'],revAns:0},
+{text:'Lulus jika nilai minimal 75 DAN kehadiran minimal 80.',tokens:['nilai','>=','75','&&','hadir','>=','80'],traps:['||','>','70','90'],answer:'nilai >= 75 && hadir >= 80',rev:'member || voucher',revOpts:['member atau memiliki voucher','member dan memiliki voucher','bukan member'],revAns:0},
+{text:'Promo jika total minimal 100000 ATAU punya voucher.',tokens:['total','>=','100000','||','voucher'],traps:['&&','>','50000','=='],answer:'total >= 100000 || voucher',rev:'x == 0 && y == 0',revOpts:['x dan y sama-sama nol','x atau y nol','x tidak sama dengan y'],revAns:0},
+{text:'Bilangan genap jika sisa pembagian N oleh 2 sama dengan 0.',tokens:['N','%','2','==','0'],traps:['!=','1','/','>'],answer:'N % 2 == 0',rev:'suhu >= 30',revOpts:['suhu minimal 30','suhu kurang dari 30','suhu tepat 30 saja'],revAns:0}
+];
+function shuffleItems(a){const x=[...a];for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
+function setBuilderMode(mode){state.builderMode=mode;$('builderModeBuild').classList.toggle('active',mode==='build');$('builderModeReverse').classList.toggle('active',mode==='reverse');$('builderViewBuild').classList.toggle('active',mode==='build');$('builderViewReverse').classList.toggle('active',mode==='reverse')}
+function makeBuilderPool(q){state.builderPool=shuffleItems([...q.tokens,...q.traps].map((value,id)=>({value,id:`${state.builder}-${id}-${Math.random().toString(36).slice(2,6)}`})));state.builderBuilt=[]}
+function renderBuilder(){
+  if(state.builderFinished){
+    $('builderModeSwitch').style.display='none';$('builderViewBuild').style.display='none';$('builderViewReverse').style.display='none';$('builderFinish').style.display='block';
+    $('builderFinish').innerHTML=`<div class="finish-card"><div class="finish-mark">✓</div><h3>Bangun Kondisi selesai</h3><p>Kamu sudah mencapai soal terakhir dari ${builders.length} kasus. Latihan tidak kembali otomatis ke soal pertama.</p><div class="actions" style="justify-content:center"><button class="btn secondary" onclick="restartBuilder()">↺ Ulangi dari awal</button></div></div>`;return;
+  }
+  $('builderModeSwitch').style.display='flex';$('builderFinish').style.display='none';$('builderViewBuild').style.display='';$('builderViewReverse').style.display='';
+  const q=builders[state.builder];state.reverseAnswered=false;makeBuilderPool(q);$('builderTitle').textContent=`Soal ${state.builder+1} / ${builders.length}`;$('builderText').textContent=q.text;renderBuildZone();renderTokenBank();$('reverseCode').textContent=q.rev;$('reverseOptions').innerHTML=q.revOpts.map((o,i)=>`<button class="option" onclick="answerReverse(${i})">${escapeHtml(o)}</button>`).join('');$('builderNextBuild').textContent=state.builder===builders.length-1?'Selesai ✓':'Soal Berikutnya →';$('builderNextReverse').textContent=state.builder===builders.length-1?'Selesai ✓':'Soal Berikutnya →';setBuilderMode(state.builderMode||'build')
+}
+function renderTokenBank(){$('tokenBank').innerHTML=state.builderPool.map((item,i)=>`<button class="token ${state.builderBuilt.includes(i)?'used':''}" id="tok${i}" onclick="useToken(${i})">${escapeHtml(item.value)}</button>`).join('')}
+function useToken(i){if(state.builderBuilt.includes(i))return;state.builderBuilt.push(i);renderBuildZone();renderTokenBank()}
+function removeBuilt(pos){state.builderBuilt.splice(pos,1);renderBuildZone();renderTokenBank()}
+function renderBuildZone(){const q=builders[state.builder],z=$('buildZone');z.classList.toggle('empty',state.builderBuilt.length===0);z.innerHTML=state.builderBuilt.map((idx,pos)=>`<button class="built-token" title="Klik untuk mengembalikan" onclick="removeBuilt(${pos})">${escapeHtml(state.builderPool[idx].value)}</button>`).join('')}
+function clearBuild(){state.builderBuilt=[];renderBuildZone();renderTokenBank()}
+function checkBuild(){if(state.builderFinished)return;const q=builders[state.builder],s=state.builderBuilt.map(i=>state.builderPool[i].value).join(' '),ok=s===q.answer;if(ok)markSkill('condition','builder'+state.builder);openModal(ok,ok?'Kondisi tersusun tepat':'Susunan belum tepat',ok?`Kondisi C++: ${q.answer}`:`Belum semua blok yang dipilih diperlukan atau urutannya masih keliru. Perhatikan kata seperti “minimal”, “dan”, atau “atau”.`,'builder',{index:state.builder})}
+function finishBuilder(){state.builderFinished=true;renderBuilder();updateOverall()}
+function advanceBuilder(){if(state.builder>=builders.length-1)finishBuilder();else{state.builder++;renderBuilder()}}
+function nextBuild(){advanceBuilder()}
+function restartBuilder(){state.builder=0;state.builderFinished=false;renderBuilder()}
+function answerReverse(i){if(state.builderFinished)return;const q=builders[state.builder],ok=i===q.revAns;if(ok)markSkill('condition','reverse'+state.builder);openModal(ok,ok?'Arti kondisi tepat':'Belum tepat',q.revOpts[q.revAns],'builder',{index:state.builder})}
+/* logic */
+function toggleLogic(x){if(state.logicOp==='!'&&x==='B')return;state['logic'+x]=!state['logic'+x];renderLogic()}
+function setLogicOp(op){state.logicOp=op;renderLogic()}
+function renderLogic(){if(!$('logicA'))return;const a=state.logicA,b=state.logicB,o=state.logicOp||'&&';const r=o==='&&'?(a&&b):o==='||'?(a||b):!a;$('logicA').textContent=a?'TRUE':'FALSE';$('logicA').className='switch-btn '+(a?'on':'');$('logicB').textContent=b?'TRUE':'FALSE';$('logicB').className='switch-btn '+(b?'on':'');$('logicBWrap').classList.toggle('is-disabled',o==='!');['And','Or','Not'].forEach(k=>$('logicOp'+k).classList.remove('active'));$(o==='&&'?'logicOpAnd':o==='||'?'logicOpOr':'logicOpNot').classList.add('active');const gateLabel=o==='&&'?'AND':o==='||'?'OR':'NOT';$('logicGate').innerHTML=`${escapeHtml(o)}<small>${gateLabel}</small>`;const expr=o==='!'?`!${a?'TRUE':'FALSE'}`:`${a?'TRUE':'FALSE'} ${o} ${b?'TRUE':'FALSE'}`;$('logicResult').innerHTML=`<div><div class="expr">${escapeHtml(expr)}</div><strong class="${r?'true':'false'}">${r?'TRUE ✓':'FALSE ✕'}</strong></div>`;const examples={"&&":'<b>Contoh AND</b><br>Siswa boleh mengikuti ujian jika <code>sudahBayar && hadir >= 80</code>. Kedua syarat wajib benar.',"||":'<b>Contoh OR</b><br>Promo berlaku jika <code>member || punyaVoucher</code>. Salah satu syarat saja sudah cukup.',"!":'<b>Contoh NOT</b><br>Peringatan dapat muncul ketika <code>!terhubung</code>, artinya kondisi “terhubung” sedang FALSE.'};$('logicExample').innerHTML=examples[o];let rows;if(o==='!')rows=[[true,!true],[false,!false]];else rows=[[true,true],[true,false],[false,true],[false,false]].map(([x,y])=>[x,y,o==='&&'?(x&&y):(x||y)]);$('logicTruth').innerHTML=`<b>Tabel kebenaran ${gateLabel}</b><div class="truth-mini">${rows.map(row=>o==='!'?`<div class="truth-row" style="grid-template-columns:1fr auto 1fr"><span class="truth-pill ${row[0]?'t':'f'}">${row[0]?'TRUE':'FALSE'}</span><span>→</span><span class="truth-pill ${row[1]?'t':'f'}">${row[1]?'TRUE':'FALSE'}</span></div>`:`<div class="truth-row"><span class="truth-pill ${row[0]?'t':'f'}">${row[0]?'T':'F'}</span><span>${escapeHtml(o)}</span><span class="truth-pill ${row[1]?'t':'f'}">${row[1]?'T':'F'}</span><span>→</span><span class="truth-pill ${row[2]?'t':'f'}">${row[2]?'T':'F'}</span></div>`).join('')}</div>`;markSkill('condition','logic'+o)}
+/* tracing */
+const traces=[
+{type:'output',level:'Dasar',code:`int x = 70;
+if (x > 70) {
+    cout << "Lulus";
+}`,opts:['Lulus','Tidak ada output','70','TRUE'],ans:1,run:'x = 70 → 70 > 70 = FALSE → blok if dilewati.',whyOpts:['Karena 70 tidak lebih besar dari 70.','Karena cout tidak boleh berada di dalam if.','Karena nilai 70 selalu menghasilkan error.'],whyAns:0,why:'Operator > tidak memasukkan nilai batas yang sama.'},
+{type:'output',level:'Dasar',code:`int x = 10;
+if (x >= 10) {
+    x++;
+}
+else {
+    x--;
+}
+cout << x;`,opts:['9','10','11','12'],ans:2,run:'x = 10 → 10 >= 10 = TRUE → x++ → x = 11 → cout.',whyOpts:['Karena >= memasukkan nilai 10 sehingga x bertambah.','Karena else selalu dijalankan.','Karena x++ membuat x menjadi 12.'],whyAns:0,why:'Nilai batas 10 termasuk pada operator >=.'},
+{type:'path',level:'Dasar',code:`int n = -2;
+if (n > 0) {
+    cout << "positif";
+}
+else if (n < 0) {
+    cout << "negatif";
+}
+else {
+    cout << "nol";
+}`,opts:['cek n>0 → positif','cek n>0 → cek n<0 → negatif','cek n<0 → nol','langsung else'],ans:1,why:'Kondisi pertama FALSE, sehingga program baru memeriksa else if. Kondisi kedua TRUE.'},
+{type:'table',level:'Sedang',code:`int x = 6;
+if (x > 3) {
+    x = x * 2;
+}
+if (x > 10) {
+    x = x - 1;
+}
+cout << x;`,fields:[['Hasil x > 3','TRUE'],['Nilai x setelah if pertama','12'],['Hasil x > 10','TRUE'],['Output','11']],why:'Dua if berdiri sendiri, sehingga keduanya dapat dijalankan.'},
+{type:'output',level:'Sedang',code:`int nilai = 85;
+if (nilai >= 90){
+    cout << "A";
+}
+else if (nilai >= 80){
+    cout << "B";
+}
+else if (nilai >= 70){
+    cout << "C";
+}
+else{
+    cout << "D";
+}`,opts:['A','B','C','D'],ans:1,run:'85 >= 90 = FALSE → 85 >= 80 = TRUE → cetak B → rantai berhenti.',whyOpts:['Karena kondisi diperiksa dari atas dan berhenti pada TRUE pertama.','Karena semua else if dijalankan sekaligus.','Karena 85 lebih besar dari 90.'],whyAns:0,why:'Rantai else if berhenti setelah satu cabang dipilih.'},
+{type:'path',level:'Sedang',code:`int a = 7, b = 4;
+if (a > b) {
+    a = a - b;
+}
+else {
+    b = b - a;
+}
+cout << a << " " << b;`,opts:['a>b TRUE → a=3 → output 3 4','a>b FALSE → b=-3 → output 7 -3','a>b TRUE → else → output 3 -3','langsung output 7 4'],ans:0,why:'Karena a > b TRUE, hanya blok if yang dijalankan.'},
+{type:'table',level:'Sedang',code:`int x = 4;
+if (x > 5){
+    x = 10;
+}
+else if (x > 2){
+    x = 20;
+}
+else{
+    x = 30;
+}
+cout << x;`,fields:[['x > 5','FALSE'],['x > 2','TRUE'],['Nilai akhir x','20'],['Output','20']],why:'Setelah kondisi kedua TRUE, else tidak dijalankan.'},
+{type:'output',level:'Sedang',code:`int umur = 17;
+bool kartu = true;
+if (umur >= 17 && kartu) {
+    cout << "boleh";
+}
+else {
+    cout << "tidak";
+}`,opts:['boleh','tidak','TRUE','17'],ans:0,run:'umur >= 17 = TRUE dan kartu = TRUE → TRUE && TRUE = TRUE → boleh.',whyOpts:['Karena kedua kondisi pada && bernilai TRUE.','Karena cukup salah satu syarat TRUE.','Karena bool kartu tidak dapat dipakai pada if.'],whyAns:0,why:'Operator && mensyaratkan kedua bagian TRUE.'},
+{type:'path',level:'Menantang',code:`int x = 5;
+if (x > 2) {
+    if (x < 8) {
+        cout << "A";
+    }
+    else {
+        cout << "B";
+    }
+}
+else {
+    cout << "C";
+}`,opts:['x>2 TRUE → x<8 TRUE → A','x>2 FALSE → C','x<8 TRUE → B','x>2 TRUE → C'],ans:0,why:'Nested if bagian dalam hanya diperiksa setelah kondisi luar TRUE.'},
+{type:'table',level:'Menantang',code:`int x = 0;
+if (x == 0) {
+    x = 1;
+}
+if (x == 1) {
+    x = 2;
+}
+else {
+    x = 3;
+}
+cout << x;`,fields:[['Setelah if pertama, x','1'],['x == 1','TRUE'],['Nilai akhir x','2'],['Output','2']],why:'if kedua terpisah dari if pertama, sehingga dievaluasi setelah x berubah menjadi 1.'},
+{type:'output',level:'Menantang',code:`int n = 15;
+if (n % 3 == 0 && n % 5 == 0){
+    cout << "A";
+}
+else if (n % 3 == 0){
+    cout << "B";
+}
+else if (n % 5 == 0){
+    cout << "C";
+}
+else{
+    cout << "D";
+}`,opts:['A','B','C','D'],ans:0,run:'15 habis dibagi 3 dan 5 → kondisi pertama TRUE → A.',whyOpts:['Karena kondisi paling spesifik ditempatkan lebih dulu.','Karena semua kondisi menghasilkan TRUE lalu output terakhir dipakai.','Karena modulo 15 % 5 adalah 5.'],whyAns:0,why:'Kondisi gabungan di awal menangkap kelipatan 3 dan 5.'},
+{type:'path',level:'Menantang',code:`int x = 3;
+if (x < 0 || x > 10) {
+    cout << "luar";
+}
+else {
+    cout << "dalam";
+}`,opts:['3<0 TRUE → luar','3>10 TRUE → luar','keduanya FALSE → else → dalam','OR selalu TRUE'],ans:2,why:'Pada OR, jika kedua kondisi FALSE maka hasil gabungannya FALSE.'}
+];
+function renderTrace(){
+  const done=Object.keys(state.traceAnswers).length;
+  const score=Object.entries(state.traceAnswers).filter(([i,v])=>v===true).length;
+  $('traceScore').textContent=`Benar ${score} · ${done}/${traces.length}`;
+  if(state.traceFinished){
+    $('traceProgress').style.width='100%';
+    $('traceCard').innerHTML=`<div class="finish-card"><div class="finish-mark">✓</div><h3>Tracing Lab selesai</h3><p>Kamu sudah menelusuri seluruh ${traces.length} soal. Tidak ada soal yang diulang otomatis.</p><div class="finish-score">Skor ${score} / ${traces.length}</div><div class="actions" style="justify-content:center"><button class="btn secondary" onclick="restartTrace()">↺ Ulangi dari awal</button><button class="btn primary" onclick="go('bug')">Lanjut ke Bug Hunter →</button></div></div>`;
+    return;
+  }
+  const q=traces[state.trace];
+  $('traceProgress').style.width=((state.trace+1)/traces.length*100)+'%';
+  let body=`<div class="qmeta"><span>${q.level} · Soal ${state.trace+1} dari ${traces.length}</span><span>${q.type==='table'?'Trace Table':q.type==='path'?'Jalur Eksekusi':'Prediksi Output'}</span></div><div class="code">${escapeHtml(q.code)}</div>`;
+  if(q.type==='table'){
+    body+=`<table class="trace-table"><thead><tr><th>Yang ditelusuri</th><th>Jawabanmu</th></tr></thead><tbody>${q.fields.map((f,i)=>`<tr><td>${escapeHtml(f[0])}</td><td><input id="tf${i}" placeholder="isi..."></td></tr>`).join('')}</tbody></table><div class="actions"><button class="btn primary" onclick="checkTraceTable()">Periksa Tracing</button></div>`;
+  }else{
+    body+=`<div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="answerTrace(${i})"><b>${String.fromCharCode(65+i)}.</b> ${escapeHtml(o)}</button>`).join('')}</div>`;
+  }
+  $('traceCard').innerHTML=body;
+}
+function restartTrace(){state.trace=0;state.traceFinished=false;state.traceAnswers={};renderTrace();updateOverall()}
+function finishTrace(){state.traceFinished=true;state.completed.add('tracing');renderTrace();updateOverall()}
+function advanceTrace(){if(state.trace>=traces.length-1){finishTrace()}else{state.trace++;renderTrace()}}
+function answerTrace(i){const q=traces[state.trace],ok=i===q.ans;state.traceAnswers[state.trace]=ok;if(ok)markSkill('tracing','t'+state.trace);if(q.type==='output'&&q.whyOpts){openModal(ok,ok?'Prediksi tepat':'Prediksi belum tepat',q.run,'traceExplain',{q,index:state.trace});$('modalExtra').innerHTML=`<div class="explain-box"><b>Mengapa hasilnya demikian?</b></div><div class="mini-options" style="margin-top:8px">${q.whyOpts.map((x,j)=>`<button onclick="answerTraceWhy(${j})">${escapeHtml(x)}</button>`).join('')}</div>`;$('modalNext').disabled=true}else openModal(ok,ok?'Tracing tepat':'Belum tepat',q.why,'trace',{index:state.trace});renderTrace()}
+function answerTraceWhy(i){const q=modalPayload.q,ok=i===q.whyAns;$('modalExtra').innerHTML=`<div class="explain-box"><b>${ok?'Penjelasan tepat.':'Perhatikan lagi.'}</b> ${escapeHtml(q.why)}</div>`;$('modalNext').disabled=false;updateModalNextLabel();if(ok)markSkill('tracing','why'+modalPayload.index)}
+function checkTraceTable(){const q=traces[state.trace];let good=0;q.fields.forEach((f,i)=>{const a=$('tf'+i).value.trim().toUpperCase(),e=String(f[1]).toUpperCase();if(a===e)good++});const ok=good===q.fields.length;state.traceAnswers[state.trace]=ok;if(ok)markSkill('tracing','t'+state.trace);openModal(ok,ok?'Trace table lengkap':'Masih ada langkah yang keliru',ok?q.why:`${good}/${q.fields.length} isian tepat. Telusuri perubahan variabel secara berurutan.`,'trace',{index:state.trace});renderTrace()}
+/* bugs */
+const bugs=[
+{level:'Dasar',category:'Operator',task:'Program harus mencetak "Sama" hanya ketika nilai sama dengan 70.',code:['#include <iostream>','using namespace std;','','int main(){','    int nilai;','    cin >> nilai;','','    if (nilai = 70) {','        cout << "Sama";','    }','','    return 0;','}'],bug:7,why:'Pada kondisi, = mengisi nilai; perbandingan kesamaan menggunakan ==.'},
+{level:'Dasar',category:'Sintaks',task:'Program harus mencetak "Lulus" hanya jika nilai lebih dari 70.',code:['#include <iostream>','using namespace std;','','int main(){','    int nilai;','    cin >> nilai;','','    if (nilai > 70); {','        cout << "Lulus";','    }','','    return 0;','}'],bug:7,why:'Titik koma setelah if mengakhiri pernyataan if, sehingga blok berikutnya tidak dikendalikan kondisi.'},
+{level:'Dasar',category:'Logika kondisi',task:'Program harus mengelompokkan bilangan menjadi positif, negatif, atau nol.',code:['#include <iostream>','using namespace std;','','int main(){','    int n;','    cin >> n;','','    if (n > 0){','        cout << "positif";','    }','    else if (n > 0){','        cout << "negatif";','    }','    else{','        cout << "nol";','    }','','    return 0;','}'],bug:10,why:'Cabang kedua seharusnya menguji n < 0.'},
+{level:'Dasar',category:'Nilai batas',task:'Jika bensin tepat cukup, kendaraan harus dianggap sampai.',code:['#include <iostream>','using namespace std;','','int main(){','    int B, J;','    cin >> B >> J;','','    if (B * 3 > J) {','        cout << "sampai";','    }','    else {','        cout << "mogok";','    }','','    return 0;','}'],bug:7,why:'Keadaan tepat cukup harus termasuk, sehingga kondisi memakai >=.'},
+{level:'Sedang',category:'Struktur percabangan',task:'Program harus menghasilkan tepat satu output: besar untuk x > 10, kecil untuk lainnya.',code:['#include <iostream>','using namespace std;','','int main(){','    int x;','    cin >> x;','','    if (x > 10) {','        cout << "besar";','    }','    if (x <= 10) {','        cout << "kecil";','    }','    else {','        cout << "lain";','    }','','    return 0;','}'],bug:10,why:'if kedua memulai keputusan baru. Untuk dua pilihan, gunakan else dari if pertama.'},
+{level:'Sedang',category:'Urutan kondisi',task:'A untuk >=90, B untuk >=80, C untuk >=70, D untuk sisanya.',code:['#include <iostream>','using namespace std;','','int main(){','    int nilai;','    cin >> nilai;','','    if (nilai >= 70){','        cout << "C";','    }','    else if (nilai >= 80){','        cout << "B";','    }','    else if (nilai >= 90){','        cout << "A";','    }','    else{','        cout << "D";','    }','','    return 0;','}'],bug:7,why:'Batas harus diperiksa dari tertinggi ke terendah agar nilai tinggi tidak tertangkap kondisi >=70 lebih dulu.'},
+{level:'Sedang',category:'Operator',task:'Program harus mencetak genap jika x habis dibagi 2.',code:['#include <iostream>','using namespace std;','','int main(){','    int x;','    cin >> x;','','    if (x % 2 = 0) {','        cout << "genap";','    }','    else {','        cout << "ganjil";','    }','','    return 0;','}'],bug:7,why:'Hasil x % 2 harus dibandingkan dengan 0 menggunakan ==.'},
+{level:'Sedang',category:'Nilai batas',task:'Kategori dewasa dimulai dari umur 17 sampai sebelum 60.',code:['#include <iostream>','using namespace std;','','int main(){','    int umur;','    cin >> umur;','','    if (umur > 17 && umur < 60) {','        cout << "dewasa";','    }','    else if (umur >= 60){','        cout << "lansia";','    }','    else{','        cout << "belum dewasa";','    }','','    return 0;','}'],bug:7,why:'Umur 17 harus termasuk kategori dewasa, sehingga gunakan umur >= 17.'},
+{level:'Menantang',category:'Operator logika',task:'Akses diberikan hanya jika PIN benar DAN OTP benar.',code:['#include <iostream>','using namespace std;','','int main(){','    bool pinBenar, otpBenar;','    cin >> pinBenar >> otpBenar;','','    if (pinBenar || otpBenar) {','        cout << "Akses diberikan";','    }','    else {','        cout << "Akses ditolak";','    }','','    return 0;','}'],bug:7,why:'Kedua syarat wajib benar, sehingga operator yang diperlukan adalah &&.'},
+{level:'Menantang',category:'Logika kondisi',task:'Program harus mencetak bilangan yang lebih besar, atau sama jika keduanya sama.',code:['#include <iostream>','using namespace std;','','int main(){','    int a, b;','    cin >> a >> b;','','    if (a > b){','        cout << a;','    }','    else if (b < a){','        cout << b;','    }','    else{','        cout << "sama";','    }','','    return 0;','}'],bug:10,why:'Cabang kedua seharusnya b > a. Kondisi b < a mengulang makna a > b.'}
+];
+const bugCats=['Operator','Sintaks','Logika kondisi','Nilai batas','Struktur percabangan','Urutan kondisi','Operator logika'];
+function renderBug(){
+  const done=Object.keys(state.bugAnswers).length;
+  const score=Object.entries(state.bugAnswers).filter(([i,v])=>v===true).length;
+  $('bugScore').textContent=`Ditemukan ${score} · ${done}/${bugs.length}`;
+  if(state.bugFinished){
+    $('bugProgress').style.width='100%';
+    $('bugCard').innerHTML=`<div class="finish-card"><div class="finish-mark">✓</div><h3>Bug Hunter selesai</h3><p>Semua ${bugs.length} program sudah diperiksa. Latihan berhenti di sini dan tidak kembali ke program pertama.</p><div class="finish-score">Bug ditemukan ${score} / ${bugs.length}</div><div class="actions" style="justify-content:center"><button class="btn secondary" onclick="restartBug()">↺ Ulangi dari awal</button><button class="btn primary" onclick="go('coding')">Lanjut ke Coding →</button></div></div>`;
+    return;
+  }
+  const q=bugs[state.bug];
+  $('bugProgress').style.width=((state.bug+1)/bugs.length*100)+'%';
+  $('bugCard').innerHTML=`<div class="qmeta"><span>${q.level} · Program ${state.bug+1}/${bugs.length}</span><span>Klik baris yang bermasalah</span></div><p class="muted" style="line-height:1.6">${escapeHtml(q.task)}</p><div class="code">${q.code.map((l,i)=>`<span class="bugline" onclick="answerBug(${i})">${String(i+1).padStart(2,'0')}  ${escapeHtml(l)}</span>`).join('')}</div>`;
+}
+function restartBug(){state.bug=0;state.bugFinished=false;state.bugAnswers={};renderBug();updateOverall()}
+function finishBug(){state.bugFinished=true;state.completed.add('bug');renderBug();updateOverall()}
+function advanceBug(){if(state.bug>=bugs.length-1){finishBug()}else{state.bug++;renderBug()}}
+function answerBug(i){const q=bugs[state.bug],ok=i===q.bug;state.bugAnswers[state.bug]=ok;if(ok)markSkill('debug','b'+state.bug);openModal(ok,ok?'Bug ditemukan':'Baris itu bukan sumber utama bug',ok?q.why:'Cari baris yang mengubah keputusan program, bukan sekadar baris output.','bug',{q,index:state.bug});if(ok){$('modalExtra').innerHTML=`<div class="explain-box"><b>Klasifikasikan bug.</b></div><div class="mini-options" style="margin-top:8px">${bugCats.map((c,j)=>`<button onclick="answerBugCategory(${j})">${escapeHtml(c)}</button>`).join('')}</div>`;$('modalNext').disabled=true}renderBug()}
+function answerBugCategory(i){const q=modalPayload.q,cat=bugCats[i],ok=cat===q.category;$('modalExtra').innerHTML=`<div class="explain-box"><b>${ok?'Kategori tepat.':'Kategori yang tepat: '+q.category+'.'}</b> ${escapeHtml(q.why)}</div>`;$('modalNext').disabled=false;updateModalNextLabel();if(ok)markSkill('debug','cat'+modalPayload.index)}
+/* coding */
+const missions=[
+{title:'Lulus?',tag:'if',desc:'Baca X. Cetak "Lulus" hanya jika X lebih dari 70.',vars:['X'],samples:[['71','Lulus'],['70','{tanpa output}']],tests:[{v:{X:69},out:'',kind:'bawah batas'},{v:{X:70},out:'',kind:'tepat batas'},{v:{X:71},out:'Lulus',kind:'atas batas'},{v:{X:100},out:'Lulus',kind:'normal'}],conds:[{label:'Kondisi lulus',cases:[[{X:69},false],[{X:70},false],[{X:71},true]]}],block:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int X;\n    cin >> X;\n\n    if (X > 70) {\n        // tulis output di sini\n    }\n\n    return 0;\n}`,starter:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int X;\n    cin >> X;\n\n    // tulis percabangan di sini\n\n    return 0;\n}`,why:'X > 70 dipilih karena nilai 70 sendiri belum lulus. Test 70 dan 71 membedakan > dari >=.'},
+{title:'Mogok atau Sampai',tag:'if else',desc:'Setiap 1 liter bensin menempuh 3 km. Cetak sampai jika jarak maksimum mencukupi J.',vars:['B','J'],samples:[['1 4','mogok'],['3 8','sampai']],tests:[{v:{B:2,J:7},out:'mogok',kind:'kurang'},{v:{B:2,J:6},out:'sampai',kind:'tepat cukup'},{v:{B:3,J:8},out:'sampai',kind:'lebih'},{v:{B:0,J:1},out:'mogok',kind:'nol'}],conds:[{label:'Kondisi sampai',cases:[[{B:2,J:7},false],[{B:2,J:6},true],[{B:3,J:8},true]]}],block:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int B, J;\n    cin >> B >> J;\n\n    if (B * 3 >= J) {\n        // output jika sampai\n    }\n    else {\n        // output jika mogok\n    }\n\n    return 0;\n}`,starter:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int B, J;\n    cin >> B >> J;\n\n    // tulis percabangan di sini\n\n    return 0;\n}`,why:'B * 3 adalah jarak maksimum. Operator >= diperlukan karena bensin yang tepat cukup tetap membuat kendaraan sampai.'},
+{title:'Positif, Negatif, Nol',tag:'else if',desc:'Cetak positif jika N > 0, negatif jika N < 0, dan nol untuk sisanya.',vars:['N'],samples:[['5','positif'],['0','nol'],['-7','negatif']],tests:[{v:{N:-1},out:'negatif',kind:'negatif'},{v:{N:0},out:'nol',kind:'nilai batas'},{v:{N:1},out:'positif',kind:'positif'},{v:{N:100},out:'positif',kind:'normal'}],conds:[{label:'Kondisi positif',cases:[[{N:-1},false],[{N:0},false],[{N:1},true]]},{label:'Kondisi negatif',cases:[[{N:-1},true],[{N:0},false],[{N:1},false]]}],block:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int N;\n    cin >> N;\n\n    if (N > 0){\n        // output positif\n    }\n    else if (N < 0){\n        // output negatif\n    }\n    else{\n        // output nol\n    }\n\n    return 0;\n}`,starter:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int N;\n    cin >> N;\n\n    // tulis tiga cabang di sini\n\n    return 0;\n}`,why:'Dua kondisi eksplisit menangani nilai positif dan negatif. Nilai yang tersisa hanya 0, sehingga cocok ditempatkan pada else.'},
+{title:'Genap atau Ganjil',tag:'operator %',desc:'Cetak genap jika N habis dibagi 2, selain itu ganjil.',vars:['N'],samples:[['8','genap'],['5','ganjil']],tests:[{v:{N:0},out:'genap',kind:'nol'},{v:{N:2},out:'genap',kind:'genap'},{v:{N:5},out:'ganjil',kind:'ganjil'},{v:{N:-3},out:'ganjil',kind:'negatif'}],conds:[{label:'Kondisi genap',cases:[[{N:0},true],[{N:2},true],[{N:5},false]]}],block:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int N;\n    cin >> N;\n\n    if (N % 2 == 0) {\n        // output genap\n    }\n    else {\n        // output ganjil\n    }\n\n    return 0;\n}`,starter:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int N;\n    cin >> N;\n\n    // tentukan genap atau ganjil\n\n    return 0;\n}`,why:'Bilangan genap memiliki sisa pembagian 0 ketika dibagi 2, sehingga kondisinya N % 2 == 0.'},
+{title:'Nilai Huruf',tag:'rentang',desc:'A untuk >=90, B >=80, C >=70, D >=60, dan E untuk sisanya.',vars:['N'],samples:[['95','A'],['74','C']],tests:[{v:{N:59},out:'E',kind:'bawah D'},{v:{N:60},out:'D',kind:'batas D'},{v:{N:70},out:'C',kind:'batas C'},{v:{N:80},out:'B',kind:'batas B'},{v:{N:90},out:'A',kind:'batas A'},{v:{N:100},out:'A',kind:'maksimum'}],conds:[{label:'Kondisi A',cases:[[{N:89},false],[{N:90},true],[{N:95},true]]},{label:'Kondisi B setelah A gagal',cases:[[{N:79},false],[{N:80},true],[{N:89},true]]}],block:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int N;\n    cin >> N;\n\n    if (N >= 90){\n        // A\n    }\n    else if (N >= 80){\n        // B\n    }\n    else if (N >= 70){\n        // C\n    }\n    else if (N >= 60){\n        // D\n    }\n    else{\n        // E\n    }\n\n    return 0;\n}`,starter:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int N;\n    cin >> N;\n\n    // tentukan nilai huruf dari batas tertinggi\n\n    return 0;\n}`,why:'Urutan kondisi harus dari batas tertinggi. Jika >=70 diperiksa lebih dulu, nilai 95 akan salah tertangkap sebagai C.'},
+{title:'Bilangan Terbesar',tag:'dua input',desc:'Cetak A jika A lebih besar, B jika B lebih besar, dan "sama" jika nilainya sama.',vars:['A','B'],samples:[['7 4','7'],['5 5','sama']],tests:[{v:{A:7,B:4},out:'7',kind:'A lebih besar'},{v:{A:2,B:9},out:'9',kind:'B lebih besar'},{v:{A:5,B:5},out:'sama',kind:'sama'},{v:{A:-1,B:-3},out:'-1',kind:'negatif'}],conds:[{label:'Kondisi A lebih besar',cases:[[{A:7,B:4},true],[{A:2,B:9},false],[{A:5,B:5},false]]},{label:'Kondisi B lebih besar',cases:[[{A:7,B:4},false],[{A:2,B:9},true],[{A:5,B:5},false]]}],block:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int A, B;\n    cin >> A >> B;\n\n    if (A > B){\n        // cetak A\n    }\n    else if (B > A){\n        // cetak B\n    }\n    else{\n        // cetak sama\n    }\n\n    return 0;\n}`,starter:`#include <iostream>\nusing namespace std;\n\nint main(){\n    int A, B;\n    cin >> A >> B;\n\n    // bandingkan A dan B\n\n    return 0;\n}`,why:'Ada tiga keadaan yang saling eksklusif: A > B, B > A, dan sisanya A == B.'}
+];
+function renderMissionPicker(){$('missionPicker').innerHTML=missions.map((m,i)=>`<label class="mission-card ${state.mission===i?'active':''}"><input type="radio" name="m" onchange="openMission(${i})" ${state.mission===i?'checked':''}><small>MISI ${String(i+1).padStart(2,'0')}</small><strong>${escapeHtml(m.title)}</strong><em>${escapeHtml(m.tag)}</em></label>`).join('')}
+const levelNames=[['1','Lengkapi kondisi'],['2','Lengkapi output'],['3','Lengkapi program'],['4','Tulis dari nol']];
+function renderCodingLevels(){$('codingLevels').innerHTML=levelNames.map((x,i)=>`<button class="level-btn ${state.codingLevel===i?'active':''}" onclick="state.codingLevel=${i};renderCoding()"><b>Level ${x[0]}</b><span>${x[1]}</span></button>`).join('')}
+function openMission(i){state.mission=i;state.codingLevel=0;renderCoding()}
+function renderCoding(){const m=missions[state.mission];renderMissionPicker();renderCodingLevels();$('missionProblem').innerHTML=`<span class="eyebrow">${escapeHtml(m.tag)}</span><h3>${escapeHtml(m.title)}</h3><p>${escapeHtml(m.desc)}</p><h4>Contoh</h4><div class="io">${m.samples.map(s=>`<div><small>Masukan</small><pre>${escapeHtml(s[0])}</pre><small>Keluaran</small><pre>${escapeHtml(s[1])}</pre></div>`).join('')}</div><p class="muted"><b>Test penting:</b> kasus batas, kondisi normal, dan kasus yang sering menimbulkan miskonsepsi.</p>`;$('testList').innerHTML='';$('acceptedWhy').innerHTML='';const L=state.codingLevel;if(L===0){$('codingWorkspace').innerHTML=`<div class="condition-fields">${m.conds.map((c,i)=>`<div class="condition-entry"><div><b>${escapeHtml(c.label)}</b><div class="muted" style="font-size:11px">Tulis ekspresi kondisi saja.</div></div><div class="field"><input id="condInput${i}" placeholder="contoh: X > 70"></div></div>`).join('')}</div><div class="actions"><button class="btn primary" onclick="checkConditions()">Periksa Kondisi</button></div>`;$('terminal').textContent='Level 1 memeriksa makna kondisi dengan beberapa nilai uji.'}else{let value=L===1?m.block:L===2?m.starter:'';$('codingWorkspace').innerHTML=`<textarea class="editor" id="codeEditor" spellcheck="false">${escapeHtml(value)}</textarea><div class="actions"><button class="btn primary" onclick="runMission()">▶ Jalankan Test</button><button class="btn secondary" onclick="renderCoding()">Reset</button><button class="btn ghost" onclick="showCodingHint()">Petunjuk</button></div>`;$('terminal').textContent=L===3?'Tulis program lengkap C++ dari nol.':'Lengkapi kode, lalu jalankan test.'}}
+function safeEvalCond(cond,vars){let e=cond.trim();if(!/^[A-Za-z0-9_+\-*/%<>=!&|().\s]+$/.test(e))throw new Error('Kondisi mengandung sintaks yang belum didukung.');for(const [k,v] of Object.entries(vars))e=e.replace(new RegExp('\\b'+k+'\\b','g'),String(v));e=e.replace(/\btrue\b/g,'true').replace(/\bfalse\b/g,'false');if(/[A-Za-z_]/.test(e.replace(/true|false/g,'')))throw new Error('Ada nama variabel yang tidak dikenali.');return Function('"use strict";return ('+e+');')()}
+function checkConditions(){const m=missions[state.mission];let total=0,good=0,details=[];try{m.conds.forEach((c,i)=>{const exp=$('condInput'+i).value;c.cases.forEach(([vars,want])=>{total++;const got=!!safeEvalCond(exp,vars);if(got===want)good++;else details.push(`${c.label}: gagal pada ${JSON.stringify(vars)}`)})});const ok=good===total;$('terminal').textContent=`${good}/${total} uji kondisi tepat.${ok?'\n✓ Kondisi memiliki makna yang benar.':'\n'+details.slice(0,2).join('\n')}`;if(ok){markSkill('coding',`m${state.mission}l0`);state.missionPassed[`${state.mission}-0`]=true;$('acceptedWhy').innerHTML=`<div class="why-accepted"><b>Mengapa benar?</b> ${escapeHtml(m.why)}</div>`}}catch(e){$('terminal').textContent='Kondisi belum dapat diperiksa: '+e.message}}
+function stripComments(code){return code.replace(/\/\/.*$/gm,'').replace(/\/\*[\s\S]*?\*\//g,'')}
+function parseBranches(code){const clean=stripComments(code),branches=[],re=/(?:\belse\s+if\s*\(([^)]*)\)|\bif\s*\(([^)]*)\)|\belse)\s*\{([\s\S]*?)\}/g;let m;while((m=re.exec(clean))){const h=m[0].slice(0,m[0].indexOf('{')).trim();let type='else',cond=null;if(/^else\s+if/.test(h)){type='elseif';cond=m[1]}else if(/^if/.test(h)){type='if';cond=m[2]}branches.push({type,cond,body:m[3]})}return branches}
+function evalCout(body,vars){const ms=[...body.matchAll(/cout\s*<<\s*([^;]+);/g)];if(!ms.length)return '';let out='';for(const m of ms){for(let p of m[1].split('<<').map(x=>x.trim())){if(/^"[\s\S]*"$/.test(p))out+=p.slice(1,-1);else if(vars[p]!==undefined)out+=String(vars[p]);else if(p==='endl')out+='\n';else if(/^-?\d+$/.test(p))out+=p}}return out.trim()}
+function executeMini(code,vars){const b=parseBranches(code);if(!b.length)throw new Error('Runner tidak menemukan blok if dengan { }.');let chain=false;for(const x of b){if(x.type==='if'){chain=true;if(safeEvalCond(x.cond,vars))return evalCout(x.body,vars)}else if(x.type==='elseif'&&chain){if(safeEvalCond(x.cond,vars))return evalCout(x.body,vars)}else if(x.type==='else'&&chain)return evalCout(x.body,vars)}return ''}
+function runMission(){const m=missions[state.mission],code=$('codeEditor').value;if(state.codingLevel===3){const required=[/#include\s*<iostream>/,/using\s+namespace\s+std\s*;/,/int\s+main\s*\(/,/return\s+0\s*;/];if(!required.every(r=>r.test(code))){$('terminal').textContent='Level 4 meminta program lengkap: #include <iostream>, using namespace std;, int main(), dan return 0;.';return}}try{const rs=m.tests.map((t,i)=>{const got=executeMini(code,t.v);return {...t,i,got,pass:got===t.out}}),good=rs.filter(r=>r.pass).length,ok=good===rs.length;$('terminal').textContent=`${good}/${rs.length} test case lolos.${ok?'\n✓ Accepted!':'\nPeriksa kondisi, urutan cabang, output, dan nilai batas.'}`;$('testList').innerHTML=rs.map(r=>`<div class="test ${r.pass?'pass':'fail'}"><b>${r.pass?'✓ PASS':'✕ FAIL'}</b><span><b>${escapeHtml(r.kind)}</b><br>Input: ${escapeHtml(Object.values(r.v).join(' '))} · Harap: ${escapeHtml(r.out||'{kosong}')} · Dapat: ${escapeHtml(r.got||'{kosong}')}</span><span>#${r.i+1}</span></div>`).join('');if(ok){markSkill('coding',`m${state.mission}l${state.codingLevel}`);state.missionPassed[`${state.mission}-${state.codingLevel}`]=true;$('acceptedWhy').innerHTML=`<div class="why-accepted"><b>Mengapa solusi ini benar?</b> ${escapeHtml(m.why)}</div>`}}catch(e){$('terminal').textContent='Runner berhenti: '+e.message+'\nGunakan if / else if / else dengan kurung kurawal dan cout sederhana.'}}
+function showCodingHint(){const m=missions[state.mission];$('terminal').textContent='PETUNJUK: '+(state.codingLevel===1?'Kondisinya sudah disediakan. Lengkapi cout pada setiap cabang.':state.codingLevel===2?'Mulai dari input, tentukan kondisi, lalu tulis output pada cabang yang sesuai.':'Gunakan struktur program C++ lengkap dan konsisten. '+m.why)}
+/* quest */
+const quests=[
+{icon:'🎟️',title:'Tiket Bioskop',scene:'Harga tiket anak berlaku jika umur kurang dari 12 tahun.',opts:['umur <= 12','umur < 12','umur > 12','umur == 12'],ans:1,why:'“Kurang dari 12” tidak memasukkan umur 12.',sim:[['11','anak'],['12','bukan anak'],['13','bukan anak']]},
+{icon:'🌧️',title:'Peringatan Hujan',scene:'Peringatan muncul jika peluang hujan minimal 70%.',opts:['peluang > 70','peluang >= 70','peluang < 70','peluang == 100'],ans:1,why:'Kata minimal memasukkan nilai 70.',sim:[['69','tidak'],['70','peringatan'],['71','peringatan']]},
+{icon:'🔐',title:'Akses Akun',scene:'Login berhasil jika PIN benar DAN OTP benar.',opts:['pinBenar || otpBenar','pinBenar && otpBenar','pinBenar == otpBenar','!pinBenar'],ans:1,why:'Kedua syarat harus TRUE sekaligus.',sim:[['T,T','berhasil'],['T,F','gagal'],['F,T','gagal']]},
+{icon:'📦',title:'Gratis Ongkir',scene:'Gratis ongkir jika total minimal 100000 ATAU pengguna punya voucher.',opts:['total >= 100000 && voucher','total >= 100000 || voucher','total > 100000 && !voucher','total == 100000'],ans:1,why:'Salah satu syarat cukup.',sim:[['120000,F','gratis'],['50000,T','gratis'],['50000,F','tidak']]},
+{icon:'🌡️',title:'Kategori Suhu',scene:'>=30 panas, >=20 nyaman, selain itu dingin. Kondisi mana diperiksa lebih dulu?',opts:['suhu >= 20','suhu >= 30','suhu < 20','suhu == 25'],ans:1,why:'Mulai dari batas tertinggi agar 35 tidak tertangkap sebagai nyaman.',sim:[['35','panas'],['25','nyaman'],['15','dingin']]},
+{icon:'🏫',title:'Izin Ujian',scene:'Boleh ujian jika sudah membayar DAN kehadiran minimal 80%.',opts:['bayar || hadir >= 80','bayar && hadir >= 80','bayar && hadir > 80','!bayar && hadir >= 80'],ans:1,why:'Dua syarat wajib terpenuhi dan 80 harus termasuk.',sim:[['T,80','boleh'],['T,79','tidak'],['F,90','tidak']]},
+{icon:'🅿️',title:'Tarif Parkir',scene:'0–2 jam = 3000, 3–5 jam = 5000, lebih dari 5 jam = 8000. Struktur paling sesuai?',opts:['if saja','if else','if - else if - else','tiga if tanpa hubungan'],ans:2,why:'Ada tiga kategori yang saling eksklusif.',sim:[['2','3000'],['4','5000'],['6','8000']]},
+{icon:'📍',title:'Titik Asal',scene:'Titik berada tepat di pusat koordinat hanya jika x = 0 DAN y = 0.',opts:['x == 0 || y == 0','x == 0 && y == 0','x != 0 && y != 0','x == y'],ans:1,why:'Kedua koordinat harus nol bersamaan.',sim:[['0,0','pusat'],['0,3','bukan'],['2,0','bukan']]}
+];
+function renderQuest(){
+  if(state.questFinished){
+    $('questProgress').style.width='100%';
+    $('questScore').textContent=`Skor ${state.questCorrect}/${quests.length}`;
+    $('questStage').innerHTML=`<div class="finish-card"><div class="finish-mark">✓</div><h3>Decision Quest selesai</h3><p>Seluruh kasus sudah dikerjakan. Quest tidak mengulang otomatis ke kasus pertama.</p><div class="finish-score">Skor ${state.questCorrect} / ${quests.length}</div><div class="actions" style="justify-content:center"><button class="btn secondary" onclick="restartQuest()">↺ Ulangi dari awal</button></div></div>`;
+    return;
+  }
+  const q=quests[state.quest];
+  $('questProgress').style.width=((state.quest+1)/quests.length*100)+'%';
+  $('questScore').textContent=`Skor ${state.questCorrect} · ${state.quest+1}/${quests.length}`;
+  const answered=state.questAnswered[state.quest];
+  $('questStage').innerHTML=`<div class="quest-scene"><div class="quest-icon">${q.icon}</div><div><span class="eyebrow">CHOOSE YOUR LOGIC</span><h3>${escapeHtml(q.title)}</h3><p>${escapeHtml(q.scene)}</p></div></div><div class="quest-options">${q.opts.map((o,i)=>`<button class="quest-option" onclick="answerQuest(${i})">${String.fromCharCode(65+i)}. ${escapeHtml(o)}</button>`).join('')}</div>${answered!==undefined?renderSimulation(q):''}`;
+}
+function restartQuest(){state.quest=0;state.questFinished=false;state.questCorrect=0;state.questAnswered={};renderQuest();updateOverall()}
+function finishQuest(){state.questFinished=true;state.completed.add('explore');renderQuest();updateOverall()}
+function advanceQuest(){if(state.quest>=quests.length-1){finishQuest()}else{state.quest++;renderQuest()}}
+function renderSimulation(q){return `<div class="simulation"><b>Simulasi beberapa input</b><div class="sim-grid" style="margin-top:8px">${q.sim.map(s=>`<div class="sim-card"><b>Input ${escapeHtml(s[0])}</b>Hasil: ${escapeHtml(s[1])}</div>`).join('')}</div></div>`}
+function answerQuest(i){const q=quests[state.quest],first=state.questAnswered[state.quest]===undefined,ok=i===q.ans;state.questAnswered[state.quest]=i;if(first&&ok)state.questCorrect++;renderQuest();openModal(ok,ok?'Logika tepat':'Belum tepat',q.why,'quest',{index:state.quest})}
+/* nested */
+function runNested(){const u=Number($('nestedUser').value),p=Number($('nestedPass').value);let out,path;if(u===1){if(p===1){out='Login berhasil';path='username TRUE → password TRUE'}else{out='Password salah';path='username TRUE → password FALSE'}}else{out='Username salah';path='username FALSE → nested if tidak diperiksa'}$('nestedResult').innerHTML=`<div><div class="expr" style="font-size:18px">${path}</div><strong style="font-size:24px">${out}</strong></div>`}
+/* compare */
+const compares=[
+{a:`if (nilai >= 75) {\n    cout << "Lulus";\n}`,b:`if (nilai > 74) {\n    cout << "Lulus";\n}`,same:true,why:'Untuk nilai bertipe bilangan bulat, >=75 dan >74 memilih himpunan nilai yang sama.'},
+{a:`if (x > 10) {\n    cout << "A";\n}\nelse {\n    cout << "B";\n}`,b:`if (x >= 10) {\n    cout << "A";\n}\nelse {\n    cout << "B";\n}`,same:false,why:'Pada x = 10, program A mencetak B sedangkan program B mencetak A.'},
+{a:`if (n > 0) {\n    cout << "positif";\n}\nelse if (n < 0) {\n    cout << "negatif";\n}\nelse {\n    cout << "nol";\n}`,b:`if (n == 0) {\n    cout << "nol";\n}\nelse if (n > 0) {\n    cout << "positif";\n}\nelse {\n    cout << "negatif";\n}`,same:true,why:'Keduanya mempartisi bilangan menjadi tiga kelompok yang sama, hanya urutan pemeriksaannya berbeda.'},
+{a:`if (nilai >= 90) {\n    cout << "A";\n}\nelse if (nilai >= 80) {\n    cout << "B";\n}`,b:`if (nilai >= 80) {\n    cout << "B";\n}\nelse if (nilai >= 90) {\n    cout << "A";\n}`,same:false,why:'Pada nilai 95, program kedua berhenti pada >=80 dan mencetak B.'}
+];
+function renderCompare(){
+  const choices=$('compareA').closest('.visual-card').querySelector('.choice-grid');
+  if(state.compareFinished){
+    $('compareNo').textContent='Selesai';
+    $('compareA').textContent='Semua pasangan program sudah dibandingkan.';
+    $('compareB').textContent='Latihan berhenti di sini dan tidak kembali otomatis ke pasangan pertama.';
+    choices.innerHTML=`<button class="btn secondary" onclick="restartCompare()">↺ Ulangi dari awal</button>`;
+    return;
+  }
+  const q=compares[state.compare];
+  $('compareNo').textContent=`Perbandingan ${state.compare+1} / ${compares.length}`;
+  $('compareA').textContent=q.a;
+  $('compareB').textContent=q.b;
+  choices.innerHTML=`<button class="choice center" onclick="answerCompare(true)">Selalu sama</button><button class="choice center" onclick="answerCompare(false)">Bisa berbeda</button>`;
+}
+function restartCompare(){state.compare=0;state.compareFinished=false;renderCompare()}
+function finishCompare(){state.compareFinished=true;renderCompare();updateOverall()}
+function advanceCompare(){if(state.compare>=compares.length-1){finishCompare()}else{state.compare++;renderCompare()}}
+function answerCompare(v){if(state.compareFinished){restartCompare();return}const q=compares[state.compare],ok=v===q.same;openModal(ok,ok?'Analisis tepat':'Perhatikan nilai pembeda',q.why,'compare',{index:state.compare});if(ok)markSkill('tracing','compare'+state.compare)}
+/* discussion */
+const discussions=[
+{q:'Apa yang terjadi jika kondisi pertama dan kedua pada rantai else if sama-sama TRUE?',note:'Arah diskusi: hanya cabang TRUE pertama yang dijalankan; cabang berikutnya tidak diperiksa.'},
+{q:'Mengapa nilai >= 90 sebaiknya diperiksa sebelum nilai >= 80?',note:'Arah diskusi: rentang >=90 merupakan bagian dari >=80. Urutan rendah-ke-tinggi membuat kategori tinggi tertelan.'},
+{q:'Bisakah dua kode berbeda menghasilkan keluaran yang sama untuk semua input?',note:'Arah diskusi: bisa. Contohnya pada bilangan bulat, x >= 75 ekuivalen dengan x > 74.'},
+{q:'Apa bedanya program yang gagal dikompilasi dan program yang berhasil berjalan tetapi logikanya salah?',note:'Arah diskusi: error sintaks mencegah program berjalan; logical error dapat menghasilkan output tetapi hasilnya keliru.'},
+{q:'Mengapa test case nilai batas penting?',note:'Arah diskusi: nilai batas membedakan operator seperti > dengan >= dan < dengan <=.'},
+{q:'Kapan nested if lebih mudah dibaca daripada kondisi gabungan dengan &&?',note:'Arah diskusi: nested if berguna jika pemeriksaan kedua hanya relevan setelah syarat pertama terpenuhi atau jika setiap kegagalan memerlukan keluaran berbeda.'}
+];
+function renderDiscussions(){$('discussionGrid').innerHTML=discussions.map((d,i)=>`<div class="card discussion-card"><span class="eyebrow">DISKUSI ${i+1}</span><h3>${escapeHtml(d.q)}</h3><button class="btn ghost" onclick="$('tn${i}').classList.toggle('show')">Tampilkan pemantik guru</button><div class="teacher-note" id="tn${i}">${escapeHtml(d.note)}</div></div>`).join('')}
+/* modal */
+function isLastModalItem(context,payload){
+  const idx=payload&&Number.isInteger(payload.index)?payload.index:null;
+  if(context==='predictExplain'&&idx!==null)return idx===predictQs.length-1;
+  if(context==='boundary'&&idx!==null)return idx===boundaryCases.length-1;
+  if(context==='builder'&&idx!==null)return idx===builders.length-1;
+  if((context==='trace'||context==='traceExplain')&&idx!==null)return idx===traces.length-1;
+  if(context==='bug'&&idx!==null)return idx===bugs.length-1;
+  if(context==='quest'&&idx!==null)return idx===quests.length-1;
+  if(context==='compare'&&idx!==null)return idx===compares.length-1;
+  return false;
+}
+function updateModalNextLabel(){
+  if(!$('modalNext'))return;
+  $('modalNext').textContent=isLastModalItem(modalContext,modalPayload)?'Selesai ✓':'Next →';
+}
+function openModal(ok,title,text,context,payload=null){
+  modalContext=context;
+  modalPayload=payload;
+  $('modalIcon').textContent=ok?'✓':'!';
+  $('modalIcon').className='modal-icon '+(ok?'ok':'no');
+  $('modalTitle').textContent=title;
+  $('modalText').textContent=text;
+  $('modalExtra').innerHTML='';
+  $('modalNext').disabled=false;
+  updateModalNextLabel();
+  $('modalBg').classList.add('show');
+}
+function closeModal(){$('modalBg').classList.remove('show')}
+function modalNextAction(){
+  if($('modalNext').disabled)return;
+  const context=modalContext;
+  const payload=modalPayload;
+  closeModal();
+  if(context==='predictExplain'){
+    advancePredict();
+  }else if(context==='boundary'){
+    advanceBoundary();
+  }else if(context==='builder'){
+    advanceBuilder();
+  }else if(context==='trace'||context==='traceExplain'){
+    advanceTrace();
+  }else if(context==='bug'){
+    advanceBug();
+  }else if(context==='quest'){
+    advanceQuest();
+  }else if(context==='compare'){
+    advanceCompare();
+  }
+  modalContext='';
+  modalPayload=null;
+  updateOverall();
+}
+/* init */
+initNav();renderLearn();renderSkillMap();calcCondition();renderPredict();resetViz();renderBoundary();renderBuilder();setTimeout(renderLogic,0);renderTrace();renderBug();renderCoding();renderQuest();renderCompare();renderDiscussions();runNested();updateOverall();
+</script>
+</body>
+</html>
