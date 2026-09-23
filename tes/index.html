@@ -435,6 +435,17 @@
             if (document.visibilityState === 'hidden' && isExamActive && !isLocked) catatPelanggaran("Pindah Tab/Aplikasi"); 
         }); 
         
+        // FITUR BARU: Deteksi Tombol ESC / Keluar Layar Penuh di PC
+        function checkFullscreen() {
+            if (!document.fullscreenElement && !document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) {
+                if (isExamActive && !isLocked) catatPelanggaran("Keluar dari Mode Layar Penuh (ESC/F11)");
+            }
+        }
+        document.addEventListener('fullscreenchange', checkFullscreen);
+        document.addEventListener('webkitfullscreenchange', checkFullscreen);
+        document.addEventListener('mozfullscreenchange', checkFullscreen);
+        document.addEventListener('MSFullscreenChange', checkFullscreen);
+
         let initialWidth = window.innerWidth; 
         window.addEventListener('resize', () => { 
             if(isExamActive && !isLocked) { 
