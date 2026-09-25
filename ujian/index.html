@@ -7,15 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #f1f5f9; 
             overflow-x: hidden; 
             touch-action: manipulation;
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and IE 11 */
-            user-select: none; /* Standard syntax */
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         .hide { display: none !important; }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
@@ -51,11 +50,11 @@
             <div class="space-y-4 text-left">
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Lengkap Sesuai Absen</label>
-                    <input type="text" id="s-nama" placeholder="Contoh: Budi Santoso" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-semibold text-gray-700">
+                    <input type="text" id="s-nama" placeholder="" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none uppercase font-semibold text-gray-700">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Nomor Daftar Hadir</label>
-                    <input type="number" id="s-nis" placeholder="CONTOH: 12" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-gray-700">
+                    <input type="number" id="s-nis" placeholder="" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono text-gray-700">
                 </div>
                 <div class="pt-2">
                     <input type="text" id="s-kode" placeholder="KODE UJIAN" class="w-full px-4 py-3 border-2 border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-600 outline-none text-center font-bold text-2xl tracking-widest bg-blue-50 uppercase">
@@ -120,7 +119,6 @@
         </div>
     </div>
 
-    <!-- OVERLAY: Pelanggaran -->
     <div id="warning-overlay" class="fixed inset-0 bg-black/90 z-[100] flex-col items-center justify-center p-4 hide">
         <div class="bg-white p-6 rounded-2xl text-center max-w-md w-full border-t-8 border-red-500 shadow-2xl">
             <div class="text-5xl mb-4">🚫</div>
@@ -134,7 +132,6 @@
         </div>
     </div>
 
-    <!-- OVERLAY: Terkunci (Butuh PIN / Buka dari Server) -->
     <div id="lock-overlay" class="fixed inset-0 bg-gray-900/98 z-[110] flex-col items-center justify-center p-4 hide">
         <div class="bg-gray-800 p-8 rounded-2xl text-center max-w-md w-full border-2 border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.5)]">
             <h2 class="text-2xl font-black text-red-500 mb-2">UJIAN DIBLOKIR</h2>
@@ -144,7 +141,6 @@
         </div>
     </div>
 
-    <!-- MODAL: Selesai Ujian -->
     <div id="finish-modal" class="fixed inset-0 bg-black/60 z-[120] flex items-center justify-center hide p-4">
         <div class="bg-white rounded-xl p-6 max-w-sm w-full text-center">
             <h3 class="text-xl font-bold text-red-600 mb-2">Selesai Ujian?</h3>
@@ -156,14 +152,11 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-3 z-[200] pointer-events-none">
         <span id="toast-msg" class="font-medium text-sm">Notifikasi</span>
     </div>
 
     <script type="module">
-        // PENTING 1: Ketiga link import ini WAJIB menggunakan versi yang sama persis (11.6.1). 
-        // Jika Anda mencampurnya dengan versi 12.19.0 pada salah satu link, seluruh tombol akan CRASH!
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -180,7 +173,6 @@
             messagingSenderId: "687374876508",
             appId: "1:687374876508:web:3a6e17a250d215d5630b99"
         };
-        // ==========================================
         
         let app, auth, db, currentUser;
         
@@ -194,24 +186,20 @@
         let gracePeriod = 30;
         let timeOffset = 0;
         
-        // Data Siswa & Live Sync
         let studentName = '';
         let studentNis = '';
         let liveSyncInterval = null;
         let sessionDocRef = null;
 
-        // Auto-fill dari kunjungan sebelumnya
         document.getElementById('s-nama').value = localStorage.getItem('cbt_nama') || '';
         document.getElementById('s-nis').value = localStorage.getItem('cbt_nis') || '';
 
-        // Deteksi Jaringan Offline
         window.addEventListener('offline', () => document.getElementById('offline-banner').classList.remove('hide'));
         window.addEventListener('online', () => document.getElementById('offline-banner').classList.add('hide'));
 
-        // UI Helpers
         window.showToast = function(msg, type='info') {
             const toast = document.getElementById('toast');
-            if(!toast) { alert(msg); return; } // Fallback peringatan paksa jika animasi UI gagal
+            if(!toast) { alert(msg); return; } 
             document.getElementById('toast-msg').innerText = msg;
             toast.classList.remove('translate-y-20', 'opacity-0');
             if(type==='error') toast.classList.replace('bg-gray-800', 'bg-red-600');
@@ -242,7 +230,6 @@
                 currentUser = auth.currentUser;
             } catch (e) {
                 console.error("Firebase Init Error:", e);
-                // Menampilkan error paksa ke layar (Tidak mati diam-diam lagi)
                 alert("GAGAL TERHUBUNG KE SERVER!\nPastikan Anda sudah mengaktifkan opsi 'Anonymous Login' di pengaturan Authentication Firebase Anda.");
             }
         }
@@ -261,7 +248,7 @@
 
         window.cariUjianSiswa = async function() {
             if(!currentUser) { 
-                alert("Sistem belum siap atau koneksi terputus! Harap tunggu beberapa detik atau pastikan Anonymous Login menyala di Firebase."); 
+                alert("Sistem belum siap atau koneksi terputus! Harap tunggu beberapa detik."); 
                 return; 
             }
             
@@ -272,7 +259,6 @@
             if(!studentName || !studentNis) { showToast("Nama & NIS wajib diisi!", "error"); return; }
             if(!kode) { showToast("Masukkan kode ujian!", "error"); return; }
 
-            // Simpan ke localstorage agar tidak perlu isi ulang
             localStorage.setItem('cbt_nama', studentName);
             localStorage.setItem('cbt_nis', studentNis);
 
@@ -293,7 +279,7 @@
                 }
             } catch(e) {
                 console.error("Error saat mencari ujian:", e);
-                showToast("Terjadi kesalahan jaringan atau Anda terblokir sistem (Cek Rules Firestore).", "error");
+                showToast("Terjadi kesalahan jaringan atau Anda terblokir sistem.", "error");
             } finally {
                 btn.innerText = orig; btn.disabled = false;
             }
@@ -330,7 +316,6 @@
             const msg = document.getElementById('lobby-status-msg');
             msg.classList.remove('hide');
 
-            // MENGGUNAKAN LOCAL STORAGE (Anti Restart HP)
             if(localStorage.getItem('done_' + activeExamData.id)) {
                 msg.innerHTML = `❌ Anda sudah menyelesaikan ujian ini.<br><button onclick="mintaResetSelesai()" class="mt-2 text-xs bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-1.5 rounded border border-red-300 transition">Buka Kembali Akses (Butuh PIN Pengawas)</button>`;
                 msg.className = "text-sm font-bold mb-4 py-3 px-3 rounded-lg bg-red-50 border border-red-200 text-red-600";
@@ -365,7 +350,7 @@
                 localStorage.removeItem('start_' + activeExamData.id);
                 localStorage.removeItem('v_' + activeExamData.id);
                 showToast("Akses di-reset! Silakan klik 'Mulai Kerjakan'.", "success");
-                checkJadwalInterval(); // Segarkan tombol lobi
+                checkJadwalInterval(); 
             } else if (pin) {
                 showToast("PIN Pengawas Salah!", "error");
             }
@@ -375,18 +360,15 @@
             if(!currentUser || !activeExamData) return;
             sessionDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', activeExamData.id, 'sessions', currentUser.uid);
             
-            // LAKUKAN PING UPDATE PERTAMA
             pingLiveServer();
 
-            // Interval Update tiap 10 detik
-            liveSyncInterval = setInterval(() => { pingLiveServer() }, 10000);
+            // OPTIMASI SKENARIO B: Interval diubah dari 10 detik menjadi 5 menit (300000 ms)
+            liveSyncInterval = setInterval(() => { pingLiveServer() }, 300000);
 
-            // Listener Real-time: Jika guru menekan tombol "Buka Blokir" dari laptop mereka
             onSnapshot(sessionDocRef, (docSnap) => {
                 if(docSnap.exists() && isExamActive) {
                     const data = docSnap.data();
                     if(data.isLocked === false && isLocked) {
-                        // Buka Kunci Otomatis!
                         localStorage.setItem('v_' + activeExamData.id, 0); 
                         document.getElementById('exam-v-count').innerText = "0";
                         isLocked = false;
@@ -401,6 +383,13 @@
 
         async function pingLiveServer(isFinished = false) {
             if(!sessionDocRef || !isExamActive) return;
+            
+            // OPTIMASI ANTI TAB HANTU: Hentikan interval otomatis jika durasi habis
+            if(durasiDetik <= 0 && !isFinished) {
+                if(liveSyncInterval) clearInterval(liveSyncInterval);
+                return;
+            }
+
             try {
                 let v = parseInt(localStorage.getItem('v_' + activeExamData.id) || '0');
                 await setDoc(sessionDocRef, {
@@ -411,8 +400,8 @@
                     isLocked: isLocked,
                     isFinished: isFinished,
                     updatedAt: new Date().toISOString()
-                }, { merge: true }); // Menggunakan merge agar tidak menimpa data unlock
-            } catch(e) {} // Silent error jika offline
+                }, { merge: true }); 
+            } catch(e) {} 
         }
 
         function triggerViolationMedia() {
@@ -434,7 +423,6 @@
         window.catatPelanggaran = function(alasan) {
             if(!activeExamData || !isExamActive || isLocked || isForceSubmitting) return;
             
-            // LOCAL STORAGE: Permanen meskipun browser direfresh/dimatikan
             let v = parseInt(localStorage.getItem('v_' + activeExamData.id) || '0'); v++;
             localStorage.setItem('v_' + activeExamData.id, v);
             triggerViolationMedia();
@@ -454,12 +442,11 @@
                 if(alasan) document.getElementById('pelanggaran-alasan').innerText = alasan;
             }
             
-            // Update segera ke Guru
+            // Ping server tetap dieksekusi secara instan (real-time) saat pelanggaran terjadi
             pingLiveServer();
         }
 
         window.bukaBlokir = function() {
-            // Ini untuk buka manual. Buka dari server via onSnapshot
             if(document.getElementById('pin-unlock-input').value === activeExamData.pin) {
                 localStorage.setItem('v_' + activeExamData.id, 0); 
                 document.getElementById('exam-v-count').innerText = "0";
@@ -501,7 +488,6 @@
             document.getElementById('exam-v-count').innerText = v;
             if(v >= activeExamData.maxV) catatPelanggaran();
 
-            // MENGGUNAKAN LOCAL STORAGE: Anti Kecurangan Waktu
             let storedStart = localStorage.getItem('start_' + activeExamData.id);
             let nowUnix = Math.floor(getNow() / 1000); 
             
@@ -509,15 +495,12 @@
                 localStorage.setItem('start_' + activeExamData.id, nowUnix);
                 durasiDetik = activeExamData.duration * 60;
             } else {
-                // Selisih waktu absolut. Jika HP mati 10 menit, waktu tetap terpotong 10 menit.
                 let elapsed = nowUnix - parseInt(storedStart);
                 durasiDetik = (activeExamData.duration * 60) - elapsed;
                 if(durasiDetik < 0) durasiDetik = 0;
             }
 
-            // Memulai pengiriman data ke Dashboard Guru
             startLiveSync();
-
             mulaiTimerEksekusi();
         }
 
@@ -531,7 +514,7 @@
                         let s = (durasiDetik % 60).toString().padStart(2, '0');
                         document.getElementById('exam-timer').innerText = m + ":" + s;
                     } else if(!isForceSubmitting) {
-                        isForceSubmitting = true; // Hentikan sensor pelanggaran
+                        isForceSubmitting = true; 
                         document.getElementById('exam-timer').innerText = "00:00";
                         document.getElementById('force-submit-overlay').classList.remove('hide');
                         
@@ -540,7 +523,6 @@
                             document.getElementById('grace-timer').innerText = gracePeriod;
                             if(gracePeriod <= 0) {
                                 clearInterval(graceInterval); clearInterval(examTimerInterval);
-                                // Selesai Paksa!
                                 selesaiUjianFinal();
                             }
                         }, 1000);
@@ -550,11 +532,11 @@
         }
 
         window.selesaiUjianFinal = async function() {
-            closeModal('finish-modal'); // PERBAIKAN: Menutup pop-up saat klik Ya
+            closeModal('finish-modal'); 
             
             if(activeExamData) {
                 localStorage.setItem('done_' + activeExamData.id, 'true');
-                await pingLiveServer(true); // Kirim status selesai (isFinished: true) ke guru
+                await pingLiveServer(true); // Ping instan saat selesai
             }
             if(liveSyncInterval) clearInterval(liveSyncInterval);
             isExamActive = false;
@@ -562,12 +544,10 @@
             document.getElementById('exam-iframe-container').innerHTML = '<div class="w-full h-full flex flex-col items-center justify-center bg-gray-900 text-white p-6 text-center"><h1 class="text-4xl font-black text-red-500 mb-4">WAKTU HABIS / SELESAI</h1><p class="mb-8 text-gray-300">Sesi ujian telah ditutup permanen.</p><button onclick="window.location.reload()" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-bold">Kembali ke Beranda</button></div>';
         }
 
-        // 1. Anti Pindah Tab
         document.addEventListener('visibilitychange', function() { 
             if (document.visibilityState === 'hidden' && isExamActive && !isLocked) catatPelanggaran("Pindah Tab / Aplikasi disembunyikan"); 
         }); 
         
-        // 2. Anti Keluar Fullscreen (termasuk ESC)
         function checkFullscreen() {
             if (!document.fullscreenElement && !document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) {
                 if (isExamActive && !isLocked) catatPelanggaran("Keluar dari Mode Layar Penuh (ESC/F11)");
@@ -576,7 +556,6 @@
         document.addEventListener('fullscreenchange', checkFullscreen);
         document.addEventListener('webkitfullscreenchange', checkFullscreen);
 
-        // 3. Anti Split-Screen (Layar Belah)
         let initialWidth = window.innerWidth; 
         window.addEventListener('resize', () => { 
             if(isExamActive && !isLocked && !isForceSubmitting) { 
@@ -585,11 +564,9 @@
             } 
         });
 
-        // 4. Anti Floating Apps (Layar Kehilangan Fokus)
         window.addEventListener('blur', function() {
             if(isExamActive && !isLocked && !isForceSubmitting) {
                 setTimeout(() => {
-                    // Jika layar kehilangan fokus bukan karena Google Form (iframe), melainkan karena klik luar (Aplikasi Notif/Floating/Bubble)
                     if (document.activeElement !== document.getElementById('exam-iframe')) {
                         catatPelanggaran("Membuka Aplikasi Mengambang (Notifikasi / Floating App)");
                     }
@@ -597,12 +574,10 @@
             }
         });
 
-        // 5. Anti-AI & Anti-Salin Lanjutan (Membajak sensor Copy/Paste)
         document.addEventListener('copy', (e) => { if(isExamActive) { e.preventDefault(); catatPelanggaran("Mencoba Menyalin (Copy) Teks Soal"); } });
         document.addEventListener('cut', (e) => { if(isExamActive) { e.preventDefault(); catatPelanggaran("Mencoba Memotong (Cut) Teks Soal"); } });
         document.addEventListener('paste', (e) => { if(isExamActive) { e.preventDefault(); catatPelanggaran("Mencoba Menempel (Paste) Teks dari luar"); } });
 
-        // 6. Anti Klik Kanan & Shortcut Berbahaya
         document.addEventListener('contextmenu', event => { if(isExamActive) event.preventDefault(); }); 
         document.addEventListener('keydown', event => { 
             if(!isExamActive) return;
@@ -612,7 +587,6 @@
             }
         }); 
         
-        // 7. Anti-Buka DevTools (Looping Debugger)
         setInterval(function() { 
             if(isExamActive && !isLocked && !isForceSubmitting) { 
                 const before = new Date().getTime(); 
@@ -622,13 +596,11 @@
             } 
         }, 1500);
 
-        // 8. Kunci Tombol Kembali (Navigasi)
         history.pushState(null, null, location.href); 
         window.onpopstate = function () { 
             if(isExamActive && !isForceSubmitting) { history.pushState(null, null, location.href); catatPelanggaran("Tombol Back ditekan"); } 
         };
 
-        // Inisialisasi awal
         syncServerTime();
         initFirebase();
     </script>
