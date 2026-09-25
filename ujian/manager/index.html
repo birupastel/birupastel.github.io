@@ -54,7 +54,7 @@
         </div>
     </main>
 
-    <!-- VIEW: DASHBOARD GURU (SERVER-SIDE PAGINATION) -->
+    <!-- VIEW: DASHBOARD GURU -->
     <main id="view-guru" class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full hide fade-in">
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
             <div>
@@ -93,7 +93,6 @@
                 </table>
             </div>
             
-            <!-- Pagination Controls -->
             <div class="flex justify-between items-center p-4 bg-gray-50 border-t border-gray-200">
                 <button onclick="loadDashboard(-1)" id="btn-prev-page" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 text-sm font-medium transition" disabled>
                     &larr; Sebelumnya
@@ -120,7 +119,7 @@
                     Live Monitor: <span id="monitor-title" class="ml-2 text-blue-600">Nama Ujian</span>
                 </h1>
                 <p class="text-sm text-gray-500 mt-1 flex items-center space-x-2">
-                    <span>Data diperbarui secara Real-Time.</span>
+                    <span>Data diperbarui secara Real-Time (Hemat Kuota Aktif).</span>
                     <button onclick="refreshLiveMonitor()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-300 px-2 py-0.5 rounded text-xs transition shadow-sm flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Segarkan
                     </button>
@@ -211,7 +210,6 @@
             <h3 class="text-xl font-bold text-gray-800 mb-2">Arsipkan Ujian?</h3>
             <p class="text-sm text-gray-600 mb-4">Ujian <span id="del-kode" class="font-bold text-orange-600"></span> akan disembunyikan dari tabel utama agar lebih rapi (Soft-Delete).</p>
             
-            <!-- Opsi Admin Only (Hard Delete) -->
             <div id="admin-hard-delete-opt" class="mb-4 text-left bg-red-50 p-3 rounded-lg border border-red-100 hide">
                 <label class="flex items-center space-x-2 text-xs font-bold text-red-700 cursor-pointer">
                     <input type="checkbox" id="chk-hard-delete" class="rounded text-red-600 focus:ring-red-500">
@@ -249,7 +247,6 @@
             messagingSenderId: "687374876508",
             appId: "1:687374876508:web:3a6e17a250d215d5630b99"
         };
-        // ==========================================
         
         let app, auth, db, provider;
         let currentUser = null;
@@ -257,13 +254,28 @@
         let targetActionId = null;
         let activeLiveMonitorUnsubscribe = null;
 
-        // Variabel Server-Side Pagination
         let currentStartDocs = []; 
         let lastVisibleDoc = null; 
         let currentPageNum = 1;
         const itemsPerPage = 8; 
 
-        // UI Helpers
+        // OPTIMASI: PENCEGAHAN READS SAAT GURU PINDAH TAB
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                // Tab disembunyikan, hentikan koneksi real-time untuk hemat kuota
+                if (activeLiveMonitorUnsubscribe) {
+                    activeLiveMonitorUnsubscribe();
+                    activeLiveMonitorUnsubscribe = null;
+                }
+            } else {
+                // Tab dibuka kembali, muat ulang data jika sedang di halaman monitor
+                const monitorView = document.getElementById('view-live-monitor');
+                if (currentMonitorId && monitorView && !monitorView.classList.contains('hide')) {
+                    openLiveMonitor(currentMonitorId, currentMonitorTitle);
+                }
+            }
+        });
+
         window.showToast = function(msg, type='info') {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
@@ -288,7 +300,6 @@
         }
         window.closeModal = function(id) { document.getElementById(id).classList.add('hide'); }
 
-        // Inisialisasi Firebase & Cek Peran (Roles)
         try {
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
@@ -300,13 +311,11 @@
                     currentUser = user;
                     document.getElementById('user-email-display').innerText = user.email;
                     try {
-                        // Cek kewenangan ke Firebase Database
                         const roleDoc = await getDoc(doc(db, 'artifacts', appId, 'roles', user.email));
                         if(roleDoc.exists()) {
                             userRole = roleDoc.data().role; 
                             document.getElementById('role-badge').innerText = `Role Anda: ${userRole.toUpperCase()}`;
                             
-                            // Jika Admin, tampilkan opsi Hard Delete di Modal Arsip
                             if(userRole === 'admin') {
                                 document.getElementById('admin-hard-delete-opt').classList.remove('hide');
                                 document.getElementById('chk-hard-delete').addEventListener('change', function(e) {
@@ -320,7 +329,6 @@
                                     }
                                 });
                             }
-
                             loadDashboard(0);
                         } else {
                             throw new Error("Akses Ditolak: Email Anda tidak terdaftar sebagai Guru/Admin.");
@@ -343,9 +351,6 @@
 
         window.logoutGuru = async function() { await signOut(auth); showView('view-login'); }
 
-        // ==========================================
-        // 1. SERVER-SIDE PAGINATION
-        // ==========================================
         window.loadDashboard = async function(direction = 0) {
             if(!currentUser || !userRole) return;
             showView('view-guru');
@@ -368,17 +373,12 @@
             try {
                 const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'exams');
                 let constraints = [
-                    where('isArchived', '==', false), // Sembunyikan yang diarsipkan (Soft Delete)
+                    where('isArchived', '==', false),
                     orderBy('updatedAt', 'desc'),
                     limit(itemsPerPage)
                 ];
 
-                // Guru biasa hanya melihat miliknya. Admin melihat semua.
-                if (userRole !== 'admin') {
-                    // PENTING: Query ini membutuhkan Composite Index di Firebase.
-                    constraints.unshift(where('creator', '==', currentUser.email));
-                }
-
+                if (userRole !== 'admin') { constraints.unshift(where('creator', '==', currentUser.email)); }
                 if (direction !== 0 && lastVisibleDoc) { constraints.push(startAfter(lastVisibleDoc)); }
 
                 const q = query(colRef, ...constraints);
@@ -400,7 +400,6 @@
             }
         }
 
-        // Pencarian (Bypass Pagination)
         window.searchExactId = async function() {
             const searchVal = document.getElementById('search-input').value.trim().toUpperCase();
             if(!searchVal) return loadDashboard(0); 
@@ -456,9 +455,6 @@
             tbody.innerHTML = html;
         }
 
-        // ==========================================
-        // 2. SISTEM ARSIP (Soft-Delete) & HARD DELETE
-        // ==========================================
         window.confirmAction = function(examId) {
             targetActionId = examId;
             document.getElementById('del-kode').innerText = examId;
@@ -474,59 +470,41 @@
 
         window.executeAction = async function() {
             if(!targetActionId) return;
-            
             const isHardDelete = document.getElementById('chk-hard-delete') && document.getElementById('chk-hard-delete').checked;
-            
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', targetActionId);
                 
                 if (isHardDelete) {
-                    await deleteDoc(docRef); // HARD DELETE
+                    await deleteDoc(docRef);
                     showToast(`Ujian ${targetActionId} dihapus PERMANEN!`, 'success');
                 } else {
-                    await updateDoc(docRef, { isArchived: true }); // SOFT DELETE
+                    await updateDoc(docRef, { isArchived: true });
                     showToast(`Ujian ${targetActionId} berhasil diarsipkan.`, 'success');
                 }
                 
                 closeModal('delete-modal');
                 loadDashboard(0); 
-                
             } catch(e) { showToast("Akses ditolak: Anda tidak memiliki izin untuk tindakan ini.", "error"); }
         }
 
-        // ==========================================
-        // 2B. FITUR RESET KODE UJIAN
-        // ==========================================
         window.resetKodeUjian = async function(oldId) {
             if(!confirm(`Yakin ingin mereset/mengganti kode ujian ${oldId}?\nKode lama akan disembunyikan (arsip) dan siswa akan mendapatkan KODE ACAK BARU.`)) return;
-            
             try {
                 const oldRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', oldId);
                 const oldSnap = await getDoc(oldRef);
-                
                 if (oldSnap.exists()) {
                     const data = oldSnap.data();
-                    
-                    // Generate ID Baru
                     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
                     let newId = ''; for(let i=0; i<6; i++) newId += chars.charAt(Math.floor(Math.random() * chars.length));
-                    
-                    // 1. Simpan Data ke ID Baru
                     const newRef = doc(db, 'artifacts', appId, 'public', 'data', 'exams', newId);
                     await setDoc(newRef, { ...data, updatedAt: new Date().toISOString() });
-                    
-                    // 2. Soft-Delete (Arsipkan) ID Lama
                     await updateDoc(oldRef, { isArchived: true });
-                    
                     showToast(`Berhasil! Kode lama diarsipkan. Kode BARU: ${newId}`, 'success');
                     loadDashboard(0);
                 }
             } catch(e) { showToast("Gagal mereset kode ujian.", "error"); }
         }
 
-        // ==========================================
-        // 3. FITUR "LIVE MONITORING"
-        // ==========================================
         let currentMonitorId = null;
         let currentMonitorTitle = null;
 
@@ -536,7 +514,6 @@
             document.getElementById('monitor-title').innerText = title;
             document.getElementById('live-monitor-list').innerHTML = '<tr><td colspan="5" class="px-6 py-10 text-center text-gray-400 text-sm">Menghubungkan ke Real-time Database...</td></tr>';
             
-            // Dengarkan perubahan pada sub-koleksi 'sessions'
             const sessionsRef = collection(db, 'artifacts', appId, 'public', 'data', 'exams', examId, 'sessions');
             
             activeLiveMonitorUnsubscribe = onSnapshot(sessionsRef, (snapshot) => {
@@ -547,9 +524,9 @@
 
                 snapshot.forEach(docSnap => {
                     const s = docSnap.data();
-                    // Jika siswa tidak mengirim ping selama > 2 menit, anggap putus/offline
+                    // Sesuaikan threshold isOffline menjadi lebih longgar karena interval ping sekarang 5 menit
                     const lastUpdate = s.updatedAt ? new Date(s.updatedAt).getTime() : 0;
-                    const isOffline = (now - lastUpdate) > 120000; 
+                    const isOffline = (now - lastUpdate) > 420000; // Putus jika tidak ada kabar > 7 menit
                     
                     if(!isOffline && !s.isFinished) countOnline++;
                     if(s.isLocked) countLocked++;
@@ -570,7 +547,7 @@
                                 <div class="text-xs text-gray-500">NIS: ${s.studentNis || '-'} | ID: ${docSnap.id.substring(0,5)}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">${statusUI}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center font-mono text-sm font-bold ${s.timeLeft < 300 ? 'text-red-500' : 'text-gray-700'}">${m}:${sec}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center font-mono text-sm font-bold ${s.timeLeft < 300 ? 'text-red-500' : 'text-gray-700'}">Estimasi: ${m}m</td>
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <span class="text-lg font-bold ${s.violations > 0 ? 'text-orange-500' : 'text-gray-300'}">${s.violations || 0}</span>
                             </td>
@@ -599,7 +576,7 @@
 
         window.closeLiveMonitor = function() {
             if(activeLiveMonitorUnsubscribe) {
-                activeLiveMonitorUnsubscribe(); // Stop listening to save quota
+                activeLiveMonitorUnsubscribe(); 
                 activeLiveMonitorUnsubscribe = null;
             }
             showView('view-guru');
@@ -613,9 +590,6 @@
             } catch(e) { showToast("Gagal membuka blokir.", "error"); }
         }
 
-        // ==========================================
-        // CREATE / EDIT UJIAN
-        // ==========================================
         window.showCreateExamForm = function() {
             document.getElementById('edit-exam-id').value = '';
             document.getElementById('g-mapel').value = '';
@@ -645,7 +619,7 @@
                     const data = docSnap.data();
                     
                     if (isCopy) {
-                        document.getElementById('edit-exam-id').value = ''; // Reset ID so it creates new
+                        document.getElementById('edit-exam-id').value = ''; 
                         document.getElementById('g-mapel').value = data.title + " (Salinan)";
                         document.getElementById('form-title').innerText = `Salin Ujian dari: ${examId}`;
                     } else {
