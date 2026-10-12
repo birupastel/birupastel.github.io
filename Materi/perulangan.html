@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
 <meta name="theme-color" content="#0f172a" />
-<title>Loop Lab C++ v3.4 — Mobile & Levelled Learning</title>
+<title>Algoritma Perulangan</title>
 
 <style>
 :root {
@@ -210,6 +210,12 @@ section.active { display: block; }
 .activity-progress { flex: 1; height: 6px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
 .activity-progress i { display: block; height: 100%; background: var(--blue); border-radius: 99px; transition: width 0.3s; }
 .score-chip { background: var(--dark); color: #fff; border-radius: 8px; padding: 5px 8px; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.streak-chip { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border-radius: 8px; padding: 5px 8px; font-size: 10px; font-weight: 800; }
+
+.summary-card { text-align: center; padding: 24px 16px; background: #fff; border-radius: 16px; border: 1px solid var(--line); box-shadow: var(--shadow); }
+.summary-card h3 { font-size: 20px; margin: 8px 0 4px; }
+.stars { font-size: 28px; letter-spacing: 4px; margin: 8px 0; color: #f59e0b; }
+.badge-unlocked { display: inline-block; background: var(--blue2); color: var(--blue); padding: 6px 12px; border-radius: 99px; font-weight: 800; font-size: 12px; margin: 8px 0; }
 
 .bugline { display: block; padding: 4px 6px; border-radius: 5px; white-space: pre; cursor: pointer; font-family: var(--mono); font-size: 11px; }
 .bugline:hover { background: rgba(255, 255, 255, 0.08); }
@@ -297,7 +303,7 @@ section.active { display: block; }
 <div class="app">
 
 <header class="topbar"><div class="top-inner">
-  <div class="brand"><div class="logo">↻</div><div><b>Loop Lab C++</b><small>v3.4 — Mobile & Levelled</small></div></div>
+  <div class="brand"><div class="logo">↻</div><div><b>Algoritma</b><small>Perulangan</small></div></div>
   <nav class="nav" id="nav"></nav>
   <div class="overall"><small><span>PROGRES</span><span id="overallText">0%</span></small><div class="bar"><i id="overallBar" style="width:0"></i></div></div>
 </div></header>
@@ -331,12 +337,26 @@ for (i = 1; i &lt;= 5; i--) {
 
 <section id="tracing">
   <div class="section-head"><div><h2>3. Tracing Lab</h2><p>Latihan melacak nilai variabel dan output program secara mandiri.</p></div><span class="badge" id="traceBadge">8 Soal</span></div>
-  <div class="activity-shell"><div class="activity-top"><div class="activity-progress"><i id="traceProgress" style="width:12%"></i></div><div class="score-chip" id="traceScore">Benar 0</div></div><div class="card activity-card" id="traceCard"></div></div>
+  <div class="activity-shell">
+    <div class="activity-top">
+      <div class="activity-progress"><i id="traceProgress" style="width:12%"></i></div>
+      <div class="streak-chip" id="traceStreak">🔥 Combo 0</div>
+      <div class="score-chip" id="traceScore">Benar 0</div>
+    </div>
+    <div class="card activity-card" id="traceCard"></div>
+  </div>
 </section>
 
 <section id="bug">
-  <div class="section-head"><div><h2>4. Bug Hunter</h2><p>Temukan baris kode penyebab kesalahan (*error* / *infinite loop*).</p></div><span class="badge">5 Kasus</span></div>
-  <div class="activity-shell"><div class="activity-top"><div class="activity-progress"><i id="bugProgress" style="width:20%"></i></div><div class="score-chip" id="bugScore">Ditemukan 0</div></div><div class="card activity-card" id="bugCard"></div></div>
+  <div class="section-head"><div><h2>4. Bug Hunter</h2><p>Temukan baris kode penyebab kesalahan (*error* / *infinite loop*).</p></div><span class="badge">8 Kasus Variatif</span></div>
+  <div class="activity-shell">
+    <div class="activity-top">
+      <div class="activity-progress"><i id="bugProgress" style="width:12.5%"></i></div>
+      <div class="streak-chip" id="bugStreak">🔥 Combo 0</div>
+      <div class="score-chip" id="bugScore">Ditemukan 0</div>
+    </div>
+    <div class="card activity-card" id="bugCard"></div>
+  </div>
 </section>
 
 <section id="coding">
@@ -416,13 +436,18 @@ const state = {
   predictTotal: 0,
   trace: 0,
   traceCorrect: 0,
+  traceStreak: 0,
+  traceAnswered: 0,
   bug: 0,
   bugCorrect: 0,
+  bugStreak: 0,
+  bugAnswered: 0,
   mission: 0,
   currentLevel: 1,
   missionPassed: new Set(),
   skills: { concept: new Set(), tracing: new Set(), termination: new Set(), pattern: new Set(), coding: new Set() },
-  sim: null
+  sim: null,
+  codeStore: {}
 };
 
 const $ = id => document.getElementById(id);
@@ -470,7 +495,7 @@ function renderSkillMap() {
   const data = [
     ['Konsep Loop', skillPct('concept', 12)],
     ['Tracing Kode', skillPct('tracing', 8)],
-    ['Terminasi Loop', skillPct('termination', 5)],
+    ['Terminasi Loop', skillPct('termination', 8)],
     ['Analisis Pola', skillPct('pattern', 6)],
     ['Koding C++', skillPct('coding', 6)]
   ];
@@ -659,46 +684,170 @@ const traceQs = [
 ];
 
 function renderTrace() {
-  const q = traceQs[state.trace];
-  $('traceProgress').style.width = ((state.trace + 1) / traceQs.length * 100) + '%';
+  $('traceProgress').style.width = ((state.traceAnswered) / traceQs.length * 100) + '%';
   $('traceScore').textContent = 'Benar ' + state.traceCorrect;
-  $('traceCard').innerHTML = `<div class="qmeta"><span>Soal ${state.trace+1} / ${traceQs.length}</span><span>${q.title}</span></div><div class="code">${esc(q.code)}</div><div class="options">${q.opts.map((o, i) => `<button class="option" onclick="answerTraceMC(${i})">${esc(o)}</button>`).join('')}</div><div class="explain-box" id="traceExplain">Pilih jawaban Anda.</div><div class="actions"><button class="btn secondary" onclick="nextTrace()">Soal Berikutnya →</button></div>`;
+  $('traceStreak').textContent = '🔥 Combo ' + state.traceStreak;
+
+  if (state.traceAnswered >= traceQs.length) {
+    const pct = Math.round(state.traceCorrect / traceQs.length * 100);
+    const stars = pct >= 80 ? '⭐⭐⭐' : pct >= 50 ? '⭐⭐' : '⭐';
+    $('traceCard').innerHTML = `
+      <div class="summary-card">
+        <span class="eyebrow">STAGE CLEAR! 🎉</span>
+        <h3>Hasil Tracing Lab</h3>
+        <div class="stars">${stars}</div>
+        <p>Anda menjawab <b>${state.traceCorrect} dari ${traceQs.length}</b> soal dengan benar (${pct}%).</p>
+        <div class="badge-unlocked">🏆 Lencana Unlocked: Master Tracer 🔍</div>
+        <div class="actions" style="justify-content:center;margin-top:16px">
+          <button class="btn secondary" onclick="resetTraceStage()">↺ Coba Lagi</button>
+          <button class="btn primary" onclick="go('bug')">Lanjut Ke Bug Hunter ▶</button>
+        </div>
+      </div>
+    `;
+    state.completed.add('tracing');
+    updateOverall();
+    return;
+  }
+
+  const q = traceQs[state.trace];
+  $('traceCard').innerHTML = `
+    <div class="qmeta">
+      <span>Soal ${state.traceAnswered + 1} / ${traceQs.length}</span>
+      <span>${q.title}</span>
+    </div>
+    <div class="code">${esc(q.code)}</div>
+    <div class="options">${q.opts.map((o, i) => `<button class="option" onclick="answerTraceMC(${i})">${esc(o)}</button>`).join('')}</div>
+    <div class="explain-box" id="traceExplain">Pilih jawaban Anda.</div>
+    <div class="actions"><button class="btn secondary" id="traceNextBtn" onclick="nextTrace()" disabled>Soal Berikutnya →</button></div>
+  `;
 }
 
 function answerTraceMC(i) {
   const q = traceQs[state.trace];
   if (i === q.ans) {
     state.traceCorrect++;
-    toast('Jawaban Tepat! ✓');
-  } else toast('Belum tepat');
+    state.traceStreak++;
+    toast(`Jawaban Tepat! 🔥 Combo x${state.traceStreak}`);
+  } else {
+    state.traceStreak = 0;
+    toast('Belum tepat');
+  }
+  state.traceAnswered++;
   $('traceScore').textContent = 'Benar ' + state.traceCorrect;
+  $('traceStreak').textContent = '🔥 Combo ' + state.traceStreak;
   $('traceExplain').innerHTML = `<b>Jawaban: ${esc(q.opts[q.ans])}</b><br>${q.why}`;
   markSkill('tracing', 'trace' + state.trace);
+  
+  document.querySelectorAll('#traceCard .option').forEach(btn => btn.disabled = true);
+  $('traceNextBtn').disabled = false;
 }
 
 function nextTrace() {
-  state.trace = (state.trace + 1) % traceQs.length;
-  if (state.trace === 0) state.completed.add('tracing');
+  state.trace++;
   renderTrace();
-  updateOverall();
+}
+
+function resetTraceStage() {
+  state.trace = 0;
+  state.traceCorrect = 0;
+  state.traceStreak = 0;
+  state.traceAnswered = 0;
+  renderTrace();
 }
 
 const bugQs = [
-  { code: ['int i;', 'for (i = 1; i <= 5; i--) {', '    cout << i << " ";', '}'], line: 1, cat: 'Iteration Salah (Infinite Loop)', fix: 'Ubah i-- menjadi i++ agar counter bertambah naik.' },
-  { code: ['int i;', 'for (i = 5; i <= 1; i--) {', '    cout << i << " ";', '}'], line: 1, cat: 'Condition Salah', fix: 'Gunakan i >= 1 agar loop berjalan menghitung mundur.' },
-  { code: ['int i;', 'for (i = 1; i < 5; i++) {', '    cout << i << " ";', '}'], line: 1, cat: 'Off-By-One Error', fix: 'Jika ingin mencetak sampai 5, gunakan i <= 5.' },
-  { code: ['int i = 1;', 'while (i <= 5) {', '    cout << i;', '}'], line: 1, cat: 'Lupa Increment', fix: 'Tambahkan i++; di dalam blok while.' },
-  { code: ['int i, hasil = 0;', 'for (i = 1; i <= 3; i++) {', '    hasil = i;', '}', 'cout << hasil;'], line: 2, cat: 'Penyimpanan Akumulasi', fix: 'Gunakan hasil = hasil + i; agar nilai tidak tertimpa.' }
+  {
+    code: ['int i;', 'for (i = 1; i <= 5; i++); {', '    cout << i << " ";', '}'],
+    line: 1,
+    cat: 'Semicolon Trap (Titik Koma Setelah Loop)',
+    fix: 'Hapus tanda titik koma (;) setelah for(...) agar body loop dapat dieksekusi berulang.'
+  },
+  {
+    code: ['int i, sum;', 'for (i = 1; i <= 5; i++) {', '    sum += i;', '}', 'cout << sum;'],
+    line: 0,
+    cat: 'Uninitialized Variable (Tanpa Nilai Awal)',
+    fix: 'Variabel sum harus diberi nilai awal sum = 0 agar penambahan akumulasi tidak menghasilkan nilai acak/sampah.'
+  },
+  {
+    code: ['int i;', 'for (i = 1; i <= 5; i++) {', '    cout << i << " ";', '    i--;', '}'],
+    line: 3,
+    cat: 'Counter Modified inside Body (Infinite Loop)',
+    fix: 'Hapus i--; di dalam body loop agar nilai counter bergerak mendekati batas berhenti.'
+  },
+  {
+    code: ['int i;', 'for (i = 5; i <= 1; i--) {', '    cout << i << " ";', '}'],
+    line: 1,
+    cat: 'Condition Salah pada Hitung Mundur',
+    fix: 'Ubah kondisi i <= 1 menjadi i >= 1 agar loop berjalan dari 5 turun ke 1.'
+  },
+  {
+    code: ['int i;', 'for (i = 1; i <= 5; i++) {', '    if (i = 3) cout << "* ";', '    else cout << i << " ";', '}'],
+    line: 2,
+    cat: 'Assignment Operator in If Condition',
+    fix: 'Ubah operator i = 3 menjadi operator perbandingan i == 3.'
+  },
+  {
+    code: ['int i, hasil = 0;', 'for (i = 1; i <= 3; i++) {', '    hasil = i;', '}', 'cout << hasil;'],
+    line: 2,
+    cat: 'Overwriting Accumulator',
+    fix: 'Gunakan hasil = hasil + i; (atau hasil += i;) agar nilai penjumlahan tidak tertimpa.'
+  },
+  {
+    code: ['int i = 1;', 'do {', '    cout << i << " ";', '    i++;', '} while (i <= 5)'],
+    line: 4,
+    cat: 'Sintaks Missing Semicolon di Do-While',
+    fix: 'Tambahkan titik koma (;) di akhir baris while(i <= 5);'
+  },
+  {
+    code: ['int i;', 'for (i = 1; i <= 15; i++) {', '    if (i % 3 == 0) cout << "Fizz ";', '    else if (i % 15 == 0) cout << "FizzBuzz ";', '}'],
+    line: 2,
+    cat: 'Order of Conditions Bug (FizzBuzz)',
+    fix: 'Cek kelipatan 15 terlebih dahulu (i % 15 == 0) sebelum mengecek kelipatan 3 agar "FizzBuzz" dicetak.'
+  }
 ];
 
 let pickedBug = null;
 
 function renderBug() {
+  $('bugProgress').style.width = ((state.bugAnswered) / bugQs.length * 100) + '%';
+  $('bugScore').textContent = 'Ditemukan ' + state.bugCorrect;
+  $('bugStreak').textContent = '🔥 Combo ' + state.bugStreak;
+
+  if (state.bugAnswered >= bugQs.length) {
+    const pct = Math.round(state.bugCorrect / bugQs.length * 100);
+    const stars = pct >= 80 ? '⭐⭐⭐' : pct >= 50 ? '⭐⭐' : '⭐';
+    $('bugCard').innerHTML = `
+      <div class="summary-card">
+        <span class="eyebrow">MISSION ACCOMPLISHED! 🎯</span>
+        <h3>Hasil Bug Hunter</h3>
+        <div class="stars">${stars}</div>
+        <p>Anda berhasil mengidentifikasi <b>${state.bugCorrect} dari ${bugQs.length}</b> bug program (${pct}%).</p>
+        <div class="badge-unlocked">🏆 Lencana Unlocked: Bug Destroyer 🐛</div>
+        <div class="actions" style="justify-content:center;margin-top:16px">
+          <button class="btn secondary" onclick="resetBugStage()">↺ Ulangi Kasus</button>
+          <button class="btn primary" onclick="go('coding')">Mulai Coding Mission ▶</button>
+        </div>
+      </div>
+    `;
+    state.completed.add('bug');
+    updateOverall();
+    return;
+  }
+
   const q = bugQs[state.bug];
   pickedBug = null;
-  $('bugProgress').style.width = ((state.bug + 1) / bugQs.length * 100) + '%';
-  $('bugScore').textContent = 'Ditemukan ' + state.bugCorrect;
-  $('bugCard').innerHTML = `<div class="qmeta"><span>Kasus ${state.bug+1} / ${bugQs.length}</span><span>Klik baris kode yang mengalami BUG</span></div><div class="code" id="bugCode">${q.code.map((l, i) => `<span class="bugline" onclick="pickBug(${i},this)">${esc(l)}</span>`).join('')}</div><div class="actions"><button class="btn primary" onclick="checkBug()">Periksa Baris Bug</button><button class="btn secondary" onclick="nextBug()">Kasus Berikutnya →</button></div><div class="explain-box" id="bugExplain">Pilih salah satu baris terlebih dahulu.</div>`;
+  $('bugCard').innerHTML = `
+    <div class="qmeta">
+      <span>Kasus ${state.bugAnswered + 1} / ${bugQs.length}</span>
+      <span>Klik baris kode yang mengalami BUG</span>
+    </div>
+    <div class="code" id="bugCode">${q.code.map((l, i) => `<span class="bugline" onclick="pickBug(${i},this)">${esc(l)}</span>`).join('')}</div>
+    <div class="actions">
+      <button class="btn primary" onclick="checkBug()">Periksa Baris Bug</button>
+      <button class="btn secondary" id="bugNextBtn" onclick="nextBug()" disabled>Kasus Berikutnya →</button>
+    </div>
+    <div class="explain-box" id="bugExplain">Pilih salah satu baris terlebih dahulu.</div>
+  `;
 }
 
 function pickBug(i, el) {
@@ -709,22 +858,40 @@ function pickBug(i, el) {
 
 function checkBug() {
   const q = bugQs[state.bug];
+  if (pickedBug === null) {
+    toast('Pilih salah satu baris kode terlebih dahulu!');
+    return;
+  }
+
+  state.bugAnswered++;
   if (pickedBug === q.line) {
     state.bugCorrect++;
-    toast('Bug Berhasil Ditemukan! 🎉');
+    state.bugStreak++;
+    toast(`Bug Berhasil Ditemukan! 🔥 Combo x${state.bugStreak}`);
     $('bugExplain').innerHTML = `<b>Anatomi Bug: ${q.cat}</b><br>${q.fix}`;
     markSkill('termination', 'bug' + state.bug);
   } else {
-    $('bugExplain').innerHTML = 'Belum tepat. Analisis kembali bagian start, condition, atau iteration.';
+    state.bugStreak = 0;
+    toast('Belum tepat');
+    $('bugExplain').innerHTML = `<b>Jawaban Tepat pada Baris Ke-${q.line + 1}: ${q.cat}</b><br>${q.fix}`;
   }
+  
   $('bugScore').textContent = 'Ditemukan ' + state.bugCorrect;
+  $('bugStreak').textContent = '🔥 Combo ' + state.bugStreak;
+  $('bugNextBtn').disabled = false;
 }
 
 function nextBug() {
-  state.bug = (state.bug + 1) % bugQs.length;
-  if (state.bug === 0) state.completed.add('bug');
+  state.bug++;
   renderBug();
-  updateOverall();
+}
+
+function resetBugStage() {
+  state.bug = 0;
+  state.bugCorrect = 0;
+  state.bugStreak = 0;
+  state.bugAnswered = 0;
+  renderBug();
 }
 
 const missions = [
@@ -732,76 +899,134 @@ const missions = [
     id: 'up', title: '1. Deret Naik (1..N)', focus: 'for naik', desc: 'Cetak angka dari 1 sampai N dipisahkan spasi.', in: '4', out: '1 2 3 4', hints: ['Start: i = 1', 'Condition: i <= N', 'Iteration: i++', 'Body: cout << i << " "'],
     l1: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 1: Lengkapi 4 komponen perulangan (start, condition, iteration, body)\n    for (i = ...; i <= ...; ...) {\n        cout << ... << " ";\n    }\n    return 0;\n}`,
     l2: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 2: Tuliskan struktur perulangan for di sini\n    \n    return 0;\n}`,
-    l3: `// LEVEL 3: Tuliskan seluruh program C++ dari awal (#include, main, cin, for, cout)\n\n`,
-    checks: [{ r: /for\s*\(\s*i\s*=\s*1/i, l: 'Start: i = 1' }, { r: /i\s*<=\s*N/i, l: 'Condition: i <= N' }, { r: /i\+\+|i\s*\+=\s*1|i\s*=\s*i\s*\+\s*1|\+\+i/i, l: 'Iteration: i++' }, { r: /cout\s*<<\s*i/i, l: 'Output: cout << i' }]
+    l3: `// LEVEL 3: Tuliskan seluruh program C++ dari awal (#include, main, cin, perulangan, cout)\n\n`,
+    checks: [
+      { r: /for\s*\(\s*(int\s+)?\w+\s*=\s*1|int\s+\w+\s*=\s*1;/i, l: 'Start: counter = 1' },
+      { r: /\w+\s*<=\s*N/i, l: 'Condition: counter <= N' },
+      { r: /\w+(\+\+|\+=\s*1|=\s*\w+\s*\+\s*1)/i, l: 'Iteration: counter++' },
+      { r: /cout\s*<<\s*\w+/i, l: 'Output: cout << counter' }
+    ],
+    getExpected: (N) => Array.from({length: N}, (_, k) => k + 1).join(' ')
   },
   {
     id: 'down', title: '2. Hitung Mundur (N..1)', focus: 'decrement', desc: 'Cetak angka dari N turun hingga 1.', in: '5', out: '5 4 3 2 1', hints: ['Start: i = N', 'Condition: i >= 1', 'Iteration: i--', 'Body: cout << i << " "'],
     l1: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 1: Lengkapi 4 komponen perulangan (start, condition, iteration, body)\n    for (i = ...; i >= ...; ...) {\n        cout << ... << " ";\n    }\n    return 0;\n}`,
     l2: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 2: Tuliskan perulangan menghitung mundur dari N sampai 1\n    \n    return 0;\n}`,
     l3: `// LEVEL 3: Tuliskan seluruh program C++ hitung mundur dari awal\n\n`,
-    checks: [{ r: /for\s*\(\s*i\s*=\s*N/i, l: 'Start: i = N' }, { r: /i\s*>=\s*1/i, l: 'Condition: i >= 1' }, { r: /i--|i\s*-=\s*1|i\s*=\s*i\s*-\s*1|--i/i, l: 'Iteration: i--' }, { r: /cout\s*<<\s*i/i, l: 'Output: cout << i' }]
+    checks: [
+      { r: /for\s*\(\s*(int\s+)?\w+\s*=\s*N|int\s+\w+\s*=\s*N;/i, l: 'Start: counter = N' },
+      { r: /\w+\s*>=\s*1/i, l: 'Condition: counter >= 1' },
+      { r: /\w+(--|-=\s*1|=\s*\w+\s*-\s*1)/i, l: 'Iteration: counter--' },
+      { r: /cout\s*<<\s*\w+/i, l: 'Output: cout << counter' }
+    ],
+    getExpected: (N) => Array.from({length: N}, (_, k) => N - k).join(' ')
   },
   {
     id: 'square', title: '3. Angka & Kuadratnya', focus: 'ekspresi i*i', desc: 'Cetak angka i diikuti nilai kuadratnya i*i dari 1..N.', in: '4', out: '1 1\n2 4\n3 9\n4 16', hints: ['Start: i = 1', 'Condition: i <= N', 'Iteration: i++', 'Body: i * i'],
     l1: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 1: Lengkapi 4 komponen perulangan (start, condition, iteration, body)\n    for (i = ...; i <= ...; ...) {\n        cout << i << " " << ... << endl;\n    }\n    return 0;\n}`,
     l2: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 2: Tulis loop untuk mencetak angka dan kuadratnya\n    \n    return 0;\n}`,
     l3: `// LEVEL 3: Tuliskan seluruh program C++ kuadrat dari awal\n\n`,
-    checks: [{ r: /for\s*\(\s*i\s*=\s*1/i, l: 'Start: i = 1' }, { r: /i\s*<=\s*N/i, l: 'Condition: i <= N' }, { r: /i\s*\*\s*i/i, l: 'Ekspresi Kuadrat: i * i' }, { r: /cout/i, l: 'Cetak Output' }]
+    checks: [
+      { r: /for\s*\(\s*(int\s+)?\w+\s*=\s*1|int\s+\w+\s*=\s*1;/i, l: 'Start: counter = 1' },
+      { r: /\w+\s*<=\s*N/i, l: 'Condition: counter <= N' },
+      { r: /\w+\s*\*\s*\w+/i, l: 'Ekspresi Kuadrat: counter * counter' },
+      { r: /cout/i, l: 'Cetak Output' }
+    ],
+    getExpected: (N) => Array.from({length: N}, (_, k) => `${k+1} ${(k+1)*(k+1)}`).join('\n')
   },
   {
     id: 'star', title: '4. Filter Genap Simbol *', focus: 'loop + if-else', desc: 'Cetak 1..N, tetapi angka genap diganti simbol *.', in: '4', out: '1 * 3 *', hints: ['Start: i = 1', 'Condition: i <= N', 'Iteration: i++', 'Modulo: i % 2 == 0'],
     l1: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 1: Lengkapi 4 komponen perulangan (start, condition, iteration, body)\n    for (i = ...; i <= ...; ...) {\n        if (i % ... == 0) {\n            cout << "* ";\n        } else {\n            cout << i << " ";\n        }\n    }\n    return 0;\n}`,
     l2: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 2: Tulis loop dan if-else untuk mengganti genap dengan *\n    \n    return 0;\n}`,
     l3: `// LEVEL 3: Tuliskan seluruh program C++ filter genap dari awal\n\n`,
-    checks: [{ r: /for\s*\(\s*i\s*=\s*1/i, l: 'Start: i = 1' }, { r: /i\s*%\s*2\s*==\s*0/i, l: 'Cek Genap: i % 2 == 0' }, { r: /if\s*\(/i, l: 'Struktur if' }, { r: /else/i, l: 'Struktur else' }]
+    checks: [
+      { r: /for\s*\(\s*(int\s+)?\w+\s*=\s*1|int\s+\w+\s*=\s*1;/i, l: 'Start: counter = 1' },
+      { r: /\w+\s*%\s*2\s*==\s*0/i, l: 'Cek Genap: counter % 2 == 0' },
+      { r: /if\s*\(/i, l: 'Struktur if' },
+      { r: /else/i, l: 'Struktur else' }
+    ],
+    getExpected: (N) => Array.from({length: N}, (_, k) => (k + 1) % 2 === 0 ? '*' : (k + 1)).join(' ')
   },
   {
     id: 'fizz', title: '5. Mini FizzBuzz', focus: 'kondisi % 3', desc: 'Cetak angka 1..N. Kelipatan 3 diganti kata "Fizz".', in: '4', out: '1 2 Fizz 4', hints: ['Start: i = 1', 'Condition: i <= N', 'Iteration: i++', 'Modulo: i % 3 == 0'],
     l1: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 1: Lengkapi 4 komponen perulangan (start, condition, iteration, body)\n    for (i = ...; i <= ...; ...) {\n        if (... % 3 == 0) {\n            cout << "Fizz ";\n        } else {\n            cout << i << " ";\n        }\n    }\n    return 0;\n}`,
     l2: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 2: Tulis perulangan Mini FizzBuzz\n    \n    return 0;\n}`,
     l3: `// LEVEL 3: Tuliskan seluruh program C++ Mini FizzBuzz dari awal\n\n`,
-    checks: [{ r: /for\s*\(\s*i\s*=\s*1/i, l: 'Start: i = 1' }, { r: /i\s*%\s*3\s*==\s*0/i, l: 'Modulo 3: i % 3 == 0' }, { r: /Fizz/i, l: 'Output Teks: Fizz' }, { r: /cout/i, l: 'Cetak Output' }]
+    checks: [
+      { r: /for\s*\(\s*(int\s+)?\w+\s*=\s*1|int\s+\w+\s*=\s*1;/i, l: 'Start: counter = 1' },
+      { r: /\w+\s*%\s*3\s*==\s*0/i, l: 'Modulo 3: counter % 3 == 0' },
+      { r: /Fizz/i, l: 'Output Teks: Fizz' },
+      { r: /cout/i, l: 'Cetak Output' }
+    ],
+    getExpected: (N) => Array.from({length: N}, (_, k) => (k + 1) % 3 === 0 ? 'Fizz' : (k + 1)).join(' ')
   },
   {
     id: 'song', title: '6. Lirik Dinamis', focus: 'output berulang', desc: 'Cetak lirik "Anak ayam N, tinggal N-1" secara menurun.', in: '3', out: 'Anak ayam 3, tinggal 2\nAnak ayam 2, tinggal 1\nAnak ayam 1, tinggal 0', hints: ['Start: i = N', 'Condition: i >= 1', 'Iteration: i--', 'Body: i - 1'],
     l1: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 1: Lengkapi 4 komponen perulangan (start, condition, iteration, body)\n    for (i = ...; i >= ...; ...) {\n        cout << "Anak ayam " << i << ", tinggal " << i - ... << endl;\n    }\n    return 0;\n}`,
     l2: `#include <iostream>\nusing namespace std;\n\nint main() {\n    int N, i;\n    cin >> N;\n    \n    // LEVEL 2: Tuliskan perulangan lirik anak ayam\n    \n    return 0;\n}`,
     l3: `// LEVEL 3: Tuliskan seluruh program C++ Lirik Dinamis dari awal\n\n`,
-    checks: [{ r: /for\s*\(\s*i\s*=\s*N/i, l: 'Start: i = N' }, { r: /i\s*>=\s*1/i, l: 'Condition: i >= 1' }, { r: /i--|i\s*-=\s*1|i\s*=\s*i\s*-\s*1|--i/i, l: 'Iteration: i--' }, { r: /Anak ayam/i, l: 'Teks Lirik' }]
+    checks: [
+      { r: /for\s*\(\s*(int\s+)?\w+\s*=\s*N|int\s+\w+\s*=\s*N;/i, l: 'Start: counter = N' },
+      { r: /\w+\s*>=\s*1/i, l: 'Condition: counter >= 1' },
+      { r: /\w+(--|-=\s*1|=\s*\w+\s*-\s*1)/i, l: 'Iteration: counter--' },
+      { r: /Anak ayam/i, l: 'Teks Lirik' }
+    ],
+    getExpected: (N) => Array.from({length: N}, (_, k) => `Anak ayam ${N - k}, tinggal ${N - k - 1}`).join('\n')
   }
 ];
 
 function renderMissions() {
-  $('missionPicker').innerHTML = missions.map((m, i) => `<div class="mission-card ${i===state.mission?'active':''}" onclick="state.mission=${i};renderMission()"><small>MISI ${i+1}</small><strong>${m.title}</strong><em>${m.focus}</em></div>`).join('');
+  $('missionPicker').innerHTML = missions.map((m, i) => `<div class="mission-card ${i===state.mission?'active':''}" onclick="switchMission(${i})"><small>MISI ${i+1}</small><strong>${m.title}</strong><em>${m.focus}</em></div>`).join('');
+  renderMission();
+}
+
+function saveCurrentCode() {
+  const key = `${state.mission}_lvl${state.currentLevel}`;
+  state.codeStore[key] = $('codeEditor').value;
+}
+
+function clearConsoleState() {
+  $('terminal').textContent = 'Pilih Level, lengkapi/tulis kode, lalu klik "Uji Kode".';
+  $('testList').innerHTML = '';
+}
+
+function switchMission(idx) {
+  saveCurrentCode();
+  state.mission = idx;
   renderMission();
 }
 
 function selectLevel(lvl) {
+  saveCurrentCode();
   state.currentLevel = lvl;
   for (let k = 1; k <= 3; k++) {
     const btn = $('lvlBtn' + k);
     if (btn) btn.classList.toggle('active', k === lvl);
   }
-  loadMissionStarterCode();
+  loadMissionCode();
 }
 
-function loadMissionStarterCode() {
+function loadMissionCode() {
   const m = missions[state.mission];
   const lvl = state.currentLevel;
-  if (lvl === 1) $('codeEditor').value = m.l1;
-  else if (lvl === 2) $('codeEditor').value = m.l2;
-  else $('codeEditor').value = m.l3;
+  const key = `${state.mission}_lvl${lvl}`;
+  
+  if (state.codeStore[key] !== undefined) {
+    $('codeEditor').value = state.codeStore[key];
+  } else {
+    if (lvl === 1) $('codeEditor').value = m.l1;
+    else if (lvl === 2) $('codeEditor').value = m.l2;
+    else $('codeEditor').value = m.l3;
+  }
+  clearConsoleState();
 }
 
 function renderMission() {
   const m = missions[state.mission];
   document.querySelectorAll('.mission-card').forEach((c, i) => c.classList.toggle('active', i === state.mission));
   $('missionProblem').innerHTML = `<span class="eyebrow">${m.focus.toUpperCase()}</span><h3>${m.title}</h3><p>${m.desc}</p><div class="io"><div><small>Input Contoh</small><pre>${esc(m.in)}</pre></div><div><small>Output Ekspektasi</small><pre>${esc(m.out)}</pre></div></div>`;
-  loadMissionStarterCode();
+  loadMissionCode();
   $('customInput').value = m.in;
-  $('terminal').textContent = 'Pilih Level, lengkapi/tulis kode, lalu klik "Uji Kode".';
-  $('testList').innerHTML = '';
 }
 
 function insertKey(token) {
@@ -817,28 +1042,36 @@ function insertKey(token) {
   ed.focus();
 }
 
-function resetMissionCode() { loadMissionStarterCode(); }
+function resetMissionCode() {
+  const m = missions[state.mission];
+  const lvl = state.currentLevel;
+  const key = `${state.mission}_lvl${lvl}`;
+  
+  if (lvl === 1) $('codeEditor').value = m.l1;
+  else if (lvl === 2) $('codeEditor').value = m.l2;
+  else $('codeEditor').value = m.l3;
+  
+  state.codeStore[key] = $('codeEditor').value;
+  clearConsoleState();
+  toast('Kode berhasil di-reset!');
+}
+
 function showHint() { toast('Petunjuk: ' + missions[state.mission].hints.join(' | ')); }
 
 function runCppCodeLocally(cppCode, inputVal) {
   if (!cppCode || !cppCode.trim()) return "Kode masih kosong.";
 
-  // Strip single-line and multi-line comments first to avoid false placeholder match inside comments
-  let codeWithoutComments = cppCode
+  let src = cppCode
     .replace(/\/\/.*$/gm, '')
     .replace(/\/\*[\s\S]*?\*\//g, '');
 
-  if (/\.\.\./.test(codeWithoutComments)) {
+  if (/\.\.\./.test(src)) {
     return "⚠️ Peringatan: Lengkapi semua titik rumpang (...) terlebih dahulu!";
   }
 
-  let src = codeWithoutComments;
-
-  // Clean C++ boilerplate headers & using namespace
   src = src.replace(/#include\s*<.*?>/g, '');
   src = src.replace(/using\s+namespace\s+std\s*;/g, '');
 
-  // Transform int main() or void main() into function __main()
   let hasMain = /(int|void)\s+main\s*\(/i.test(src);
   if (hasMain) {
     src = src.replace(/(int|void)\s+main\s*\([^)]*\)/i, 'function __main()');
@@ -846,16 +1079,13 @@ function runCppCodeLocally(cppCode, inputVal) {
     src = 'function __main() {\n' + src + '\n}';
   }
 
-  // Transpile C++ data types to JS let
-  src = src.replace(/\b(int|float|double|char|long|short)\b/g, 'let');
+  src = src.replace(/\b(int|float|double|char|long|short|string|bool)\b/g, 'let');
 
-  // Transpile cin >> var1 >> var2;
   src = src.replace(/cin\s*((?:\s*>>\s*[a-zA-Z_][a-zA-Z0-9_]*)+)\s*;/g, (m, g1) => {
     let vars = g1.split('>>').map(v => v.trim()).filter(Boolean);
     return vars.map(v => `${v} = __nextInput();`).join(' ');
   });
 
-  // Transpile cout << a << b << c; into __cout(a, b, c);
   src = src.replace(/cout\s*<<\s*([^;]+);/g, (match, body) => {
     let strings = [];
     let cleanBody = body.replace(/("[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*')/g, (s) => {
@@ -871,8 +1101,7 @@ function runCppCodeLocally(cppCode, inputVal) {
     return `__cout(${restoredParts.join(', ')});`;
   });
 
-  // Inject infinite loop protection into opening curly braces
-  src = src.replace(/\{/g, '{ if (++__guard > 2000) throw new Error("Infinite Loop Terdeteksi! (Lebih dari 2000 iterasi)"); ');
+  src = src.replace(/\{/g, '{ if (++__guard > 3000) throw new Error("Infinite Loop Terdeteksi! (Lebih dari 3000 iterasi)"); ');
 
   let inputList = String(inputVal || '').trim().split(/\s+/).map(Number);
 
@@ -922,7 +1151,8 @@ function runAndCheckCode() {
   const code = $('codeEditor').value;
   const inputVal = $('customInput').value;
 
-  // Strip comments before checking for remaining placeholders
+  saveCurrentCode();
+
   const codeNoComments = code.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
 
   if (/\.\.\./.test(codeNoComments)) {
@@ -931,33 +1161,50 @@ function runAndCheckCode() {
     return;
   }
 
-  if (state.currentLevel === 3) {
-    if (!code.includes('#include') || !code.includes('main')) {
-      toast('Level 3 memerlukan struktur program C++ lengkap (#include & main)!');
-    }
-  }
-  
   const simOutput = runCppCodeLocally(code, inputVal);
   $('terminal').textContent = `=== KONSOL OUTPUT C++ (Input N = ${inputVal}) ===\n` + simOutput;
 
-  let results = m.checks.map(c => ({ ok: c.r.test(code), label: c.l }));
+  let results = [];
 
   if (state.currentLevel === 3) {
-    results.unshift({ ok: /#include\s*<iostream>/i.test(code), label: 'Header: #include <iostream>' });
-    results.unshift({ ok: /int\s+main\s*\(/i.test(code), label: 'Fungsi Utama: int main()' });
+    results.push({ ok: /#include\s*<iostream>/i.test(code), label: 'Header: #include <iostream>' });
+    results.push({ ok: /(int|void)\s+main\s*\(/i.test(code), label: 'Fungsi Utama: main()' });
+    results.push({ ok: /\b(for|while|do)\b/i.test(code), label: 'Struktur Perulangan (for / while / do-while)' });
+
+    const hiddenInputs = [2, 5, 8];
+    hiddenInputs.forEach((testN, idx) => {
+      const expOut = m.getExpected(testN).trim();
+      const actualOut = runCppCodeLocally(code, String(testN)).trim();
+      const pass = (actualOut === expOut);
+      results.push({
+        ok: pass,
+        label: `Hidden Test ${idx + 1} (N = ${testN}): Output ${pass ? 'Sesuai' : 'Tidak Sesuai'}`
+      });
+    });
+
+  } else {
+    results = m.checks.map(c => ({ ok: c.r.test(code), label: c.l }));
+    
+    const expectedOut = m.getExpected(Number(inputVal) || 4).trim();
+    const isOutputCorrect = simOutput.trim() === expectedOut;
+    results.push({
+      ok: isOutputCorrect,
+      label: `Keluaran Konsol (Input N = ${inputVal}): ${isOutputCorrect ? 'Sesuai' : 'Tidak Sesuai'}`
+    });
   }
 
   const allPassed = results.every(x => x.ok);
 
-  $('testList').innerHTML = results.map((x,i) => `<div class="test ${x.ok?'pass':'fail'}"><b>Uji ${i+1}</b><span>${x.label}</span><span>${x.ok?'PASS':'CHECK'}</span></div>`).join('');
+  $('testList').innerHTML = results.map((x, i) => `<div class="test ${x.ok?'pass':'fail'}"><b>Uji ${i+1}</b><span>${x.label}</span><span>${x.ok?'PASS':'CHECK'}</span></div>`).join('');
 
   if (allPassed) {
     state.missionPassed.add(m.id);
     markSkill('coding', m.id);
     toast(`Misi ${state.mission+1} (Level ${state.currentLevel}) Lolos! 🎉`);
   } else {
-    toast('Periksa kembali struktur kode C++ Anda.');
+    toast('Periksa kembali struktur kode atau keluaran program Anda.');
   }
+
   if (state.missionPassed.size === missions.length) state.completed.add('coding');
   updateOverall();
 }
@@ -984,7 +1231,6 @@ function renderChallenges() {
   $('challengeGrid').innerHTML = challenges.map((c, i) => `<div class="challenge"><h4>${i+1}. ${c[0]}</h4><p>${c[1]}</p><button class="btn ghost" onclick="this.nextElementSibling.classList.toggle('hide')">Kunci Jawab</button><div class="teacher-tip hide">${c[2]}</div></div>`).join('');
 }
 
-// Support Tab key indentation inside Code Editor
 $('codeEditor').addEventListener('keydown', function(e) {
   if (e.key === 'Tab') {
     e.preventDefault();
