@@ -74,9 +74,13 @@
 
     .topics-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-top: 0.5rem; }
     .topic-checkbox-card { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.85rem 1rem; background-color: var(--bg-app); border: 1.5px solid var(--border); border-radius: var(--radius-md); cursor: pointer; user-select: none; transition: all 0.2s ease; }
-    .topic-checkbox-card:hover { background-color: #ffffff; border-color: #cbd5e1; }
+    .topic-checkbox-card:hover:not(.disabled) { background-color: #ffffff; border-color: #cbd5e1; }
     .topic-checkbox-card.selected { background-color: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+    .topic-checkbox-card.special-exam { border-color: #a855f7; }
+    .topic-checkbox-card.special-exam.selected { background-color: #faf5ff; border-color: #9333ea; color: #7e22ce; }
+    .topic-checkbox-card.disabled { opacity: 0.5; cursor: not-allowed; }
     .topic-checkbox-card input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; margin-top: 0.1rem; }
+    .topic-checkbox-card.special-exam input[type="checkbox"] { accent-color: #9333ea; }
     .topic-title { font-size: 0.95rem; }
 
     .error-banner { display: none; background-color: var(--danger-bg); color: var(--danger-text); border: 1px solid #fecaca; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.9rem; margin-bottom: 1.5rem; align-items: center; gap: 0.5rem; }
@@ -92,24 +96,27 @@
     .student-badge-info { font-size: 0.9rem; color: var(--text-muted); }
     .progress-counter { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
 
-    .progress-indicators { display: flex; justify-content: space-between; gap: 0.4rem; margin-bottom: 1.75rem; overflow-x: auto; padding-bottom: 0.35rem; }
-    .dot-item { flex: 1; height: 7px; min-width: 22px; background-color: var(--border); border-radius: 9999px; cursor: pointer; transition: all 0.2s ease; }
-    .dot-item.active { background-color: var(--accent); transform: scaleY(1.3); }
-    .dot-item.answered { background-color: #93c5fd; }
-    .dot-item.answered.active { background-color: var(--accent); }
+    .progress-indicators { display: flex; justify-content: flex-start; gap: 0.35rem; margin-bottom: 1.75rem; overflow-x: auto; padding-bottom: 0.5rem; }
+    .dot-item { flex: 0 0 18px; height: 18px; border-radius: 4px; background-color: var(--border); font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; }
+    .dot-item.active { background-color: var(--accent); color: #ffffff; transform: scale(1.15); }
+    .dot-item.answered { background-color: #bfdbfe; color: var(--accent); }
+    .dot-item.answered.active { background-color: var(--accent); color: #ffffff; }
 
     .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
     .topic-pill { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; background-color: var(--accent-soft); color: var(--accent); padding: 0.3rem 0.75rem; border-radius: 9999px; border: 1px solid var(--accent-border); }
     .question-type-label { font-size: 0.8rem; color: var(--text-muted); }
-    .question-text { font-size: 1.15rem; font-weight: 600; color: var(--text-main); margin-bottom: 1.25rem; line-height: 1.45; }
+    .question-text { font-size: 1.15rem; font-weight: 600; color: var(--text-main); margin-bottom: 1.25rem; line-height: 1.5; white-space: pre-line; }
+
+    .question-image-box { margin-bottom: 1.5rem; padding: 1.25rem; background: #ffffff; border: 1.5px solid var(--border); border-radius: var(--radius-md); text-align: center; display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-sm); }
+    .question-image-box svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
 
     .code-container { background-color: var(--code-bg); color: var(--code-text); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.5rem; font-family: var(--font-mono); font-size: 0.95rem; line-height: 1.6; border: 1px solid var(--code-border); overflow-x: auto; white-space: pre; }
     
     .options-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
-    .option-card { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border: 1.5px solid var(--border); border-radius: var(--radius-md); background-color: #ffffff; cursor: pointer; font-size: 1rem; }
+    .option-card { display: flex; align-items: flex-start; gap: 0.85rem; padding: 0.9rem 1.1rem; border: 1.5px solid var(--border); border-radius: var(--radius-md); background-color: #ffffff; cursor: pointer; font-size: 0.95rem; line-height: 1.4; }
     .option-card:hover { border-color: #cbd5e1; background-color: #fbfcfe; }
     .option-card.selected { border-color: var(--accent); background-color: var(--accent-soft); color: var(--accent); font-weight: 600; }
-    .option-radio { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; }
+    .option-radio { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; margin-top: 0.15rem; flex-shrink: 0; }
 
     .short-answer-box { margin-bottom: 2rem; }
     .short-answer-input { width: 100%; padding: 0.95rem 1.2rem; font-size: 1.05rem; font-family: var(--font-mono); border: 1.5px solid var(--border); border-radius: var(--radius-md); outline: none; }
@@ -120,14 +127,14 @@
     .result-card { text-align: center; padding: 2.5rem 2rem; }
     .result-badge-status { display: inline-block; font-size: 0.85rem; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 0.5rem; }
     
-    .score-circle { width: 140px; height: 140px; margin: 1.25rem auto; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: var(--shadow-md); transition: all 0.3s ease; }
+    .score-circle { width: 150px; height: 150px; margin: 1.25rem auto; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: var(--shadow-md); transition: all 0.3s ease; }
     .score-circle.success-mode { background: linear-gradient(135deg, var(--success-bg), #ffffff); border: 4px solid var(--success-border); }
     .score-circle.success-mode .score-number { color: var(--success-text); }
     .score-circle.danger-mode { background: linear-gradient(135deg, var(--danger-bg), #ffffff); border: 4px solid var(--danger-border); }
     .score-circle.danger-mode .score-number { color: var(--danger-text); }
-    .score-number { font-size: 2.6rem; font-weight: 800; line-height: 1; }
-    .score-max { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
-    .feedback-message { font-size: 1.6rem; font-weight: 800; margin-bottom: 1.5rem; }
+    .score-number { font-size: 2.8rem; font-weight: 800; line-height: 1; }
+    .score-max { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+    .feedback-message { font-size: 1.5rem; font-weight: 800; margin-bottom: 1.5rem; }
 
     .result-details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; text-align: left; background-color: var(--bg-app); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 2rem; border: 1px solid var(--border); }
     .result-item-label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem; }
@@ -141,7 +148,7 @@
     .review-item.correct { border-left: 5px solid var(--success-text); }
     .review-item.incorrect { border-left: 5px solid var(--danger-text); }
     .review-meta { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.4rem; }
-    .review-q-text { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .review-q-text { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; white-space: pre-line; }
     .review-ans-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem; background-color: var(--bg-app); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); font-family: var(--font-mono); }
 
     /* Confetti */
@@ -176,7 +183,7 @@
       <div class="card">
         <div class="intro-box">
           <h2 id="setup-heading">Konfigurasi Kuis C++</h2>
-          <p>Latih kemampuanmu memahami dasar-dasar pemrograman C++ melalui soal yang di-*generate* unik secara dinamis.</p>
+          <p>Latih kemampuanmu memahami dasar-dasar pemrograman C++ melalui kuis latihan interaktif.</p>
         </div>
 
         <div id="setup-error" class="error-banner">
@@ -188,7 +195,7 @@
           <div class="form-row-2">
             <div class="form-group">
               <label for="student-name" class="field-label">Nama Siswa</label>
-              <input type="text" id="student-name" placeholder="" autocomplete="name">
+              <input type="text" id="student-name" placeholder="Ketik nama lengkap..." autocomplete="name">
             </div>
             <div class="form-group">
               <label for="student-class" class="field-label">Kelas</label>
@@ -204,26 +211,34 @@
 
           <div class="form-group">
             <label class="field-label">Pilih Topik Inti (Minimal 1)</label>
-            <p class="field-hint">Kuis terdiri dari 10 soal (3 Mudah, 3 Sedang, 4 Sulit) yang didistribusikan ke topik pilihan.</p>
+            <p class="field-hint">Catatan: Mode "Latihan Ulangan" bersifat eksklusif (tidak bisa digabung topik lain).</p>
             <div class="topics-grid" id="topics-list">
-              <label class="topic-checkbox-card selected" for="topik-1">
-                <input type="checkbox" id="topik-1" value="t1" checked>
+              <!-- Special Exam Topic -->
+              <label class="topic-checkbox-card special-exam" for="topik-exam">
+                <input type="checkbox" id="topik-exam" value="exam">
+                <div class="topic-title"><strong>📝 Latihan Ulangan (30 Soal • 45 Menit • KKM 80)</strong></div>
+              </label>
+
+              <hr style="border: 0; border-top: 1px dashed var(--border); margin: 0.25rem 0;">
+
+              <label class="topic-checkbox-card" for="topik-1">
+                <input type="checkbox" id="topik-1" value="t1">
                 <div class="topic-title">1. Pengenalan Sintaks, Output, Newline, & Komentar</div>
               </label>
-              <label class="topic-checkbox-card selected" for="topik-2">
-                <input type="checkbox" id="topik-2" value="t2" checked>
+              <label class="topic-checkbox-card" for="topik-2">
+                <input type="checkbox" id="topik-2" value="t2">
                 <div class="topic-title">2. Variabel, Tipe Data, Input, & Operator</div>
               </label>
-              <label class="topic-checkbox-card selected" for="topik-3">
-                <input type="checkbox" id="topik-3" value="t3" checked>
+              <label class="topic-checkbox-card" for="topik-3">
+                <input type="checkbox" id="topik-3" value="t3">
                 <div class="topic-title">3. Algoritma Percabangan</div>
               </label>
-              <label class="topic-checkbox-card selected" for="topik-4">
-                <input type="checkbox" id="topik-4" value="t4" checked>
+              <label class="topic-checkbox-card" for="topik-4">
+                <input type="checkbox" id="topik-4" value="t4">
                 <div class="topic-title">4. Algoritma Perulangan</div>
               </label>
-              <label class="topic-checkbox-card selected" for="topik-5">
-                <input type="checkbox" id="topik-5" value="t5" checked>
+              <label class="topic-checkbox-card" for="topik-5">
+                <input type="checkbox" id="topik-5" value="t5">
                 <div class="topic-title">5. Array</div>
               </label>
             </div>
@@ -250,6 +265,7 @@
         </div>
 
         <h3 class="question-text" id="question-text-content">Pertanyaan...</h3>
+        <div class="question-image-box" id="question-image-area" style="display: none;"></div>
         <div class="code-container" id="question-code-block" style="display: none;"></div>
         <div id="question-input-area"></div>
 
@@ -275,6 +291,7 @@
           <div><div class="result-item-label">Nama Siswa</div><div class="result-item-val" id="result-name-val">-</div></div>
           <div><div class="result-item-label">Kelas</div><div class="result-item-val" id="result-class-val">-</div></div>
           <div><div class="result-item-label">Jumlah Benar</div><div class="result-item-val" id="result-correct-count">-</div></div>
+          <div><div class="result-item-label">Status Kelulusan</div><div class="result-item-val" id="result-pass-status">-</div></div>
           <div><div class="result-item-label">Waktu Pengerjaan</div><div class="result-item-val" id="result-time-spent">-</div></div>
           <div><div class="result-item-label">IP Siswa</div><div class="result-item-val" id="result-ip-val">Mendeteksi...</div></div>
           <div style="grid-column: span 2;"><div class="result-item-label">Tanggal & Jam Selesai (GMT+7)</div><div class="result-item-val" id="result-timestamp-val">-</div></div>
@@ -298,7 +315,8 @@
       't2': 'Variabel, Input, & Operator',
       't3': 'Algoritma Percabangan',
       't4': 'Algoritma Perulangan',
-      't5': 'Array'
+      't5': 'Array',
+      'exam': 'Latihan Ulangan'
     };
 
     const state = { 
@@ -307,10 +325,13 @@
       currentIndex: 0, 
       answers: {}, 
       timerRemaining: 600, 
+      totalTimeLimit: 600,
       timerInterval: null, 
       score: 0, 
+      isExamMode: false,
+      kkmScore: 70,
       userIP: '127.0.0.1 (Offline)',
-      usedArch: new Set() // Archetype tracker anti-duplikasi
+      usedArch: new Set()
     };
 
     /* --- Utilities --- */
@@ -335,7 +356,6 @@
       return `${m.toString().padStart(2,'0')}:${sc.toString().padStart(2,'0')}`;
     }
 
-    // Normalisasi fleksibel tanpa clue
     function normalizeAns(str) {
       if(!str) return '';
       return str.toString().trim().toLowerCase().replace(/["']/g, '').replace(/\s+/g, ' ').replace(/\s*;\s*$/, ';');
@@ -344,20 +364,14 @@
       return str ? str.toString().replace(/\s+/g, '').toLowerCase() : '';
     }
 
-    /* --- Archetype System --- */
-    // Sistem ini dijamin memberikan pola yang unik karena setiap Array level kesulitan memiliki minimal 4 pola. 
-    // Saat diminta 4 soal sulit (maksimal), ke-4 pola akan keluar semua secara acak, TANPA pengulangan.
+    /* --- Archetype System (Topik Dinamis) --- */
     function getArch(topic, diff, archList) {
       const available = archList.filter(f => !state.usedArch.has(`${topic}-${diff}-${f.name}`));
-      // Jika available.length === 0, berarti koleksi pola kurang (tidak akan terjadi karena kita buat 4+ pola per level)
       const selected = available.length > 0 ? randItem(available) : randItem(archList); 
       state.usedArch.add(`${topic}-${diff}-${selected.name}`);
       return selected(); 
     }
 
-    /* =========================================================
-       GENERATOR T1: Sintaks, Output, Komentar (Masing-masing 4 Pola)
-       ========================================================= */
     function genT1(diff) {
       const archs = {
         easy: [
@@ -382,9 +396,6 @@
       return getArch('t1', diff, archs[diff]);
     }
 
-    /* =========================================================
-       GENERATOR T2: Variabel & Operator (Masing-masing 4 Pola)
-       ========================================================= */
     function genT2(diff) {
       const archs = {
         easy: [
@@ -409,9 +420,6 @@
       return getArch('t2', diff, archs[diff]);
     }
 
-    /* =========================================================
-       GENERATOR T3: Percabangan (Masing-masing 4 Pola)
-       ========================================================= */
     function genT3(diff) {
       const archs = {
         easy: [
@@ -436,9 +444,6 @@
       return getArch('t3', diff, archs[diff]);
     }
 
-    /* =========================================================
-       GENERATOR T4: Perulangan (Masing-masing 4 Pola)
-       ========================================================= */
     function genT4(diff) {
       const archs = {
         easy: [
@@ -463,9 +468,6 @@
       return getArch('t4', diff, archs[diff]);
     }
 
-    /* =========================================================
-       GENERATOR T5: Array (Masing-masing 4 Pola)
-       ========================================================= */
     function genT5(diff) {
       const archs = {
         easy: [
@@ -490,14 +492,458 @@
       return getArch('t5', diff, archs[diff]);
     }
 
-    /* --- Quiz Flow --- */
+    // --- REFINED SVG ASSETS FOR EXAM QUESTIONS (#2, #4, #5) ---
+    const SVG_MAP_ANDRI = `<svg width="360" height="210" viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg">
+      <rect width="360" height="210" fill="#f4f1ea" rx="8"/>
+      <!-- Grid Map Lines -->
+      <path d="M0,40 L360,40 M0,80 L360,80 M0,120 L360,120 M0,160 L360,160 M60,0 L60,210 M120,0 L120,210 M180,0 L180,210 M240,0 L240,210 M300,0 L300,210" stroke="#e0dbc9" stroke-width="1.5" stroke-dasharray="3,3"/>
+      
+      <!-- Yellow Winding Road -->
+      <path d="M 40,160 L 160,160 L 160,80 L 310,80" stroke="#fef08a" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M 40,160 L 160,160 L 160,80 L 310,80" stroke="#eab308" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <!-- Dashed Road Marking Line -->
+      <path d="M 40,160 L 160,160 L 160,80 L 310,80" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="10,10" fill="none"/>
+
+      <!-- Start Pin Area & Player "Andri" -->
+      <ellipse cx="40" cy="165" rx="22" ry="10" fill="#4ade80" opacity="0.8"/>
+      <ellipse cx="40" cy="165" rx="22" ry="10" fill="none" stroke="#16a34a" stroke-width="2"/>
+      
+      <!-- Andri Avatar Figurine -->
+      <g transform="translate(40,140)">
+        <!-- Label Andri -->
+        <rect x="-24" y="-36" width="48" height="20" fill="#ffffff" stroke="#0f172a" stroke-width="1.5" rx="4"/>
+        <text x="0" y="-22" font-size="12" fill="#0f172a" text-anchor="middle" font-weight="bold">Andri</text>
+        
+        <!-- Yellow figurine pin -->
+        <circle cx="0" cy="-2" r="7" fill="#eab308" stroke="#854d0e" stroke-width="1.5"/>
+        <path d="M-4,5 L4,5 L2,18 L-2,18 Z" fill="#eab308" stroke="#854d0e" stroke-width="1.5"/>
+      </g>
+
+      <!-- Target Map Pin (Red Google Maps Pin) -->
+      <g transform="translate(310,65)">
+        <path d="M 0,0 C -12,-12 -18,-22 -18,-32 C -18,-42 -10,-50 0,-50 C 10,-50 18,-42 18,-32 C 18,-22 12,-12 0,0 Z" fill="#ef4444" stroke="#b91c1c" stroke-width="2"/>
+        <circle cx="0" cy="-32" r="6" fill="#0f172a"/>
+      </g>
+    </svg>`;
+
+    const SVG_BLOCKLY_SQUARE = `<svg width="340" height="150" viewBox="0 0 340 150" xmlns="http://www.w3.org/2000/svg">
+      <rect width="340" height="150" fill="#f8fafc" rx="8"/>
+      <!-- Main Outer Repeat Block (Green) -->
+      <path d="M 20,20 L 220,20 L 220,44 L 80,44 L 80,116 L 220,116 L 220,136 L 20,136 Z" fill="#47a047" stroke="#337033" stroke-width="1.5"/>
+      <text x="35" y="36" font-family="-apple-system, sans-serif" font-size="14" fill="#ffffff" font-weight="bold">repeat</text>
+      <!-- Number 4 Input Field -->
+      <rect x="90" y="24" width="30" height="16" fill="#ffffff" rx="3"/>
+      <text x="105" y="37" font-family="-apple-system, sans-serif" font-size="13" fill="#0f172a" text-anchor="middle" font-weight="bold">4</text>
+      <text x="130" y="36" font-family="-apple-system, sans-serif" font-size="14" fill="#ffffff" font-weight="bold">times</text>
+      <text x="35" y="68" font-family="-apple-system, sans-serif" font-size="14" fill="#ffffff" font-weight="bold">do</text>
+
+      <!-- Nested Move Forward Block (Teal) -->
+      <path d="M 75,48 L 310,48 L 310,76 L 75,76 Z" fill="#4aa3a3" stroke="#2e6666" stroke-width="1.5"/>
+      <text x="90" y="66" font-family="-apple-system, sans-serif" font-size="13" fill="#ffffff" font-weight="bold">move  forward  by  100</text>
+
+      <!-- Nested Turn Right Block (Teal) -->
+      <path d="M 75,80 L 310,80 L 310,108 L 75,108 Z" fill="#4aa3a3" stroke="#2e6666" stroke-width="1.5"/>
+      <text x="90" y="98" font-family="-apple-system, sans-serif" font-size="13" fill="#ffffff" font-weight="bold">turn  right  by  ↻  90°</text>
+    </svg>`;
+
+    const SVG_FLOWCHART_APPLE = `<svg width="460" height="540" viewBox="0 0 460 540" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+        </marker>
+      </defs>
+
+      <rect width="460" height="540" fill="#f8fafc" rx="8"/>
+
+      <!-- Start Node (Pill) -->
+      <rect x="60" y="20" width="130" height="44" rx="22" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+      <text x="125" y="47" font-family="sans-serif" font-size="15" fill="#14532d" font-weight="bold" text-anchor="middle">Start</text>
+
+      <!-- Arrow: Start -> Diamond 1 -->
+      <line x1="125" y1="64" x2="125" y2="105" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+
+      <!-- Diamond 1: Apakah besar -->
+      <polygon points="125,110 195,150 125,190 55,150" fill="#fef9c3" stroke="#a16207" stroke-width="2"/>
+      <text x="125" y="146" font-family="sans-serif" font-size="13" fill="#713f12" font-weight="bold" text-anchor="middle">Apakah</text>
+      <text x="125" y="162" font-family="sans-serif" font-size="13" fill="#713f12" font-weight="bold" text-anchor="middle">besar?</text>
+
+      <!-- Arrow Diamond 1 -> Tidak -> Parallelogram Biasa -->
+      <line x1="195" y1="150" x2="280" y2="150" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="212" y="132" width="42" height="20" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+      <text x="233" y="146" font-family="sans-serif" font-size="11" fill="#334155" text-anchor="middle" font-weight="bold">Tidak</text>
+
+      <!-- Arrow Diamond 1 -> Ya -> Diamond 2 -->
+      <line x1="125" y1="190" x2="125" y2="255" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="103" y="208" width="30" height="20" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+      <text x="118" y="222" font-family="sans-serif" font-size="11" fill="#334155" text-anchor="middle" font-weight="bold">Ya</text>
+
+      <!-- Parallelogram: cetak "Biasa" -->
+      <polygon points="300,128 410,128 380,172 270,172" fill="#f3e8ff" stroke="#6b21a8" stroke-width="2"/>
+      <text x="340" y="154" font-family="sans-serif" font-size="13" fill="#581c87" font-weight="bold" text-anchor="middle">cetak "Biasa"</text>
+
+      <!-- Diamond 2: Apakah berwarna merah? -->
+      <polygon points="125,260 200,300 125,340 50,300" fill="#fef9c3" stroke="#a16207" stroke-width="2"/>
+      <text x="125" y="295" font-family="sans-serif" font-size="12" fill="#713f12" font-weight="bold" text-anchor="middle">Apakah</text>
+      <text x="125" y="309" font-family="sans-serif" font-size="12" fill="#713f12" font-weight="bold" text-anchor="middle">berwarna merah?</text>
+
+      <!-- Arrow Diamond 2 -> Tidak -> Parallelogram Baik -->
+      <line x1="125" y1="340" x2="125" y2="435" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="100" y="375" width="38" height="20" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+      <text x="119" y="389" font-family="sans-serif" font-size="11" fill="#334155" text-anchor="middle" font-weight="bold">Tidak</text>
+
+      <!-- Parallelogram: cetak "Baik" -->
+      <polygon points="70,440 180,440 150,484 40,484" fill="#f3e8ff" stroke="#6b21a8" stroke-width="2"/>
+      <text x="110" y="466" font-family="sans-serif" font-size="13" fill="#581c87" font-weight="bold" text-anchor="middle">cetak "Baik"</text>
+
+      <!-- Arrow Diamond 2 -> Ya -> Diamond 3 -->
+      <line x1="200" y1="300" x2="265" y2="300" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="216" y="282" width="30" height="20" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+      <text x="231" y="296" font-family="sans-serif" font-size="11" fill="#334155" text-anchor="middle" font-weight="bold">Ya</text>
+
+      <!-- Diamond 3: Apakah baret? -->
+      <polygon points="340,260 410,300 340,340 270,300" fill="#fef9c3" stroke="#a16207" stroke-width="2"/>
+      <text x="340" y="295" font-family="sans-serif" font-size="13" fill="#713f12" font-weight="bold" text-anchor="middle">Apakah</text>
+      <text x="340" y="310" font-family="sans-serif" font-size="13" fill="#713f12" font-weight="bold" text-anchor="middle">baret?</text>
+
+      <!-- Arrow Diamond 3 -> Ya -> Up to Parallelogram Biasa -->
+      <line x1="340" y1="260" x2="340" y2="180" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="325" y="210" width="30" height="20" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+      <text x="340" y="224" font-family="sans-serif" font-size="11" fill="#334155" text-anchor="middle" font-weight="bold">Ya</text>
+
+      <!-- Arrow Diamond 3 -> Tidak -> Parallelogram Super -->
+      <line x1="340" y1="340" x2="340" y2="435" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+      <rect x="318" y="375" width="42" height="20" rx="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1"/>
+      <text x="339" y="389" font-family="sans-serif" font-size="11" fill="#334155" text-anchor="middle" font-weight="bold">Tidak</text>
+
+      <!-- Parallelogram: cetak "Super" -->
+      <polygon points="295,440 405,440 375,484 265,484" fill="#f3e8ff" stroke="#6b21a8" stroke-width="2"/>
+      <text x="335" y="466" font-family="sans-serif" font-size="13" fill="#581c87" font-weight="bold" text-anchor="middle">cetak "Super"</text>
+    </svg>`;
+
+    const EXAM_QUESTIONS = [
+      // 1
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'SMAN 1 Garut melakukan pendataan terhadap murid baru kelas X. Dari sekumpulan data (nama, asal sekolah, nomor HP, hobi, dan nama pacar), pihak sekolah hanya memilih data nama, asal sekolah, dan nomor HP. Proses membuang informasi yang tidak penting dan memfokuskan pada data yang relevan disebut...',
+        options: ['Dekomposisi', 'Pengenalan Pola', 'Abstraksi', 'Algoritma', 'Struktur Data'],
+        answer: 'Abstraksi'
+      },
+      // 2
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Andri ingin bergerak dari titik ia berdiri menuju koordinat tujuan. Bantuan langkah yang tepat untuk Andri adalah...',
+        imageSvg: SVG_MAP_ANDRI,
+        options: [
+          'move forward, turn left, move forward, turn left, move forward.',
+          'move forward, turn left, move forward, turn right, move forward.',
+          'move forward, turn right, move forward, turn left, move forward.',
+          'move forward, turn right, move forward, turn right, move forward.',
+          'repeat move forward until finish point'
+        ],
+        answer: 'move forward, turn left, move forward, turn right, move forward.'
+      },
+      // 3
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: `Perhatikan algoritma berikut:
+Program PositifNegatif
+{Diberikan satu buah bilangan bulat, kemudian ditentukan apakah bilangan yang diberikan termasuk positif atau negatif, cetak hasil pada layar}
+DEKLARASI :
+  x : integer
+ALGORITMA :
+  input(x)
+  if x >= 0
+      print (“bilangan positif atau nol”)
+  else
+      print (“bilangan negatif”)
+Notasi algoritma di atas disebut…`,
+        options: ['Bahasa Natural', 'Bahasa Manusia', 'Bahasa Pemrograman', 'Flowchart', 'Pseudocode'],
+        answer: 'Pseudocode'
+      },
+      // 4
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Perhatikan diagram instruksi langkah pembentukan bangun di bawah ini! Bangun datar yang dihasilkan oleh serangkaian perintah tersebut adalah...',
+        imageSvg: SVG_BLOCKLY_SQUARE,
+        options: ['Persegi', 'Belah ketupat', 'Jajar Genjang', 'Trapesium', 'Lingkaran'],
+        answer: 'Persegi'
+      },
+      // 5
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Sebuah toko buah apel menyortir apel kedalam tiga kategori yaitu, Biasa, Baik, dan Super berdasarkan kriteria tertentu yang dapat dilihat pada flowchart berikut:\n\nSebuah apel berukuran besar, berwarna merah, dengan kulit yang mulus masuk kedalam kategori?',
+        imageSvg: SVG_FLOWCHART_APPLE,
+        options: ['Biasa', 'Baik', 'Super', 'Busuk', 'Tidak dapat dikategorikan'],
+        answer: 'Super'
+      },
+      // 6
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan template penulisan kode program dalam bahasa C++ berikut. Untuk melengkapi template pada baris ke-6 (yang bergaris bawah) adalah…',
+        code: '#include <iostream>\nusing namespace std;\n\nint main (){\n   cout <<"Hello World";\n   __________\n}',
+        answer: 'return 0;',
+        acc: ['return 0', 'return0;']
+      },
+      // 7
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini. Apabila kode program tersebut dikompilasi, maka outputnya adalah...',
+        code: 'cout << "SMAN 1";\ncout << "Garut";',
+        answer: 'SMAN 1Garut'
+      },
+      // 8
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Perhatikan potongan kode program di bawah ini. Apabila kode program tersebut dikompilasi, maka outputnya adalah...',
+        code: 'cout << "1\\n";\ncout << "2 ";\ncout << "3\\n";\ncout << "4 ";\ncout << "5";\ncout << "6";',
+        options: [
+          '1\n2 3\n4 5 6',
+          '1\n2 3\n4 56',
+          '1 2 3 4 5 6',
+          '1\n2\n3\n4\n5\n6',
+          '1 2\n3 4\n5 6'
+        ],
+        answer: '1\n2 3\n4 56'
+      },
+      // 9
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Penamaan variabel dalam Bahasa C/C++ yang valid adalah…',
+        options: ['s1s1', '123nama', ':nama', 'nama lengkap', 'Break'],
+        answer: 's1s1'
+      },
+      // 10
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Perhatikan potongan kode program di bawah ini! Lengkapi bagian bergaris bawah agar menjadi pendeklarasian tiga buah variabel yang benar!',
+        code: '___ variabel1 = 1.7;\n___ variabel2 = 7;\n___ variabel3 = "Saya Jujur";',
+        options: [
+          'float, int, char',
+          'float, int, string',
+          'float, integer, char',
+          'float, integer, string',
+          'double, int, string'
+        ],
+        answer: 'float, int, string'
+      },
+      // 11
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Perhatikan potongan kode program di bawah ini! Nilai (isi) akhir variabel a dan b berturut-turut adalah...',
+        code: 'int a=3, b=4;\na = a + b;\nb = a - b;\na = a - b;',
+        options: ['3 dan 4', '4 dan 3', '-1 dan -1', '3 dan -1', '7 dan -3'],
+        answer: '4 dan 3'
+      },
+      // 12
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini! Nilai (isi) akhir variabel a adalah...',
+        code: 'int a=3, b=4;\na = a + b;\nb = a % b;\na = a / b;',
+        answer: '2'
+      },
+      // 13
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini! Nilai dari larik angka dengan index ke-3 adalah...',
+        code: 'int angka[5] = {3,6,5,4,7};',
+        answer: '4'
+      },
+      // 14
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini! Nilai akhir variabel sum adalah?',
+        code: 'int angka[5] = {3,6,5,4,7};\nint sum = angka[1] + angka[angka[3]];',
+        answer: '13'
+      },
+      // 15
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Perhatikan potongan kode program di bawah ini! Nilai akhir dari larik angka adalah?',
+        code: 'int angka[5] = {3,6,5,4,7};\nangka[1] += 2;\nangka[2] = 3;\nangka[3]++;',
+        options: [
+          '{3,6,5,4,7}',
+          '{2,3,6,4,7}',
+          '{5,6,6,4,7}',
+          '{3,8,3,5,7}',
+          'Error'
+        ],
+        answer: '{3,8,3,5,7}'
+      },
+      // 16
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Perhatikan kode program di bawah ini! Untuk melengkapi bagian bergaris bawah yang tepat adalah…',
+        code: 'int a;\ncin >> a;\nif(______ ){\n     cout << "bilangan genap";\n}\nelse{\n     cout << "bilangan ganjil";\n}',
+        options: ['a%2 != 1', 'a%2 != 0', 'a%2 = 1', 'a%2 = 0', 'a/2 ==0'],
+        answer: 'a%2 != 1'
+      },
+      // 17
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program berikut! Output yang dicetak oleh kode di bawah ini adalah…',
+        code: 'int harga = 200;\nint bayar = 0;\nif (harga > 300) {\n    bayar = harga - 50;\n} \nelse if (harga >= 200) {\n    bayar = harga - 20;\n} \nelse {\n    bayar = harga;\n}\ncout << bayar;',
+        answer: '180'
+      },
+      // 18
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program berikut! Output dari potongan kode di bawah ini adalah…',
+        code: 'int x = 8, y = 5;\nif (x < 10 && y > 8) {\n    cout << "Kondisi A";\n} else {\n    cout << "Kondisi B";\n}',
+        answer: 'Kondisi B'
+      },
+      // 19
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini! Jika nilai variabel x adalah nol (0) dan variabel y adalah -3, maka apa keluaran dari potongan kode tersebut?',
+        code: 'if(x > 0){\n    if(y > 0){\n        cout << "Q";\n    }\n    else{\n        cout << "W";\n    }    \n}\nelse{\n    if(y > 0){\n        cout << "E";\n    }\n    else if(y==0){\n        cout << "R";\n    }\n    else{\n        cout << "T";\n    }    \n}',
+        answer: 'T'
+      },
+      // 20
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program berikut! Jika nilai variabel angka adalah 2, maka apa output yang dihasilkan?',
+        code: 'switch (angka) {\ncase 1:\n   cout << "Satu ";\n   break;\ncase 2:\n   cout << "Dua ";\ncase 3:\n   cout << "Tiga ";\n   break;\ndefault:\n   cout << "Lainnya";\n}',
+        answer: 'Dua Tiga',
+        acc: ['Dua Tiga ']
+      },
+      // 21
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Perhatikan potongan kode program di bawah ini! Bagian iterasi adalah?',
+        code: 'int x = 0;\nwhile(x<9){\n     x += 3;\n}',
+        options: ['int x = 0', 'while', 'x<9', 'x += 3', 'Int'],
+        answer: 'x += 3'
+      },
+      // 22
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: 'Perhatikan potongan kode program di bawah ini! Kondisi yang tepat untuk menghasilkan output * * * * * adalah?',
+        code: 'int x = 0;\nwhile(_____ ){\n     printf("* ");\n     x++;\n}',
+        options: ['x < 5', 'x < 4', 'x <= 5', 'x == 4', 'x != 4'],
+        answer: 'x < 5'
+      },
+      // 23
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini! Output yang dihasilkan adalah?',
+        code: 'for(j=5; j>=1; j--){\n     cout << j;\n}',
+        answer: '54321'
+      },
+      // 24
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program berikut! Banyaknya pengulangan yang dilakukan adalah…',
+        code: 'int i;\nfor(i=51; i<55; i++){\n     cout << i;\n}',
+        answer: '4'
+      },
+      // 25
+      {
+        topic: 'exam',
+        type: 'multiple-choice',
+        qText: `Perhatikan tulisan berikut:
+Hello 1
+Hello 2
+Hello 3
+Hello 4
+Hello 5 
+
+Untuk menghasilkan keluaran seperti di atas, kode programnya adalah…`,
+        options: [
+          'int i=1;\nwhile(i<=5){\n     cout << "Hello "<<i<<endl;\n     i++;\n}',
+          'int i=0;\nwhile(i<=5){\n     cout << "Hello "<<i<<endl;\n     i++;\n}',
+          'int i=1;\nwhile(i<5){\n     cout << "Hello "<<i<<endl;\n     i++;\n}',
+          'int i=0;\nwhile(i<5){\n     cout << "Hello "<<i<<endl;\n     i++;\n}',
+          'int i=1;\nwhile(i<=6){\n     cout << "Hello "<<i<<endl;\n     i++;\n}'
+        ],
+        answer: 'int i=1;\nwhile(i<=5){\n     cout << "Hello "<<i<<endl;\n     i++;\n}'
+      },
+      // 26
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini! Output yang dihasilkan adalah?',
+        code: 'int harga[3] = {15000, 10000, 12000};\nint total = harga[0] + (2 * harga[2]); \nif (total > 30000) {\n    cout << total - 5000;\n} \nelse {\n    cout << total;\n}',
+        answer: '34000'
+      },
+      // 27
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini! Nilai dari data3[2] adalah?',
+        code: 'int i;\nint data1[5] = {3,6,4,5,7};\nint data2[5] = {6,5,4,1,7};\nint data3[5];    \nfor(i=0; i<5; i++){\n    data3[i] = data1[i] * data2[i];\n}',
+        answer: '16'
+      },
+      // 28
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program dibawah ini! Output yang dihasilkan adalah?',
+        code: 'for (int i = 1; i <= 6; i++) {\n    if (i % 3 == 0) {\n        cout << "* ";\n    } else {\n        cout << i << " ";\n    }\n}',
+        answer: '1 2 * 4 5 *',
+        acc: ['1 2 * 4 5 * ']
+      },
+      // 29
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini! Nilai variabel total yang dicetak di akhir program adalah…',
+        code: 'int data[4] = {5, 2, 8, 3};\nint total = 0;\nfor (int i = 0; i < 4; i++) {\n    if (data[i] > 4) {\n        total += data[i];\n    }\n}\ncout << total;',
+        answer: '13'
+      },
+      // 30
+      {
+        topic: 'exam',
+        type: 'short-answer',
+        qText: 'Perhatikan potongan kode program di bawah ini! Nilai akhir variabel jumlah yang dicetak ke layar adalah...',
+        code: 'int jumlah = 0;\nfor (int i = 1; i <= 5; i++) {\n    if (i % 2 != 0) {\n        jumlah += i;\n    }\n}\ncout << jumlah;',
+        answer: '9'
+      }
+    ];
+
     function buildQuizDist(tps) {
-      state.usedArch.clear(); // RESET Tracker Pattern. Sangat Penting!
+      state.usedArch.clear();
+      
+      // Khusus Topik Latihan Ulangan
+      if(tps.includes('exam')) {
+        state.isExamMode = true;
+        state.kkmScore = 80;
+        state.totalTimeLimit = 2700; // 45 Menit
+        return [...EXAM_QUESTIONS]; // 30 Soal Baku Eksak
+      }
+
+      // Topik Dinamis (10 Soal)
+      state.isExamMode = false;
+      state.kkmScore = 70;
+      state.totalTimeLimit = 600; // 10 Menit
+
       const slots = ['easy','easy','easy', 'medium','medium','medium', 'hard','hard','hard','hard'];
       const generated = [];
       const topics = shuffle(tps);
       
-      // Bagikan 10 slot kesulitan merata ke topik yg dicentang
       slots.forEach((diff, i) => {
         const t = topics[i % topics.length];
         if(t === 't1') generated.push(genT1(diff)); 
@@ -506,7 +952,7 @@
         else if(t === 't4') generated.push(genT4(diff));
         else generated.push(genT5(diff));
       });
-      return shuffle(generated); // Acak urutan tampil ke siswa
+      return shuffle(generated);
     }
 
     function setView(v) {
@@ -520,13 +966,22 @@
       const name = document.getElementById('student-name').value.trim();
       const cls = document.getElementById('student-class').value;
       const tps = Array.from(document.querySelectorAll('#topics-list input:checked')).map(c=>c.value);
-      if(!name || !cls || tps.length===0) { document.getElementById('setup-error').style.display = 'flex'; return; }
-      document.getElementById('setup-error').style.display = 'none';
+      const errorBanner = document.getElementById('setup-error');
+      const errorText = document.getElementById('setup-error-text');
+
+      if(!name || !cls || tps.length===0) { 
+        if(!name) errorText.textContent = "Isi nama kamu dulu ya!";
+        else if(!cls) errorText.textContent = "Pilih kelas kamu dulu ya!";
+        else errorText.textContent = "Pilih minimal 1 topik kuis!";
+        errorBanner.style.display = 'flex'; 
+        return; 
+      }
+      
+      errorBanner.style.display = 'none';
       
       localStorage.setItem('qName', name); localStorage.setItem('qClass', cls);
       state.studentName = name; state.studentClass = cls; state.answers = {}; state.currentIndex = 0;
       
-      // Murni Generate 10 Soal Berdasarkan Pola
       state.questions = buildQuizDist(tps);
       
       document.getElementById('quiz-student-display').textContent = name;
@@ -537,10 +992,21 @@
 
     function renderQ(idx) {
       state.currentIndex = idx; const q = state.questions[idx];
-      document.getElementById('quiz-progress-text').textContent = `Soal ${idx+1} dari 10`;
+      const totalQ = state.questions.length;
+      document.getElementById('quiz-progress-text').textContent = `Soal ${idx+1} dari ${totalQ}`;
       document.getElementById('question-topic-badge').textContent = TOPIC_NAMES[q.topic];
       document.getElementById('question-type-badge').textContent = q.type==='multiple-choice'?'Pilihan Ganda':'Isian Singkat';
       document.getElementById('question-text-content').textContent = q.qText;
+      
+      const imgBox = document.getElementById('question-image-area');
+      if(q.imageSvg) {
+        imgBox.style.display = 'flex';
+        imgBox.innerHTML = q.imageSvg;
+      } else {
+        imgBox.style.display = 'none';
+        imgBox.innerHTML = '';
+      }
+
       const cb = document.getElementById('question-code-block');
       if(q.code) { cb.style.display = 'block'; cb.textContent = q.code; } else cb.style.display = 'none';
       
@@ -551,18 +1017,18 @@
         const l = document.createElement('div'); l.className='options-list';
         q.options.forEach((o, i) => {
           const c = document.createElement('label'); c.className=`option-card ${val===o?'selected':''}`;
-          c.innerHTML = `<input type="radio" name="qopt" value="${o}" class="option-radio" ${val===o?'checked':''}><span>${o}</span>`;
+          c.innerHTML = `<input type="radio" name="qopt" value="${o.replace(/"/g, '&quot;')}" class="option-radio" ${val===o?'checked':''}><span>${o.replace(/</g, '&lt;').replace(/\n/g, '<br>')}</span>`;
           c.querySelector('input').addEventListener('change', (e) => { state.answers[idx]=e.target.value; renderDots(); renderQ(idx); });
           l.appendChild(c);
         }); ia.appendChild(l);
       } else {
-        ia.innerHTML = `<div class="short-answer-box"><input type="text" class="short-answer-input" placeholder="Ketik jawaban..." value="${val}" autocomplete="off" spellcheck="false"></div>`;
+        ia.innerHTML = `<div class="short-answer-box"><input type="text" class="short-answer-input" placeholder="Ketik jawaban..." value="${val.replace(/"/g, '&quot;')}" autocomplete="off" spellcheck="false"></div>`;
         ia.querySelector('input').addEventListener('input', e => { state.answers[idx]=e.target.value; renderDots(); });
       }
       
       document.getElementById('btn-prev-question').disabled = (idx===0);
       const bN = document.getElementById('btn-next-question');
-      if(idx===9) { bN.textContent='Submit Kuis ✓'; bN.classList.add('btn-primary'); } else { bN.textContent='Selanjutnya →'; bN.classList.remove('btn-primary'); }
+      if(idx === totalQ - 1) { bN.textContent='Submit Kuis ✓'; bN.classList.add('btn-primary'); } else { bN.textContent='Selanjutnya →'; bN.classList.remove('btn-primary'); }
       renderDots();
     }
 
@@ -570,6 +1036,7 @@
       const c = document.getElementById('progress-dots'); c.innerHTML='';
       state.questions.forEach((_, i) => {
         const d = document.createElement('div'); d.className='dot-item';
+        d.textContent = i + 1;
         if(i===state.currentIndex) d.classList.add('active');
         if(state.answers[i] && state.answers[i].toString().trim() !== '') d.classList.add('answered');
         d.onclick = () => { saveAns(); renderQ(i); }; c.appendChild(d);
@@ -582,11 +1049,11 @@
       else { const i = document.querySelector('.short-answer-input'); if(i) state.answers[state.currentIndex]=i.value; }
     }
 
-    function handleNextQuestion() { saveAns(); if(state.currentIndex<9) renderQ(state.currentIndex+1); else submitQuiz(); }
+    function handleNextQuestion() { saveAns(); const totalQ = state.questions.length; if(state.currentIndex < totalQ - 1) renderQ(state.currentIndex+1); else submitQuiz(); }
     function handlePreviousQuestion() { saveAns(); if(state.currentIndex>0) renderQ(state.currentIndex-1); }
 
     function startTimer() {
-      clearInterval(state.timerInterval); state.timerRemaining = 600; updTimer();
+      clearInterval(state.timerInterval); state.timerRemaining = state.totalTimeLimit; updTimer();
       state.timerInterval = setInterval(() => {
         state.timerRemaining--; updTimer();
         if(state.timerRemaining <= 0) { clearInterval(state.timerInterval); saveAns(); submitQuiz(); }
@@ -610,18 +1077,25 @@
 
     function submitQuiz() {
       clearInterval(state.timerInterval); saveAns();
-      let c=0; state.questions.forEach((q,i)=>{ if(checkAnswer(q, state.answers[i])) c++; });
-      state.score = c*10;
+      let c=0; const totalQ = state.questions.length;
+      state.questions.forEach((q,i)=>{ if(checkAnswer(q, state.answers[i])) c++; });
+      
+      state.score = Math.round((c / totalQ) * 100);
       
       document.getElementById('result-score-val').textContent = state.score;
       document.getElementById('result-name-val').textContent = state.studentName;
       document.getElementById('result-class-val').textContent = state.studentClass;
-      document.getElementById('result-correct-count').textContent = `${c} / 10`;
-      document.getElementById('result-time-spent').textContent = formatTime(600-state.timerRemaining);
+      document.getElementById('result-correct-count').textContent = `${c} / ${totalQ}`;
+      document.getElementById('result-time-spent').textContent = formatTime(state.totalTimeLimit - state.timerRemaining);
       document.getElementById('result-timestamp-val').textContent = getTimeWIB();
       
+      const isPassed = state.score >= state.kkmScore;
+      const passEl = document.getElementById('result-pass-status');
+      passEl.textContent = isPassed ? `LULUS (KKM ${state.kkmScore})` : `TIDAK LULUS (KKM ${state.kkmScore})`;
+      passEl.style.color = isPassed ? 'var(--success-text)' : 'var(--danger-text)';
+
       const sc = document.getElementById('score-circle-container'); const fb = document.getElementById('result-feedback-text');
-      if(state.score>=90) {
+      if(isPassed) {
         sc.className='score-circle success-mode'; fb.textContent='Selamat Ya! 🎉'; fb.style.color='var(--success-text)';
         for(let i=0; i<60; i++) {
           const d = document.createElement('div'); d.className='confetti'; d.style.left=Math.random()*100+'vw'; d.style.backgroundColor=randItem(['#2563eb','#10b981','#f59e0b','#ef4444']); d.style.animationDuration=(Math.random()*2+2)+'s';
@@ -629,10 +1103,22 @@
         }
       } else { sc.className='score-circle danger-mode'; fb.textContent='Tetap Semangat! 💪'; fb.style.color='var(--danger-text)'; }
 
+      // Tag topik teruji
+      const tagsContainer = document.getElementById('result-topics-tags');
+      tagsContainer.innerHTML = '';
+      if(state.isExamMode) {
+        tagsContainer.innerHTML = `<span class="topic-mini-tag" style="background:#faf5ff; border-color:#d8b4fe; color:#7e22ce; font-weight:bold;">📝 Latihan Ulangan (30 Soal)</span>`;
+      } else {
+        const uniqueTopics = [...new Set(state.questions.map(q=>q.topic))];
+        uniqueTopics.forEach(t => {
+          tagsContainer.innerHTML += `<span class="topic-mini-tag">${TOPIC_NAMES[t]}</span>`;
+        });
+      }
+
       const rv = document.getElementById('review-list'); rv.innerHTML='';
       state.questions.forEach((q,i)=>{
         const ua = state.answers[i]||'-'; const ok = checkAnswer(q,ua);
-        rv.innerHTML += `<div class="review-item ${ok?'correct':'incorrect'}"><div class="review-meta"><strong>Soal ${i+1} • ${TOPIC_NAMES[q.topic]}</strong><span style="color:var(--${ok?'success':'danger'}-text); font-weight:700;">${ok?'BENAR':'SALAH'}</span></div><div class="review-q-text">${q.qText.replace(/</g,'&lt;')}</div><div class="review-ans-grid"><div><strong>Jawabanmu:</strong> ${ua.replace(/</g,'&lt;')}</div><div><strong>Kunci:</strong> ${q.answer.replace(/</g,'&lt;')}</div></div></div>`;
+        rv.innerHTML += `<div class="review-item ${ok?'correct':'incorrect'}"><div class="review-meta"><strong>Soal ${i+1} • ${TOPIC_NAMES[q.topic]}</strong><span style="color:var(--${ok?'success':'danger'}-text); font-weight:700;">${ok?'BENAR':'SALAH'}</span></div><div class="review-q-text">${q.qText.replace(/</g,'&lt;').replace(/\n/g, '<br>')}</div><div class="review-ans-grid"><div><strong>Jawabanmu:</strong> ${ua.replace(/</g,'&lt;')}</div><div><strong>Kunci:</strong> ${q.answer.replace(/</g,'&lt;')}</div></div></div>`;
       });
       setView('RESULT');
     }
@@ -643,7 +1129,47 @@
       fetchUserIP();
       if(localStorage.getItem('qName')) document.getElementById('student-name').value = localStorage.getItem('qName');
       if(localStorage.getItem('qClass')) document.getElementById('student-class').value = localStorage.getItem('qClass');
-      document.querySelectorAll('.topic-checkbox-card input').forEach(c => { c.onchange = function() { if(this.checked) this.closest('.topic-checkbox-card').classList.add('selected'); else this.closest('.topic-checkbox-card').classList.remove('selected'); }; });
+      
+      const examCheck = document.getElementById('topik-exam');
+      const normalTopicChecks = document.querySelectorAll('#topics-list input[type="checkbox"]:not(#topik-exam)');
+
+      // Exclusive logic for exam mode
+      examCheck.addEventListener('change', function() {
+        if(this.checked) {
+          this.closest('.topic-checkbox-card').classList.add('selected');
+          normalTopicChecks.forEach(cb => {
+            cb.checked = false;
+            cb.disabled = true;
+            cb.closest('.topic-checkbox-card').classList.remove('selected');
+            cb.closest('.topic-checkbox-card').classList.add('disabled');
+          });
+        } else {
+          this.closest('.topic-checkbox-card').classList.remove('selected');
+          normalTopicChecks.forEach(cb => {
+            cb.disabled = false;
+            cb.closest('.topic-checkbox-card').classList.remove('disabled');
+          });
+        }
+      });
+
+      normalTopicChecks.forEach(c => { 
+        c.addEventListener('change', function() { 
+          if(this.checked) {
+            this.closest('.topic-checkbox-card').classList.add('selected'); 
+            examCheck.checked = false;
+            examCheck.disabled = true;
+            examCheck.closest('.topic-checkbox-card').classList.remove('selected');
+            examCheck.closest('.topic-checkbox-card').classList.add('disabled');
+          } else {
+            this.closest('.topic-checkbox-card').classList.remove('selected');
+            const anyChecked = Array.from(normalTopicChecks).some(cb => cb.checked);
+            if(!anyChecked) {
+              examCheck.disabled = false;
+              examCheck.closest('.topic-checkbox-card').classList.remove('disabled');
+            }
+          }
+        }); 
+      });
     };
   </script>
 </body>
