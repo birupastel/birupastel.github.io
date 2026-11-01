@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multimedia Pembelajaran Interaktif: Searching Algorithm</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Canvas Confetti for Game/Quiz Win -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* Smooth transition effect for active elements */
+    .array-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Hide scrollbar for clean tab navigation on small screens */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="h-full font-sans text-slate-800 antialiased flex flex-col bg-slate-50">
+
+  <!-- TOP HEADER & NAVBAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+            <i data-lucide="search" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-slate-900 text-lg leading-tight">SearchEdu <span class="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-semibold ml-1">Interactive MPI</span></h1>
+            <p class="text-xs text-slate-500">Linear vs Binary Search Algorithm</p>
+          </div>
+        </div>
+
+        <!-- Mode Toggle (Siswa vs Guru) -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button id="modeStudentBtn" onclick="switchUserMode('student')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-sky-600 shadow-sm">
+            <i data-lucide="user" class="w-3.5 h-3.5"></i>
+            <span>Mode Siswa</span>
+          </button>
+          <button id="modeTeacherBtn" onclick="switchUserMode('teacher')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+            <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+            <span>Mode Guru</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex space-x-1 sm:space-x-4 border-t border-slate-100 py-2 overflow-x-auto no-scrollbar" id="navTabs">
+        <button onclick="switchTab('intro')" id="tab-intro" class="nav-tab text-sky-600 bg-sky-50 font-semibold px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>1. Apersepsi & Game</span>
+        </button>
+        <button onclick="switchTab('linear')" id="tab-linear" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="list-ordered" class="w-4 h-4"></i>
+          <span>2. Linear Search</span>
+        </button>
+        <button onclick="switchTab('binary')" id="tab-binary" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="git-commit" class="w-4 h-4"></i>
+          <span>3. Binary Search</span>
+        </button>
+        <button onclick="switchTab('compare')" id="tab-compare" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="swords" class="w-4 h-4"></i>
+          <span>4. Arena Komparasi</span>
+        </button>
+        <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="award" class="w-4 h-4"></i>
+          <span>5. Evaluasi & Kuis</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- TEACHER MODE BANNER NOTIFICATION -->
+  <div id="teacherBanner" class="hidden bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-800 flex items-center justify-between max-w-7xl mx-auto w-full">
+    <div class="flex items-center space-x-2">
+      <i data-lucide="info" class="w-4 h-4 text-amber-600"></i>
+      <span><strong class="font-bold">Mode Guru Aktif:</strong> Semua kontrol animasi terbuka, slider kecepatan diaktifkan, dan Anda dapat lompat bebas antar bagian untuk presentasi.</span>
+    </div>
+    <span class="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-mono">Teacher Edition</span>
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- SECTION 1: APERSEPSI & GAME INTUISI -->
+    <section id="sec-intro" class="tab-content space-y-6">
+      
+      <!-- Welcome Header -->
+      <div class="bg-gradient-to-r from-sky-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 opacity-10 text-white pointer-events-none">
+          <i data-lucide="search" class="w-72 h-72"></i>
+        </div>
+        <div class="relative z-10 max-w-2xl">
+          <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Apersepsi Awal</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-3 leading-tight">Bagaimana Manusia & Komputer Mencari Data?</h2>
+          <p class="mt-2 text-sky-100 text-sm sm:text-base leading-relaxed">
+            Sebelum masuk ke rumus algoritma, mari pahami intuisi mencari data pada koleksi tak terurut melalui permainan sederhana di bawah ini.
+          </p>
+        </div>
+      </div>
+
+      <!-- CARD SEARCH (LINEAR INTUITION) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between max-w-3xl mx-auto">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Permainan Apersepsi: Data Acak</span>
+            <span id="cardTriesCount" class="text-xs font-medium text-slate-500">Percobaan: 0</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900 mb-1">Cari Kartu Rahasia 🎯</h3>
+          <p class="text-xs text-slate-600 mb-4">Kartu di bawah ini berisi angka acak (tidak terurut). Cari angka target dengan membuka kartu satu per satu!</p>
+          
+          <div class="bg-slate-50 p-4 rounded-xl mb-4 border border-slate-100 flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-700">Target Angka yang dicari:</span>
+            <span id="cardTargetValue" class="text-xl font-extrabold text-sky-600 bg-white px-3 py-1 rounded-lg border border-sky-200 shadow-sm">?</span>
+          </div>
+
+          <!-- Cards Grid -->
+          <div id="cardsGrid" class="grid grid-cols-5 gap-2 sm:gap-3 my-4">
+            <!-- Rendered dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Feedback Box Card Game -->
+        <div class="mt-4">
+          <div id="cardGameFeedback" class="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium">
+            Klik salah satu kartu di atas untuk memulai pencarian.
+          </div>
+          <button onclick="resetCardGame()" class="w-full mt-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1.5">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            <span>Acak & Main Lagi</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Kesimpulan Apersepsi -->
+      <div class="bg-sky-50 rounded-2xl p-5 border border-sky-200 flex items-start space-x-4 max-w-3xl mx-auto">
+        <div class="p-2.5 bg-sky-500 text-white rounded-xl shadow-sm shrink-0">
+          <i data-lucide="lightbulb" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h4 class="font-bold text-sky-900 text-sm">Refleksi Penting:</h4>
+          <p class="text-xs text-sky-800 leading-relaxed mt-1">
+            Pada permainan kartu di atas, kamu terpaksa membuka kartu satu demi satu tanpa kepastian posisi. Ini menggambarkan konsep dasar dari <strong class="font-bold">Linear Search</strong>!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: LINEAR SEARCH VISUALIZER -->
+    <section id="sec-linear" class="tab-content space-y-6 hidden">
+      <!-- Section Intro Header -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span class="bg-sky-100 text-sky-700 text-xs font-bold px-2.5 py-1 rounded-md">Algoritma #1</span>
+            <h2 class="text-xl font-bold text-slate-900 mt-2">Linear Search (Pencarian Berurutan)</h2>
+            <p class="text-xs text-slate-600 mt-1 max-w-2xl">
+              Algoritma ini mengecek setiap elemen dari indeks paling awal (0) hingga akhir satu per satu sampai elemen yang dicari ditemukan atau seluruh array habis diperiksa.
+            </p>
+          </div>
+          <div class="flex items-center space-x-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-slate-500">Kompleksitas Waktu:</span>
+            <span class="text-sm font-mono font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">O(n)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Visualizer Box -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+        
+        <!-- Top Input & Setup Bar -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Target Angka yang Dicari:</label>
+            <input type="number" id="linearTargetInput" value="38" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Opsi Array Data:</label>
+            <div class="flex space-x-2">
+              <button onclick="generateLinearArray('random')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all w-full flex items-center justify-center space-x-1">
+                <i data-lucide="shuffle" class="w-3.5 h-3.5"></i>
+                <span>Acak Data</span>
+              </button>
+              <button onclick="generateLinearArray('sorted')" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all w-full flex items-center justify-center space-x-1">
+                <i data-lucide="arrow-down-0-1" class="w-3.5 h-3.5"></i>
+                <span>Urutkan</span>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kecepatan Animasi:</label>
+            <input type="range" id="linearSpeedRange" min="200" max="1500" value="800" class="w-full accent-sky-600 cursor-pointer">
+            <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-0.5">
+              <span>Cepat</span>
+              <span>Lambat</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Array Container -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Visualisasi Deret Array:</span>
+            <span id="linearStepCounter" class="text-xs font-mono font-bold text-sky-600">Langkah: 0</span>
+          </div>
+
+          <div id="linearArrayContainer" class="flex items-center justify-start sm:justify-center gap-2 py-8 px-4 bg-slate-50 rounded-2xl border border-slate-200 overflow-x-auto min-h-[140px]">
+            <!-- Dynamic Cards rendered here -->
+          </div>
+
+          <!-- Color Legend -->
+          <div class="flex flex-wrap items-center justify-center gap-4 mt-3 text-xs text-slate-600">
+            <div class="flex items-center space-x-1.5">
+              <span class="w-3.5 h-3.5 rounded bg-slate-200 border border-slate-300 inline-block"></span>
+              <span>Belum Didekati</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-3.5 h-3.5 rounded bg-amber-400 border border-amber-500 inline-block"></span>
+              <span>Sedang Diperiksa</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-3.5 h-3.5 rounded bg-emerald-500 border border-emerald-600 inline-block"></span>
+              <span>Ditemukan!</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-3.5 h-3.5 rounded bg-rose-200 border border-rose-300 inline-block"></span>
+              <span>Bukan Target</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulation Controls Buttons -->
+        <div class="flex items-center justify-center space-x-3 pt-2">
+          <button onclick="stepLinearPrev()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1">
+            <i data-lucide="skip-back" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Mundur</span>
+          </button>
+          
+          <button id="linearPlayBtn" onclick="toggleLinearPlay()" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center space-x-2">
+            <i data-lucide="play" id="linearPlayIcon" class="w-4 h-4"></i>
+            <span id="linearPlayText">Jalankan (Play)</span>
+          </button>
+
+          <button onclick="stepLinearNext()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1">
+            <span class="hidden sm:inline">Maju</span>
+            <i data-lucide="skip-forward" class="w-4 h-4"></i>
+          </button>
+
+          <button onclick="resetLinearVisualizer()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-xl transition-all">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Step Explanation Log Box -->
+        <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs shadow-inner flex items-start space-x-3">
+          <i data-lucide="terminal" class="w-4 h-4 text-sky-400 mt-0.5 shrink-0"></i>
+          <div id="linearLogText">Klik 'Jalankan' atau 'Maju' untuk memulai proses simulasi Linear Search.</div>
+        </div>
+
+      </div>
+
+      <!-- CODE IMPLEMENTATION DROPDOWN (C++ & PYTHON) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <button onclick="toggleCodeDropdown('linearCodeAcc')" class="w-full px-6 py-4 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-all font-bold text-slate-800 text-sm">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="code" class="w-4 h-4 text-sky-600"></i>
+            <span>Implementasi Kode Program (C++ & Python)</span>
+          </div>
+          <i data-lucide="chevron-down" id="linearCodeAccIcon" class="w-4 h-4 text-slate-500 transition-transform"></i>
+        </button>
+
+        <div id="linearCodeAcc" class="hidden border-t border-slate-200 p-6 space-y-6">
+          
+          <!-- C++ Code -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">C++ Implementation</span>
+              <button onclick="copyCode('cppLinearCode')" class="text-xs text-sky-600 hover:text-sky-700 font-semibold flex items-center space-x-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Salin Kode</span>
+              </button>
+            </div>
+            <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono overflow-x-auto"><code id="cppLinearCode">#include &lt;iostream&gt;
+using namespace std;
+
+int linearSearch(int arr[], int size, int target) {
+    for (int i = 0; i &lt; size; i++) {
+        if (arr[i] == target) {
+            return i; // Ditemukan, kembalikan indeks
+        }
+    }
+    return -1; // Tidak ditemukan
+}
+
+int main() {
+    int data[] = {12, 25, 38, 41, 53, 67, 72};
+    int n = sizeof(data) / sizeof(data[0]);
+    int target = 41;
+
+    int result = linearSearch(data, n, target);
+    if (result != -1)
+        cout &lt;&lt; "Elemen ditemukan pada indeks: " &lt;&lt; result &lt;&lt; endl;
+    else
+        cout &lt;&lt; "Elemen tidak ditemukan." &lt;&lt; endl;
+
+    return 0;
+}</code></pre>
+          </div>
+
+          <!-- Python Code -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Python Implementation</span>
+              <button onclick="copyCode('pyLinearCode')" class="text-xs text-sky-600 hover:text-sky-700 font-semibold flex items-center space-x-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Salin Kode</span>
+              </button>
+            </div>
+            <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono overflow-x-auto"><code id="pyLinearCode">def linear_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i  # Ditemukan, kembalikan indeks
+    return -1  # Tidak ditemukan
+
+# Contoh Penggunaan
+data = [12, 25, 38, 41, 53, 67, 72]
+target_val = 41
+
+idx = linear_search(data, target_val)
+if idx != -1:
+    print(f"Elemen ditemukan pada indeks: {idx}")
+else:
+    print("Elemen tidak ditemukan.")</code></pre>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: BINARY SEARCH VISUALIZER & GAME TEBAK ANGKA -->
+    <section id="sec-binary" class="tab-content space-y-6 hidden">
+      <!-- Section Intro Header -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-md">Algoritma #2</span>
+              <span class="bg-rose-100 text-rose-700 text-xs font-extrabold px-2.5 py-1 rounded-md border border-rose-200">Syarat Mutlak: Data Harus Terurut!</span>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900 mt-2">Binary Search (Pencarian Biner)</h2>
+            <p class="text-xs text-slate-600 mt-1 max-w-2xl">
+              Algoritma membagi ruang pencarian menjadi dua bagian secara berulang dengan membandingkan nilai tengah (Mid) terhadap target yang dicari.
+            </p>
+          </div>
+          <div class="flex items-center space-x-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="text-xs font-bold text-slate-500">Kompleksitas Waktu:</span>
+            <span class="text-sm font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">O(log n)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION: GAME TEBAK ANGKA 1-100 (BINARY INTUITION) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Game Intuisi Binary Search</span>
+            <h3 class="text-lg font-bold text-slate-900 mt-1">Game Tebak Angka 1 - 100 🧠</h3>
+          </div>
+          
+          <!-- Mode Toggle Game -->
+          <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
+            <button id="btnGameModeA" onclick="switchGuessMode('A')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-emerald-600 shadow-sm transition-all">
+              Mode A: Komputer Menebak
+            </button>
+            <button id="btnGameModeB" onclick="switchGuessMode('B')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all">
+              Mode B: Player Menebak
+            </button>
+          </div>
+        </div>
+
+        <!-- MODE A: COMPUTER GUESSES PLAYER'S NUMBER -->
+        <div id="gameModeA" class="space-y-4">
+          <p class="text-xs text-slate-600">Pikirkan sebuah angka antara <strong class="font-bold">1 sampai 100</strong>. Komputer akan menebak angka pikiranmu secara efisien menggunakan Binary Search!</p>
+          
+          <div class="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-xl border border-emerald-200 text-center">
+            <span class="text-xs font-medium text-emerald-800 uppercase block mb-1">Tebakan Komputer:</span>
+            <span id="computerGuessDisplay" class="text-3xl font-extrabold text-emerald-700">50 ?</span>
+            <div class="text-[11px] text-emerald-600 mt-1 font-mono" id="guessRangeInfo">Rentang Aktif: 1 - 100</div>
+          </div>
+
+          <!-- Feedback Buttons for Mode A -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button onclick="processGuessFeedback('bigger')" id="btnBigger" class="py-2.5 px-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center space-x-1">
+              <i data-lucide="arrow-up" class="w-4 h-4"></i>
+              <span>Angka Saya Lebih Besar</span>
+            </button>
+            <button onclick="processGuessFeedback('correct')" id="btnCorrect" class="py-2.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center space-x-1">
+              <i data-lucide="check" class="w-4 h-4"></i>
+              <span>Benar!</span>
+            </button>
+            <button onclick="processGuessFeedback('smaller')" id="btnSmaller" class="py-2.5 px-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center space-x-1">
+              <i data-lucide="arrow-down" class="w-4 h-4"></i>
+              <span>Angka Saya Lebih Kecil</span>
+            </button>
+          </div>
+
+          <div id="guessGameLog" class="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium">
+            Pikirkan angka 1-100 lalu berikan respon pada tombol di atas.
+          </div>
+        </div>
+
+        <!-- MODE B: PLAYER GUESSES COMPUTER'S SECRET NUMBER -->
+        <div id="gameModeB" class="space-y-4 hidden">
+          <p class="text-xs text-slate-600">Komputer telah menyimpan angka rahasia antara <strong class="font-bold">1 sampai 100</strong>. Giliranmu menebaknya! Gunakan petunjuk dari komputer.</p>
+          
+          <div class="flex items-center space-x-2 max-w-md mx-auto">
+            <input type="number" id="playerGuessInput" min="1" max="100" placeholder="Masukkan tebakanmu..." class="flex-1 px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <button onclick="submitPlayerGuess()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center space-x-1.5">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              <span>Tebak</span>
+            </button>
+          </div>
+
+          <div id="playerGameLog" class="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto">
+            Ketik angka tebakanmu lalu tekan tombol 'Tebak'.
+          </div>
+        </div>
+
+        <button onclick="resetGuessGame()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1.5">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>Reset Game Tebak Angka</span>
+        </button>
+      </div>
+
+      <!-- Main Visualizer Box Binary Search -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+        
+        <!-- Top Input & Setup Bar -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Target Angka yang Dicari:</label>
+            <input type="number" id="binaryTargetInput" value="45" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Generate Array Terurut Baru:</label>
+            <button onclick="generateBinaryArray()" class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-semibold transition-all w-full flex items-center justify-center space-x-1">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>Acak Elemen Baru</span>
+            </button>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Kecepatan Animasi:</label>
+            <input type="range" id="binarySpeedRange" min="300" max="2000" value="1000" class="w-full accent-indigo-600 cursor-pointer">
+            <div class="flex justify-between text-[10px] text-slate-400 font-mono mt-0.5">
+              <span>Cepat</span>
+              <span>Lambat</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Array Container with Pointer Labels -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Visualisasi Indeks & Pointer:</span>
+            <span id="binaryStepCounter" class="text-xs font-mono font-bold text-indigo-600">Langkah: 0</span>
+          </div>
+
+          <div id="binaryArrayContainer" class="flex items-end justify-start sm:justify-center gap-2 py-10 px-4 bg-slate-50 rounded-2xl border border-slate-200 overflow-x-auto min-h-[160px]">
+            <!-- Dynamic Cards rendered here -->
+          </div>
+
+          <!-- Color & Pointer Legend -->
+          <div class="flex flex-wrap items-center justify-center gap-4 mt-4 text-xs text-slate-600">
+            <div class="flex items-center space-x-1.5">
+              <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+              <span class="font-bold text-rose-700">Low (Batas Kiri)</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+              <span class="font-bold text-amber-700">Mid (Titik Tengah)</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-3 h-3 rounded-full bg-sky-500 inline-block"></span>
+              <span class="font-bold text-sky-700">High (Batas Kanan)</span>
+            </div>
+            <div class="flex items-center space-x-1.5">
+              <span class="w-3.5 h-3.5 rounded bg-slate-300 opacity-40 inline-block"></span>
+              <span>Dieliminasi / Dibuang</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulation Controls Buttons -->
+        <div class="flex items-center justify-center space-x-3 pt-2">
+          <button onclick="stepBinaryPrev()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1">
+            <i data-lucide="skip-back" class="w-4 h-4"></i>
+            <span class="hidden sm:inline">Mundur</span>
+          </button>
+          
+          <button id="binaryPlayBtn" onclick="toggleBinaryPlay()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center space-x-2">
+            <i data-lucide="play" id="binaryPlayIcon" class="w-4 h-4"></i>
+            <span id="binaryPlayText">Jalankan (Play)</span>
+          </button>
+
+          <button onclick="stepBinaryNext()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center space-x-1">
+            <span class="hidden sm:inline">Maju</span>
+            <i data-lucide="skip-forward" class="w-4 h-4"></i>
+          </button>
+
+          <button onclick="resetBinaryVisualizer()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-xl transition-all">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Step Explanation Log Box -->
+        <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs shadow-inner flex items-start space-x-3">
+          <i data-lucide="code-2" class="w-4 h-4 text-indigo-400 mt-0.5 shrink-0"></i>
+          <div id="binaryLogText">Klik 'Jalankan' atau 'Maju' untuk mengamati eliminasi variabel Low, Mid, dan High.</div>
+        </div>
+
+      </div>
+
+      <!-- CODE IMPLEMENTATION DROPDOWN (C++ & PYTHON) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <button onclick="toggleCodeDropdown('binaryCodeAcc')" class="w-full px-6 py-4 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-all font-bold text-slate-800 text-sm">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="code" class="w-4 h-4 text-indigo-600"></i>
+            <span>Implementasi Kode Program (C++ & Python)</span>
+          </div>
+          <i data-lucide="chevron-down" id="binaryCodeAccIcon" class="w-4 h-4 text-slate-500 transition-transform"></i>
+        </button>
+
+        <div id="binaryCodeAcc" class="hidden border-t border-slate-200 p-6 space-y-6">
+          
+          <!-- C++ Code -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">C++ Implementation</span>
+              <button onclick="copyCode('cppBinaryCode')" class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold flex items-center space-x-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Salin Kode</span>
+              </button>
+            </div>
+            <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono overflow-x-auto"><code id="cppBinaryCode">#include &lt;iostream&gt;
+using namespace std;
+
+int binarySearch(int arr[], int size, int target) {
+    int low = 0;
+    int high = size - 1;
+
+    while (low &lt;= high) {
+        int mid = low + (high - low) / 2;
+
+        if (arr[mid] == target)
+            return mid; // Ditemukan
+        
+        if (arr[mid] &lt; target)
+            low = mid + 1; // Cari di setengah bagian kanan
+        else
+            high = mid - 1; // Cari di setengah bagian kiri
+    }
+
+    return -1; // Tidak ditemukan
+}
+
+int main() {
+    int data[] = {11, 19, 24, 33, 45, 52, 68, 77, 85, 91, 98};
+    int n = sizeof(data) / sizeof(data[0]);
+    int target = 45;
+
+    int result = binarySearch(data, n, target);
+    if (result != -1)
+        cout &lt;&lt; "Elemen ditemukan pada indeks: " &lt;&lt; result &lt;&lt; endl;
+    else
+        cout &lt;&lt; "Elemen tidak ditemukan." &lt;&lt; endl;
+
+    return 0;
+}</code></pre>
+          </div>
+
+          <!-- Python Code -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Python Implementation</span>
+              <button onclick="copyCode('pyBinaryCode')" class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold flex items-center space-x-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>Salin Kode</span>
+              </button>
+            </div>
+            <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono overflow-x-auto"><code id="pyBinaryCode">def binary_search(arr, target):
+    low = 0
+    high = len(arr) - 1
+
+    while low &lt;= high:
+        mid = (low + high) // 2
+
+        if arr[mid] == target:
+            return mid  # Ditemukan
+        elif arr[mid] &lt; target:
+            low = mid + 1  # Buang bagian kiri
+        else:
+            high = mid - 1  # Buang bagian kanan
+
+    return -1  # Tidak ditemukan
+
+# Contoh Penggunaan
+data = [11, 19, 24, 33, 45, 52, 68, 77, 85, 91, 98]
+target_val = 45
+
+idx = binary_search(data, target_val)
+if idx != -1:
+    print(f"Elemen ditemukan pada indeks: {idx}")
+else:
+    print("Elemen tidak ditemukan.")</code></pre>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: ARENA KOMPARASI SIDE-BY-SIDE -->
+    <section id="sec-compare" class="tab-content space-y-6 hidden">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <h2 class="text-xl font-bold text-slate-900">Arena Komparasi Side-by-Side ⚔️</h2>
+        <p class="text-xs text-slate-600 mt-1">
+          Uji efisiensi kecepatan antara Linear Search vs Binary Search pada himpunan 100 data terurut secara bersamaan!
+        </p>
+        
+        <!-- Controls Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mt-4 pt-4 border-t border-slate-100">
+          <div class="flex items-center space-x-3">
+            <label class="text-xs font-semibold text-slate-700">Target Angka (1-100):</label>
+            <input type="number" id="compareTargetInput" min="1" max="100" value="88" class="w-24 px-3 py-1.5 border border-slate-300 rounded-xl text-sm font-bold text-center focus:ring-2 focus:ring-sky-500">
+          </div>
+          <button onclick="runComparison()" class="px-6 py-2.5 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center space-x-2">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            <span>Mulai Adu Algoritma!</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Comparison Dual Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Linear Search Box -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-md">Linear Search</span>
+              <span class="text-xs font-mono font-bold text-slate-500">O(n)</span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+              <span class="text-xs text-slate-500">Total Operasi/Langkah:</span>
+              <span id="cmpLinearSteps" class="text-2xl font-extrabold text-amber-600">0</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-3 mt-2 overflow-hidden">
+              <div id="cmpLinearProgress" class="bg-amber-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+          </div>
+          <div id="cmpLinearStatus" class="mt-6 p-3 bg-slate-50 rounded-xl text-xs text-slate-600 text-center font-mono">
+            Siap untuk pengujian...
+          </div>
+        </div>
+
+        <!-- Binary Search Box -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Binary Search</span>
+              <span class="text-xs font-mono font-bold text-slate-500">O(log n)</span>
+            </div>
+            <div class="mt-2 flex items-baseline justify-between">
+              <span class="text-xs text-slate-500">Total Operasi/Langkah:</span>
+              <span id="cmpBinarySteps" class="text-2xl font-extrabold text-emerald-600">0</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-3 mt-2 overflow-hidden">
+              <div id="cmpBinaryProgress" class="bg-emerald-500 h-full w-0 transition-all duration-300"></div>
+            </div>
+          </div>
+          <div id="cmpBinaryStatus" class="mt-6 p-3 bg-slate-50 rounded-xl text-xs text-slate-600 text-center font-mono">
+            Siap untuk pengujian...
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Verdict Box -->
+      <div id="cmpVerdictBox" class="hidden bg-emerald-50 border border-emerald-200 p-5 rounded-2xl text-emerald-900">
+        <h4 class="font-bold text-sm flex items-center space-x-2">
+          <i data-lucide="trophy" class="w-5 h-5 text-emerald-600"></i>
+          <span>Hasil Komparasi:</span>
+        </h4>
+        <p id="cmpVerdictText" class="text-xs mt-1 leading-relaxed text-emerald-800">
+          <!-- Text dynamically inserted -->
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 5: KUIS & EVALUASI MANDIRI -->
+    <section id="sec-quiz" class="tab-content space-y-6 hidden">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Kuis & Uji Pemahaman Mandiri 📝</h2>
+            <p class="text-xs text-slate-600 mt-1">Uji pemahamanmu mengenai konsep Linear dan Binary Search melalui studi kasus di bawah ini.</p>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-slate-400 block font-mono">SKOR ANDA</span>
+            <span id="quizScoreDisplay" class="text-2xl font-extrabold text-sky-600">0 / 3</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Questions Container -->
+      <div class="space-y-4" id="quizContainer">
+        <!-- Rendered dynamically by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CLEAN FOOTER -->
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // ==========================================
+    // GLOBAL STATE & SYSTEM SETUP
+    // ==========================================
+    let currentUserMode = 'student';
+    let currentTab = 'intro';
+
+    window.onload = function() {
+      lucide.createIcons();
+      initCardGame();
+      initGuessGame();
+      initPlayerGuessGame();
+      resetLinearVisualizer();
+      resetBinaryVisualizer();
+      renderQuiz();
+    };
+
+    // Tab Navigation Logic
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(el => {
+        el.classList.remove('text-sky-600', 'bg-sky-50', 'font-semibold');
+        el.classList.add('text-slate-600', 'hover:bg-slate-100', 'font-medium');
+      });
+
+      const activeSection = document.getElementById(`sec-${tabId}`);
+      if(activeSection) activeSection.classList.remove('hidden');
+
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      if(activeBtn) {
+        activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-100', 'font-medium');
+        activeBtn.classList.add('text-sky-600', 'bg-sky-50', 'font-semibold');
+      }
+    }
+
+    // Teacher vs Student Mode Switcher
+    function switchUserMode(mode) {
+      currentUserMode = mode;
+      const studentBtn = document.getElementById('modeStudentBtn');
+      const teacherBtn = document.getElementById('modeTeacherBtn');
+      const teacherBanner = document.getElementById('teacherBanner');
+
+      if (mode === 'teacher') {
+        studentBtn.classList.remove('bg-white', 'text-sky-600', 'shadow-sm');
+        studentBtn.classList.add('text-slate-600');
+        teacherBtn.classList.add('bg-white', 'text-amber-600', 'shadow-sm');
+        teacherBtn.classList.remove('text-slate-600');
+        teacherBanner.classList.remove('hidden');
+      } else {
+        teacherBtn.classList.remove('bg-white', 'text-amber-600', 'shadow-sm');
+        teacherBtn.classList.add('text-slate-600');
+        studentBtn.classList.add('bg-white', 'text-sky-600', 'shadow-sm');
+        studentBtn.classList.remove('text-slate-600');
+        teacherBanner.classList.add('hidden');
+      }
+    }
+
+    // Code Accordion Toggle
+    function toggleCodeDropdown(accId) {
+      const acc = document.getElementById(accId);
+      const icon = document.getElementById(`${accId}Icon`);
+      if (acc.classList.contains('hidden')) {
+        acc.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+      } else {
+        acc.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+      }
+    }
+
+    // Copy Code Helper
+    function copyCode(elementId) {
+      const codeText = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(codeText).then(() => {
+        alert("Kode berhasil disalin!");
+      });
+    }
+
+    // ==========================================
+    // APERSEPSI GAME 1: CARD SEARCH (LINEAR)
+    // ==========================================
+    let cardTarget = 0;
+    let cardTries = 0;
+    let cardValues = [];
+    let cardRevealed = [];
+
+    function initCardGame() {
+      cardTries = 0;
+      document.getElementById('cardTriesCount').innerText = `Percobaan: 0`;
+      document.getElementById('cardGameFeedback').className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium";
+      document.getElementById('cardGameFeedback').innerText = "Klik salah satu kartu di atas untuk menemukan angka target.";
+      
+      const set = new Set();
+      while(set.size < 10) {
+        set.add(Math.floor(Math.random() * 89) + 10);
+      }
+      cardValues = Array.from(set);
+      cardRevealed = new Array(10).fill(false);
+      
+      cardTarget = cardValues[Math.floor(Math.random() * cardValues.length)];
+      document.getElementById('cardTargetValue').innerText = cardTarget;
+
+      renderCards();
+    }
+
+    function renderCards() {
+      const grid = document.getElementById('cardsGrid');
+      grid.innerHTML = '';
+      cardValues.forEach((val, idx) => {
+        const btn = document.createElement('button');
+        btn.onclick = () => revealCard(idx);
+        btn.className = `h-16 rounded-xl font-bold text-sm transition-all transform flex items-center justify-center border shadow-sm ${
+          cardRevealed[idx]
+            ? (val === cardTarget ? 'bg-emerald-500 text-white border-emerald-600 scale-105' : 'bg-rose-100 text-rose-700 border-rose-200')
+            : 'bg-white hover:bg-slate-100 text-slate-400 border-slate-200 hover:-translate-y-1'
+        }`;
+        
+        btn.innerHTML = cardRevealed[idx] ? val : `<i data-lucide="help-circle" class="w-5 h-5 text-slate-300"></i>`;
+        grid.appendChild(btn);
+      });
+      lucide.createIcons();
+    }
+
+    function revealCard(idx) {
+      if (cardRevealed[idx]) return;
+      cardRevealed[idx] = true;
+      cardTries++;
+      document.getElementById('cardTriesCount').innerText = `Percobaan: ${cardTries}`;
+
+      const fb = document.getElementById('cardGameFeedback');
+      if (cardValues[idx] === cardTarget) {
+        fb.className = "p-3 rounded-xl bg-emerald-50 text-emerald-800 text-xs text-center border border-emerald-200 font-bold";
+        fb.innerText = `🎉 HEBAT! Ditemukan dalam ${cardTries} kali coba. Karena data acak, kamu harus mengecek satu per satu (Linear Search).`;
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } else {
+        fb.className = "p-3 rounded-xl bg-amber-50 text-amber-800 text-xs text-center border border-amber-200 font-medium";
+        fb.innerText = `Bukan ${cardValues[idx]}. Coba kartu lainnya!`;
+      }
+      renderCards();
+    }
+
+    function resetCardGame() {
+      initCardGame();
+    }
+
+    // ==========================================
+    // BINARY SEARCH GAME: TEBAK ANGKA 1-100
+    // ==========================================
+    let guessMode = 'A'; // 'A' = Komputer Menebak, 'B' = Player Menebak
+
+    function switchGuessMode(mode) {
+      guessMode = mode;
+      const btnA = document.getElementById('btnGameModeA');
+      const btnB = document.getElementById('btnGameModeB');
+      const modeA = document.getElementById('gameModeA');
+      const modeB = document.getElementById('gameModeB');
+
+      if (mode === 'A') {
+        btnA.classList.add('bg-white', 'text-emerald-600', 'shadow-sm');
+        btnA.classList.remove('text-slate-600');
+        btnB.classList.remove('bg-white', 'text-emerald-600', 'shadow-sm');
+        btnB.classList.add('text-slate-600');
+        modeA.classList.remove('hidden');
+        modeB.classList.add('hidden');
+      } else {
+        btnB.classList.add('bg-white', 'text-emerald-600', 'shadow-sm');
+        btnB.classList.remove('text-slate-600');
+        btnA.classList.remove('bg-white', 'text-emerald-600', 'shadow-sm');
+        btnA.classList.add('text-slate-600');
+        modeB.classList.remove('hidden');
+        modeA.classList.add('hidden');
+      }
+    }
+
+    // MODE A LOGIC: COMPUTER GUESSES
+    let guessLow = 1;
+    let guessHigh = 100;
+    let guessMid = 50;
+    let guessTries = 0;
+    let guessGameOver = false;
+
+    function initGuessGame() {
+      guessLow = 1;
+      guessHigh = 100;
+      guessMid = Math.floor((guessLow + guessHigh) / 2);
+      guessTries = 1;
+      guessGameOver = false;
+
+      document.getElementById('computerGuessDisplay').innerText = `${guessMid} ?`;
+      document.getElementById('guessRangeInfo').innerText = `Rentang Aktif: ${guessLow} - ${guessHigh}`;
+      
+      const log = document.getElementById('guessGameLog');
+      log.className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium";
+      log.innerText = "Pikirkan angka 1-100 lalu berikan respon pada tombol di atas.";
+    }
+
+    function processGuessFeedback(type) {
+      if(guessGameOver) return;
+
+      const log = document.getElementById('guessGameLog');
+
+      if (type === 'correct') {
+        guessGameOver = true;
+        log.className = "p-3 rounded-xl bg-emerald-50 text-emerald-800 text-xs text-center border border-emerald-200 font-bold";
+        log.innerText = `🎯 TEPAT! Komputer berhasil menebak angka ${guessMid} dalam ${guessTries} kali tebakan menggunakan prinsip Binary Search!`;
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+        return;
+      }
+
+      if (type === 'smaller') {
+        // Angka rahasia pemain lebih kecil dari guessMid
+        guessHigh = guessMid - 1;
+      } else if (type === 'bigger') {
+        // Angka rahasia pemain lebih besar dari guessMid
+        guessLow = guessMid + 1;
+      }
+
+      if (guessLow > guessHigh) {
+        log.className = "p-3 rounded-xl bg-rose-50 text-rose-800 text-xs text-center border border-rose-200 font-bold";
+        log.innerText = "Ada respon yang keliru tadi! Silakan reset game.";
+        guessGameOver = true;
+        return;
+      }
+
+      guessMid = Math.floor((guessLow + guessHigh) / 2);
+      guessTries++;
+
+      document.getElementById('computerGuessDisplay').innerText = `${guessMid} ?`;
+      document.getElementById('guessRangeInfo').innerText = `Rentang Aktif: ${guessLow} - ${guessHigh}`;
+      log.innerText = `Komputer memotong setengah kemungkinan. Tebakan ke-${guessTries}: ${guessMid}?`;
+    }
+
+    // MODE B LOGIC: PLAYER GUESSES
+    let secretComputerNumber = 0;
+    let playerTries = 0;
+    let playerGameOver = false;
+
+    function initPlayerGuessGame() {
+      secretComputerNumber = Math.floor(Math.random() * 100) + 1;
+      playerTries = 0;
+      playerGameOver = false;
+      document.getElementById('playerGuessInput').value = '';
+      const log = document.getElementById('playerGameLog');
+      log.className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto";
+      log.innerText = "Ketik angka tebakanmu lalu tekan tombol 'Tebak'.";
+    }
+
+    function submitPlayerGuess() {
+      if(playerGameOver) return;
+      const input = document.getElementById('playerGuessInput');
+      const val = parseInt(input.value);
+
+      if (isNaN(val) || val < 1 || val > 100) {
+        alert("Masukkan angka antara 1 sampai 100!");
+        return;
+      }
+
+      playerTries++;
+      const log = document.getElementById('playerGameLog');
+
+      if (val === secretComputerNumber) {
+        playerGameOver = true;
+        log.className = "p-3 rounded-xl bg-emerald-50 text-emerald-800 text-xs text-center border border-emerald-200 font-bold max-w-md mx-auto";
+        log.innerText = `🎉 TEBAKAN BENAR! Angka rahasianya adalah ${secretComputerNumber}. Kamu menebak dalam ${playerTries} langkah.`;
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } else if (val < secretComputerNumber) {
+        log.className = "p-3 rounded-xl bg-amber-50 text-amber-800 text-xs text-center border border-amber-200 font-medium max-w-md mx-auto";
+        log.innerText = `Tebakanmu (${val}) TERLALU KECIL! Coba angka yang lebih besar.`;
+      } else {
+        log.className = "p-3 rounded-xl bg-indigo-50 text-indigo-800 text-xs text-center border border-indigo-200 font-medium max-w-md mx-auto";
+        log.innerText = `Tebakanmu (${val}) TERLALU BESAR! Coba angka yang lebih kecil.`;
+      }
+    }
+
+    function resetGuessGame() {
+      initGuessGame();
+      initPlayerGuessGame();
+    }
+
+    // ==========================================
+    // SECTION 2: LINEAR SEARCH VISUALIZER LOGIC
+    // ==========================================
+    let linearArray = [12, 25, 38, 41, 53, 67, 72, 89, 94];
+    let linearCurrentStep = 0;
+    let linearTimer = null;
+    let linearIsPlaying = false;
+
+    function generateLinearArray(type) {
+      resetLinearVisualizer();
+      const set = new Set();
+      while(set.size < 9) set.add(Math.floor(Math.random() * 89) + 10);
+      linearArray = Array.from(set);
+      if(type === 'sorted') linearArray.sort((a,b) => a - b);
+      renderLinearArray();
+    }
+
+    function renderLinearArray() {
+      const container = document.getElementById('linearArrayContainer');
+      container.innerHTML = '';
+      const targetVal = parseInt(document.getElementById('linearTargetInput').value);
+
+      linearArray.forEach((val, idx) => {
+        let cardBg = "bg-white border-slate-200 text-slate-800";
+        let statusBadge = "";
+
+        if (linearCurrentStep > 0) {
+          const examinedIdx = linearCurrentStep - 1;
+          if (idx < examinedIdx) {
+            cardBg = "bg-rose-50 border-rose-200 text-rose-400 opacity-60";
+          } else if (idx === examinedIdx) {
+            if (val === targetVal) {
+              cardBg = "bg-emerald-500 border-emerald-600 text-white scale-110 shadow-lg ring-4 ring-emerald-200";
+              statusBadge = `<span class="absolute -top-3 bg-emerald-700 text-[9px] text-white px-1.5 py-0.5 rounded-full font-bold uppercase">Ketemu</span>`;
+            } else {
+              cardBg = "bg-amber-400 border-amber-500 text-slate-900 scale-105 shadow-md";
+              statusBadge = `<span class="absolute -top-3 bg-amber-600 text-[9px] text-white px-1.5 py-0.5 rounded-full font-bold uppercase">Periksa</span>`;
+            }
+          }
+        }
+
+        const div = document.createElement('div');
+        div.className = `relative flex flex-col items-center justify-center w-12 h-16 sm:w-14 sm:h-20 rounded-xl border-2 font-bold text-sm sm:text-base array-card shrink-0 ${cardBg}`;
+        div.innerHTML = `${statusBadge}
+                         <span>${val}</span>
+                         <span class="text-[10px] font-mono font-normal mt-1 opacity-60">i:${idx}</span>`;
+        container.appendChild(div);
+      });
+
+      document.getElementById('linearStepCounter').innerText = `Langkah: ${linearCurrentStep}`;
+    }
+
+    function updateLinearLog() {
+      const targetVal = parseInt(document.getElementById('linearTargetInput').value);
+      const log = document.getElementById('linearLogText');
+
+      if (linearCurrentStep === 0) {
+        log.innerText = `Siap melakukan pencarian target (${targetVal}). Klik 'Maju' atau 'Jalankan'.`;
+        return;
+      }
+
+      const currentIdx = linearCurrentStep - 1;
+
+      if (currentIdx < linearArray.length) {
+        const val = linearArray[currentIdx];
+        if (val === targetVal) {
+          log.innerHTML = `<span class="text-emerald-400 font-bold">SUKSES:</span> Elemen pada indeks ${currentIdx} (${val}) sama dengan target (${targetVal}). Pencarian Selesai!`;
+        } else {
+          log.innerText = `Langkah ${linearCurrentStep}: Memeriksa indeks ${currentIdx} (Nilai: ${val}). Bukan target (${targetVal}), lanjut ke indeks berikutnya...`;
+        }
+      } else {
+        log.innerHTML = `<span class="text-rose-400 font-bold">GAGAL:</span> Seluruh array (${linearArray.length} elemen) telah diperiksa. Target (${targetVal}) tidak ditemukan dalam data.`;
+      }
+    }
+
+    function stepLinearNext() {
+      const targetVal = parseInt(document.getElementById('linearTargetInput').value);
+      
+      if (linearCurrentStep > 0) {
+        const lastIdx = linearCurrentStep - 1;
+        if (lastIdx < linearArray.length && linearArray[lastIdx] === targetVal) {
+          stopLinearPlay();
+          return;
+        }
+      }
+
+      if (linearCurrentStep <= linearArray.length) {
+        linearCurrentStep++;
+        renderLinearArray();
+        updateLinearLog();
+      } else {
+        stopLinearPlay();
+      }
+    }
+
+    function stepLinearPrev() {
+      if (linearCurrentStep > 0) {
+        linearCurrentStep--;
+        renderLinearArray();
+        updateLinearLog();
+      }
+    }
+
+    function toggleLinearPlay() {
+      if (linearIsPlaying) {
+        stopLinearPlay();
+      } else {
+        linearIsPlaying = true;
+        document.getElementById('linearPlayText').innerText = "Pause";
+        document.getElementById('linearPlayIcon').setAttribute('data-lucide', 'pause');
+        lucide.createIcons();
+
+        const speed = 1700 - parseInt(document.getElementById('linearSpeedRange').value);
+        linearTimer = setInterval(() => {
+          const targetVal = parseInt(document.getElementById('linearTargetInput').value);
+          if (linearCurrentStep > 0 && linearCurrentStep <= linearArray.length) {
+            if (linearArray[linearCurrentStep - 1] === targetVal) {
+              stopLinearPlay();
+              return;
+            }
+          }
+          if (linearCurrentStep > linearArray.length) {
+            stopLinearPlay();
+            return;
+          }
+          stepLinearNext();
+        }, speed);
+      }
+    }
+
+    function stopLinearPlay() {
+      linearIsPlaying = false;
+      if (linearTimer) clearInterval(linearTimer);
+      document.getElementById('linearPlayText').innerText = "Jalankan (Play)";
+      document.getElementById('linearPlayIcon').setAttribute('data-lucide', 'play');
+      lucide.createIcons();
+    }
+
+    function resetLinearVisualizer() {
+      stopLinearPlay();
+      linearCurrentStep = 0;
+      renderLinearArray();
+      updateLinearLog();
+    }
+
+
+    // ==========================================
+    // SECTION 3: BINARY SEARCH VISUALIZER LOGIC
+    // ==========================================
+    let binaryArray = [11, 19, 24, 33, 45, 52, 68, 77, 85, 91, 98];
+    let binaryStepsHistory = [];
+    let binaryCurrentStepIdx = 0;
+    let binaryTimer = null;
+    let binaryIsPlaying = false;
+
+    function generateBinaryArray() {
+      resetBinaryVisualizer();
+      const set = new Set();
+      while(set.size < 11) set.add(Math.floor(Math.random() * 89) + 10);
+      binaryArray = Array.from(set).sort((a,b) => a - b);
+      calculateBinarySteps();
+      renderBinaryArray();
+    }
+
+    function calculateBinarySteps() {
+      binaryStepsHistory = [];
+      const targetVal = parseInt(document.getElementById('binaryTargetInput').value);
+      let low = 0;
+      let high = binaryArray.length - 1;
+      let step = 0;
+
+      while (low <= high) {
+        let mid = Math.floor((low + high) / 2);
+        step++;
+        binaryStepsHistory.push({
+          step: step,
+          low: low,
+          mid: mid,
+          high: high,
+          found: binaryArray[mid] === targetVal,
+          val: binaryArray[mid]
+        });
+
+        if (binaryArray[mid] === targetVal) {
+          break;
+        } else if (binaryArray[mid] < targetVal) {
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+
+      if (binaryStepsHistory.length === 0 || (!binaryStepsHistory[binaryStepsHistory.length - 1].found)) {
+        binaryStepsHistory.push({
+          step: step + 1,
+          low: low,
+          mid: -1,
+          high: high,
+          found: false,
+          notFound: true
+        });
+      }
+    }
+
+    function renderBinaryArray() {
+      const container = document.getElementById('binaryArrayContainer');
+      container.innerHTML = '';
+      const targetVal = parseInt(document.getElementById('binaryTargetInput').value);
+
+      const currentState = binaryStepsHistory[binaryCurrentStepIdx - 1] || null;
+
+      binaryArray.forEach((val, idx) => {
+        let cardStyle = "bg-white border-slate-200 text-slate-800";
+        let lowLabel = "";
+        let midLabel = "";
+        let highLabel = "";
+
+        if (currentState) {
+          const { low, mid, high, notFound } = currentState;
+
+          if (idx < low || idx > high) {
+            cardStyle = "bg-slate-100 border-slate-200 text-slate-300 opacity-40";
+          }
+
+          if (!notFound) {
+            if (idx === mid) {
+              if (val === targetVal) {
+                cardStyle = "bg-emerald-500 border-emerald-600 text-white scale-110 shadow-xl ring-4 ring-emerald-200 z-20";
+              } else {
+                cardStyle = "bg-amber-400 border-amber-500 text-slate-900 scale-105 shadow-md z-10";
+              }
+              midLabel = `<span class="absolute -top-7 bg-amber-500 text-[10px] text-white px-2 py-0.5 rounded-full font-extrabold uppercase shadow-sm">Mid</span>`;
+            }
+
+            if (idx === low) {
+              lowLabel = `<span class="absolute -bottom-6 bg-rose-500 text-[9px] text-white px-1.5 py-0.5 rounded-md font-bold uppercase shadow-sm">Low</span>`;
+            }
+            if (idx === high) {
+              highLabel = `<span class="absolute -bottom-6 bg-sky-500 text-[9px] text-white px-1.5 py-0.5 rounded-md font-bold uppercase shadow-sm">High</span>`;
+            }
+          }
+        }
+
+        const div = document.createElement('div');
+        div.className = `relative flex flex-col items-center justify-center w-11 h-16 sm:w-13 sm:h-20 rounded-xl border-2 font-bold text-xs sm:text-base array-card shrink-0 ${cardStyle}`;
+        div.innerHTML = `${midLabel}
+                         ${lowLabel}
+                         ${highLabel}
+                         <span>${val}</span>
+                         <span class="text-[9px] font-mono font-normal mt-0.5 opacity-60">i:${idx}</span>`;
+        container.appendChild(div);
+      });
+
+      document.getElementById('binaryStepCounter').innerText = `Langkah: ${binaryCurrentStepIdx}`;
+    }
+
+    function updateBinaryLog() {
+      const targetVal = parseInt(document.getElementById('binaryTargetInput').value);
+      const log = document.getElementById('binaryLogText');
+
+      if (binaryCurrentStepIdx === 0) {
+        log.innerText = `Siap melakukan Binary Search target (${targetVal}). Data terurut. Klik 'Maju' atau 'Jalankan'.`;
+        return;
+      }
+
+      const currentState = binaryStepsHistory[binaryCurrentStepIdx - 1];
+
+      if (currentState.notFound) {
+        log.innerHTML = `<span class="text-rose-400 font-bold">GAGAL:</span> Batas Low (${currentState.low}) melebihi High (${currentState.high}). Target (${targetVal}) tidak ada dalam array.`;
+      } else if (currentState.found) {
+        log.innerHTML = `<span class="text-emerald-400 font-bold">SUKSES:</span> Target (${targetVal}) cocok dengan nilai Mid pada indeks ${currentState.mid}! Selesai hanya dalam ${currentState.step} langkah.`;
+      } else {
+        const midVal = binaryArray[currentState.mid];
+        let action = midVal < targetVal ? `Mid (${midVal}) < Target (${targetVal}), maka geser Low ke Mid + 1 (${currentState.mid + 1})` : `Mid (${midVal}) > Target (${targetVal}), maka geser High ke Mid - 1 (${currentState.mid - 1})`;
+        log.innerText = `Langkah ${currentState.step}: Low=${currentState.low}, High=${currentState.high} → Mid=${currentState.mid} (Nilai=${midVal}). ${action}.`;
+      }
+    }
+
+    function stepBinaryNext() {
+      calculateBinarySteps();
+      if (binaryCurrentStepIdx < binaryStepsHistory.length) {
+        binaryCurrentStepIdx++;
+        renderBinaryArray();
+        updateBinaryLog();
+
+        if (binaryStepsHistory[binaryCurrentStepIdx - 1].found) {
+          stopBinaryPlay();
+        }
+      } else {
+        stopBinaryPlay();
+      }
+    }
+
+    function stepBinaryPrev() {
+      if (binaryCurrentStepIdx > 0) {
+        binaryCurrentStepIdx--;
+        renderBinaryArray();
+        updateBinaryLog();
+      }
+    }
+
+    function toggleBinaryPlay() {
+      if (binaryIsPlaying) {
+        stopBinaryPlay();
+      } else {
+        binaryIsPlaying = true;
+        document.getElementById('binaryPlayText').innerText = "Pause";
+        document.getElementById('binaryPlayIcon').setAttribute('data-lucide', 'pause');
+        lucide.createIcons();
+
+        const speed = 2200 - parseInt(document.getElementById('binarySpeedRange').value);
+        binaryTimer = setInterval(() => {
+          if (binaryCurrentStepIdx >= binaryStepsHistory.length) {
+            stopBinaryPlay();
+            return;
+          }
+          stepBinaryNext();
+        }, speed);
+      }
+    }
+
+    function stopBinaryPlay() {
+      binaryIsPlaying = false;
+      if (binaryTimer) clearInterval(binaryTimer);
+      document.getElementById('binaryPlayText').innerText = "Jalankan (Play)";
+      document.getElementById('binaryPlayIcon').setAttribute('data-lucide', 'play');
+      lucide.createIcons();
+    }
+
+    function resetBinaryVisualizer() {
+      stopBinaryPlay();
+      binaryCurrentStepIdx = 0;
+      calculateBinarySteps();
+      renderBinaryArray();
+      updateBinaryLog();
+    }
+
+    document.getElementById('binaryTargetInput').addEventListener('change', () => {
+      resetBinaryVisualizer();
+    });
+    document.getElementById('linearTargetInput').addEventListener('change', () => {
+      resetLinearVisualizer();
+    });
+
+    // ==========================================
+    // SECTION 4: ARENA KOMPARASI SIDE-BY-SIDE
+    // ==========================================
+    function runComparison() {
+      const target = parseInt(document.getElementById('compareTargetInput').value);
+      if (isNaN(target) || target < 1 || target > 100) {
+        alert("Masukkan angka target antara 1 s.d. 100");
+        return;
+      }
+
+      const array100 = Array.from({ length: 100 }, (_, i) => i + 1);
+
+      let linearSteps = 0;
+      let linearFound = false;
+      for (let i = 0; i < array100.length; i++) {
+        linearSteps++;
+        if (array100[i] === target) {
+          linearFound = true;
+          break;
+        }
+      }
+
+      let binarySteps = 0;
+      let binaryFound = false;
+      let low = 0;
+      let high = array100.length - 1;
+
+      while (low <= high) {
+        binarySteps++;
+        let mid = Math.floor((low + high) / 2);
+        if (array100[mid] === target) {
+          binaryFound = true;
+          break;
+        } else if (array100[mid] < target) {
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
+      }
+
+      document.getElementById('cmpLinearSteps').innerText = linearSteps;
+      document.getElementById('cmpBinarySteps').innerText = binarySteps;
+
+      document.getElementById('cmpLinearProgress').style.width = `${(linearSteps / 100) * 100}%`;
+      document.getElementById('cmpBinaryProgress').style.width = `${(binarySteps / 7) * 100}%`;
+
+      document.getElementById('cmpLinearStatus').innerText = linearFound ? `Target ditemukan setelah mengecek ${linearSteps} elemen berurutan.` : `Mengecek seluruh 100 elemen namun target tidak ada.`;
+      document.getElementById('cmpBinaryStatus').innerText = binaryFound ? `Target ditemukan hanya dalam ${binarySteps} kali pembagian area.` : `Selesai dalam ${binarySteps} langkah (Target tidak ada).`;
+
+      const verdictBox = document.getElementById('cmpVerdictBox');
+      const verdictText = document.getElementById('cmpVerdictText');
+      verdictBox.classList.remove('hidden');
+
+      const speedFactor = (linearSteps / (binarySteps || 1)).toFixed(1);
+      verdictText.innerHTML = `Pada pencarian angka <strong class="font-bold">${target}</strong> dari 100 data: <br>` +
+                              `• <strong class="font-bold">Binary Search</strong> ⚡ <span class="font-extrabold text-emerald-700">${speedFactor}x lebih cepat/efisien</span> dibandingkan Linear Search.<br>` +
+                              `• Linear Search butuh <strong class="font-bold">${linearSteps} langkah</strong>, sementara Binary Search hanya butuh <strong class="font-bold">${binarySteps} langkah</strong>!`;
+      
+      confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+    }
+
+    // ==========================================
+    // SECTION 5: KUIS INTERAKTIF & EVALUASI
+    // ==========================================
+    const quizData = [
+      {
+        id: 1,
+        question: "1. Sebuah toko kelontong menyimpan daftar 1.000 barang secara acak (tidak terurut) di dalam komputer. Algoritma pencarian mana yang paling memungkinkan untuk digunakan?",
+        options: [
+          "Binary Search, karena datanya sangat banyak",
+          "Linear Search, karena data belum terurut",
+          "Binary Search, dengan membagi data 1.000 menjadi 500",
+          "Kedua algoritma memiliki kecepatan yang sama persis"
+        ],
+        correct: 1,
+        explanation: "Syarat mutlak penggunaan Binary Search adalah data wajib terurut. Jika data masih acak, kita harus menggunakan Linear Search."
+      },
+      {
+        id: 2,
+        question: "2. Berapa jumlah langkah maksimal (worst-case) yang dibutuhkan Binary Search untuk menemukan nama siswa di dalam buku induk berisi 64 data terurut?",
+        options: [
+          "64 langkah",
+          "32 langkah",
+          "6 langkah",
+          "7 langkah"
+        ],
+        correct: 2,
+        explanation: "Kompleksitas Binary Search adalah O(log2 n). Maka log2(64) = 6 langkah maksimal! (2^6 = 64)."
+      },
+      {
+        id: 3,
+        question: "3. Dalam visualisasi Binary Search, jika nilai pada posisi Mid (misal: 35) lebih kecil daripada angka Target yang kita cari (misal: 50), apa langkah pointer selanjutnya?",
+        options: [
+          "Geser pointer High ke (Mid - 1)",
+          "Geser pointer Low ke (Mid + 1)",
+          "Hentikan pencarian karena target tidak ditemukan",
+          "Ulangi pencarian dari indeks paling awal (0)"
+        ],
+        correct: 1,
+        explanation: "Karena data terurut dan Mid (35) < Target (50), maka seluruh bagian kiri dipastikan lebih kecil lagi. Jadi kita abaikan bagian kiri dengan menggeser Low = Mid + 1."
+      }
+    ];
+
+    let userQuizAnswers = {};
+
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      quizData.forEach((q, qIdx) => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4";
+        
+        let optionsHtml = '';
+        q.options.forEach((opt, optIdx) => {
+          const isSelected = userQuizAnswers[q.id] === optIdx;
+          let btnStyle = "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100";
+          
+          if (userQuizAnswers[q.id] !== undefined) {
+            if (optIdx === q.correct) {
+              btnStyle = "bg-emerald-50 border-emerald-300 text-emerald-900 font-semibold";
+            } else if (isSelected && optIdx !== q.correct) {
+              btnStyle = "bg-rose-50 border-rose-300 text-rose-900 font-semibold";
+            }
+          }
+
+          optionsHtml += `
+            <button onclick="answerQuiz(${q.id}, ${optIdx})" ${userQuizAnswers[q.id] !== undefined ? 'disabled' : ''} class="w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm transition-all flex items-start space-x-3 ${btnStyle}">
+              <span class="w-5 h-5 rounded-full border border-current flex items-center justify-center shrink-0 text-[10px] font-bold mt-0.5">${String.fromCharCode(65 + optIdx)}</span>
+              <span>${opt}</span>
+            </button>
+          `;
+        });
+
+        let explanationHtml = '';
+        if (userQuizAnswers[q.id] !== undefined) {
+          const isCorrect = userQuizAnswers[q.id] === q.correct;
+          explanationHtml = `
+            <div class="p-4 rounded-xl ${isCorrect ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-rose-50 text-rose-900 border border-rose-200'} text-xs mt-3">
+              <span class="font-bold block mb-1">${isCorrect ? '✅ Jawaban Benar!' : '❌ Jawaban Kurang Tepat'}</span>
+              <p class="opacity-90 leading-relaxed">${q.explanation}</p>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug">${q.question}</h3>
+          <div class="space-y-2">${optionsHtml}</div>
+          ${explanationHtml}
+        `;
+        container.appendChild(card);
+      });
+
+      calculateQuizScore();
+    }
+
+    function answerQuiz(qId, optIdx) {
+      userQuizAnswers[qId] = optIdx;
+      renderQuiz();
+    }
+
+    function calculateQuizScore() {
+      let score = 0;
+      quizData.forEach(q => {
+        if (userQuizAnswers[q.id] === q.correct) score++;
+      });
+      document.getElementById('quizScoreDisplay').innerText = `${score} / ${quizData.length}`;
+
+      if (Object.keys(userQuizAnswers).length === quizData.length && score === quizData.length) {
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      }
+    }
+
+  </script>
+</body>
+</html>

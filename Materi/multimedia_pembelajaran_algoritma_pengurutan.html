@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduSort Web - Pembelajaran Algoritma Pengurutan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Modern Layout & Styles */
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 0; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { background-color: #2563eb !important; color: #ffffff !important; font-weight: 700; }
+        
+        .var-bold { font-weight: 700; color: #0f172a; }
+        .card { background: #ffffff; border-radius: 1rem; border: 1px solid #e2e8f0; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        
+        /* Dark Code Blocks */
+        pre.code-box { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            border-radius: 0.75rem; 
+            padding: 1rem; 
+            font-size: 0.75rem; 
+            line-height: 1.6; 
+            overflow-x: auto; 
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            border: 1px solid #1e293b;
+            margin-top: 0.5rem;
+            white-space: pre;
+        }
+        pre.code-box code { font-family: inherit; }
+        
+        .badge-step { width: 1.75rem; height: 1.75rem; background-color: #e0e7ff; color: #4338ca; border-radius: 0.5rem; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.875rem; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 pb-12">
+
+    <!-- Header & Navigasi Utama -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-3 w-full sm:w-auto">
+                <div class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center font-black text-xl shadow-md">
+                    ⇄
+                </div>
+                <div>
+                    <h1 class="text-base font-extrabold text-slate-900 leading-tight">EduSort Web</h1>
+                    <p class="text-xs text-slate-500 font-medium">Pembelajaran Algoritma Pengurutan Interaktif</p>
+                </div>
+            </div>
+
+            <!-- Navigasi Menu Tab -->
+            <nav class="flex items-center space-x-1 bg-slate-100 p-1 rounded-xl w-full sm:w-auto justify-between sm:justify-start text-xs font-semibold overflow-x-auto">
+                <button id="btn-materi" onclick="switchTab('materi')" class="tab-btn active px-3 py-2 rounded-lg text-slate-600 transition">📖 Materi</button>
+                <button id="btn-simulasi" onclick="switchTab('simulasi')" class="tab-btn px-3 py-2 rounded-lg text-slate-600 transition">▶ Simulasi</button>
+                <button id="btn-race" onclick="switchTab('race')" class="tab-btn px-3 py-2 rounded-lg text-slate-600 transition">⚡ Race</button>
+                <button id="btn-game" onclick="switchTab('game')" class="tab-btn px-3 py-2 rounded-lg text-slate-600 transition">🎮 Game</button>
+                <button id="btn-kuis" onclick="switchTab('kuis')" class="tab-btn px-3 py-2 rounded-lg text-slate-600 transition">✔ Kuis</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-6">
+
+        <!-- TAB 1: MATERI -->
+        <section id="tab-materi" class="tab-content active space-y-6">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl p-6 shadow-md">
+                <span class="bg-white/20 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Modul PJJ Mandiri</span>
+                <h2 class="text-xl font-bold mt-2">Memahami Algoritma Pengurutan (Sorting)</h2>
+                <p class="text-xs text-blue-100 mt-1 leading-relaxed">
+                    Pengurutan data dapat dilakukan secara <b class="text-white">Ascending</b> (menaik: kecil ke besar) atau <b class="text-white">Descending</b> (menurun: besar ke kecil). Pelajari konsep logika dan kode programnya di bawah ini!
+                </p>
+            </div>
+
+            <!-- Modul Bubble Sort -->
+            <div class="card space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step">1</span>
+                        <h3 class="text-base font-bold text-slate-800">Bubble Sort (Metode Apung)</h3>
+                    </div>
+                    <span class="text-[11px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium">Pertukaran Bertetangga</span>
+                </div>
+
+                <!-- Analogi Dunia Nyata -->
+                <div class="bg-amber-50 border border-amber-200/60 rounded-xl p-3.5 text-xs text-amber-900 leading-relaxed">
+                    <h4 class="font-bold text-amber-900 mb-1 flex items-center">
+                        💡 Analogi Dunia Nyata: Barisan Siswa
+                    </h4>
+                    Seperti dua siswa bertetangga saat baris upacara. Jika tinggi siswa kiri &gt; kanan, mereka saling bertukar tempat. Elemen terbesar bertahap "mengapung" ke ujung kanan.
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Algoritma ini membandingkan dua elemen bertetangga <b class="var-bold">data[j]</b> dan <b class="var-bold">data[j+1]</b>. Jika posisinya melanggar aturan urutan, lakukan penukaran (swap).
+                </p>
+
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-2">
+                    <p class="font-semibold text-slate-700">📈 Ascending (Menaik):</p>
+                    <p class="text-slate-600">Ditukar jika <b class="var-bold">data[j] &gt; data[j+1]</b>. Elemen terbesar bertahap mengapung ke ujung kanan.</p>
+                    <p class="font-semibold text-slate-700 pt-1">📉 Descending (Menurun):</p>
+                    <p class="text-slate-600">Ditukar jika <b class="var-bold">data[j] &lt; data[j+1]</b>. Elemen terkecil bertahap mengapung ke ujung kanan.</p>
+                </div>
+
+                <!-- Code Block Bubble Sort -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">Implementasi Kode Program:</span>
+                        <div class="flex space-x-2 text-xs">
+                            <select id="mat-bubble-lang" onchange="updateBubbleCode()" class="bg-slate-100 border border-slate-300 rounded px-2 py-1 font-semibold text-xs">
+                                <option value="cpp">C++</option>
+                                <option value="python">Python</option>
+                            </select>
+                            <select id="mat-bubble-mode" onchange="updateBubbleCode()" class="bg-slate-100 border border-slate-300 rounded px-2 py-1 font-semibold text-xs">
+                                <option value="asc">Ascending</option>
+                                <option value="desc">Descending</option>
+                            </select>
+                        </div>
+                    </div>
+                    <pre class="code-box"><code id="code-bubble">// Bubble Sort (Ascending) - C++
+for (i=n-1; i>0; i--) {
+    for (j=0; j<i; j++) {
+        if (data[j] > data[j+1]) {
+            temp = data[j];
+            data[j] = data[j+1];
+            data[j+1] = temp;
+        }
+    }
+}</code></pre>
+                </div>
+            </div>
+
+            <!-- Modul Selection Sort -->
+            <div class="card space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="badge-step">2</span>
+                        <h3 class="text-base font-bold text-slate-800">Selection Sort (Metode Seleksi)</h3>
+                    </div>
+                    <span class="text-[11px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium">Pencarian Indeks Target</span>
+                </div>
+
+                <!-- Analogi Dunia Nyata -->
+                <div class="bg-indigo-50 border border-indigo-200/60 rounded-xl p-3.5 text-xs text-indigo-900 leading-relaxed">
+                    <h4 class="font-bold text-indigo-900 mb-1 flex items-center">
+                        💡 Analogi Dunia Nyata: Kartu Remi di Tangan
+                    </h4>
+                    Seperti mencari kartu nilai terkecil/terbesar dari sisa kartu di tangan, lalu langsung menukarnya ke posisi target awal di sebelah kiri.
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Mencari posisi indeks nilai ekstrim (terkecil/terbesar) pada sisa larik, lalu menukarnya langsung ke posisi indeks target <b class="var-bold">i</b>.
+                </p>
+
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-2">
+                    <p class="font-semibold text-slate-700">📈 Ascending (Menaik):</p>
+                    <p class="text-slate-600">Mencari nilai terkecil <b class="var-bold">idmin</b> (jika <b class="var-bold">data[j] &lt; data[idmin]</b>), ditukar ke posisi <b class="var-bold">i</b>.</p>
+                    <p class="font-semibold text-slate-700 pt-1">📉 Descending (Menurun):</p>
+                    <p class="text-slate-600">Mencari nilai terbesar <b class="var-bold">idmax</b> (jika <b class="var-bold">data[j] &gt; data[idmax]</b>), ditukar ke posisi <b class="var-bold">i</b>.</p>
+                </div>
+
+                <!-- Code Block Selection Sort -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-700">Implementasi Kode Program:</span>
+                        <div class="flex space-x-2 text-xs">
+                            <select id="mat-select-lang" onchange="updateSelectCode()" class="bg-slate-100 border border-slate-300 rounded px-2 py-1 font-semibold text-xs">
+                                <option value="cpp">C++</option>
+                                <option value="python">Python</option>
+                            </select>
+                            <select id="mat-select-mode" onchange="updateSelectCode()" class="bg-slate-100 border border-slate-300 rounded px-2 py-1 font-semibold text-xs">
+                                <option value="asc">Ascending</option>
+                                <option value="desc">Descending</option>
+                            </select>
+                        </div>
+                    </div>
+                    <pre class="code-box"><code id="code-select">// Selection Sort (Ascending) - C++
+for (i=0; i<n; i++) {
+    idmin = i;
+    for (j=i+1; j<n; j++) {
+        if (data[j] < data[idmin]) {
+            idmin = j;
+        }
+    }
+    temp = data[idmin];
+    data[idmin] = data[i];
+    data[i] = temp;
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: SIMULASI -->
+        <section id="tab-simulasi" class="tab-content space-y-4">
+            <div class="card space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <h3 class="text-base font-bold text-slate-800">Visualizer Simulasi Interaktif</h3>
+                    <div class="flex space-x-2 text-xs">
+                        <select id="sim-algo" onchange="resetSim()" class="bg-slate-100 border border-slate-300 rounded px-2.5 py-1 font-semibold">
+                            <option value="bubble">Bubble Sort</option>
+                            <option value="selection">Selection Sort</option>
+                        </select>
+                        <select id="sim-mode" onchange="resetSim()" class="bg-slate-100 border border-slate-300 rounded px-2.5 py-1 font-semibold">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Visual Bar Canvas Container -->
+                <div class="bg-slate-100/70 rounded-2xl p-4 min-h-[220px] flex items-end justify-center space-x-3 sm:space-x-6 border border-slate-200/80 relative" id="sim-bars-container">
+                    <!-- Batang di-render oleh JavaScript -->
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-3 text-[11px] font-medium text-slate-600 pt-1">
+                    <span class="flex items-center space-x-1"><span class="w-3 h-3 bg-blue-500 rounded-sm inline-block"></span> <span>Normal</span></span>
+                    <span class="flex items-center space-x-1"><span class="w-3 h-3 bg-amber-400 rounded-sm inline-block"></span> <span>Membandingkan</span></span>
+                    <span class="flex items-center space-x-1"><span class="w-3 h-3 bg-rose-500 rounded-sm inline-block"></span> <span>Penukaran (Swap)</span></span>
+                    <span class="flex items-center space-x-1"><span class="w-3 h-3 bg-purple-500 rounded-sm inline-block"></span> <span>Target (idmin/idmax)</span></span>
+                    <span class="flex items-center space-x-1"><span class="w-3 h-3 bg-emerald-500 rounded-sm inline-block"></span> <span>Terurut</span></span>
+                </div>
+
+                <!-- Tombol Kontrol Simulasi -->
+                <div class="flex items-center justify-center space-x-2 pt-2">
+                    <button id="sim-btn-play" onclick="togglePlaySim()" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow hover:bg-blue-700 transition">▶ Mulai</button>
+                    <button id="sim-btn-step" onclick="stepSim()" class="bg-slate-200 text-slate-800 font-bold px-4 py-2 rounded-xl text-xs hover:bg-slate-300 transition">⏭ Step</button>
+                    <button id="sim-btn-reset" onclick="resetSim()" class="bg-slate-100 text-slate-600 font-bold px-4 py-2 rounded-xl text-xs hover:bg-slate-200 transition">↺ Reset</button>
+                </div>
+            </div>
+
+            <!-- Panel Live Code Tracing -->
+            <div class="bg-slate-900 rounded-2xl p-4 text-white space-y-3 shadow-lg">
+                <div class="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
+                    <span class="font-bold text-slate-300">Live Code Tracing</span>
+                    <select id="sim-lang" onchange="renderCodeTracing()" class="bg-slate-800 text-slate-200 text-[11px] border border-slate-700 rounded px-2 py-0.5">
+                        <option value="cpp">C++</option>
+                        <option value="python">Python</option>
+                    </select>
+                </div>
+
+                <!-- Kode yang Di-highlight Per Baris -->
+                <div class="font-mono text-xs leading-relaxed overflow-x-auto space-y-1" id="trace-code-block">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <!-- Kotak Status Variabel -->
+                <div class="bg-slate-800/80 rounded-xl p-3 border border-slate-700/60 text-xs space-y-1">
+                    <div class="flex items-center justify-between text-[11px] text-slate-400 font-semibold mb-1">
+                        <span>STATUS VARIABEL & EKSEKUSI</span>
+                        <div id="var-badges" class="flex space-x-1 font-mono text-xs">
+                            <span class="bg-slate-700 text-blue-300 px-1.5 py-0.5 rounded">i: -</span>
+                            <span class="bg-slate-700 text-amber-300 px-1.5 py-0.5 rounded">j: -</span>
+                            <span class="bg-slate-700 text-rose-300 px-1.5 py-0.5 rounded">temp: -</span>
+                        </div>
+                    </div>
+                    <p id="var-status-text" class="text-slate-200 leading-relaxed font-sans">Siap menjalankan simulasi...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: RACE -->
+        <section id="tab-race" class="tab-content space-y-4">
+            <div class="card space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800">Race Mode: Side-by-Side</h3>
+                        <p class="text-xs text-slate-500">Adu efisiensi Bubble Sort vs Selection Sort pada data acak identik dengan kecepatan sinkron.</p>
+                    </div>
+                    <button id="race-btn-start" onclick="startRace()" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow hover:bg-indigo-700 transition">⚡ Mulai Balapan</button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Kartu Balapan Bubble Sort -->
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+                            <span>Bubble Sort</span>
+                            <span id="race-bubble-status" class="text-slate-500">Siap</span>
+                        </div>
+                        <div id="race-bubble-bars" class="h-32 bg-white rounded-lg p-2 flex items-end justify-center space-x-2 border border-slate-100"></div>
+                        <div class="text-[11px] text-slate-600 flex justify-between pt-1">
+                            <span>Compare: <b id="race-bubble-comp">0</b></span>
+                            <span>Swap: <b id="race-bubble-swap">0</b></span>
+                        </div>
+                    </div>
+
+                    <!-- Kartu Balapan Selection Sort -->
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-200 space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+                            <span>Selection Sort</span>
+                            <span id="race-select-status" class="text-slate-500">Siap</span>
+                        </div>
+                        <div id="race-select-bars" class="h-32 bg-white rounded-lg p-2 flex items-end justify-center space-x-2 border border-slate-100"></div>
+                        <div class="text-[11px] text-slate-600 flex justify-between pt-1">
+                            <span>Compare: <b id="race-select-comp">0</b></span>
+                            <span>Swap: <b id="race-select-swap">0</b></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: GAME -->
+        <section id="tab-game" class="tab-content space-y-4">
+            <div class="card space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800">Mini Game: Uji Langkah Algoritma</h3>
+                        <p class="text-xs text-slate-500">Klik 2 kartu yang seharusnya ditukar pada langkah saat ini!</p>
+                    </div>
+                    <button onclick="initGame()" class="bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow hover:bg-blue-700 transition">↻ Soal Baru</button>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-900 font-medium" id="game-task-desc">
+                    Tugas: Urutkan array berikut!
+                </div>
+
+                <!-- Kartu Angka Game -->
+                <div id="game-cards-container" class="flex justify-center space-x-3 py-6">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <div id="game-feedback" class="text-center text-xs font-bold p-3 rounded-xl min-h-[40px] flex items-center justify-center">
+                    Klik dua kartu angka yang ingin kamu tukar posisinya!
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: KUIS -->
+        <section id="tab-kuis" class="tab-content space-y-4">
+            <div class="card space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <h3 class="text-base font-bold text-slate-800">Kuis</h3>
+                    <span id="quiz-progress" class="text-xs font-bold text-slate-500">Soal 1 dari 10</span>
+                </div>
+
+                <div id="quiz-container" class="space-y-4">
+                    <!-- Soal Rendered oleh JS -->
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-100" id="quiz-nav-btns">
+                    <button id="quiz-btn-prev" onclick="prevQuestion()" class="bg-slate-100 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs hover:bg-slate-200 transition">Sebelumnya</button>
+                    <button id="quiz-btn-next" onclick="nextQuestion()" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-xl text-xs hover:bg-blue-700 transition">Selanjutnya</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // FUNGSI UTAMA SWITCH TAB
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            const targetContent = document.getElementById('tab-' + tabId);
+            const targetBtn = document.getElementById('btn-' + tabId);
+            if (targetContent) targetContent.classList.add('active');
+            if (targetBtn) targetBtn.classList.add('active');
+
+            if (tabId === 'materi') { updateBubbleCode(); updateSelectCode(); }
+            if (tabId === 'simulasi') { resetSim(); }
+            if (tabId === 'race') { resetRace(); }
+            if (tabId === 'game') { initGame(); }
+            if (tabId === 'kuis') { resetQuiz(); }
+        };
+
+        // --- MATERI CODE UPDATER ---
+        window.updateBubbleCode = function() {
+            const lang = document.getElementById('mat-bubble-lang')?.value || 'cpp';
+            const mode = document.getElementById('mat-bubble-mode')?.value || 'asc';
+            const codeEl = document.getElementById('code-bubble');
+            if (!codeEl) return;
+
+            if (lang === 'cpp') {
+                codeEl.textContent = mode === 'asc' ? 
+`// Bubble Sort Ascending (C++)
+for (i=n-1; i>0; i--) {
+    for (j=0; j<i; j++) {
+        if (data[j] > data[j+1]) {
+            temp = data[j];
+            data[j] = data[j+1];
+            data[j+1] = temp;
+        }
+    }
+}` :
+`// Bubble Sort Descending (C++)
+for (i=n-1; i>0; i--) {
+    for (j=0; j<i; j++) {
+        if (data[j] < data[j+1]) {
+            temp = data[j];
+            data[j] = data[j+1];
+            data[j+1] = temp;
+        }
+    }
+}`;
+            } else {
+                codeEl.textContent = mode === 'asc' ?
+`# Bubble Sort Ascending (Python)
+for i in range(n - 1, 0, -1):
+    for j in range(i):
+        if data[j] > data[j + 1]:
+            temp = data[j]
+            data[j] = data[j + 1]
+            data[j + 1] = temp` :
+`# Bubble Sort Descending (Python)
+for i in range(n - 1, 0, -1):
+    for j in range(i):
+        if data[j] < data[j + 1]:
+            temp = data[j]
+            data[j] = data[j + 1]
+            data[j + 1] = temp`;
+            }
+        };
+
+        window.updateSelectCode = function() {
+            const lang = document.getElementById('mat-select-lang')?.value || 'cpp';
+            const mode = document.getElementById('mat-select-mode')?.value || 'asc';
+            const codeEl = document.getElementById('code-select');
+            if (!codeEl) return;
+
+            if (lang === 'cpp') {
+                codeEl.textContent = mode === 'asc' ?
+`// Selection Sort Ascending (C++)
+for (i=0; i<n; i++) {
+    idmin = i;
+    for (j=i+1; j<n; j++) {
+        if (data[j] < data[idmin]) {
+            idmin = j;
+        }
+    }
+    temp = data[idmin];
+    data[idmin] = data[i];
+    data[i] = temp;
+}` :
+`// Selection Sort Descending (C++)
+for (i=0; i<n; i++) {
+    idmax = i;
+    for (j=i+1; j<n; j++) {
+        if (data[j] > data[idmax]) {
+            idmax = j;
+        }
+    }
+    temp = data[idmax];
+    data[idmax] = data[i];
+    data[i] = temp;
+}`;
+            } else {
+                codeEl.textContent = mode === 'asc' ?
+`# Selection Sort Ascending (Python)
+for i in range(n):
+    idmin = i
+    for j in range(i + 1, n):
+        if data[j] < data[idmin]:
+            idmin = j
+    temp = data[idmin]
+    data[idmin] = data[i]
+    data[i] = temp` :
+`# Selection Sort Descending (Python)
+for i in range(n):
+    idmax = i
+    for j in range(i + 1, n):
+        if data[j] > data[idmax]:
+            idmax = j
+    temp = data[idmax]
+    data[idmax] = data[i]
+    data[i] = temp`;
+            }
+        };
+
+        // --- SIMULASI LOGIC ---
+        let simSteps = [];
+        let simCurrentStep = 0;
+        let simTimer = null;
+        const initialSimData = [45, 12, 89, 23, 3];
+
+        window.resetSim = function() {
+            if (simTimer) clearInterval(simTimer);
+            simTimer = null;
+            const playBtn = document.getElementById('sim-btn-play');
+            if (playBtn) playBtn.textContent = '▶ Mulai';
+            simCurrentStep = 0;
+            generateSimSteps();
+            renderSimStep();
+        };
+
+        window.togglePlaySim = function() {
+            const playBtn = document.getElementById('sim-btn-play');
+            if (simTimer) {
+                clearInterval(simTimer);
+                simTimer = null;
+                if (playBtn) playBtn.textContent = '▶ Mulai';
+            } else {
+                if (simCurrentStep >= simSteps.length - 1) {
+                    simCurrentStep = 0;
+                }
+                if (playBtn) playBtn.textContent = '⏸ Pause';
+                simTimer = setInterval(() => {
+                    if (simCurrentStep < simSteps.length - 1) {
+                        simCurrentStep++;
+                        renderSimStep();
+                    } else {
+                        clearInterval(simTimer);
+                        simTimer = null;
+                        if (playBtn) playBtn.textContent = '▶ Mulai';
+                    }
+                }, 800);
+            }
+        };
+
+        window.stepSim = function() {
+            if (simTimer) {
+                clearInterval(simTimer);
+                simTimer = null;
+                const playBtn = document.getElementById('sim-btn-play');
+                if (playBtn) playBtn.textContent = '▶ Mulai';
+            }
+            if (simCurrentStep < simSteps.length - 1) {
+                simCurrentStep++;
+                renderSimStep();
+            }
+        };
+
+        function generateSimSteps() {
+            simSteps = [];
+            let arr = [...initialSimData];
+            let n = arr.length;
+            const algo = document.getElementById('sim-algo').value;
+            const mode = document.getElementById('sim-mode').value;
+
+            if (algo === 'bubble') {
+                for (let i = n - 1; i > 0; i--) {
+                    for (let j = 0; j < i; j++) {
+                        let isSwap = mode === 'asc' ? arr[j] > arr[j + 1] : arr[j] < arr[j + 1];
+                        simSteps.push({
+                            arr: [...arr],
+                            compare: [j, j + 1],
+                            lines: [3],
+                            varText: `Pengecekan: Bandingkan data[${j}] (${arr[j]}) dan data[${j+1}] (${arr[j+1]})`,
+                            iVal: i, jVal: j, tempVal: '-'
+                        });
+                        if (isSwap) {
+                            let temp = arr[j];
+                            arr[j] = arr[j + 1];
+                            arr[j + 1] = temp;
+                            simSteps.push({
+                                arr: [...arr],
+                                swap: [j, j + 1],
+                                lines: [4, 5, 6],
+                                varText: `Penukaran! temp = ${temp}, data[${j}] ⇄ data[${j+1}]`,
+                                iVal: i, jVal: j, tempVal: temp
+                            });
+                        }
+                    }
+                }
+            } else {
+                let varTarget = mode === 'asc' ? 'idmin' : 'idmax';
+                for (let i = 0; i < n; i++) {
+                    let idTarget = i;
+                    simSteps.push({
+                        arr: [...arr],
+                        target: idTarget,
+                        lines: [1],
+                        varText: `Inisialisasi target: ${varTarget} = ${i} (nilai ${arr[i]})`,
+                        iVal: i, jVal: '-', targetVal: idTarget, tempVal: '-'
+                    });
+                    for (let j = i + 1; j < n; j++) {
+                        let isNewTarget = mode === 'asc' ? arr[j] < arr[idTarget] : arr[j] > arr[idTarget];
+                        simSteps.push({
+                            arr: [...arr],
+                            compare: [j, idTarget],
+                            target: idTarget,
+                            lines: [3],
+                            varText: `Pengecekan: Apakah data[${j}] (${arr[j]}) ${mode==='asc'?'<':'>'} data[${varTarget}] (${arr[idTarget]})?`,
+                            iVal: i, jVal: j, targetVal: idTarget, tempVal: '-'
+                        });
+                        if (isNewTarget) {
+                            idTarget = j;
+                            simSteps.push({
+                                arr: [...arr],
+                                target: idTarget,
+                                lines: [4],
+                                varText: `Nilai target baru ditemukan! ${varTarget} = ${j} (nilai ${arr[j]})`,
+                                iVal: i, jVal: j, targetVal: idTarget, tempVal: '-'
+                            });
+                        }
+                    }
+                    if (idTarget !== i) {
+                        let temp = arr[idTarget];
+                        arr[idTarget] = arr[i];
+                        arr[i] = temp;
+                        simSteps.push({
+                            arr: [...arr],
+                            swap: [i, idTarget],
+                            lines: [7, 8, 9],
+                            varText: `Penukaran Akhir Iterasi: temp = ${temp}, data[${idTarget}] ⇄ data[${i}]`,
+                            iVal: i, jVal: '-', targetVal: idTarget, tempVal: temp
+                        });
+                    }
+                }
+            }
+            simSteps.push({
+                arr: [...arr],
+                done: true,
+                lines: [],
+                varText: `Selesai! Seluruh data telah terurut sempurna.`,
+                iVal: '-', jVal: '-', tempVal: '-'
+            });
+        }
+
+        function renderSimStep() {
+            const step = simSteps[simCurrentStep] || simSteps[0];
+            const container = document.getElementById('sim-bars-container');
+            container.innerHTML = '';
+            
+            let maxVal = Math.max(...step.arr, 100);
+
+            step.arr.forEach((val, idx) => {
+                let barColor = 'bg-blue-500';
+                if (step.done) barColor = 'bg-emerald-500';
+                else if (step.swap && step.swap.includes(idx)) barColor = 'bg-rose-500';
+                else if (step.target === idx) barColor = 'bg-purple-500';
+                else if (step.compare && step.compare.includes(idx)) barColor = 'bg-amber-400';
+
+                let heightPx = Math.max(24, Math.round((val / maxVal) * 160));
+
+                container.innerHTML += `
+                    <div class="flex flex-col items-center flex-1 max-w-[48px]">
+                        <span class="text-[11px] font-bold text-slate-700 mb-1">${val}</span>
+                        <div class="${barColor} w-full rounded-t-lg transition-all duration-300" style="height: ${heightPx}px;"></div>
+                        <span class="text-[10px] font-mono text-slate-400 mt-1">[${idx}]</span>
+                    </div>
+                `;
+            });
+
+            // Update Status Display with visual badges
+            const badgeEl = document.getElementById('var-badges');
+            const textEl = document.getElementById('var-status-text');
+            const mode = document.getElementById('sim-mode').value;
+            const varTarget = mode === 'asc' ? 'idmin' : 'idmax';
+            
+            if (badgeEl) {
+                badgeEl.innerHTML = `
+                    <span class="bg-slate-700 text-blue-300 px-1.5 py-0.5 rounded">i: ${step.iVal ?? '-'}</span>
+                    <span class="bg-slate-700 text-amber-300 px-1.5 py-0.5 rounded">j: ${step.jVal ?? '-'}</span>
+                    ${step.targetVal !== undefined ? `<span class="bg-slate-700 text-purple-300 px-1.5 py-0.5 rounded">${varTarget}: ${step.targetVal}</span>` : ''}
+                    <span class="bg-slate-700 text-rose-300 px-1.5 py-0.5 rounded">temp: ${step.tempVal ?? '-'}</span>
+                `;
+            }
+            if (textEl) textEl.textContent = step.varText;
+
+            renderCodeTracing();
+        }
+
+        window.renderCodeTracing = function() {
+            const lang = document.getElementById('sim-lang')?.value || 'cpp';
+            const algo = document.getElementById('sim-algo')?.value || 'bubble';
+            const mode = document.getElementById('sim-mode')?.value || 'asc';
+            const codeBox = document.getElementById('trace-code-block');
+            if (!codeBox) return;
+
+            const step = simSteps[simCurrentStep] || { lines: [] };
+            let codeLines = [];
+
+            if (algo === 'bubble') {
+                if (lang === 'cpp') {
+                    codeLines = mode === 'asc' ? [
+                        `// Bubble Sort Ascending (C++)`,
+                        `for (i=n-1; i>0; i--) {`,
+                        `    for (j=0; j<i; j++) {`,
+                        `        if (data[j] > data[j+1]) {`,
+                        `            temp = data[j];`,
+                        `            data[j] = data[j+1];`,
+                        `            data[j+1] = temp;`,
+                        `        }`,
+                        `    }`,
+                        `}`
+                    ] : [
+                        `// Bubble Sort Descending (C++)`,
+                        `for (i=n-1; i>0; i--) {`,
+                        `    for (j=0; j<i; j++) {`,
+                        `        if (data[j] < data[j+1]) {`,
+                        `            temp = data[j];`,
+                        `            data[j] = data[j+1];`,
+                        `            data[j+1] = temp;`,
+                        `        }`,
+                        `    }`,
+                        `}`
+                    ];
+                } else {
+                    codeLines = mode === 'asc' ? [
+                        `# Bubble Sort Ascending (Python)`,
+                        `for i in range(n - 1, 0, -1):`,
+                        `    for j in range(i):`,
+                        `        if data[j] > data[j + 1]:`,
+                        `            temp = data[j]`,
+                        `            data[j] = data[j + 1]`,
+                        `            data[j + 1] = temp`
+                    ] : [
+                        `# Bubble Sort Descending (Python)`,
+                        `for i in range(n - 1, 0, -1):`,
+                        `    for j in range(i):`,
+                        `        if data[j] < data[j + 1]:`,
+                        `            temp = data[j]`,
+                        `            data[j] = data[j + 1]`,
+                        `            data[j + 1] = temp`
+                    ];
+                }
+            } else {
+                let varT = mode === 'asc' ? 'idmin' : 'idmax';
+                let op = mode === 'asc' ? '<' : '>';
+                if (lang === 'cpp') {
+                    codeLines = [
+                        `// Selection Sort (${mode === 'asc' ? 'Ascending' : 'Descending'}) (C++)`,
+                        `for (i=0; i<n; i++) {`,
+                        `    ${varT} = i;`,
+                        `    for (j=i+1; j<n; j++) {`,
+                        `        if (data[j] ${op} data[${varT}]) {`,
+                        `            ${varT} = j;`,
+                        `        }`,
+                        `    }`,
+                        `    temp = data[${varT}];`,
+                        `    data[${varT}] = data[i];`,
+                        `    data[i] = temp;`,
+                        `}`
+                    ];
+                } else {
+                    codeLines = [
+                        `# Selection Sort (${mode === 'asc' ? 'Ascending' : 'Descending'}) (Python)`,
+                        `for i in range(n):`,
+                        `    ${varT} = i`,
+                        `    for j in range(i + 1, n):`,
+                        `        if data[j] ${op} data[${varT}]:`,
+                        `            ${varT} = j`,
+                        `    temp = data[${varT}]`,
+                        `    data[${varT}] = data[i]`,
+                        `    data[i] = temp`
+                    ];
+                }
+            }
+
+            codeBox.innerHTML = codeLines.map((line, idx) => {
+                let isHL = step.lines && step.lines.includes(idx);
+                let bgClass = isHL ? 'bg-blue-600/50 text-white font-bold px-1 rounded' : 'text-slate-400';
+                return `<div class="${bgClass}">${line.replace(/ /g, '&nbsp;')}</div>`;
+            }).join('');
+        };
+
+        // --- RACE MODE ANIMATION ---
+        let raceTimer = null;
+        let raceBubbleSteps = [];
+        let raceSelectSteps = [];
+
+        window.resetRace = function() {
+            if (raceTimer) clearInterval(raceTimer);
+            raceTimer = null;
+            
+            const rawData = [45, 12, 89, 23, 3];
+            
+            // Generate Detailed Bubble Steps for Race
+            raceBubbleSteps = [];
+            let bArr = [...rawData];
+            let bComp = 0, bSwap = 0;
+            for (let i = bArr.length - 1; i > 0; i--) {
+                for (let j = 0; j < i; j++) {
+                    bComp++;
+                    let isSwap = bArr[j] > bArr[j + 1];
+                    raceBubbleSteps.push({ arr: [...bArr], comp: bComp, swapCount: bSwap, compare: [j, j + 1], done: false });
+                    if (isSwap) {
+                        let t = bArr[j]; bArr[j] = bArr[j + 1]; bArr[j + 1] = t;
+                        bSwap++;
+                        raceBubbleSteps.push({ arr: [...bArr], comp: bComp, swapCount: bSwap, swap: [j, j + 1], done: false });
+                    }
+                }
+            }
+            raceBubbleSteps.push({ arr: [...bArr], comp: bComp, swapCount: bSwap, done: true });
+
+            // Generate Detailed Selection Steps for Race
+            raceSelectSteps = [];
+            let sArr = [...rawData];
+            let sComp = 0, sSwap = 0;
+            for (let i = 0; i < sArr.length; i++) {
+                let idmin = i;
+                raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, target: idmin, done: false });
+                for (let j = i + 1; j < sArr.length; j++) {
+                    sComp++;
+                    let isNewMin = sArr[j] < sArr[idmin];
+                    raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, compare: [j, idmin], target: idmin, done: false });
+                    if (isNewMin) {
+                        idmin = j;
+                        raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, target: idmin, done: false });
+                    }
+                }
+                if (idmin !== i) {
+                    let t = sArr[idmin]; sArr[idmin] = sArr[i]; sArr[i] = t;
+                    sSwap++;
+                    raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, swap: [i, idmin], done: false });
+                }
+            }
+            raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, done: true });
+
+            document.getElementById('race-bubble-comp').textContent = '0';
+            document.getElementById('race-bubble-swap').textContent = '0';
+            document.getElementById('race-select-comp').textContent = '0';
+            document.getElementById('race-select-swap').textContent = '0';
+            document.getElementById('race-bubble-status').textContent = 'Siap';
+            document.getElementById('race-select-status').textContent = 'Siap';
+            
+            renderRaceBars('race-bubble-bars', { arr: rawData });
+            renderRaceBars('race-select-bars', { arr: rawData });
+        };
+
+        function renderRaceBars(containerId, stepObj) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const arr = stepObj.arr;
+            let maxVal = Math.max(...arr, 100);
+
+            container.innerHTML = arr.map((v, idx) => {
+                let barColor = 'bg-indigo-500';
+                if (stepObj.done) barColor = 'bg-emerald-500';
+                else if (stepObj.swap && stepObj.swap.includes(idx)) barColor = 'bg-rose-500';
+                else if (stepObj.target === idx) barColor = 'bg-purple-500';
+                else if (stepObj.compare && stepObj.compare.includes(idx)) barColor = 'bg-amber-400';
+
+                let heightPx = Math.max(16, Math.round((v / maxVal) * 100));
+                return `<div class="${barColor} w-full rounded-t transition-all duration-200" style="height: ${heightPx}px;"></div>`;
+            }).join('');
+        }
+
+        window.startRace = function() {
+            resetRace();
+            let stepIndex = 0;
+
+            document.getElementById('race-bubble-status').textContent = 'Berjalan...';
+            document.getElementById('race-select-status').textContent = 'Berjalan...';
+
+            raceTimer = setInterval(() => {
+                let bStep = raceBubbleSteps[stepIndex] || raceBubbleSteps[raceBubbleSteps.length - 1];
+                let sStep = raceSelectSteps[stepIndex] || raceSelectSteps[raceSelectSteps.length - 1];
+
+                let bDone = stepIndex >= raceBubbleSteps.length - 1;
+                let sDone = stepIndex >= raceSelectSteps.length - 1;
+
+                renderRaceBars('race-bubble-bars', bStep);
+                document.getElementById('race-bubble-comp').textContent = bStep.comp;
+                document.getElementById('race-bubble-swap').textContent = bStep.swapCount;
+                if (bDone) {
+                    document.getElementById('race-bubble-status').textContent = 'Selesai! ✓';
+                }
+
+                renderRaceBars('race-select-bars', sStep);
+                document.getElementById('race-select-comp').textContent = sStep.comp;
+                document.getElementById('race-select-swap').textContent = sStep.swapCount;
+                if (sDone) {
+                    document.getElementById('race-select-status').textContent = 'Selesai! ✓';
+                }
+
+                if (bDone && sDone) {
+                    clearInterval(raceTimer);
+                    raceTimer = null;
+                } else {
+                    stepIndex++;
+                }
+            }, 300);
+        };
+
+        // --- GAME LOGIC ---
+        let gameArr = [];
+        let selectedIndices = [];
+
+        window.initGame = function() {
+            gameArr = [34, 12, 56, 21, 9];
+            selectedIndices = [];
+            document.getElementById('game-task-desc').textContent = 'Tugas: Urutkan secara Ascending (Kecil ke Besar) menggunakan Bubble Sort!';
+            renderGame();
+        };
+
+        function renderGame() {
+            const container = document.getElementById('game-cards-container');
+            container.innerHTML = gameArr.map((val, idx) => {
+                let isSel = selectedIndices.includes(idx);
+                let selClass = isSel ? 'border-2 border-blue-600 bg-blue-50 text-blue-600 font-bold scale-105' : 'bg-white border border-slate-200 text-slate-800';
+                return `<button onclick="clickGameCard(${idx})" class="w-12 h-16 rounded-xl shadow-sm text-base flex items-center justify-center transition-all ${selClass}">${val}</button>`;
+            }).join('');
+            document.getElementById('game-feedback').textContent = 'Klik dua kartu angka yang ingin kamu tukar posisinya!';
+            document.getElementById('game-feedback').className = 'text-center text-xs font-bold p-3 rounded-xl bg-slate-100 text-slate-600';
+        }
+
+        window.clickGameCard = function(idx) {
+            if (selectedIndices.includes(idx)) {
+                selectedIndices = selectedIndices.filter(i => i !== idx);
+            } else {
+                selectedIndices.push(idx);
+            }
+            renderGame();
+
+            if (selectedIndices.length === 2) {
+                let [i1, i2] = selectedIndices;
+                if (Math.abs(i1 - i2) === 1 && ((i1 < i2 && gameArr[i1] > gameArr[i2]) || (i1 > i2 && gameArr[i1] < gameArr[i2]))) {
+                    let temp = gameArr[i1];
+                    gameArr[i1] = gameArr[i2];
+                    gameArr[i2] = temp;
+                    selectedIndices = [];
+                    renderGame();
+                    document.getElementById('game-feedback').textContent = '✓ Benar! Kartu berhasil ditukar.';
+                    document.getElementById('game-feedback').className = 'text-center text-xs font-bold p-3 rounded-xl bg-emerald-100 text-emerald-700';
+                } else {
+                    selectedIndices = [];
+                    document.getElementById('game-feedback').textContent = '❌ Kurang Tepat! Pilih 2 kartu bertetangga yang posisinya salah.';
+                    document.getElementById('game-feedback').className = 'text-center text-xs font-bold p-3 rounded-xl bg-rose-100 text-rose-700';
+                }
+            }
+        };
+
+        // --- KUIS LOGIC ---
+        const quizQuestions = [
+            { q: "Pada Bubble Sort Ascending, prinsip utama yang terjadi setiap iterasi adalah...", o: ["Membandingkan elemen bertetangga data[j] dan data[j+1], lalu menukarnya jika data[j] > data[j+1]", "Mencari elemen terkecil lalu menukarnya ke posisi indeks 0", "Membagi larik menjadi dua bagian"], a: 0 },
+            { q: "Pada Selection Sort Descending, peran variabel penanda idmax adalah...", o: ["Menyimpan indeks nilai terkecil", "Menyimpan indeks nilai terbesar pada sisa larik untuk ditukarkan ke posisi target", "Menghitung total perulangan"], a: 1 },
+            { q: "Perbedaan utama daerah terurut (sorted subarray) antara Bubble Sort dan Selection Sort pada pengurutan Ascending adalah...", o: ["Bubble Sort membentuk daerah terurut di ujung kanan, Selection Sort di ujung kiri", "Selection Sort di ujung kanan, Bubble Sort di tengah", "Tidak ada daerah terurut"], a: 0 },
+            { q: "Diberikan array [34, 12, 56, 21, 9]. Urutan array setelah 1 iterasi Bubble Sort Ascending adalah...", o: ["12, 34, 21, 9, 56", "9, 12, 34, 56, 21", "12, 21, 34, 9, 56"], a: 0 },
+            { q: "Diberikan array [45, 10, 89, 23, 3]. Nilai idmax pada iterasi pertama Selection Sort Descending adalah indeks ke...", o: ["Indeks 2 (nilai 89)", "Indeks 0 (nilai 45)", "Indeks 4 (nilai 3)"], a: 0 },
+            { q: "Array awal [4, 1, 3, 2]. Berapa kali penukaran (swap) pada Bubble Sort Ascending?", o: ["4 kali", "2 kali", "1 kali"], a: 0 },
+            { q: "Array awal [4, 1, 3, 2]. Berapa kali penukaran (swap) pada Selection Sort Ascending?", o: ["2 kali", "4 kali", "6 kali"], a: 0 },
+            { q: "Mengapa Selection Sort umumnya lebih hemat swap dibanding Bubble Sort?", o: ["Penukaran hanya terjadi 1 kali per iterasi outer loop", "Selection Sort tidak membandingkan angka", "Selection Sort menggunakan memori ganda"], a: 0 },
+            { q: "Jika data sudah terurut sempurna [10, 20, 30], apakah Selection Sort tetap melakukan pengecekan?", o: ["Ya, tetap melakukan pengecekan kondisi hingga akhir", "Tidak, langsung berhenti", "Mengacak data kembali"], a: 0 },
+            { q: "Suatu ketika ada 9 anak (Djoko, Ella, Erik, Tedjo, Zuzy, Supry, Gugun, Jhon, Thuti). Berapa proses pertukaran posisi minimum agar seluruh siswi perempuan (Ella, Zuzy, Thuti) berdiri berdekatan?", o: ["2 kali pertukaran", "4 kali pertukaran", "1 kali pertukaran"], a: 0 }
+        ];
+
+        let currentQuizIdx = 0;
+        let quizAnswers = new Array(10).fill(null);
+
+        window.resetQuiz = function() {
+            currentQuizIdx = 0;
+            quizAnswers = new Array(10).fill(null);
+            renderQuiz();
+        };
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            const q = quizQuestions[currentQuizIdx];
+            document.getElementById('quiz-progress').textContent = `Soal ${currentQuizIdx + 1} dari 10`;
+
+            container.innerHTML = `
+                <p class="text-sm font-bold text-slate-800 leading-relaxed">${currentQuizIdx + 1}. ${q.q}</p>
+                <div class="space-y-2 pt-2">
+                    ${q.o.map((opt, i) => `
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer text-xs font-medium text-slate-700">
+                            <input type="radio" name="quiz-opt" value="${i}" ${quizAnswers[currentQuizIdx] === i ? 'checked' : ''} onchange="selectAnswer(${i})" class="w-4 h-4 text-blue-600">
+                            <span>${opt}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('quiz-btn-prev').style.visibility = currentQuizIdx === 0 ? 'hidden' : 'visible';
+            document.getElementById('quiz-btn-next').textContent = currentQuizIdx === 9 ? 'Selesai' : 'Selanjutnya';
+        }
+
+        window.selectAnswer = function(idx) {
+            quizAnswers[currentQuizIdx] = idx;
+        };
+
+        window.nextQuestion = function() {
+            if (currentQuizIdx < 9) {
+                currentQuizIdx++;
+                renderQuiz();
+            } else {
+                let score = 0;
+                quizAnswers.forEach((ans, idx) => {
+                    if (ans === quizQuestions[idx].a) score += 10;
+                });
+                const container = document.getElementById('quiz-container');
+                document.getElementById('quiz-nav-btns').style.display = 'none';
+                let isPass = score >= 90;
+                container.innerHTML = `
+                    <div class="text-center py-6 space-y-3">
+                        <div class="text-4xl font-black ${isPass ? 'text-emerald-600' : 'text-amber-600'}">${score} / 100</div>
+                        <h4 class="text-base font-bold text-slate-800">${isPass ? '🎉 Selamat! Anda Lulus' : '💪 Tetap Semangat!'}</h4>
+                        <p class="text-xs text-slate-600 max-w-md mx-auto">${isPass ? 'Pemahaman kamu mengenai algoritma pengurutan sangat luar biasa!' : 'Kamu dapat mengulas kembali materi simulasi dan mencoba kuis lagi.'}</p>
+                        <button onclick="location.reload()" class="bg-blue-600 text-white font-bold px-4 py-2 rounded-xl text-xs shadow mt-2">Coba Lagi</button>
+                    </div>
+                `;
+            }
+        };
+
+        window.prevQuestion = function() {
+            if (currentQuizIdx > 0) {
+                currentQuizIdx--;
+                renderQuiz();
+            }
+        };
+
+        // INITIALIZATION ON LOAD
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBubbleCode();
+            updateSelectCode();
+            switchTab('materi');
+        });
+    </script>
+</body>
+</html>
