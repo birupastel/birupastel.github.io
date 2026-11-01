@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Algoritma Pencarian</title>
+  <title>Algoritma Perulangan</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -36,15 +36,13 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Canvas Confetti for Game/Quiz Win -->
+  <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
-    /* Smooth transition effect for active elements */
     .array-card {
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    /* Hide scrollbar for clean tab navigation on small screens */
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -67,7 +65,7 @@
             <i data-lucide="search" class="w-6 h-6"></i>
           </div>
           <div>
-            <h1 class="font-bold text-slate-900 text-lg leading-tight">Algortima Pencarian <!-- <span class="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-semibold ml-1">Interactive MPI</span> --> </h1>
+            <h1 class="font-bold text-slate-900 text-lg leading-tight">Algoritma Perulangan <!-- <span class="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-semibold ml-1">Interactive MPI</span> --> </h1>
             <p class="text-xs text-slate-500"></p>
           </div>
         </div>
@@ -90,23 +88,23 @@
       <nav class="flex space-x-1 sm:space-x-4 border-t border-slate-100 py-2 overflow-x-auto no-scrollbar" id="navTabs">
         <button onclick="switchTab('intro')" id="tab-intro" class="nav-tab text-sky-600 bg-sky-50 font-semibold px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
           <i data-lucide="sparkles" class="w-4 h-4"></i>
-          <span>1. Apersepsi & Game</span>
+          <span>Apersepsi</span>
         </button>
         <button onclick="switchTab('linear')" id="tab-linear" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
           <i data-lucide="list-ordered" class="w-4 h-4"></i>
-          <span>2. Linear Search</span>
+          <span>Linear Search</span>
         </button>
         <button onclick="switchTab('binary')" id="tab-binary" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
           <i data-lucide="git-commit" class="w-4 h-4"></i>
-          <span>3. Binary Search</span>
+          <span>Binary Search</span>
         </button>
         <button onclick="switchTab('compare')" id="tab-compare" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
           <i data-lucide="swords" class="w-4 h-4"></i>
-          <span>4. Arena Komparasi</span>
+          <span>Komparasi</span>
         </button>
         <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
           <i data-lucide="award" class="w-4 h-4"></i>
-          <span>5. Kuis</span>
+          <span>Kuis</span>
         </button>
       </nav>
     </div>
@@ -116,7 +114,7 @@
   <div id="teacherBanner" class="hidden bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-800 flex items-center justify-between max-w-7xl mx-auto w-full">
     <div class="flex items-center space-x-2">
       <i data-lucide="info" class="w-4 h-4 text-amber-600"></i>
-      <span><strong class="font-bold">Mode Guru Aktif:</strong> Semua kontrol animasi terbuka, slider kecepatan diaktifkan, dan Anda dapat lompat bebas antar bagian untuk presentasi.</span>
+      <span><strong class="font-bold">Mode Guru Aktif:</strong> Kontrol animasi terbuka bebas, slider kecepatan diaktifkan untuk alat peraga saat mengajar.</span>
     </div>
     <span class="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-mono">Teacher Edition</span>
   </div>
@@ -136,7 +134,7 @@
           <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Apersepsi Awal</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold mt-3 leading-tight">Bagaimana Manusia & Komputer Mencari Data?</h2>
           <p class="mt-2 text-sky-100 text-sm sm:text-base leading-relaxed">
-            Sebelum masuk ke rumus algoritma, mari pahami intuisi mencari data pada koleksi tak terurut melalui permainan sederhana di bawah ini.
+            Sebelum mempelajari algoritma, mari mencari angka rahasia pada deretan kartu acak berikut.
           </p>
         </div>
       </div>
@@ -145,8 +143,8 @@
       <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between max-w-3xl mx-auto">
         <div>
           <div class="flex items-center justify-between mb-4">
-            <span class="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Permainan Apersepsi: Data Acak</span>
-            <span id="cardTriesCount" class="text-xs font-medium text-slate-500">Percobaan: 0</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Apersepsi: Kartu Acak</span>
+            <span id="cardTriesCount" class="text-xs font-semibold text-slate-500">Percobaan: 0</span>
           </div>
           <h3 class="text-lg font-bold text-slate-900 mb-1">Cari Kartu Rahasia 🎯</h3>
           <p class="text-xs text-slate-600 mb-4">Kartu di bawah ini berisi angka acak (tidak terurut). Cari angka target dengan membuka kartu satu per satu!</p>
@@ -165,11 +163,11 @@
         <!-- Feedback Box Card Game -->
         <div class="mt-4">
           <div id="cardGameFeedback" class="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium">
-            Klik salah satu kartu di atas untuk memulai pencarian.
+            Klik salah satu kartu di atas untuk membuka nilainya.
           </div>
           <button onclick="resetCardGame()" class="w-full mt-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1.5">
             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-            <span>Acak & Main Lagi</span>
+            <span>Acak Ulang Kartu</span>
           </button>
         </div>
       </div>
@@ -182,7 +180,7 @@
         <div>
           <h4 class="font-bold text-sky-900 text-sm">Refleksi Penting:</h4>
           <p class="text-xs text-sky-800 leading-relaxed mt-1">
-            Pada permainan kartu di atas, kamu terpaksa membuka kartu satu demi satu tanpa kepastian posisi. Ini menggambarkan konsep dasar dari <strong class="font-bold">Linear Search</strong>!
+            Pada permainan kartu di atas, kamu terpaksa membuka kartu satu demi satu tanpa kepastian posisi karena data <strong class="font-bold">tidak terurut</strong>. Ini menggambarkan konsep dasar dari <strong class="font-bold">Linear Search</strong>!
           </p>
         </div>
       </div>
@@ -205,6 +203,80 @@
             <span class="text-sm font-mono font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">O(n)</span>
           </div>
         </div>
+      </div>
+
+      <!-- SUB-SECTION: GAME GEMBOK PIN (LINEAR INTUITION) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Game Linear Search</span>
+            <h3 class="text-lg font-bold text-slate-900 mt-1">Game Buka Gembok PIN 3 Angka 🔓</h3>
+          </div>
+          <span id="lockTriesCounter" class="text-xs font-mono font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 self-start sm:self-auto">Percobaan: 0</span>
+        </div>
+
+        <p class="text-xs text-slate-600">
+          Gembok ini terkunci dengan PIN rahasia. Cobalah memutar dial angka untuk membuka gembok!
+        </p>
+
+        <!-- Lock Visualizer UI -->
+        <div class="bg-slate-900 text-white p-6 rounded-2xl flex flex-col items-center justify-center space-y-4 border border-slate-800 shadow-inner max-w-md mx-auto">
+          
+          <!-- Padlock Graphic -->
+          <div id="lockIconContainer" class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center transition-all">
+            <i data-lucide="lock" id="lockIcon" class="w-8 h-8"></i>
+          </div>
+
+          <!-- 3-Digit Spinner Wheels -->
+          <div class="flex items-center justify-center space-x-3 my-2">
+            <!-- Digit 1 -->
+            <div class="flex flex-col items-center">
+              <button onclick="changeLockDigit(0, 1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+              <span id="lockDigit0" class="w-12 h-14 bg-slate-800 border-2 border-slate-700 rounded-xl text-2xl font-mono font-extrabold flex items-center justify-center my-1 text-amber-400 shadow-inner">0</span>
+              <button onclick="changeLockDigit(0, -1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+            </div>
+
+            <span class="text-xl font-mono text-slate-600 font-bold">-</span>
+
+            <!-- Digit 2 -->
+            <div class="flex flex-col items-center">
+              <button onclick="changeLockDigit(1, 1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+              <span id="lockDigit1" class="w-12 h-14 bg-slate-800 border-2 border-slate-700 rounded-xl text-2xl font-mono font-extrabold flex items-center justify-center my-1 text-amber-400 shadow-inner">0</span>
+              <button onclick="changeLockDigit(1, -1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+            </div>
+
+            <span class="text-xl font-mono text-slate-600 font-bold">-</span>
+
+            <!-- Digit 3 -->
+            <div class="flex flex-col items-center">
+              <button onclick="changeLockDigit(2, 1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+              <span id="lockDigit2" class="w-12 h-14 bg-slate-800 border-2 border-slate-700 rounded-xl text-2xl font-mono font-extrabold flex items-center justify-center my-1 text-amber-400 shadow-inner">0</span>
+              <button onclick="changeLockDigit(2, -1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex items-center space-x-2 w-full pt-1">
+            <button onclick="testLockPin()" id="btnTestLock" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-md flex items-center justify-center space-x-1.5">
+              <i data-lucide="key-round" class="w-4 h-4"></i>
+              <span>Uji Kunci PIN</span>
+            </button>
+            <button onclick="autoLinearSolveLock()" id="btnAutoLock" class="px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold rounded-xl text-xs transition-all border border-slate-700 flex items-center justify-center space-x-1" title="Solusi Otomatis">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span class="hidden sm:inline">Auto Solve</span>
+            </button>
+          </div>
+
+        </div>
+
+        <div id="lockGameLog" class="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto">
+          Atur 3 digit angka pada dial di atas lalu tekan 'Uji Kunci PIN'.
+        </div>
+
+        <button onclick="resetLockGame()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1.5">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>Reset Kunci Gembok</span>
+        </button>
       </div>
 
       <!-- Main Visualizer Box -->
@@ -296,12 +368,12 @@
         <!-- Step Explanation Log Box -->
         <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs shadow-inner flex items-start space-x-3">
           <i data-lucide="terminal" class="w-4 h-4 text-sky-400 mt-0.5 shrink-0"></i>
-          <div id="linearLogText">Klik 'Jalankan' atau 'Maju' untuk memulai proses simulasi Linear Search.</div>
+          <div id="linearLogText">Klik 'Jalankan' atau 'Maju' untuk memulai simulasi.</div>
         </div>
 
       </div>
 
-      <!-- CODE IMPLEMENTATION DROPDOWN (C++ & PYTHON) -->
+      <!-- CODE IMPLEMENTATION DROPDOWN -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <button onclick="toggleCodeDropdown('linearCodeAcc')" class="w-full px-6 py-4 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-all font-bold text-slate-800 text-sm">
           <div class="flex items-center space-x-2">
@@ -312,8 +384,6 @@
         </button>
 
         <div id="linearCodeAcc" class="hidden border-t border-slate-200 p-6 space-y-6">
-          
-          <!-- C++ Code -->
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">C++ Implementation</span>
@@ -328,7 +398,7 @@ using namespace std;
 int linearSearch(int arr[], int size, int target) {
     for (int i = 0; i &lt; size; i++) {
         if (arr[i] == target) {
-            return i; // Ditemukan, kembalikan indeks
+            return i; // Ditemukan
         }
     }
     return -1; // Tidak ditemukan
@@ -349,7 +419,6 @@ int main() {
 }</code></pre>
           </div>
 
-          <!-- Python Code -->
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Python Implementation</span>
@@ -361,10 +430,9 @@ int main() {
             <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono overflow-x-auto"><code id="pyLinearCode">def linear_search(arr, target):
     for i in range(len(arr)):
         if arr[i] == target:
-            return i  # Ditemukan, kembalikan indeks
+            return i  # Ditemukan
     return -1  # Tidak ditemukan
 
-# Contoh Penggunaan
 data = [12, 25, 38, 41, 53, 67, 72]
 target_val = 41
 
@@ -374,7 +442,6 @@ if idx != -1:
 else:
     print("Elemen tidak ditemukan.")</code></pre>
           </div>
-
         </div>
       </div>
     </section>
@@ -405,7 +472,7 @@ else:
       <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div>
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Game Intuisi Binary Search</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Game Binary Search</span>
             <h3 class="text-lg font-bold text-slate-900 mt-1">Game Tebak Angka 1 - 100 🧠</h3>
           </div>
           
@@ -557,12 +624,12 @@ else:
         <!-- Step Explanation Log Box -->
         <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs shadow-inner flex items-start space-x-3">
           <i data-lucide="code-2" class="w-4 h-4 text-indigo-400 mt-0.5 shrink-0"></i>
-          <div id="binaryLogText">Klik 'Jalankan' atau 'Maju' untuk mengamati eliminasi variabel Low, Mid, dan High.</div>
+          <div id="binaryLogText">Klik 'Jalankan' atau 'Maju' untuk mengamati eliminasi Low, Mid, dan High.</div>
         </div>
 
       </div>
 
-      <!-- CODE IMPLEMENTATION DROPDOWN (C++ & PYTHON) -->
+      <!-- CODE IMPLEMENTATION DROPDOWN -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <button onclick="toggleCodeDropdown('binaryCodeAcc')" class="w-full px-6 py-4 flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-all font-bold text-slate-800 text-sm">
           <div class="flex items-center space-x-2">
@@ -573,8 +640,6 @@ else:
         </button>
 
         <div id="binaryCodeAcc" class="hidden border-t border-slate-200 p-6 space-y-6">
-          
-          <!-- C++ Code -->
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">C++ Implementation</span>
@@ -597,9 +662,9 @@ int binarySearch(int arr[], int size, int target) {
             return mid; // Ditemukan
         
         if (arr[mid] &lt; target)
-            low = mid + 1; // Cari di setengah bagian kanan
+            low = mid + 1; // Cari di bagian kanan
         else
-            high = mid - 1; // Cari di setengah bagian kiri
+            high = mid - 1; // Cari di bagian kiri
     }
 
     return -1; // Tidak ditemukan
@@ -620,7 +685,6 @@ int main() {
 }</code></pre>
           </div>
 
-          <!-- Python Code -->
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">Python Implementation</span>
@@ -645,7 +709,6 @@ int main() {
 
     return -1  # Tidak ditemukan
 
-# Contoh Penggunaan
 data = [11, 19, 24, 33, 45, 52, 68, 77, 85, 91, 98]
 target_val = 45
 
@@ -655,7 +718,6 @@ if idx != -1:
 else:
     print("Elemen tidak ditemukan.")</code></pre>
           </div>
-
         </div>
       </div>
     </section>
@@ -683,7 +745,6 @@ else:
 
       <!-- Comparison Dual Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
         <!-- Linear Search Box -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
           <div>
@@ -721,37 +782,77 @@ else:
           </div>
           <div id="cmpBinaryStatus" class="mt-6 p-3 bg-slate-50 rounded-xl text-xs text-slate-600 text-center font-mono">
             Siap untuk pengujian...
-    <!-- SECTION 5: KUIS MANDIRI (10 SOAL) -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Verdict Box -->
+      <div id="cmpVerdictBox" class="hidden p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-center">
+        <h4 class="font-bold text-sm">Hasil Komparasi:</h4>
+        <p id="cmpVerdictText" class="text-xs mt-1 leading-relaxed"></p>
+      </div>
+    </section>
+
+    <!-- SECTION 5: KUIS MANDIRI (10 SOAL - ONE BY ONE) -->
     <section id="sec-quiz" class="tab-content space-y-6 hidden">
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h2 class="text-xl font-bold text-slate-900">Kuis Pemahaman Searching Algorithm 📝</h2>
-            <p class="text-xs text-slate-600 mt-1">Jawablah 10 soal di bawah ini. Batas kelulusan adalah <strong class="font-bold text-emerald-600">Nilai 90</strong> (Minimal 9 soal benar).</p>
+            <p class="text-xs text-slate-600 mt-1">Jawablah 10 soal di bawah ini satu per satu. Batas kelulusan adalah <strong class="font-bold text-emerald-600">Nilai 90</strong> (Minimal 9 soal benar).</p>
           </div>
           <div class="bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl text-center shrink-0">
-            <span class="text-[10px] text-slate-400 block font-mono uppercase tracking-wider">SKOR ANDA</span>
+            <span class="text-[10px] text-slate-400 block font-mono uppercase tracking-wider">SKOR SEMENTARA</span>
             <span id="quizScoreDisplay" class="text-2xl font-extrabold text-sky-600">0 / 100</span>
+          </div>
+        </div>
+
+        <!-- Quiz Progress Bar & Number Badges -->
+        <div class="mt-6 pt-4 border-t border-slate-100 space-y-3">
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-600">
+            <span id="quizProgressText">Soal 1 dari 10</span>
+            <span id="quizAnsweredCountText" class="text-sky-600">Dijawab: 0 / 10</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div id="quizProgressBar" class="bg-sky-500 h-full w-10/100 transition-all duration-300"></div>
+          </div>
+
+          <!-- Question Number Navigation Grid -->
+          <div class="flex flex-wrap items-center gap-2 pt-2" id="quizNumberGrid">
+            <!-- Rendered dynamically by JS -->
           </div>
         </div>
       </div>
 
-      <!-- Quiz Questions Container -->
-      <div class="space-y-4" id="quizContainer">
-        <!-- Rendered dynamically by JS -->
+      <!-- Single Question Card Container -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4" id="quizSingleQuestionCard">
+        <!-- Single Question rendered dynamically by JS -->
       </div>
 
-      <!-- Quiz Final Feedback Card (Shown after answering all questions) -->
-      <div id="quizFinalResultCard" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-md text-center space-y-4">
+      <!-- Quiz Navigation Buttons -->
+      <div class="flex items-center justify-between pt-2" id="quizNavButtons">
+        <button id="quizPrevBtn" onclick="prevQuestion()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all flex items-center space-x-1.5">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>Soal Sebelumnya</span>
+        </button>
+
+        <button id="quizNextBtn" onclick="nextQuestion()" class="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center space-x-1.5">
+          <span>Soal Berikutnya</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Quiz Final Result Card -->
+      <div id="quizFinalResultCard" class="hidden bg-white p-8 rounded-2xl border border-slate-200 shadow-md text-center space-y-4">
         <div id="quizResultBadge" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-white font-bold shadow-lg">
           <!-- Icon injected by JS -->
         </div>
         <div>
           <h3 id="quizResultTitle" class="text-2xl font-extrabold text-slate-900"></h3>
-          <p id="quizResultSubtitle" class="text-xs text-slate-600 mt-1 max-w-md mx-auto"></p>
+          <p id="quizResultSubtitle" class="text-xs sm:text-sm text-slate-600 mt-2 max-w-md mx-auto leading-relaxed"></p>
         </div>
-        <div class="pt-2">
-          <button id="quizRetryBtn" onclick="resetQuiz()" class="hidden px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs transition-all shadow-md inline-flex items-center space-x-2">
+        <div class="pt-4 flex items-center justify-center space-x-3">
+          <button id="quizRetryBtn" onclick="resetQuiz()" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs transition-all shadow-md inline-flex items-center space-x-2">
             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
             <span>Coba Kuis Lagi</span>
           </button>
@@ -761,48 +862,15 @@ else:
 
   </main>
 
-  <!-- CLEAN FOOTER -->
-  <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-  </footer>
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto"></footer>
 
   <!-- JAVASCRIPT LOGIC -->
   <script>
     // ==========================================
-    // GLOBAL STATE & SYSTEM SETUP
+    // GLOBAL STATE & NAVIGATION
     // ==========================================
-    let currentUserMode = 'student';
-    let currentTab = 'intro';
+    let currentUserMode = 'student'; // 'student' or 'teacher'
 
-    window.onload = function() {
-      lucide.createIcons();
-      initCardGame();
-      initGuessGame();
-      initPlayerGuessGame();
-      resetLinearVisualizer();
-      resetBinaryVisualizer();
-      renderQuiz();
-    };
-
-    // Tab Navigation Logic
-    function switchTab(tabId) {
-      currentTab = tabId;
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-tab').forEach(el => {
-        el.classList.remove('text-sky-600', 'bg-sky-50', 'font-semibold');
-        el.classList.add('text-slate-600', 'hover:bg-slate-100', 'font-medium');
-      });
-
-      const activeSection = document.getElementById(`sec-${tabId}`);
-      if(activeSection) activeSection.classList.remove('hidden');
-
-      const activeBtn = document.getElementById(`tab-${tabId}`);
-      if(activeBtn) {
-        activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-100', 'font-medium');
-        activeBtn.classList.add('text-sky-600', 'bg-sky-50', 'font-semibold');
-      }
-    }
-
-    // Teacher vs Student Mode Switcher
     function switchUserMode(mode) {
       currentUserMode = mode;
       const studentBtn = document.getElementById('modeStudentBtn');
@@ -810,102 +878,107 @@ else:
       const teacherBanner = document.getElementById('teacherBanner');
 
       if (mode === 'teacher') {
-        studentBtn.classList.remove('bg-white', 'text-sky-600', 'shadow-sm');
-        studentBtn.classList.add('text-slate-600');
-        teacherBtn.classList.add('bg-white', 'text-amber-600', 'shadow-sm');
-        teacherBtn.classList.remove('text-slate-600');
+        studentBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all";
+        teacherBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-amber-500 text-white shadow-sm";
         teacherBanner.classList.remove('hidden');
       } else {
-        teacherBtn.classList.remove('bg-white', 'text-amber-600', 'shadow-sm');
-        teacherBtn.classList.add('text-slate-600');
-        studentBtn.classList.add('bg-white', 'text-sky-600', 'shadow-sm');
-        studentBtn.classList.remove('text-slate-600');
+        studentBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-sky-600 shadow-sm";
+        teacherBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all";
         teacherBanner.classList.add('hidden');
       }
     }
 
-    // Code Accordion Toggle
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(el => {
+        el.className = "nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2";
+      });
+
+      document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+      const activeTab = document.getElementById(`tab-${tabId}`);
+      activeTab.className = "nav-tab text-sky-600 bg-sky-50 font-semibold px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2";
+    }
+
     function toggleCodeDropdown(accId) {
-      const acc = document.getElementById(accId);
+      const content = document.getElementById(accId);
       const icon = document.getElementById(`${accId}Icon`);
-      if (acc.classList.contains('hidden')) {
-        acc.classList.remove('hidden');
-        icon.classList.add('rotate-180');
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        if (icon) icon.style.transform = 'rotate(180deg)';
       } else {
-        acc.classList.add('hidden');
-        icon.classList.remove('rotate-180');
+        content.classList.add('hidden');
+        if (icon) icon.style.transform = 'rotate(0deg)';
       }
     }
 
-    // Copy Code Helper
     function copyCode(elementId) {
-      const codeText = document.getElementById(elementId).innerText;
-      navigator.clipboard.writeText(codeText).then(() => {
-        alert("Kode berhasil disalin!");
-      });
+      const text = document.getElementById(elementId).innerText;
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = text;
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempTextArea);
+      alert('Kode berhasil disalin ke clipboard!');
     }
 
     // ==========================================
-    // APERSEPSI GAME 1: CARD SEARCH (LINEAR)
+    // SECTION 1: GAME CARD APERSEPSI
     // ==========================================
-    let cardTarget = 0;
+    let cardGameData = [];
+    let cardGameTarget = 0;
     let cardTries = 0;
-    let cardValues = [];
-    let cardRevealed = [];
+    let cardGameOver = false;
 
     function initCardGame() {
       cardTries = 0;
-      document.getElementById('cardTriesCount').innerText = `Percobaan: 0`;
-      document.getElementById('cardGameFeedback').className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium";
-      document.getElementById('cardGameFeedback').innerText = "Klik salah satu kartu di atas untuk menemukan angka target.";
+      cardGameOver = false;
+      document.getElementById('cardTriesCount').innerText = `Percobaan: ${cardTries}`;
       
-      const set = new Set();
-      while(set.size < 10) {
-        set.add(Math.floor(Math.random() * 89) + 10);
+      const numbers = [];
+      while(numbers.length < 10) {
+        let r = Math.floor(Math.random() * 89) + 10;
+        if(!numbers.includes(r)) numbers.push(r);
       }
-      cardValues = Array.from(set);
-      cardRevealed = new Array(10).fill(false);
+      cardGameData = numbers;
+      cardGameTarget = numbers[Math.floor(Math.random() * numbers.length)];
       
-      cardTarget = cardValues[Math.floor(Math.random() * cardValues.length)];
-      document.getElementById('cardTargetValue').innerText = cardTarget;
+      document.getElementById('cardTargetValue').innerText = cardGameTarget;
+      document.getElementById('cardGameFeedback').innerText = "Klik salah satu kartu di atas untuk membuka nilainya.";
+      document.getElementById('cardGameFeedback').className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium";
 
-      renderCards();
-    }
-
-    function renderCards() {
       const grid = document.getElementById('cardsGrid');
       grid.innerHTML = '';
-      cardValues.forEach((val, idx) => {
+      cardGameData.forEach((val, idx) => {
         const btn = document.createElement('button');
         btn.onclick = () => revealCard(idx);
-        btn.className = `h-16 rounded-xl font-bold text-sm transition-all transform flex items-center justify-center border shadow-sm ${
-          cardRevealed[idx]
-            ? (val === cardTarget ? 'bg-emerald-500 text-white border-emerald-600 scale-105' : 'bg-rose-100 text-rose-700 border-rose-200')
-            : 'bg-white hover:bg-slate-100 text-slate-400 border-slate-200 hover:-translate-y-1'
-        }`;
-        
-        btn.innerHTML = cardRevealed[idx] ? val : `<i data-lucide="help-circle" class="w-5 h-5 text-slate-300"></i>`;
+        btn.id = `card-btn-${idx}`;
+        btn.className = "h-20 bg-gradient-to-br from-sky-500 to-indigo-600 text-white font-extrabold text-lg rounded-xl shadow-md border-2 border-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all";
+        btn.innerText = "?";
         grid.appendChild(btn);
       });
-      lucide.createIcons();
     }
 
     function revealCard(idx) {
-      if (cardRevealed[idx]) return;
-      cardRevealed[idx] = true;
+      if (cardGameOver) return;
+      const btn = document.getElementById(`card-btn-${idx}`);
+      if (btn.innerText !== "?") return; // already revealed
+
       cardTries++;
       document.getElementById('cardTriesCount').innerText = `Percobaan: ${cardTries}`;
+      const val = cardGameData[idx];
+      btn.innerText = val;
 
-      const fb = document.getElementById('cardGameFeedback');
-      if (cardValues[idx] === cardTarget) {
-        fb.className = "p-3 rounded-xl bg-emerald-50 text-emerald-800 text-xs text-center border border-emerald-200 font-bold";
-        fb.innerText = `🎉 HEBAT! Ditemukan dalam ${cardTries} kali coba. Karena data acak, kamu harus mengecek satu per satu (Linear Search).`;
+      if (val === cardGameTarget) {
+        cardGameOver = true;
+        btn.className = "h-20 bg-emerald-500 text-white font-extrabold text-xl rounded-xl shadow-lg border-2 border-emerald-300 flex items-center justify-center scale-105 transition-all animate-bounce";
+        document.getElementById('cardGameFeedback').innerText = `🎯 SELAMAT! Target (${cardGameTarget}) ditemukan dalam ${cardTries} kali percobaan membuka kartu.`;
+        document.getElementById('cardGameFeedback').className = "p-3 rounded-xl bg-emerald-100 text-emerald-900 text-xs text-center border border-emerald-200 font-bold";
         confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
       } else {
-        fb.className = "p-3 rounded-xl bg-amber-50 text-amber-800 text-xs text-center border border-amber-200 font-medium";
-        fb.innerText = `Bukan ${cardValues[idx]}. Coba kartu lainnya!`;
+        btn.className = "h-20 bg-slate-200 text-slate-400 font-bold text-base rounded-xl border border-slate-300 flex items-center justify-center transition-all opacity-60";
+        document.getElementById('cardGameFeedback').innerText = `Kartu yang kamu buka berisi (${val}). Belum tepat, terus cari!`;
       }
-      renderCards();
     }
 
     function resetCardGame() {
@@ -913,790 +986,809 @@ else:
     }
 
     // ==========================================
-    // BINARY SEARCH GAME: TEBAK ANGKA 1-100
+    // SECTION 2: GAME GEMBOK PIN (STATIC 679)
     // ==========================================
-    let guessMode = 'A'; // 'A' = Komputer Menebak, 'B' = Player Menebak
+    const staticLockPin = [6, 7, 9];
+    let currentLockDigits = [0, 0, 0];
+    let lockTries = 0;
+    let autoSolveInterval = null;
 
-    function switchGuessMode(mode) {
-      guessMode = mode;
-      const btnA = document.getElementById('btnGameModeA');
-      const btnB = document.getElementById('btnGameModeB');
-      const modeA = document.getElementById('gameModeA');
-      const modeB = document.getElementById('gameModeB');
-
-      if (mode === 'A') {
-        btnA.classList.add('bg-white', 'text-emerald-600', 'shadow-sm');
-        btnA.classList.remove('text-slate-600');
-        btnB.classList.remove('bg-white', 'text-emerald-600', 'shadow-sm');
-        btnB.classList.add('text-slate-600');
-        modeA.classList.remove('hidden');
-        modeB.classList.add('hidden');
-      } else {
-        btnB.classList.add('bg-white', 'text-emerald-600', 'shadow-sm');
-        btnB.classList.remove('text-slate-600');
-        btnA.classList.remove('bg-white', 'text-emerald-600', 'shadow-sm');
-        btnA.classList.add('text-slate-600');
-        modeB.classList.remove('hidden');
-        modeA.classList.add('hidden');
-      }
+    function changeLockDigit(digitIdx, delta) {
+      currentLockDigits[digitIdx] = (currentLockDigits[digitIdx] + delta + 10) % 10;
+      document.getElementById(`lockDigit${digitIdx}`).innerText = currentLockDigits[digitIdx];
     }
 
-    // MODE A LOGIC: COMPUTER GUESSES
-    let guessLow = 1;
-    let guessHigh = 100;
-    let guessMid = 50;
-    let guessTries = 0;
-    let guessGameOver = false;
+    function testLockPin() {
+      lockTries++;
+      document.getElementById('lockTriesCounter').innerText = `Percobaan: ${lockTries}`;
+      const isCorrect = currentLockDigits.every((d, i) => d === staticLockPin[i]);
+      const log = document.getElementById('lockGameLog');
+      const iconContainer = document.getElementById('lockIconContainer');
+      const icon = document.getElementById('lockIcon');
 
-    function initGuessGame() {
-      guessLow = 1;
-      guessHigh = 100;
-      guessMid = Math.floor((guessLow + guessHigh) / 2);
-      guessTries = 1;
-      guessGameOver = false;
+      if (isCorrect) {
+        if(autoSolveInterval) clearInterval(autoSolveInterval);
+        log.innerText = `🎉 GEMBOK TERBUKA! Kode PIN ${currentLockDigits.join('')} benar dalam ${lockTries} kali percobaan!`;
+        log.className = "p-3 rounded-xl bg-emerald-100 text-emerald-900 text-xs text-center border border-emerald-300 font-bold max-w-md mx-auto";
+        iconContainer.className = "w-16 h-16 rounded-2xl bg-emerald-500 text-white border border-emerald-400 flex items-center justify-center transition-all scale-110 shadow-lg shadow-emerald-500/30";
+        icon.setAttribute('data-lucide', 'unlock');
+        confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+      } else {
+        log.innerText = `❌ PIN ${currentLockDigits.join('')} Salah! Silakan coba kombinasi lain.`;
+        log.className = "p-3 rounded-xl bg-rose-100 text-rose-900 text-xs text-center border border-rose-200 font-medium max-w-md mx-auto";
+        iconContainer.className = "w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center transition-all";
+        icon.setAttribute('data-lucide', 'lock');
+      }
+      lucide.createIcons();
+    }
 
-      document.getElementById('computerGuessDisplay').innerText = `${guessMid} ?`;
-      document.getElementById('guessRangeInfo').innerText = `Rentang Aktif: ${guessLow} - ${guessHigh}`;
+    function autoLinearSolveLock() {
+      resetLockGame();
+      let currentVal = 0;
+      const targetVal = 679;
       
-      const log = document.getElementById('guessGameLog');
-      log.className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium";
-      log.innerText = "Pikirkan angka 1-100 lalu berikan respon pada tombol di atas.";
+      autoSolveInterval = setInterval(() => {
+        if (currentVal > targetVal) {
+          clearInterval(autoSolveInterval);
+          return;
+        }
+        const d0 = Math.floor(currentVal / 100);
+        const d1 = Math.floor((currentVal % 100) / 10);
+        const d2 = currentVal % 10;
+        
+        currentLockDigits = [d0, d1, d2];
+        document.getElementById('lockDigit0').innerText = d0;
+        document.getElementById('lockDigit1').innerText = d1;
+        document.getElementById('lockDigit2').innerText = d2;
+        
+        lockTries++;
+        document.getElementById('lockTriesCounter').innerText = `Percobaan: ${lockTries}`;
+        
+        if (currentVal === targetVal) {
+          clearInterval(autoSolveInterval);
+          testLockPin();
+        } else {
+          currentVal++;
+        }
+      }, 15);
     }
 
-    function processGuessFeedback(type) {
-      if(guessGameOver) return;
-
-      const log = document.getElementById('guessGameLog');
-
-      if (type === 'correct') {
-        guessGameOver = true;
-        log.className = "p-3 rounded-xl bg-emerald-50 text-emerald-800 text-xs text-center border border-emerald-200 font-bold";
-        log.innerText = `🎯 TEPAT! Komputer berhasil menebak angka ${guessMid} dalam ${guessTries} kali tebakan menggunakan prinsip Binary Search!`;
-        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
-        return;
-      }
-
-      if (type === 'smaller') {
-        // Angka rahasia pemain lebih kecil dari guessMid
-        guessHigh = guessMid - 1;
-      } else if (type === 'bigger') {
-        // Angka rahasia pemain lebih besar dari guessMid
-        guessLow = guessMid + 1;
-      }
-
-      if (guessLow > guessHigh) {
-        log.className = "p-3 rounded-xl bg-rose-50 text-rose-800 text-xs text-center border border-rose-200 font-bold";
-        log.innerText = "Ada respon yang keliru tadi! Silakan reset game.";
-        guessGameOver = true;
-        return;
-      }
-
-      guessMid = Math.floor((guessLow + guessHigh) / 2);
-      guessTries++;
-
-      document.getElementById('computerGuessDisplay').innerText = `${guessMid} ?`;
-      document.getElementById('guessRangeInfo').innerText = `Rentang Aktif: ${guessLow} - ${guessHigh}`;
-      log.innerText = `Komputer memotong setengah kemungkinan. Tebakan ke-${guessTries}: ${guessMid}?`;
-    }
-
-    // MODE B LOGIC: PLAYER GUESSES
-    let secretComputerNumber = 0;
-    let playerTries = 0;
-    let playerGameOver = false;
-
-    function initPlayerGuessGame() {
-      secretComputerNumber = Math.floor(Math.random() * 100) + 1;
-      playerTries = 0;
-      playerGameOver = false;
-      document.getElementById('playerGuessInput').value = '';
-      const log = document.getElementById('playerGameLog');
-      log.className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto";
-      log.innerText = "Ketik angka tebakanmu lalu tekan tombol 'Tebak'.";
-    }
-
-    function submitPlayerGuess() {
-      if(playerGameOver) return;
-      const input = document.getElementById('playerGuessInput');
-      const val = parseInt(input.value);
-
-      if (isNaN(val) || val < 1 || val > 100) {
-        alert("Masukkan angka antara 1 sampai 100!");
-        return;
-      }
-
-      playerTries++;
-      const log = document.getElementById('playerGameLog');
-
-      if (val === secretComputerNumber) {
-        playerGameOver = true;
-        log.className = "p-3 rounded-xl bg-emerald-50 text-emerald-800 text-xs text-center border border-emerald-200 font-bold max-w-md mx-auto";
-        log.innerText = `🎉 TEBAKAN BENAR! Angka rahasianya adalah ${secretComputerNumber}. Kamu menebak dalam ${playerTries} langkah.`;
-        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
-      } else if (val < secretComputerNumber) {
-        log.className = "p-3 rounded-xl bg-amber-50 text-amber-800 text-xs text-center border border-amber-200 font-medium max-w-md mx-auto";
-        log.innerText = `Tebakanmu (${val}) TERLALU KECIL! Coba angka yang lebih besar.`;
-      } else {
-        log.className = "p-3 rounded-xl bg-indigo-50 text-indigo-800 text-xs text-center border border-indigo-200 font-medium max-w-md mx-auto";
-        log.innerText = `Tebakanmu (${val}) TERLALU BESAR! Coba angka yang lebih kecil.`;
-      }
-    }
-
-    function resetGuessGame() {
-      initGuessGame();
-      initPlayerGuessGame();
+    function resetLockGame() {
+      if(autoSolveInterval) clearInterval(autoSolveInterval);
+      currentLockDigits = [0, 0, 0];
+      lockTries = 0;
+      document.getElementById('lockDigit0').innerText = 0;
+      document.getElementById('lockDigit1').innerText = 0;
+      document.getElementById('lockDigit2').innerText = 0;
+      document.getElementById('lockTriesCounter').innerText = `Percobaan: 0`;
+      document.getElementById('lockGameLog').innerText = "Atur 3 digit angka pada dial di atas lalu tekan 'Uji Kunci PIN'.";
+      document.getElementById('lockGameLog').className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto";
+      const iconContainer = document.getElementById('lockIconContainer');
+      const icon = document.getElementById('lockIcon');
+      iconContainer.className = "w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center transition-all";
+      icon.setAttribute('data-lucide', 'lock');
+      lucide.createIcons();
     }
 
     // ==========================================
-    // SECTION 2: LINEAR SEARCH VISUALIZER LOGIC
+    // SECTION 2: LINEAR SEARCH VISUALIZER
     // ==========================================
-    let linearArray = [12, 25, 38, 41, 53, 67, 72, 89, 94];
-    let linearCurrentStep = 0;
-    let linearTimer = null;
+    let linearArray = [12, 25, 38, 41, 53, 67, 72, 85];
+    let linearCurrentIndex = -1;
+    let linearTarget = 38;
     let linearIsPlaying = false;
-
-    function generateLinearArray(type) {
-      resetLinearVisualizer();
-      const set = new Set();
-      while(set.size < 9) set.add(Math.floor(Math.random() * 89) + 10);
-      linearArray = Array.from(set);
-      if(type === 'sorted') linearArray.sort((a,b) => a - b);
-      renderLinearArray();
-    }
+    let linearInterval = null;
+    let linearSteps = 0;
+    let linearFound = false;
 
     function renderLinearArray() {
       const container = document.getElementById('linearArrayContainer');
       container.innerHTML = '';
-      const targetVal = parseInt(document.getElementById('linearTargetInput').value);
-
       linearArray.forEach((val, idx) => {
-        let cardBg = "bg-white border-slate-200 text-slate-800";
-        let statusBadge = "";
-
-        if (linearCurrentStep > 0) {
-          const examinedIdx = linearCurrentStep - 1;
-          if (idx < examinedIdx) {
-            cardBg = "bg-rose-50 border-rose-200 text-rose-400 opacity-60";
-          } else if (idx === examinedIdx) {
-            if (val === targetVal) {
-              cardBg = "bg-emerald-500 border-emerald-600 text-white scale-110 shadow-lg ring-4 ring-emerald-200";
-              statusBadge = `<span class="absolute -top-3 bg-emerald-700 text-[9px] text-white px-1.5 py-0.5 rounded-full font-bold uppercase">Ketemu</span>`;
-            } else {
-              cardBg = "bg-amber-400 border-amber-500 text-slate-900 scale-105 shadow-md";
-              statusBadge = `<span class="absolute -top-3 bg-amber-600 text-[9px] text-white px-1.5 py-0.5 rounded-full font-bold uppercase">Periksa</span>`;
-            }
+        let style = "bg-white border-slate-200 text-slate-800 shadow-sm";
+        if (idx === linearCurrentIndex) {
+          if (val === linearTarget) {
+            style = "bg-emerald-500 border-emerald-600 text-white font-extrabold scale-110 shadow-lg shadow-emerald-500/30";
+          } else {
+            style = "bg-amber-400 border-amber-500 text-amber-950 font-bold scale-105 shadow-md";
           }
+        } else if (idx < linearCurrentIndex) {
+          style = "bg-rose-50 border-rose-200 text-rose-400 opacity-60";
         }
 
-        const div = document.createElement('div');
-        div.className = `relative flex flex-col items-center justify-center w-12 h-16 sm:w-14 sm:h-20 rounded-xl border-2 font-bold text-sm sm:text-base array-card shrink-0 ${cardBg}`;
-        div.innerHTML = `${statusBadge}
-                         <span>${val}</span>
-                         <span class="text-[10px] font-mono font-normal mt-1 opacity-60">i:${idx}</span>`;
-        container.appendChild(div);
+        const card = document.createElement('div');
+        card.className = `array-card w-12 h-16 sm:w-14 sm:h-20 rounded-xl border-2 flex flex-col items-center justify-center shrink-0 ${style}`;
+        card.innerHTML = `
+          <span class="text-[10px] text-slate-400 font-mono mb-1">[${idx}]</span>
+          <span class="text-sm sm:text-base font-bold">${val}</span>
+        `;
+        container.appendChild(card);
       });
-
-      document.getElementById('linearStepCounter').innerText = `Langkah: ${linearCurrentStep}`;
     }
 
-    function updateLinearLog() {
-      const targetVal = parseInt(document.getElementById('linearTargetInput').value);
-      const log = document.getElementById('linearLogText');
-
-      if (linearCurrentStep === 0) {
-        log.innerText = `Siap melakukan pencarian target (${targetVal}). Klik 'Maju' atau 'Jalankan'.`;
-        return;
+    function generateLinearArray(type) {
+      resetLinearVisualizer();
+      let arr = [];
+      while(arr.length < 8) {
+        let r = Math.floor(Math.random() * 89) + 10;
+        if(!arr.includes(r)) arr.push(r);
       }
-
-      const currentIdx = linearCurrentStep - 1;
-
-      if (currentIdx < linearArray.length) {
-        const val = linearArray[currentIdx];
-        if (val === targetVal) {
-          log.innerHTML = `<span class="text-emerald-400 font-bold">SUKSES:</span> Elemen pada indeks ${currentIdx} (${val}) sama dengan target (${targetVal}). Pencarian Selesai!`;
-        } else {
-          log.innerText = `Langkah ${linearCurrentStep}: Memeriksa indeks ${currentIdx} (Nilai: ${val}). Bukan target (${targetVal}), lanjut ke indeks berikutnya...`;
-        }
-      } else {
-        log.innerHTML = `<span class="text-rose-400 font-bold">GAGAL:</span> Seluruh array (${linearArray.length} elemen) telah diperiksa. Target (${targetVal}) tidak ditemukan dalam data.`;
-      }
+      if (type === 'sorted') arr.sort((a,b) => a - b);
+      linearArray = arr;
+      renderLinearArray();
     }
 
     function stepLinearNext() {
-      const targetVal = parseInt(document.getElementById('linearTargetInput').value);
-      
-      if (linearCurrentStep > 0) {
-        const lastIdx = linearCurrentStep - 1;
-        if (lastIdx < linearArray.length && linearArray[lastIdx] === targetVal) {
-          stopLinearPlay();
-          return;
+      if (linearFound || linearCurrentIndex >= linearArray.length - 1) return;
+      linearTarget = parseInt(document.getElementById('linearTargetInput').value) || 38;
+      linearCurrentIndex++;
+      linearSteps++;
+      document.getElementById('linearStepCounter').innerText = `Langkah: ${linearSteps}`;
+
+      const currVal = linearArray[linearCurrentIndex];
+      const log = document.getElementById('linearLogText');
+
+      if (currVal === linearTarget) {
+        linearFound = true;
+        log.innerHTML = `<span class="text-emerald-400 font-bold">Langkah ${linearSteps}:</span> Memeriksa indeks [${linearCurrentIndex}] → Nilai: ${currVal} == Target (${linearTarget}). <strong class="text-emerald-300">DITEMUKAN!</strong>`;
+        if (linearIsPlaying) toggleLinearPlay();
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } else {
+        log.innerHTML = `<span class="text-amber-400 font-bold">Langkah ${linearSteps}:</span> Memeriksa indeks [${linearCurrentIndex}] → Nilai: ${currVal} != Target (${linearTarget}). Lanjut ke indeks berikutnya...`;
+        if (linearCurrentIndex === linearArray.length - 1) {
+          log.innerHTML = `<span class="text-rose-400 font-bold">Selesai:</span> Target (${linearTarget}) <strong class="text-rose-300">TIDAK DITEMUKAN</strong> dalam seluruh elemen array.`;
+          if (linearIsPlaying) toggleLinearPlay();
         }
       }
-
-      if (linearCurrentStep <= linearArray.length) {
-        linearCurrentStep++;
-        renderLinearArray();
-        updateLinearLog();
-      } else {
-        stopLinearPlay();
-      }
+      renderLinearArray();
     }
 
     function stepLinearPrev() {
-      if (linearCurrentStep > 0) {
-        linearCurrentStep--;
-        renderLinearArray();
-        updateLinearLog();
+      if (linearCurrentIndex <= 0) {
+        resetLinearVisualizer();
+        return;
       }
+      linearFound = false;
+      linearCurrentIndex--;
+      linearSteps--;
+      document.getElementById('linearStepCounter').innerText = `Langkah: ${linearSteps}`;
+      document.getElementById('linearLogText').innerText = `Mundur ke langkah ${linearSteps} (Indeks [${linearCurrentIndex}]).`;
+      renderLinearArray();
     }
 
     function toggleLinearPlay() {
+      const btnText = document.getElementById('linearPlayText');
+      const btnIcon = document.getElementById('linearPlayIcon');
       if (linearIsPlaying) {
-        stopLinearPlay();
+        clearInterval(linearInterval);
+        linearIsPlaying = false;
+        btnText.innerText = "Jalankan (Play)";
+        btnIcon.setAttribute('data-lucide', 'play');
       } else {
+        if (linearFound || linearCurrentIndex >= linearArray.length - 1) resetLinearVisualizer();
         linearIsPlaying = true;
-        document.getElementById('linearPlayText').innerText = "Pause";
-        document.getElementById('linearPlayIcon').setAttribute('data-lucide', 'pause');
-        lucide.createIcons();
-
+        btnText.innerText = "Jeda (Pause)";
+        btnIcon.setAttribute('data-lucide', 'pause');
         const speed = 1700 - parseInt(document.getElementById('linearSpeedRange').value);
-        linearTimer = setInterval(() => {
-          const targetVal = parseInt(document.getElementById('linearTargetInput').value);
-          if (linearCurrentStep > 0 && linearCurrentStep <= linearArray.length) {
-            if (linearArray[linearCurrentStep - 1] === targetVal) {
-              stopLinearPlay();
-              return;
-            }
+        linearInterval = setInterval(() => {
+          if (linearFound || linearCurrentIndex >= linearArray.length - 1) {
+            toggleLinearPlay();
+          } else {
+            stepLinearNext();
           }
-          if (linearCurrentStep > linearArray.length) {
-            stopLinearPlay();
-            return;
-          }
-          stepLinearNext();
         }, speed);
       }
-    }
-
-    function stopLinearPlay() {
-      linearIsPlaying = false;
-      if (linearTimer) clearInterval(linearTimer);
-      document.getElementById('linearPlayText').innerText = "Jalankan (Play)";
-      document.getElementById('linearPlayIcon').setAttribute('data-lucide', 'play');
       lucide.createIcons();
     }
 
     function resetLinearVisualizer() {
-      stopLinearPlay();
-      linearCurrentStep = 0;
+      if (linearIsPlaying) toggleLinearPlay();
+      linearCurrentIndex = -1;
+      linearSteps = 0;
+      linearFound = false;
+      document.getElementById('linearStepCounter').innerText = `Langkah: 0`;
+      document.getElementById('linearLogText').innerText = "Klik 'Jalankan' atau 'Maju' untuk memulai simulasi.";
       renderLinearArray();
-      updateLinearLog();
     }
 
+    // ==========================================
+    // SECTION 3: GAME TEBAK ANGKA 1-100 (BINARY INTUITION)
+    // ==========================================
+    let guessMode = 'A'; // 'A' or 'B'
+    let rangeLow = 1;
+    let rangeHigh = 100;
+    let computerGuess = 50;
+    let secretPlayerNumber = null;
+    let secretComputerNumber = null;
+    let guessAttempts = 0;
+
+    function switchGuessMode(mode) {
+      guessMode = mode;
+      document.getElementById('btnGameModeA').className = mode === 'A' ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-emerald-600 shadow-sm transition-all" : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all";
+      document.getElementById('btnGameModeB').className = mode === 'B' ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-emerald-600 shadow-sm transition-all" : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all";
+      
+      if(mode === 'A') {
+        document.getElementById('gameModeA').classList.remove('hidden');
+        document.getElementById('gameModeB').classList.add('hidden');
+      } else {
+        document.getElementById('gameModeA').classList.add('hidden');
+        document.getElementById('gameModeB').classList.remove('hidden');
+      }
+      resetGuessGame();
+    }
+
+    function processGuessFeedback(type) {
+      guessAttempts++;
+      const log = document.getElementById('guessGameLog');
+
+      if (type === 'correct') {
+        log.innerText = `🎯 Hore! Komputer berhasil menebak angkamu (${computerGuess}) dalam ${guessAttempts} langkah!`;
+        log.className = "p-3 rounded-xl bg-emerald-100 text-emerald-900 text-xs text-center border border-emerald-300 font-bold";
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+        return;
+      } else if (type === 'bigger') {
+        rangeLow = computerGuess + 1;
+      } else if (type === 'smaller') {
+        rangeHigh = computerGuess - 1;
+      }
+
+      if (rangeLow > rangeHigh) {
+        log.innerText = `⚠️ Terjadi kontradiksi respon! Pastikan kamu memberikan umpan balik yang konsisten.`;
+        log.className = "p-3 rounded-xl bg-rose-100 text-rose-900 text-xs text-center border border-rose-300 font-bold";
+        return;
+      }
+
+      computerGuess = Math.floor((rangeLow + rangeHigh) / 2);
+      document.getElementById('computerGuessDisplay').innerText = `${computerGuess} ?`;
+      document.getElementById('guessRangeInfo').innerText = `Rentang Aktif: ${rangeLow} - ${rangeHigh}`;
+      log.innerText = `Komputer memotong rentang pencarian menjadi ${rangeLow}-${rangeHigh} dan mencetak tebakan baru.`;
+    }
+
+    function submitPlayerGuess() {
+      const input = document.getElementById('playerGuessInput');
+      const val = parseInt(input.value);
+      const log = document.getElementById('playerGameLog');
+
+      if (isNaN(val) || val < 1 || val > 100) {
+        alert('Masukkan angka valid antara 1 s.d. 100!');
+        return;
+      }
+
+      guessAttempts++;
+      if (val === secretComputerNumber) {
+        log.innerText = `🎉 TEBAKANMU BENAR! Angka rahasianya adalah ${secretComputerNumber}. Kamu menebak dalam ${guessAttempts} kali percobaan.`;
+        log.className = "p-3 rounded-xl bg-emerald-100 text-emerald-900 text-xs text-center border border-emerald-300 font-bold max-w-md mx-auto";
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } else if (val < secretComputerNumber) {
+        log.innerText = `📈 Angka ${val} Terlalu KECIL! Coba tebak angka yang lebih besar.`;
+        log.className = "p-3 rounded-xl bg-indigo-50 text-indigo-900 text-xs text-center border border-indigo-200 font-medium max-w-md mx-auto";
+      } else {
+        log.innerText = `📉 Angka ${val} Terlalu BESAR! Coba tebak angka yang lebih kecil.`;
+        log.className = "p-3 rounded-xl bg-amber-50 text-amber-900 text-xs text-center border border-amber-200 font-medium max-w-md mx-auto";
+      }
+      input.value = '';
+    }
+
+    function resetGuessGame() {
+      rangeLow = 1;
+      rangeHigh = 100;
+      computerGuess = 50;
+      guessAttempts = 0;
+      secretComputerNumber = Math.floor(Math.random() * 100) + 1;
+
+      document.getElementById('computerGuessDisplay').innerText = `50 ?`;
+      document.getElementById('guessRangeInfo').innerText = `Rentang Aktif: 1 - 100`;
+      document.getElementById('guessGameLog').innerText = "Pikirkan angka 1-100 lalu berikan respon pada tombol di atas.";
+      document.getElementById('guessGameLog').className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium";
+
+      document.getElementById('playerGameLog').innerText = "Ketik angka tebakanmu lalu tekan tombol 'Tebak'.";
+      document.getElementById('playerGameLog').className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto";
+    }
 
     // ==========================================
-    // SECTION 3: BINARY SEARCH VISUALIZER LOGIC
+    // SECTION 3: BINARY SEARCH VISUALIZER
     // ==========================================
     let binaryArray = [11, 19, 24, 33, 45, 52, 68, 77, 85, 91, 98];
-    let binaryStepsHistory = [];
-    let binaryCurrentStepIdx = 0;
-    let binaryTimer = null;
+    let binaryLow = 0;
+    let binaryHigh = binaryArray.length - 1;
+    let binaryMid = Math.floor((binaryLow + binaryHigh) / 2);
+    let binaryTarget = 45;
+    let binarySteps = 0;
     let binaryIsPlaying = false;
-
-    function generateBinaryArray() {
-      resetBinaryVisualizer();
-      const set = new Set();
-      while(set.size < 11) set.add(Math.floor(Math.random() * 89) + 10);
-      binaryArray = Array.from(set).sort((a,b) => a - b);
-      calculateBinarySteps();
-      renderBinaryArray();
-    }
-
-    function calculateBinarySteps() {
-      binaryStepsHistory = [];
-      const targetVal = parseInt(document.getElementById('binaryTargetInput').value);
-      let low = 0;
-      let high = binaryArray.length - 1;
-      let step = 0;
-
-      while (low <= high) {
-        let mid = Math.floor((low + high) / 2);
-        step++;
-        binaryStepsHistory.push({
-          step: step,
-          low: low,
-          mid: mid,
-          high: high,
-          found: binaryArray[mid] === targetVal,
-          val: binaryArray[mid]
-        });
-
-        if (binaryArray[mid] === targetVal) {
-          break;
-        } else if (binaryArray[mid] < targetVal) {
-          low = mid + 1;
-        } else {
-          high = mid - 1;
-        }
-      }
-
-      if (binaryStepsHistory.length === 0 || (!binaryStepsHistory[binaryStepsHistory.length - 1].found)) {
-        binaryStepsHistory.push({
-          step: step + 1,
-          low: low,
-          mid: -1,
-          high: high,
-          found: false,
-          notFound: true
-        });
-      }
-    }
+    let binaryInterval = null;
+    let binaryFound = false;
+    let binaryHistory = [];
 
     function renderBinaryArray() {
       const container = document.getElementById('binaryArrayContainer');
       container.innerHTML = '';
-      const targetVal = parseInt(document.getElementById('binaryTargetInput').value);
-
-      const currentState = binaryStepsHistory[binaryCurrentStepIdx - 1] || null;
-
       binaryArray.forEach((val, idx) => {
-        let cardStyle = "bg-white border-slate-200 text-slate-800";
-        let lowLabel = "";
-        let midLabel = "";
-        let highLabel = "";
+        let style = "bg-white border-slate-200 text-slate-800 shadow-sm";
+        let badgeHtml = '';
 
-        if (currentState) {
-          const { low, mid, high, notFound } = currentState;
-
-          if (idx < low || idx > high) {
-            cardStyle = "bg-slate-100 border-slate-200 text-slate-300 opacity-40";
-          }
-
-          if (!notFound) {
-            if (idx === mid) {
-              if (val === targetVal) {
-                cardStyle = "bg-emerald-500 border-emerald-600 text-white scale-110 shadow-xl ring-4 ring-emerald-200 z-20";
-              } else {
-                cardStyle = "bg-amber-400 border-amber-500 text-slate-900 scale-105 shadow-md z-10";
-              }
-              midLabel = `<span class="absolute -top-7 bg-amber-500 text-[10px] text-white px-2 py-0.5 rounded-full font-extrabold uppercase shadow-sm">Mid</span>`;
-            }
-
-            if (idx === low) {
-              lowLabel = `<span class="absolute -bottom-6 bg-rose-500 text-[9px] text-white px-1.5 py-0.5 rounded-md font-bold uppercase shadow-sm">Low</span>`;
-            }
-            if (idx === high) {
-              highLabel = `<span class="absolute -bottom-6 bg-sky-500 text-[9px] text-white px-1.5 py-0.5 rounded-md font-bold uppercase shadow-sm">High</span>`;
+        if (idx < binaryLow || idx > binaryHigh) {
+          style = "bg-slate-200 border-slate-300 text-slate-400 opacity-40 line-through";
+        } else {
+          if (idx === binaryMid) {
+            if (val === binaryTarget && binaryFound) {
+              style = "bg-emerald-500 border-emerald-600 text-white font-extrabold scale-110 shadow-lg shadow-emerald-500/30";
+            } else {
+              style = "bg-amber-400 border-amber-500 text-amber-950 font-extrabold scale-105 shadow-md";
             }
           }
         }
 
-        const div = document.createElement('div');
-        div.className = `relative flex flex-col items-center justify-center w-11 h-16 sm:w-13 sm:h-20 rounded-xl border-2 font-bold text-xs sm:text-base array-card shrink-0 ${cardStyle}`;
-        div.innerHTML = `${midLabel}
-                         ${lowLabel}
-                         ${highLabel}
-                         <span>${val}</span>
-                         <span class="text-[9px] font-mono font-normal mt-0.5 opacity-60">i:${idx}</span>`;
-        container.appendChild(div);
-      });
+        // Pointer Badges
+        let badges = [];
+        if (idx === binaryLow && binaryLow <= binaryHigh) badges.push('<span class="bg-rose-500 text-white px-1 rounded text-[9px]">L</span>');
+        if (idx === binaryMid && binaryLow <= binaryHigh) badges.push('<span class="bg-amber-600 text-white px-1 rounded text-[9px]">M</span>');
+        if (idx === binaryHigh && binaryLow <= binaryHigh) badges.push('<span class="bg-sky-500 text-white px-1 rounded text-[9px]">H</span>');
 
-      document.getElementById('binaryStepCounter').innerText = `Langkah: ${binaryCurrentStepIdx}`;
+        if (badges.length > 0) {
+          badgeHtml = `<div class="flex space-x-0.5 absolute -top-5">${badges.join('')}</div>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = `array-card relative w-12 h-16 sm:w-14 sm:h-20 rounded-xl border-2 flex flex-col items-center justify-center shrink-0 ${style}`;
+        card.innerHTML = `
+          ${badgeHtml}
+          <span class="text-[10px] text-slate-400 font-mono mb-1">[${idx}]</span>
+          <span class="text-sm sm:text-base font-bold">${val}</span>
+        `;
+        container.appendChild(card);
+      });
     }
 
-    function updateBinaryLog() {
-      const targetVal = parseInt(document.getElementById('binaryTargetInput').value);
-      const log = document.getElementById('binaryLogText');
-
-      if (binaryCurrentStepIdx === 0) {
-        log.innerText = `Siap melakukan Binary Search target (${targetVal}). Data terurut. Klik 'Maju' atau 'Jalankan'.`;
-        return;
+    function generateBinaryArray() {
+      resetBinaryVisualizer();
+      let arr = [];
+      while(arr.length < 11) {
+        let r = Math.floor(Math.random() * 89) + 10;
+        if(!arr.includes(r)) arr.push(r);
       }
-
-      const currentState = binaryStepsHistory[binaryCurrentStepIdx - 1];
-
-      if (currentState.notFound) {
-        log.innerHTML = `<span class="text-rose-400 font-bold">GAGAL:</span> Batas Low (${currentState.low}) melebihi High (${currentState.high}). Target (${targetVal}) tidak ada dalam array.`;
-      } else if (currentState.found) {
-        log.innerHTML = `<span class="text-emerald-400 font-bold">SUKSES:</span> Target (${targetVal}) cocok dengan nilai Mid pada indeks ${currentState.mid}! Selesai hanya dalam ${currentState.step} langkah.`;
-      } else {
-        const midVal = binaryArray[currentState.mid];
-        let action = midVal < targetVal ? `Mid (${midVal}) < Target (${targetVal}), maka geser Low ke Mid + 1 (${currentState.mid + 1})` : `Mid (${midVal}) > Target (${targetVal}), maka geser High ke Mid - 1 (${currentState.mid - 1})`;
-        log.innerText = `Langkah ${currentState.step}: Low=${currentState.low}, High=${currentState.high} → Mid=${currentState.mid} (Nilai=${midVal}). ${action}.`;
-      }
+      arr.sort((a,b) => a - b);
+      binaryArray = arr;
+      binaryHigh = binaryArray.length - 1;
+      binaryMid = Math.floor((binaryLow + binaryHigh) / 2);
+      renderBinaryArray();
     }
 
     function stepBinaryNext() {
-      calculateBinarySteps();
-      if (binaryCurrentStepIdx < binaryStepsHistory.length) {
-        binaryCurrentStepIdx++;
-        renderBinaryArray();
-        updateBinaryLog();
+      if (binaryFound || binaryLow > binaryHigh) return;
+      binaryTarget = parseInt(document.getElementById('binaryTargetInput').value) || 45;
+      
+      // Save State History for Prev
+      binaryHistory.push({ low: binaryLow, high: binaryHigh, mid: binaryMid, steps: binarySteps, found: binaryFound });
+      
+      binarySteps++;
+      binaryMid = Math.floor((binaryLow + binaryHigh) / 2);
+      document.getElementById('binaryStepCounter').innerText = `Langkah: ${binarySteps}`;
+      
+      const midVal = binaryArray[binaryMid];
+      const log = document.getElementById('binaryLogText');
 
-        if (binaryStepsHistory[binaryCurrentStepIdx - 1].found) {
-          stopBinaryPlay();
-        }
+      if (midVal === binaryTarget) {
+        binaryFound = true;
+        log.innerHTML = `<span class="text-emerald-400 font-bold">Langkah ${binarySteps}:</span> Mid = indeks [${binaryMid}] (${midVal}) == Target (${binaryTarget}). <strong class="text-emerald-300">DITEMUKAN!</strong>`;
+        if (binaryIsPlaying) toggleBinaryPlay();
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      } else if (midVal < binaryTarget) {
+        log.innerHTML = `<span class="text-indigo-400 font-bold">Langkah ${binarySteps}:</span> Mid = [${binaryMid}] (${midVal}) < Target (${binaryTarget}). Geser Low ke [${binaryMid + 1}]. (Elemen sebelah kiri elminasi)`;
+        binaryLow = binaryMid + 1;
       } else {
-        stopBinaryPlay();
+        log.innerHTML = `<span class="text-indigo-400 font-bold">Langkah ${binarySteps}:</span> Mid = [${binaryMid}] (${midVal}) > Target (${binaryTarget}). Geser High ke [${binaryMid - 1}]. (Elemen sebelah kanan eliminasi)`;
+        binaryHigh = binaryMid - 1;
       }
+
+      if (binaryLow > binaryHigh && !binaryFound) {
+        log.innerHTML = `<span class="text-rose-400 font-bold">Selesai:</span> Target (${binaryTarget}) <strong class="text-rose-300">TIDAK DITEMUKAN</strong>. (Low > High)`;
+        if (binaryIsPlaying) toggleBinaryPlay();
+      }
+
+      renderBinaryArray();
     }
 
     function stepBinaryPrev() {
-      if (binaryCurrentStepIdx > 0) {
-        binaryCurrentStepIdx--;
-        renderBinaryArray();
-        updateBinaryLog();
+      if (binaryHistory.length === 0) {
+        resetBinaryVisualizer();
+        return;
       }
+      const prev = binaryHistory.pop();
+      binaryLow = prev.low;
+      binaryHigh = prev.high;
+      binaryMid = prev.mid;
+      binarySteps = prev.steps;
+      binaryFound = prev.found;
+      document.getElementById('binaryStepCounter').innerText = `Langkah: ${binarySteps}`;
+      document.getElementById('binaryLogText').innerText = `Mundur ke langkah ${binarySteps}.`;
+      renderBinaryArray();
     }
 
     function toggleBinaryPlay() {
+      const btnText = document.getElementById('binaryPlayText');
+      const btnIcon = document.getElementById('binaryPlayIcon');
       if (binaryIsPlaying) {
-        stopBinaryPlay();
+        clearInterval(binaryInterval);
+        binaryIsPlaying = false;
+        btnText.innerText = "Jalankan (Play)";
+        btnIcon.setAttribute('data-lucide', 'play');
       } else {
+        if (binaryFound || binaryLow > binaryHigh) resetBinaryVisualizer();
         binaryIsPlaying = true;
-        document.getElementById('binaryPlayText').innerText = "Pause";
-        document.getElementById('binaryPlayIcon').setAttribute('data-lucide', 'pause');
-        lucide.createIcons();
-
-        const speed = 2200 - parseInt(document.getElementById('binarySpeedRange').value);
-        binaryTimer = setInterval(() => {
-          if (binaryCurrentStepIdx >= binaryStepsHistory.length) {
-            stopBinaryPlay();
-            return;
+        btnText.innerText = "Jeda (Pause)";
+        btnIcon.setAttribute('data-lucide', 'pause');
+        const speed = 2300 - parseInt(document.getElementById('binarySpeedRange').value);
+        binaryInterval = setInterval(() => {
+          if (binaryFound || binaryLow > binaryHigh) {
+            toggleBinaryPlay();
+          } else {
+            stepBinaryNext();
           }
-          stepBinaryNext();
         }, speed);
       }
-    }
-
-    function stopBinaryPlay() {
-      binaryIsPlaying = false;
-      if (binaryTimer) clearInterval(binaryTimer);
-      document.getElementById('binaryPlayText').innerText = "Jalankan (Play)";
-      document.getElementById('binaryPlayIcon').setAttribute('data-lucide', 'play');
       lucide.createIcons();
     }
 
     function resetBinaryVisualizer() {
-      stopBinaryPlay();
-      binaryCurrentStepIdx = 0;
-      calculateBinarySteps();
+      if (binaryIsPlaying) toggleBinaryPlay();
+      binaryLow = 0;
+      binaryHigh = binaryArray.length - 1;
+      binaryMid = Math.floor((binaryLow + binaryHigh) / 2);
+      binarySteps = 0;
+      binaryFound = false;
+      binaryHistory = [];
+      document.getElementById('binaryStepCounter').innerText = `Langkah: 0`;
+      document.getElementById('binaryLogText').innerText = "Klik 'Jalankan' atau 'Maju' untuk mengamati eliminasi Low, Mid, dan High.";
       renderBinaryArray();
-      updateBinaryLog();
     }
-
-    document.getElementById('binaryTargetInput').addEventListener('change', () => {
-      resetBinaryVisualizer();
-    });
-    document.getElementById('linearTargetInput').addEventListener('change', () => {
-      resetLinearVisualizer();
-    });
 
     // ==========================================
     // SECTION 4: ARENA KOMPARASI SIDE-BY-SIDE
     // ==========================================
     function runComparison() {
-      const target = parseInt(document.getElementById('compareTargetInput').value);
-      if (isNaN(target) || target < 1 || target > 100) {
-        alert("Masukkan angka target antara 1 s.d. 100");
-        return;
-      }
+      const target = parseInt(document.getElementById('compareTargetInput').value) || 88;
+      const data = Array.from({length: 100}, (_, i) => i + 1);
 
-      const array100 = Array.from({ length: 100 }, (_, i) => i + 1);
-
+      // Linear Search Calculation
       let linearSteps = 0;
-      let linearFound = false;
-      for (let i = 0; i < array100.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         linearSteps++;
-        if (array100[i] === target) {
-          linearFound = true;
-          break;
-        }
+        if (data[i] === target) break;
       }
 
+      // Binary Search Calculation
       let binarySteps = 0;
-      let binaryFound = false;
-      let low = 0;
-      let high = array100.length - 1;
-
+      let low = 0, high = data.length - 1;
       while (low <= high) {
         binarySteps++;
         let mid = Math.floor((low + high) / 2);
-        if (array100[mid] === target) {
-          binaryFound = true;
-          break;
-        } else if (array100[mid] < target) {
-          low = mid + 1;
-        } else {
-          high = mid - 1;
-        }
+        if (data[mid] === target) break;
+        if (data[mid] < target) low = mid + 1;
+        else high = mid - 1;
       }
 
+      // Update UI Counters & Progress
       document.getElementById('cmpLinearSteps').innerText = linearSteps;
-      document.getElementById('cmpBinarySteps').innerText = binarySteps;
-
       document.getElementById('cmpLinearProgress').style.width = `${(linearSteps / 100) * 100}%`;
-      document.getElementById('cmpBinaryProgress').style.width = `${(binarySteps / 7) * 100}%`;
+      document.getElementById('cmpLinearStatus').innerText = `Selesai dalam ${linearSteps} langkah (Memeriksa 1 per 1).`;
 
-      document.getElementById('cmpLinearStatus').innerText = linearFound ? `Target ditemukan setelah mengecek ${linearSteps} elemen berurutan.` : `Mengecek seluruh 100 elemen namun target tidak ada.`;
-      document.getElementById('cmpBinaryStatus').innerText = binaryFound ? `Target ditemukan hanya dalam ${binarySteps} kali pembagian area.` : `Selesai dalam ${binarySteps} langkah (Target tidak ada).`;
+      document.getElementById('cmpBinarySteps').innerText = binarySteps;
+      document.getElementById('cmpBinaryProgress').style.width = `${(binarySteps / 100) * 100}%`;
+      document.getElementById('cmpBinaryStatus').innerText = `Selesai dalam ${binarySteps} langkah (Bagi dua area).`;
 
       const verdictBox = document.getElementById('cmpVerdictBox');
       const verdictText = document.getElementById('cmpVerdictText');
       verdictBox.classList.remove('hidden');
-
-      const speedFactor = (linearSteps / (binarySteps || 1)).toFixed(1);
-      verdictText.innerHTML = `Pada pencarian angka <strong class="font-bold">${target}</strong> dari 100 data: <br>` +
-                              `• <strong class="font-bold">Binary Search</strong> ⚡ <span class="font-extrabold text-emerald-700">${speedFactor}x lebih cepat/efisien</span> dibandingkan Linear Search.<br>` +
-                              `• Linear Search butuh <strong class="font-bold">${linearSteps} langkah</strong>, sementara Binary Search hanya butuh <strong class="font-bold">${binarySteps} langkah</strong>!`;
-      
-      confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+      verdictText.innerHTML = `Untuk mencari angka <strong class="font-bold">${target}</strong> pada 100 data, <strong class="text-indigo-600 font-bold">Binary Search ${Math.round(linearSteps / binarySteps)}x LIPAT LEBIH CEPEAT</strong> daripada Linear Search!`;
     }
 
     // ==========================================
-    // SECTION 5: KUIS INTERAKTIF & EVALUASI
+    // SECTION 5: KUIS MANDIRI (10 SOAL - ONE BY ONE)
     // ==========================================
-    // SECTION 5: KUIS INTERAKTIF (10 SOAL)
-    // ==========================================
-    const quizData = [
-      // --- KELOMPOK 1: KONSEP ALGORITMA (2 SOAL) ---
+    const quizQuestions = [
+      // 2 Soal Konsep Algoritma Pencarian
       {
         id: 1,
-        question: "1. Manakah dari pernyataan berikut yang paling tepat menggambarkan perbedaan utama antara Linear Search dan Binary Search?",
+        type: "Konsep Dasar",
+        question: "Syarat utama agar algoritma Binary Search (Pencarian Bagi Dua) dapat diterapkan secara valid pada suatu himpunan data adalah...",
         options: [
-          "Linear Search bekerja lebih cepat daripada Binary Search pada data berukuran besar",
-          "Binary Search mewajibkan data dalam keadaan terurut, sedangkan Linear Search dapat bekerja pada data acak",
-          "Linear Search hanya dapat digunakan untuk angka genap, sedangkan Binary Search untuk angka ganjil",
-          "Binary Search selalu mengecek elemen satu per satu dari paling kiri sampai paling kanan"
+          "Data harus berjumlah Genap",
+          "Data harus sudah terurut (ascending/descending)",
+          "Data tidak boleh memiliki angka duplikat",
+          "Data harus bertipe teks/string"
         ],
-        correct: 1,
-        explanation: "Syarat mutlak penggunaan Binary Search adalah data harus terurut. Linear Search tidak memerlukan data terurut dan memeriksa satu demi satu."
+        answer: 1,
+        explanation: "Binary Search memotong ruang pencarian berdasarkan perbandingan elemen tengah (Mid). Hal ini hanya bekerja secara valid jika data sudah terurut."
       },
       {
         id: 2,
-        question: "2. Mengapa Binary Search disebut memiliki kompleksitas waktu O(log n)?",
+        type: "Konsep Dasar",
+        question: "Manakah pernyataan yang PALING TEPAT mengenai kompleksitas waktu algoritma Linear Search dibanding Binary Search?",
         options: [
-          "Karena jumlah langkahnya selalu sama dengan jumlah total data (n)",
-          "Karena algoritma selalu mengalikan dua jumlah data di setiap langkahnya",
-          "Karena ruang pencarian dipotong menjadi dua bagian (1/2) secara berulang di setiap langkah",
-          "Karena algoritma membutuhkan dua kali perulangan bertingkat"
+          "Linear Search beroperasi pada O(log n), sedangkan Binary Search O(n)",
+          "Linear Search selalu lebih cepat untuk data terurut berukuran besar",
+          "Linear Search beroperasi pada O(n) sehingga jumlah langkah berbanding lurus dengan banyak data",
+          "Keduanya memerlukan jumlah langkah yang persis sama pada kasus terburuk (worst-case)"
         ],
-        correct: 2,
-        explanation: "Sifat utama Binary Search adalah selalu membagi dua (eliminasi setengah) area pencarian pada tiap iterasi, sehingga jumlah langkahnya tumbuh secara logaritmik O(log2 n)."
+        answer: 2,
+        explanation: "Linear Search memiliki kompleksitas O(n), di mana pada kasus terburuk kita harus memeriksa seluruh elemen satu demi satu."
       },
-
-      // --- KELOMPOK 2: SIMULASI LINEAR SEARCH (1 SOAL) ---
+      // 1 Soal Hitung Langkah Linear Search
       {
         id: 3,
-        question: "3. Diberikan sekumpulan data acak: [42, 15, 88, 23, 67, 31, 90, 54]. Jika kita mencari angka 31 menggunakan Linear Search (Pencarian Berurutan), berapa kali pemeriksaan yang dilakukan hingga data ditemukan?",
-        options: [
-          "4 kali",
-          "5 kali",
-          "6 kali",
-          "8 kali"
-        ],
-        correct: 2,
-        explanation: "Pemeriksaan berurutan dari kiri: (1) 42 → (2) 15 → (3) 88 → (4) 23 → (5) 67 → (6) 31 [KETEMU!]. Total butuh 6 kali pemeriksaan."
+        type: "Hitung Langkah Linear",
+        question: "Diberikan array acak: [42, 15, 88, 23, 67, 31, 90, 54]. Jika kita mencari angka 31 menggunakan Linear Search dari indeks pertama, berapa kali perbandingan/pencarian yang dilakukan sampai angka ditemukan?",
+        options: ["4 kali", "5 kali", "6 kali", "7 kali"],
+        answer: 2,
+        explanation: "Pemeriksaan berurutan: 42 (1), 15 (2), 88 (3), 23 (4), 67 (5), 31 (6). Angka 31 ditemukan pada iterasi ke-6 (indeks 5)."
       },
-
-      // --- KELOMPOK 3: SIMULASI BINARY SEARCH (3 SOAL) ---
+      // 3 Soal Hitung Langkah Binary Search
       {
         id: 4,
-        question: "4. Diberikan array terurut: [10, 20, 30, 40, 50, 60, 70, 80, 90]. Jika dilakukan Binary Search untuk mencari angka 30, berapa kali pencarian (pemeriksaan nilai Mid) sampai data ditemukan?",
-        options: [
-          "1 kali",
-          "2 kali",
-          "3 kali",
-          "4 kali"
-        ],
-        correct: 1,
-        explanation: "Langkah 1: Low=0, High=8 → Mid=4 (Nilai: 50). Karena 50 > 30, geser High=3.\nLangkah 2: Low=0, High=3 → Mid=1 (Nilai: 20). Karena 20 < 30, geser Low=2.\nLangkah 3: Low=2, High=3 → Mid=2 (Nilai: 30) [KETEMU!]. Total = 3 kali."
+        type: "Hitung Langkah Binary",
+        question: "Diberikan array terurut berisi 7 elemen: [10, 20, 30, 40, 50, 60, 70]. Berapa langkah pencarian yang dibutuhkan Binary Search untuk menemukan angka 20?",
+        options: ["1 langkah", "2 langkah", "3 langkah", "4 langkah"],
+        answer: 1,
+        explanation: "Langkah 1: Low=0, High=6 -> Mid=3 (nilai 40). Karena 20 < 40, High=2. Langkah 2: Low=0, High=2 -> Mid=1 (nilai 20). Ditemukan dalam 2 langkah!"
       },
       {
         id: 5,
-        question: "5. Diberikan array terurut 7 elemen: [5, 12, 25, 33, 48, 60, 75]. Jika kita mencari nilai 5 menggunakan Binary Search, berapa kali pemeriksaan nilai Mid yang dibutuhkan?",
-        options: [
-          "1 kali",
-          "2 kali",
-          "3 kali",
-          "7 kali"
-        ],
-        correct: 1,
-        explanation: "Langkah 1: Mid = index 3 (Nilai: 33). Karena 33 > 5, High berpindah ke bagian kiri [5, 12, 25].\nLangkah 2: Mid baru = index 1 (Nilai: 12). Karena 12 > 5, High berpindah lagi [5].\nLangkah 3: Mid baru = index 0 (Nilai: 5) [KETEMU!]. Total = 3 kali."
+        type: "Hitung Langkah Binary",
+        question: "Diberikan array terurut 15 elemen: [3, 8, 12, 19, 24, 31, 38, 45, 52, 60, 67, 73, 81, 89, 95]. Jika mencari target = 81, berapa kali perbandingan elemen tengah (Mid) hingga target ditemukan?",
+        options: ["2 kali", "3 kali", "4 kali", "5 kali"],
+        answer: 1,
+        explanation: "Langkah 1: Mid=[7] (45) < 81 -> Low=8. Langkah 2: Mid=[11] (73) < 81 -> Low=12. Langkah 3: Mid=[13] (89) > 81 -> High=12. Langkah 4: Mid=[12] (81) == 81 (Ditemukan dalam 3-4 iterasi)."
       },
       {
         id: 6,
-        question: "6. Diberikan array terurut 11 elemen: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22]. Jika kita mencari angka 12, berapa kali pemeriksaan Mid yang terjadi?",
-        options: [
-          "1 kali",
-          "2 kali",
-          "3 kali",
-          "5 kali"
-        ],
-        correct: 0,
-        explanation: "Indeks 0 hingga 10. Nilai tengah awal (Mid) = (0 + 10) / 2 = indeks 5. Nilai pada indeks 5 adalah tepat 12! [Langsung KETEMU di langkah pertama]."
+        type: "Hitung Langkah Binary",
+        question: "Berapa jumlah langkah MAKSIMAL (Worst-Case) yang dibutuhkan Binary Search untuk mencari data dalam himpunan terurut berukuran 64 elemen?",
+        options: ["64 langkah", "32 langkah", "6 langkah", "7 langkah"],
+        answer: 3,
+        explanation: "Kompleksitas Binary Search adalah O(log2 n). Untuk n=64, ceil(log2 64) = 6 langkah (atau maksimal 7 kali pembagian area)."
       },
-
-      // --- KELOMPOK 4: BERPIKIR KOMPUTASIONAL / BEBRAS STYLE (4 SOAL) ---
+      // 4 Soal Berpikir Komputasional (Bebras-Style)
       {
         id: 7,
-        question: "7. [Tantangan Bebras - Lemari Buku Guru] Pak Budi menyusun 1.000 buku di perpustakaan secara berurutan berdasarkan nomor kode buku. Pak Budi ingin mencari buku bernomor kode 750 menggunakan cara 'potong setengah' (Binary Search). Berapa kali maksimal Pak Budi harus membuka lemari untuk memastikan buku itu ada atau tidak?",
+        type: "Berpikir Komputasional",
+        question: "Bebek Bebras menata 100 buku di rak perpustakaan berdasarkan nomor ISBN yang sudah terurut. Ketika seorang pengunjung mencari buku tertentu, strategi paling cepat bagi Bebras untuk menemukan buku tersebut adalah...",
         options: [
-          "10 kali",
-          "500 kali",
-          "100 kali",
-          "1.000 kali"
+          "Membuka buku satu per satu dari rak paling kiri ke kanan",
+          "Membuka buku di tengah rak, lalu mengeliminasi separuh rak yang tidak memuat nomor ISBN tersebut",
+          "Mengambil 10 buku secara acak lalu menebak posisinya",
+          "Menata ulang seluruh buku dari awal sebelum mencari"
         ],
-        correct: 0,
-        explanation: "Untuk 1.000 data, jumlah pencarian maksimal Binary Search adalah log2(1000) ≈ 9,96, yang dibulatkan ke atas menjadi 10 kali membuka lemari!"
+        answer: 1,
+        explanation: "Prinsip Binary Search: Membuka buku di bagian tengah memanfaatkan sifat data yang sudah terurut untuk mengeliminasi 50% opsi secara cepat."
       },
       {
         id: 8,
-        question: "8. [Tantangan Bebras - Berang-Berang Detektif] Seorang berang-berang ingin menemukan nomor telepon temannya dari buku telepon yang tebal (terurut alfabet). Jika berang-berang tersebut langsung membuka halaman tengah buku telepon, prinsip algoritma apa yang sedang ia terapkan?",
-        options: [
-          "Linear Search",
-          "Binary Search",
-          "Random Search",
-          "Bubble Sort"
-        ],
-        correct: 1,
-        explanation: "Membuka langsung bagian tengah dari media yang sudah terurut alfabet merupakan penerapan nyata prinsip dasar Binary Search (Pencarian Bagi Dua)."
+        type: "Berpikir Komputasional",
+        question: "Terdapat 8 kotak harta karun yang terkunci di sebuah goa. Hanya 1 kotak yang berisi emas. Kunci kotak acak dan tidak ada petunjuk urutan sama sekali. Berapa kali percobaan minimal yang HARUS dilakukan untuk menjamin emas PASTI ditemukan?",
+        options: ["3 kali", "4 kali", "7 kali", "8 kali"],
+        answer: 3,
+        explanation: "Karena data acak tanpa urutan (Linear Search worst case), dalam skenario terburuk emas mungkin berada di kotak terakhir (kotak ke-8)."
       },
       {
         id: 9,
-        question: "9. [Tantangan Bebras - Barisan Loket] Ada 8 loket pendaftaran yang tutup dan dipasangi nomor antrean acak di balik pintunya: [14, 5, 29, 3, 18, 42, 9, 21]. Petugas harus menemukan loket nomor 42 dengan membalik papan loket satu per satu. Mengapa petugas TIDAK BISA menggunakan Binary Search pada kasus ini?",
+        type: "Berpikir Komputasional",
+        question: "Detektif Budi menyelidiki daftar 1.000 log riwayat transaksi keuangan terurut berdasarkan timestamp detik. Mengapa Detektif Budi memilih algoritma Binary Search ketimbang memeriksa satu per satu dari awal?",
         options: [
-          "Karena jumlah loketnya genap",
-          "Karena nomor pada loket belum disusun terurut",
-          "Karena nomor 42 terlalu besar",
-          "Karena loket berada di luar ruangan"
+          "Karena Binary Search membutuhkan memori penyimpanan komputer yang lebih sedikit",
+          "Karena Binary Search menjamin pencarian selesai dalam maksimal ~10 langkah saja dibanding 1.000 langkah",
+          "Karena Linear Search tidak bisa digunakan untuk data angka",
+          "Karena Binary Search otomatis mengoreksi data transaksi yang salah"
         ],
-        correct: 1,
-        explanation: "Binary Search tidak bisa diterapkan sebab data antrean pada loket masih acak (tidak terurut). Petugas wajib menggunakan Linear Search."
+        answer: 1,
+        explanation: "2^10 = 1024. Artinya dengan Binary Search, 1.000 data terurut dapat diproses hanya dalam maksimal 10 kali tebakan/langkah."
       },
       {
         id: 10,
-        question: "10. [Tantangan Bebras - Tebak Koper] Sebuah koper terkunci dengan kode 3-digit. Jika seorang peretas mencoba password dari '000', '001', '002', sampai '999' secara berurutan satu per satu hingga koper terbuka, strategi pencarian apa yang sedang digunakan peretas tersebut?",
+        type: "Berpikir Komputasional",
+        question: "Di sebuah toko sepatu, kotak sepatu di gudang disimpan secara acak tanpa nomor urut. Pelanggan meminta sepatu ukuran 42. Apa tindakan paling efisien dari staf gudang?",
         options: [
-          "Binary Search",
-          "Linear Search",
-          "Divide and Conquer",
-          "Hashing Search"
+          "Gunakan Binary Search langsung tanpa mengurutkan kotak",
+          "Lakukan Linear Search (memeriksa satu per satu) karena data kotak belum terurut",
+          "Tebak kotak tengah dan buang separuh kotak lainnya",
+          "Menghentikan pencarian karena ukuran sepatu tidak mungkin ada"
         ],
-        correct: 1,
-        explanation: "Memeriksa setiap kemungkinan kombinasi satu demi satu secara urut dari depan ke belakang adalah contoh nyata teknik Linear Search (Brute-force)."
+        answer: 1,
+        explanation: "Jika data belum/tidak terurut, kita TIDAK BISA menggunakan Binary Search. Pilihan realistis satu-satunya adalah melakukan Linear Search (memeriksa satu per satu)."
       }
     ];
 
-    let userQuizAnswers = {};
+    let currentQuestionIdx = 0;
+    let userAnswers = new Array(quizQuestions.length).fill(null);
 
     function renderQuiz() {
-      const container = document.getElementById('quizContainer');
-      container.innerHTML = '';
-
-      quizData.forEach((q, qIdx) => {
-        const card = document.createElement('div');
-        card.className = "bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4";
-        
-        let optionsHtml = '';
-        q.options.forEach((opt, optIdx) => {
-          const isSelected = userQuizAnswers[q.id] === optIdx;
-          let btnStyle = "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100";
-          
-          if (userQuizAnswers[q.id] !== undefined) {
-            if (optIdx === q.correct) {
-              btnStyle = "bg-emerald-50 border-emerald-300 text-emerald-900 font-semibold";
-            } else if (isSelected && optIdx !== q.correct) {
-              btnStyle = "bg-rose-50 border-rose-300 text-rose-900 font-semibold";
-            }
-          }
-
-          optionsHtml += `
-            <button onclick="answerQuiz(${q.id}, ${optIdx})" ${userQuizAnswers[q.id] !== undefined ? 'disabled' : ''} class="w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm transition-all flex items-start space-x-3 ${btnStyle}">
-              <span class="w-5 h-5 rounded-full border border-current flex items-center justify-center shrink-0 text-[10px] font-bold mt-0.5">${String.fromCharCode(65 + optIdx)}</span>
-              <span>${opt}</span>
-            </button>
-          `;
-        });
-
-        let explanationHtml = '';
-        if (userQuizAnswers[q.id] !== undefined) {
-          const isCorrect = userQuizAnswers[q.id] === q.correct;
-          explanationHtml = `
-            <div class="p-4 rounded-xl ${isCorrect ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-rose-50 text-rose-900 border border-rose-200'} text-xs mt-3">
-              <span class="font-bold block mb-1">${isCorrect ? '✅ Jawaban Benar!' : '❌ Jawaban Kurang Tepat'}</span>
-              <p class="opacity-90 leading-relaxed whitespace-pre-line">${q.explanation}</p>
-            </div>
-          `;
-        }
-
-        card.innerHTML = `
-          <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug whitespace-pre-line">${q.question}</h3>
-          <div class="space-y-2">${optionsHtml}</div>
-          ${explanationHtml}
-        `;
-        container.appendChild(card);
-      });
-
-      calculateQuizScore();
+      renderQuizProgress();
+      renderQuizQuestionCard();
     }
 
-    function answerQuiz(qId, optIdx) {
-      userQuizAnswers[qId] = optIdx;
+    function renderQuizProgress() {
+      const current = currentQuestionIdx + 1;
+      const total = quizQuestions.length;
+      const answeredCount = userAnswers.filter(ans => ans !== null).length;
+
+      document.getElementById('quizProgressText').innerText = `Soal ${current} dari ${total}`;
+      document.getElementById('quizAnsweredCountText').innerText = `Dijawab: ${answeredCount} / ${total}`;
+      document.getElementById('quizProgressBar').style.width = `${(current / total) * 100}%`;
+
+      // Render Question Number Grid
+      const grid = document.getElementById('quizNumberGrid');
+      grid.innerHTML = '';
+      quizQuestions.forEach((q, idx) => {
+        const btn = document.createElement('button');
+        btn.onclick = () => jumpToQuestion(idx);
+        let btnStyle = "bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200";
+
+        if (idx === currentQuestionIdx) {
+          btnStyle = "bg-sky-600 text-white font-extrabold ring-2 ring-sky-500 ring-offset-1 border-sky-600";
+        } else if (userAnswers[idx] !== null) {
+          btnStyle = "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold";
+        }
+
+        btn.className = `w-8 h-8 rounded-lg text-xs font-mono transition-all border flex items-center justify-center ${btnStyle}`;
+        btn.innerText = idx + 1;
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderQuizQuestionCard() {
+      const q = quizQuestions[currentQuestionIdx];
+      const selected = userAnswers[currentQuestionIdx];
+      const card = document.getElementById('quizSingleQuestionCard');
+
+      let optionsHtml = '';
+      q.options.forEach((opt, oIdx) => {
+        let optStyle = "bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700";
+        let iconHtml = `<span class="w-6 h-6 rounded-full border border-slate-300 font-mono text-xs flex items-center justify-center bg-white text-slate-500 mr-3">${String.fromCharCode(65 + oIdx)}</span>`;
+
+        if (selected !== null) {
+          if (oIdx === q.answer) {
+            optStyle = "bg-emerald-50 border-emerald-400 text-emerald-900 font-bold";
+            iconHtml = `<span class="w-6 h-6 rounded-full bg-emerald-500 text-white font-bold text-xs flex items-center justify-center mr-3">✓</span>`;
+          } else if (oIdx === selected) {
+            optStyle = "bg-rose-50 border-rose-300 text-rose-900 font-medium";
+            iconHtml = `<span class="w-6 h-6 rounded-full bg-rose-500 text-white font-bold text-xs flex items-center justify-center mr-3">✕</span>`;
+          } else {
+            optStyle = "bg-slate-50 border-slate-200 opacity-50 text-slate-500";
+          }
+        }
+
+        optionsHtml += `
+          <button onclick="selectQuizOption(${oIdx})" ${selected !== null ? 'disabled' : ''} class="w-full text-left p-4 rounded-xl border transition-all flex items-center justify-start ${optStyle}">
+            ${iconHtml}
+            <span class="text-xs sm:text-sm leading-snug">${opt}</span>
+          </button>
+        `;
+      });
+
+      let explanationHtml = '';
+      if (selected !== null) {
+        explanationHtml = `
+          <div class="mt-4 p-4 rounded-xl bg-sky-50 border border-sky-200 text-sky-900 text-xs leading-relaxed">
+            <strong class="font-bold block mb-1">💡 Pembahasan / Penjelasan:</strong>
+            ${q.explanation}
+          </div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-sky-700 bg-sky-50 px-2.5 py-1 rounded-md border border-sky-200">${q.type}</span>
+          <span class="text-xs text-slate-400 font-mono">Soal #${q.id}</span>
+        </div>
+        <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">${q.question}</h3>
+        <div class="space-y-2.5 pt-2">${optionsHtml}</div>
+        ${explanationHtml}
+      `;
+
+      // Button Nav State
+      const prevBtn = document.getElementById('quizPrevBtn');
+      const nextBtn = document.getElementById('quizNextBtn');
+
+      prevBtn.disabled = currentQuestionIdx === 0;
+      prevBtn.style.opacity = currentQuestionIdx === 0 ? "0.5" : "1";
+
+      if (currentQuestionIdx === quizQuestions.length - 1) {
+        nextBtn.innerHTML = `<span>Lihat Hasil Kuis</span> <i data-lucide="award" class="w-4 h-4"></i>`;
+        nextBtn.className = "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center space-x-1.5";
+      } else {
+        nextBtn.innerHTML = `<span>Soal Berikutnya</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+        nextBtn.className = "px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center space-x-1.5";
+      }
+      lucide.createIcons();
+    }
+
+    function selectQuizOption(optionIdx) {
+      if (userAnswers[currentQuestionIdx] !== null) return;
+      userAnswers[currentQuestionIdx] = optionIdx;
+      
+      // Calculate Score
+      let score = 0;
+      userAnswers.forEach((ans, idx) => {
+        if (ans === quizQuestions[idx].answer) score += 10;
+      });
+      document.getElementById('quizScoreDisplay').innerText = `${score} / 100`;
+      
       renderQuiz();
     }
 
-    function calculateQuizScore() {
-      let correctCount = 0;
-      const totalQuestions = quizData.length;
+    function jumpToQuestion(idx) {
+      currentQuestionIdx = idx;
+      renderQuiz();
+    }
 
-      quizData.forEach(q => {
-        if (userQuizAnswers[q.id] === q.correct) correctCount++;
-      });
-
-      const score = Math.round((correctCount / totalQuestions) * 100);
-      document.getElementById('quizScoreDisplay').innerText = `${score} / 100`;
-
-      // Check if all questions have been answered
-      const answeredCount = Object.keys(userQuizAnswers).length;
-      const finalCard = document.getElementById('quizFinalResultCard');
-      const resultBadge = document.getElementById('quizResultBadge');
-      const resultTitle = document.getElementById('quizResultTitle');
-      const resultSubtitle = document.getElementById('quizResultSubtitle');
-      const retryBtn = document.getElementById('quizRetryBtn');
-
-      if (answeredCount === totalQuestions) {
-        finalCard.classList.remove('hidden');
-
-        if (score >= 90) {
-          // LULUS
-          resultBadge.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/30";
-          resultBadge.innerHTML = `<i data-lucide="check-circle-2" class="w-10 h-10"></i>`;
-          resultTitle.innerText = `Selamat, Kamu LULUS! 🎉`;
-          resultTitle.className = "text-2xl font-extrabold text-emerald-600";
-          resultSubtitle.innerText = `Luar biasa! Skor kamu ${score}/100. Kamu telah menguasai konsep dan logika algoritma Linear & Binary Search dengan sangat baik.`;
-          retryBtn.classList.add('hidden');
-          confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
-        } else {
-          // BELUM LULUS (< 90)
-          resultBadge.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center bg-rose-500 text-white font-bold shadow-lg shadow-rose-500/30";
-          resultBadge.innerHTML = `<i data-lucide="x-circle" class="w-10 h-10"></i>`;
-          resultTitle.innerText = `Belum Lulus 😔`;
-          resultTitle.className = "text-2xl font-extrabold text-rose-600";
-          resultSubtitle.innerText = `Skor kamu ${score}/100 (Syarat lulus: minimal 90). Silakan pelajari kembali modul materi dan klik tombol di bawah untuk mengulang kuis.`;
-          retryBtn.classList.remove('hidden');
-        }
-        lucide.createIcons();
+    function nextQuestion() {
+      if (currentQuestionIdx < quizQuestions.length - 1) {
+        currentQuestionIdx++;
+        renderQuiz();
       } else {
-        finalCard.classList.add('hidden');
+        showQuizFinalResult();
       }
     }
 
-    function resetQuiz() {
-      userQuizAnswers = {};
-      document.getElementById('quizFinalResultCard').classList.add('hidden');
-      renderQuiz();
-      window.scrollTo({ top: document.getElementById('sec-quiz').offsetTop - 80, behavior: 'smooth' });
+    function prevQuestion() {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        renderQuiz();
+      }
     }
 
+    function showQuizFinalResult() {
+      document.getElementById('quizSingleQuestionCard').classList.add('hidden');
+      document.getElementById('quizNavButtons').classList.add('hidden');
+      const resultCard = document.getElementById('quizFinalResultCard');
+      resultCard.classList.remove('hidden');
+
+      let correctCount = 0;
+      userAnswers.forEach((ans, idx) => {
+        if (ans === quizQuestions[idx].answer) correctCount++;
+      });
+      const finalScore = correctCount * 10;
+
+      const badge = document.getElementById('quizResultBadge');
+      const title = document.getElementById('quizResultTitle');
+      const subtitle = document.getElementById('quizResultSubtitle');
+
+      if (finalScore >= 90) {
+        badge.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-white font-bold shadow-lg bg-emerald-500 shadow-emerald-500/30";
+        badge.innerHTML = `<i data-lucide="trophy" class="w-8 h-8"></i>`;
+        title.innerHTML = `SELAMAT! KAMU LULUS 🎉`;
+        title.className = "text-2xl font-extrabold text-emerald-600";
+        subtitle.innerText = `Skor Akhir Kamu: ${finalScore} / 100 (Benar ${correctCount} dari 10 Soal). Kamu telah menguasai konsep dasar dan analisis pemikiran komputasional algoritma Searching dengan sangat baik!`;
+        confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+      } else {
+        badge.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-white font-bold shadow-lg bg-amber-500 shadow-amber-500/30";
+        badge.innerHTML = `<i data-lucide="rotate-ccw" class="w-8 h-8"></i>`;
+        title.innerHTML = `BELUM LULUS (Skor: ${finalScore})`;
+        title.className = "text-2xl font-extrabold text-amber-600";
+        subtitle.innerText = `Batas nilai kelulusan adalah 90 (Minimal 9 soal benar). Kamu menjawab benar ${correctCount} dari 10 soal. Jangan berkecil hati, silakan pelajari kembali modul materi dan coba lagi!`;
+      }
+      lucide.createIcons();
+    }
+
+    function resetQuiz() {
+      currentQuestionIdx = 0;
+      userAnswers = new Array(quizQuestions.length).fill(null);
+      document.getElementById('quizScoreDisplay').innerText = `0 / 100`;
+      document.getElementById('quizSingleQuestionCard').classList.remove('hidden');
+      document.getElementById('quizNavButtons').classList.remove('hidden');
+      document.getElementById('quizFinalResultCard').classList.add('hidden');
+      renderQuiz();
+    }
+
+    // Initialize all components on Load
+    window.onload = function() {
+      initCardGame();
+      resetLockGame();
+      generateLinearArray('random');
+      resetGuessGame();
+      generateBinaryArray();
+      renderQuiz();
+      lucide.createIcons();
+    };
   </script>
 </body>
 </html>
