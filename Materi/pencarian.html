@@ -67,7 +67,7 @@
             <i data-lucide="search" class="w-6 h-6"></i>
           </div>
           <div>
-            <h1 class="font-bold text-slate-900 text-lg leading-tight">Algoritma Pencarian <!-- <span class="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-semibold ml-1">Interactive MPI</span> --> </h1>
+            <h1 class="font-bold text-slate-900 text-lg leading-tight">Algortima Pencarian <!-- <span class="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-semibold ml-1">Interactive MPI</span> --> </h1>
             <p class="text-xs text-slate-500"></p>
           </div>
         </div>
@@ -106,7 +106,7 @@
         </button>
         <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
           <i data-lucide="award" class="w-4 h-4"></i>
-          <span>5. Evaluasi & Kuis</span>
+          <span>5. Kuis</span>
         </button>
       </nav>
     </div>
@@ -721,34 +721,17 @@ else:
           </div>
           <div id="cmpBinaryStatus" class="mt-6 p-3 bg-slate-50 rounded-xl text-xs text-slate-600 text-center font-mono">
             Siap untuk pengujian...
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Verdict Box -->
-      <div id="cmpVerdictBox" class="hidden bg-emerald-50 border border-emerald-200 p-5 rounded-2xl text-emerald-900">
-        <h4 class="font-bold text-sm flex items-center space-x-2">
-          <i data-lucide="trophy" class="w-5 h-5 text-emerald-600"></i>
-          <span>Hasil Komparasi:</span>
-        </h4>
-        <p id="cmpVerdictText" class="text-xs mt-1 leading-relaxed text-emerald-800">
-          <!-- Text dynamically inserted -->
-        </p>
-      </div>
-    </section>
-
-    <!-- SECTION 5: KUIS & EVALUASI MANDIRI -->
+    <!-- SECTION 5: KUIS MANDIRI (10 SOAL) -->
     <section id="sec-quiz" class="tab-content space-y-6 hidden">
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Kuis & Uji Pemahaman Mandiri 📝</h2>
-            <p class="text-xs text-slate-600 mt-1">Uji pemahamanmu mengenai konsep Linear dan Binary Search melalui studi kasus di bawah ini.</p>
+            <h2 class="text-xl font-bold text-slate-900">Kuis Pemahaman Searching Algorithm 📝</h2>
+            <p class="text-xs text-slate-600 mt-1">Jawablah 10 soal di bawah ini. Batas kelulusan adalah <strong class="font-bold text-emerald-600">Nilai 90</strong> (Minimal 9 soal benar).</p>
           </div>
-          <div class="text-right">
-            <span class="text-xs text-slate-400 block font-mono">SKOR ANDA</span>
-            <span id="quizScoreDisplay" class="text-2xl font-extrabold text-sky-600">0 / 3</span>
+          <div class="bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl text-center shrink-0">
+            <span class="text-[10px] text-slate-400 block font-mono uppercase tracking-wider">SKOR ANDA</span>
+            <span id="quizScoreDisplay" class="text-2xl font-extrabold text-sky-600">0 / 100</span>
           </div>
         </div>
       </div>
@@ -756,6 +739,23 @@ else:
       <!-- Quiz Questions Container -->
       <div class="space-y-4" id="quizContainer">
         <!-- Rendered dynamically by JS -->
+      </div>
+
+      <!-- Quiz Final Feedback Card (Shown after answering all questions) -->
+      <div id="quizFinalResultCard" class="hidden bg-white p-6 rounded-2xl border border-slate-200 shadow-md text-center space-y-4">
+        <div id="quizResultBadge" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-white font-bold shadow-lg">
+          <!-- Icon injected by JS -->
+        </div>
+        <div>
+          <h3 id="quizResultTitle" class="text-2xl font-extrabold text-slate-900"></h3>
+          <p id="quizResultSubtitle" class="text-xs text-slate-600 mt-1 max-w-md mx-auto"></p>
+        </div>
+        <div class="pt-2">
+          <button id="quizRetryBtn" onclick="resetQuiz()" class="hidden px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs transition-all shadow-md inline-flex items-center space-x-2">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <span>Coba Kuis Lagi</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -1454,42 +1454,135 @@ else:
     // ==========================================
     // SECTION 5: KUIS INTERAKTIF & EVALUASI
     // ==========================================
+    // SECTION 5: KUIS INTERAKTIF (10 SOAL)
+    // ==========================================
     const quizData = [
+      // --- KELOMPOK 1: KONSEP ALGORITMA (2 SOAL) ---
       {
         id: 1,
-        question: "1. Sebuah toko kelontong menyimpan daftar 1.000 barang secara acak (tidak terurut) di dalam komputer. Algoritma pencarian mana yang paling memungkinkan untuk digunakan?",
+        question: "1. Manakah dari pernyataan berikut yang paling tepat menggambarkan perbedaan utama antara Linear Search dan Binary Search?",
         options: [
-          "Binary Search, karena datanya sangat banyak",
-          "Linear Search, karena data belum terurut",
-          "Binary Search, dengan membagi data 1.000 menjadi 500",
-          "Kedua algoritma memiliki kecepatan yang sama persis"
+          "Linear Search bekerja lebih cepat daripada Binary Search pada data berukuran besar",
+          "Binary Search mewajibkan data dalam keadaan terurut, sedangkan Linear Search dapat bekerja pada data acak",
+          "Linear Search hanya dapat digunakan untuk angka genap, sedangkan Binary Search untuk angka ganjil",
+          "Binary Search selalu mengecek elemen satu per satu dari paling kiri sampai paling kanan"
         ],
         correct: 1,
-        explanation: "Syarat mutlak penggunaan Binary Search adalah data wajib terurut. Jika data masih acak, kita harus menggunakan Linear Search."
+        explanation: "Syarat mutlak penggunaan Binary Search adalah data harus terurut. Linear Search tidak memerlukan data terurut dan memeriksa satu demi satu."
       },
       {
         id: 2,
-        question: "2. Berapa jumlah langkah maksimal (worst-case) yang dibutuhkan Binary Search untuk menemukan nama siswa di dalam buku induk berisi 64 data terurut?",
+        question: "2. Mengapa Binary Search disebut memiliki kompleksitas waktu O(log n)?",
         options: [
-          "64 langkah",
-          "32 langkah",
-          "6 langkah",
-          "7 langkah"
+          "Karena jumlah langkahnya selalu sama dengan jumlah total data (n)",
+          "Karena algoritma selalu mengalikan dua jumlah data di setiap langkahnya",
+          "Karena ruang pencarian dipotong menjadi dua bagian (1/2) secara berulang di setiap langkah",
+          "Karena algoritma membutuhkan dua kali perulangan bertingkat"
         ],
         correct: 2,
-        explanation: "Kompleksitas Binary Search adalah O(log2 n). Maka log2(64) = 6 langkah maksimal! (2^6 = 64)."
+        explanation: "Sifat utama Binary Search adalah selalu membagi dua (eliminasi setengah) area pencarian pada tiap iterasi, sehingga jumlah langkahnya tumbuh secara logaritmik O(log2 n)."
       },
+
+      // --- KELOMPOK 2: SIMULASI LINEAR SEARCH (1 SOAL) ---
       {
         id: 3,
-        question: "3. Dalam visualisasi Binary Search, jika nilai pada posisi Mid (misal: 35) lebih kecil daripada angka Target yang kita cari (misal: 50), apa langkah pointer selanjutnya?",
+        question: "3. Diberikan sekumpulan data acak: [42, 15, 88, 23, 67, 31, 90, 54]. Jika kita mencari angka 31 menggunakan Linear Search (Pencarian Berurutan), berapa kali pemeriksaan yang dilakukan hingga data ditemukan?",
         options: [
-          "Geser pointer High ke (Mid - 1)",
-          "Geser pointer Low ke (Mid + 1)",
-          "Hentikan pencarian karena target tidak ditemukan",
-          "Ulangi pencarian dari indeks paling awal (0)"
+          "4 kali",
+          "5 kali",
+          "6 kali",
+          "8 kali"
+        ],
+        correct: 2,
+        explanation: "Pemeriksaan berurutan dari kiri: (1) 42 → (2) 15 → (3) 88 → (4) 23 → (5) 67 → (6) 31 [KETEMU!]. Total butuh 6 kali pemeriksaan."
+      },
+
+      // --- KELOMPOK 3: SIMULASI BINARY SEARCH (3 SOAL) ---
+      {
+        id: 4,
+        question: "4. Diberikan array terurut: [10, 20, 30, 40, 50, 60, 70, 80, 90]. Jika dilakukan Binary Search untuk mencari angka 30, berapa kali pencarian (pemeriksaan nilai Mid) sampai data ditemukan?",
+        options: [
+          "1 kali",
+          "2 kali",
+          "3 kali",
+          "4 kali"
         ],
         correct: 1,
-        explanation: "Karena data terurut dan Mid (35) < Target (50), maka seluruh bagian kiri dipastikan lebih kecil lagi. Jadi kita abaikan bagian kiri dengan menggeser Low = Mid + 1."
+        explanation: "Langkah 1: Low=0, High=8 → Mid=4 (Nilai: 50). Karena 50 > 30, geser High=3.\nLangkah 2: Low=0, High=3 → Mid=1 (Nilai: 20). Karena 20 < 30, geser Low=2.\nLangkah 3: Low=2, High=3 → Mid=2 (Nilai: 30) [KETEMU!]. Total = 3 kali."
+      },
+      {
+        id: 5,
+        question: "5. Diberikan array terurut 7 elemen: [5, 12, 25, 33, 48, 60, 75]. Jika kita mencari nilai 5 menggunakan Binary Search, berapa kali pemeriksaan nilai Mid yang dibutuhkan?",
+        options: [
+          "1 kali",
+          "2 kali",
+          "3 kali",
+          "7 kali"
+        ],
+        correct: 1,
+        explanation: "Langkah 1: Mid = index 3 (Nilai: 33). Karena 33 > 5, High berpindah ke bagian kiri [5, 12, 25].\nLangkah 2: Mid baru = index 1 (Nilai: 12). Karena 12 > 5, High berpindah lagi [5].\nLangkah 3: Mid baru = index 0 (Nilai: 5) [KETEMU!]. Total = 3 kali."
+      },
+      {
+        id: 6,
+        question: "6. Diberikan array terurut 11 elemen: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22]. Jika kita mencari angka 12, berapa kali pemeriksaan Mid yang terjadi?",
+        options: [
+          "1 kali",
+          "2 kali",
+          "3 kali",
+          "5 kali"
+        ],
+        correct: 0,
+        explanation: "Indeks 0 hingga 10. Nilai tengah awal (Mid) = (0 + 10) / 2 = indeks 5. Nilai pada indeks 5 adalah tepat 12! [Langsung KETEMU di langkah pertama]."
+      },
+
+      // --- KELOMPOK 4: BERPIKIR KOMPUTASIONAL / BEBRAS STYLE (4 SOAL) ---
+      {
+        id: 7,
+        question: "7. [Tantangan Bebras - Lemari Buku Guru] Pak Budi menyusun 1.000 buku di perpustakaan secara berurutan berdasarkan nomor kode buku. Pak Budi ingin mencari buku bernomor kode 750 menggunakan cara 'potong setengah' (Binary Search). Berapa kali maksimal Pak Budi harus membuka lemari untuk memastikan buku itu ada atau tidak?",
+        options: [
+          "10 kali",
+          "500 kali",
+          "100 kali",
+          "1.000 kali"
+        ],
+        correct: 0,
+        explanation: "Untuk 1.000 data, jumlah pencarian maksimal Binary Search adalah log2(1000) ≈ 9,96, yang dibulatkan ke atas menjadi 10 kali membuka lemari!"
+      },
+      {
+        id: 8,
+        question: "8. [Tantangan Bebras - Berang-Berang Detektif] Seorang berang-berang ingin menemukan nomor telepon temannya dari buku telepon yang tebal (terurut alfabet). Jika berang-berang tersebut langsung membuka halaman tengah buku telepon, prinsip algoritma apa yang sedang ia terapkan?",
+        options: [
+          "Linear Search",
+          "Binary Search",
+          "Random Search",
+          "Bubble Sort"
+        ],
+        correct: 1,
+        explanation: "Membuka langsung bagian tengah dari media yang sudah terurut alfabet merupakan penerapan nyata prinsip dasar Binary Search (Pencarian Bagi Dua)."
+      },
+      {
+        id: 9,
+        question: "9. [Tantangan Bebras - Barisan Loket] Ada 8 loket pendaftaran yang tutup dan dipasangi nomor antrean acak di balik pintunya: [14, 5, 29, 3, 18, 42, 9, 21]. Petugas harus menemukan loket nomor 42 dengan membalik papan loket satu per satu. Mengapa petugas TIDAK BISA menggunakan Binary Search pada kasus ini?",
+        options: [
+          "Karena jumlah loketnya genap",
+          "Karena nomor pada loket belum disusun terurut",
+          "Karena nomor 42 terlalu besar",
+          "Karena loket berada di luar ruangan"
+        ],
+        correct: 1,
+        explanation: "Binary Search tidak bisa diterapkan sebab data antrean pada loket masih acak (tidak terurut). Petugas wajib menggunakan Linear Search."
+      },
+      {
+        id: 10,
+        question: "10. [Tantangan Bebras - Tebak Koper] Sebuah koper terkunci dengan kode 3-digit. Jika seorang peretas mencoba password dari '000', '001', '002', sampai '999' secara berurutan satu per satu hingga koper terbuka, strategi pencarian apa yang sedang digunakan peretas tersebut?",
+        options: [
+          "Binary Search",
+          "Linear Search",
+          "Divide and Conquer",
+          "Hashing Search"
+        ],
+        correct: 1,
+        explanation: "Memeriksa setiap kemungkinan kombinasi satu demi satu secara urut dari depan ke belakang adalah contoh nyata teknik Linear Search (Brute-force)."
       }
     ];
 
@@ -1530,13 +1623,13 @@ else:
           explanationHtml = `
             <div class="p-4 rounded-xl ${isCorrect ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-rose-50 text-rose-900 border border-rose-200'} text-xs mt-3">
               <span class="font-bold block mb-1">${isCorrect ? '✅ Jawaban Benar!' : '❌ Jawaban Kurang Tepat'}</span>
-              <p class="opacity-90 leading-relaxed">${q.explanation}</p>
+              <p class="opacity-90 leading-relaxed whitespace-pre-line">${q.explanation}</p>
             </div>
           `;
         }
 
         card.innerHTML = `
-          <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug">${q.question}</h3>
+          <h3 class="font-bold text-slate-900 text-sm sm:text-base leading-snug whitespace-pre-line">${q.question}</h3>
           <div class="space-y-2">${optionsHtml}</div>
           ${explanationHtml}
         `;
@@ -1552,15 +1645,56 @@ else:
     }
 
     function calculateQuizScore() {
-      let score = 0;
-      quizData.forEach(q => {
-        if (userQuizAnswers[q.id] === q.correct) score++;
-      });
-      document.getElementById('quizScoreDisplay').innerText = `${score} / ${quizData.length}`;
+      let correctCount = 0;
+      const totalQuestions = quizData.length;
 
-      if (Object.keys(userQuizAnswers).length === quizData.length && score === quizData.length) {
-        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+      quizData.forEach(q => {
+        if (userQuizAnswers[q.id] === q.correct) correctCount++;
+      });
+
+      const score = Math.round((correctCount / totalQuestions) * 100);
+      document.getElementById('quizScoreDisplay').innerText = `${score} / 100`;
+
+      // Check if all questions have been answered
+      const answeredCount = Object.keys(userQuizAnswers).length;
+      const finalCard = document.getElementById('quizFinalResultCard');
+      const resultBadge = document.getElementById('quizResultBadge');
+      const resultTitle = document.getElementById('quizResultTitle');
+      const resultSubtitle = document.getElementById('quizResultSubtitle');
+      const retryBtn = document.getElementById('quizRetryBtn');
+
+      if (answeredCount === totalQuestions) {
+        finalCard.classList.remove('hidden');
+
+        if (score >= 90) {
+          // LULUS
+          resultBadge.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/30";
+          resultBadge.innerHTML = `<i data-lucide="check-circle-2" class="w-10 h-10"></i>`;
+          resultTitle.innerText = `Selamat, Kamu LULUS! 🎉`;
+          resultTitle.className = "text-2xl font-extrabold text-emerald-600";
+          resultSubtitle.innerText = `Luar biasa! Skor kamu ${score}/100. Kamu telah menguasai konsep dan logika algoritma Linear & Binary Search dengan sangat baik.`;
+          retryBtn.classList.add('hidden');
+          confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+        } else {
+          // BELUM LULUS (< 90)
+          resultBadge.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center bg-rose-500 text-white font-bold shadow-lg shadow-rose-500/30";
+          resultBadge.innerHTML = `<i data-lucide="x-circle" class="w-10 h-10"></i>`;
+          resultTitle.innerText = `Belum Lulus 😔`;
+          resultTitle.className = "text-2xl font-extrabold text-rose-600";
+          resultSubtitle.innerText = `Skor kamu ${score}/100 (Syarat lulus: minimal 90). Silakan pelajari kembali modul materi dan klik tombol di bawah untuk mengulang kuis.`;
+          retryBtn.classList.remove('hidden');
+        }
+        lucide.createIcons();
+      } else {
+        finalCard.classList.add('hidden');
       }
+    }
+
+    function resetQuiz() {
+      userQuizAnswers = {};
+      document.getElementById('quizFinalResultCard').classList.add('hidden');
+      renderQuiz();
+      window.scrollTo({ top: document.getElementById('sec-quiz').offsetTop - 80, behavior: 'smooth' });
     }
 
   </script>
