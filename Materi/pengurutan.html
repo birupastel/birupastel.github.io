@@ -6,7 +6,7 @@
     <title>Algoritma Pengurutan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Modern Layout & Styles */
+        /* Layout & Typography */
         * { box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 0; }
         
@@ -17,7 +17,7 @@
         .var-bold { font-weight: 700; color: #0f172a; }
         .card { background: #ffffff; border-radius: 1rem; border: 1px solid #e2e8f0; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         
-        /* Dark Code Blocks */
+        /* Dark Code Block Styling */
         pre.code-box { 
             background-color: #0f172a; 
             color: #f8fafc; 
@@ -46,8 +46,8 @@
                     ⇄
                 </div>
                 <div>
-                    <h1 class="text-base font-extrabold text-slate-900 leading-tight">Algoritma Pengurutan</h1>
-                    <p class="text-xs text-slate-500 font-medium"></p>
+                    <h1 class="text-base font-extrabold text-slate-900 leading-tight">EduSort Web</h1>
+                    <p class="text-xs text-slate-500 font-medium">Pembelajaran Algoritma Pengurutan Interaktif</p>
                 </div>
             </div>
 
@@ -239,8 +239,8 @@ for (i=0; i<n; i++) {
                     </select>
                 </div>
 
-                <!-- Kode yang Di-highlight Per Baris -->
-                <div class="font-mono text-xs leading-relaxed overflow-x-auto space-y-1" id="trace-code-block">
+                <!-- Kode yang Di-highlight Per Baris (Dengan Indentasi Rapi) -->
+                <div class="font-mono text-xs leading-relaxed overflow-x-auto space-y-1 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80" id="trace-code-block">
                     <!-- Rendered by JS -->
                 </div>
 
@@ -306,13 +306,21 @@ for (i=0; i<n; i++) {
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <div>
                         <h3 class="text-base font-bold text-slate-800">Mini Game: Uji Langkah Algoritma</h3>
-                        <p class="text-xs text-slate-500">Klik 2 kartu yang seharusnya ditukar pada langkah saat ini!</p>
+                        <p class="text-xs text-slate-500">Selesaikan 4 Level Pengurutan secara bertahap!</p>
                     </div>
-                    <button onclick="initGame()" class="bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow hover:bg-blue-700 transition">↻ Soal Baru</button>
+                    <button onclick="resetCurrentGameLevel()" class="bg-blue-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow hover:bg-blue-700 transition">↻ Acak Soal Baru</button>
                 </div>
 
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-900 font-medium" id="game-task-desc">
-                    Tugas: Urutkan array berikut!
+                <!-- Game Level Selector Buttons -->
+                <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 text-xs font-semibold" id="game-level-buttons">
+                    <button id="btn-lvl-1" onclick="selectGameLevel(1)" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold">Level 1</button>
+                    <button id="btn-lvl-2" onclick="selectGameLevel(2)" disabled class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-400 opacity-50 cursor-not-allowed">Level 2 🔒</button>
+                    <button id="btn-lvl-3" onclick="selectGameLevel(3)" disabled class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-400 opacity-50 cursor-not-allowed">Level 3 🔒</button>
+                    <button id="btn-lvl-4" onclick="selectGameLevel(4)" disabled class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-400 opacity-50 cursor-not-allowed">Level 4 🔒</button>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-900 font-medium space-y-1" id="game-task-desc">
+                    <!-- Task description rendered by JS -->
                 </div>
 
                 <!-- Kartu Angka Game -->
@@ -322,6 +330,12 @@ for (i=0; i<n; i++) {
 
                 <div id="game-feedback" class="text-center text-xs font-bold p-3 rounded-xl min-h-[40px] flex items-center justify-center">
                     Klik dua kartu angka yang ingin kamu tukar posisinya!
+                </div>
+
+                <div id="game-next-level-wrapper" class="hidden text-center pt-2">
+                    <button id="btn-next-level" onclick="goToNextLevel()" class="bg-emerald-600 text-white font-bold px-6 py-2.5 rounded-xl text-xs shadow-md hover:bg-emerald-700 transition">
+                        Lanjut ke Level Selanjutnya ➔
+                    </button>
                 </div>
             </div>
         </section>
@@ -560,7 +574,7 @@ for i in range(n):
                     simSteps.push({
                         arr: [...arr],
                         target: idTarget,
-                        lines: [1],
+                        lines: [2],
                         varText: `Inisialisasi target: ${varTarget} = ${i} (nilai ${arr[i]})`,
                         iVal: i, jVal: '-', targetVal: idTarget, tempVal: '-'
                     });
@@ -570,7 +584,7 @@ for i in range(n):
                             arr: [...arr],
                             compare: [j, idTarget],
                             target: idTarget,
-                            lines: [3],
+                            lines: [4],
                             varText: `Pengecekan: Apakah data[${j}] (${arr[j]}) ${mode==='asc'?'<':'>'} data[${varTarget}] (${arr[idTarget]})?`,
                             iVal: i, jVal: j, targetVal: idTarget, tempVal: '-'
                         });
@@ -579,7 +593,7 @@ for i in range(n):
                             simSteps.push({
                                 arr: [...arr],
                                 target: idTarget,
-                                lines: [4],
+                                lines: [5],
                                 varText: `Nilai target baru ditemukan! ${varTarget} = ${j} (nilai ${arr[j]})`,
                                 iVal: i, jVal: j, targetVal: idTarget, tempVal: '-'
                             });
@@ -592,7 +606,7 @@ for i in range(n):
                         simSteps.push({
                             arr: [...arr],
                             swap: [i, idTarget],
-                            lines: [7, 8, 9],
+                            lines: [8, 9, 10],
                             varText: `Penukaran Akhir Iterasi: temp = ${temp}, data[${idTarget}] ⇄ data[${i}]`,
                             iVal: i, jVal: '-', targetVal: idTarget, tempVal: temp
                         });
@@ -660,256 +674,415 @@ for i in range(n):
             if (!codeBox) return;
 
             const step = simSteps[simCurrentStep] || { lines: [] };
-            let codeLines = [];
+            let rawLines = [];
 
             if (algo === 'bubble') {
                 if (lang === 'cpp') {
-                    codeLines = mode === 'asc' ? [
-                        `// Bubble Sort Ascending (C++)`,
-                        `for (i=n-1; i>0; i--) {`,
-                        `    for (j=0; j<i; j++) {`,
-                        `        if (data[j] > data[j+1]) {`,
-                        `            temp = data[j];`,
-                        `            data[j] = data[j+1];`,
-                        `            data[j+1] = temp;`,
-                        `        }`,
-                        `    }`,
-                        `}`
+                    rawLines = mode === 'asc' ? [
+                        { indent: 0, text: `// Bubble Sort Ascending (C++)` },
+                        { indent: 0, text: `for (i=n-1; i>0; i--) {` },
+                        { indent: 1, text: `for (j=0; j<i; j++) {` },
+                        { indent: 2, text: `if (data[j] > data[j+1]) {` },
+                        { indent: 3, text: `temp = data[j];` },
+                        { indent: 3, text: `data[j] = data[j+1];` },
+                        { indent: 3, text: `data[j+1] = temp;` },
+                        { indent: 2, text: `}` },
+                        { indent: 1, text: `}` },
+                        { indent: 0, text: `}` }
                     ] : [
-                        `// Bubble Sort Descending (C++)`,
-                        `for (i=n-1; i>0; i--) {`,
-                        `    for (j=0; j<i; j++) {`,
-                        `        if (data[j] < data[j+1]) {`,
-                        `            temp = data[j];`,
-                        `            data[j] = data[j+1];`,
-                        `            data[j+1] = temp;`,
-                        `        }`,
-                        `    }`,
-                        `}`
+                        { indent: 0, text: `// Bubble Sort Descending (C++)` },
+                        { indent: 0, text: `for (i=n-1; i>0; i--) {` },
+                        { indent: 1, text: `for (j=0; j<i; j++) {` },
+                        { indent: 2, text: `if (data[j] < data[j+1]) {` },
+                        { indent: 3, text: `temp = data[j];` },
+                        { indent: 3, text: `data[j] = data[j+1];` },
+                        { indent: 3, text: `data[j+1] = temp;` },
+                        { indent: 2, text: `}` },
+                        { indent: 1, text: `}` },
+                        { indent: 0, text: `}` }
                     ];
                 } else {
-                    codeLines = mode === 'asc' ? [
-                        `# Bubble Sort Ascending (Python)`,
-                        `for i in range(n - 1, 0, -1):`,
-                        `    for j in range(i):`,
-                        `        if data[j] > data[j + 1]:`,
-                        `            temp = data[j]`,
-                        `            data[j] = data[j + 1]`,
-                        `            data[j + 1] = temp`
+                    rawLines = mode === 'asc' ? [
+                        { indent: 0, text: `# Bubble Sort Ascending (Python)` },
+                        { indent: 0, text: `for i in range(n - 1, 0, -1):` },
+                        { indent: 1, text: `for j in range(i):` },
+                        { indent: 2, text: `if data[j] > data[j + 1]:` },
+                        { indent: 3, text: `temp = data[j]` },
+                        { indent: 3, text: `data[j] = data[j + 1]` },
+                        { indent: 3, text: `data[j + 1] = temp` }
                     ] : [
-                        `# Bubble Sort Descending (Python)`,
-                        `for i in range(n - 1, 0, -1):`,
-                        `    for j in range(i):`,
-                        `        if data[j] < data[j + 1]:`,
-                        `            temp = data[j]`,
-                        `            data[j] = data[j + 1]`,
-                        `            data[j + 1] = temp`
+                        { indent: 0, text: `# Bubble Sort Descending (Python)` },
+                        { indent: 0, text: `for i in range(n - 1, 0, -1):` },
+                        { indent: 1, text: `for j in range(i):` },
+                        { indent: 2, text: `if data[j] < data[j + 1]:` },
+                        { indent: 3, text: `temp = data[j]` },
+                        { indent: 3, text: `data[j] = data[j + 1]` },
+                        { indent: 3, text: `data[j + 1] = temp` }
                     ];
                 }
             } else {
                 let varT = mode === 'asc' ? 'idmin' : 'idmax';
                 let op = mode === 'asc' ? '<' : '>';
                 if (lang === 'cpp') {
-                    codeLines = [
-                        `// Selection Sort (${mode === 'asc' ? 'Ascending' : 'Descending'}) (C++)`,
-                        `for (i=0; i<n; i++) {`,
-                        `    ${varT} = i;`,
-                        `    for (j=i+1; j<n; j++) {`,
-                        `        if (data[j] ${op} data[${varT}]) {`,
-                        `            ${varT} = j;`,
-                        `        }`,
-                        `    }`,
-                        `    temp = data[${varT}];`,
-                        `    data[${varT}] = data[i];`,
-                        `    data[i] = temp;`,
-                        `}`
+                    rawLines = [
+                        { indent: 0, text: `// Selection Sort (${mode === 'asc' ? 'Ascending' : 'Descending'}) (C++)` },
+                        { indent: 0, text: `for (i=0; i<n; i++) {` },
+                        { indent: 1, text: `${varT} = i;` },
+                        { indent: 1, text: `for (j=i+1; j<n; j++) {` },
+                        { indent: 2, text: `if (data[j] ${op} data[${varT}]) {` },
+                        { indent: 3, text: `${varT} = j;` },
+                        { indent: 2, text: `}` },
+                        { indent: 1, text: `}` },
+                        { indent: 1, text: `temp = data[${varT}];` },
+                        { indent: 1, text: `data[${varT}] = data[i];` },
+                        { indent: 1, text: `data[i] = temp;` },
+                        { indent: 0, text: `}` }
                     ];
                 } else {
-                    codeLines = [
-                        `# Selection Sort (${mode === 'asc' ? 'Ascending' : 'Descending'}) (Python)`,
-                        `for i in range(n):`,
-                        `    ${varT} = i`,
-                        `    for j in range(i + 1, n):`,
-                        `        if data[j] ${op} data[${varT}]:`,
-                        `            ${varT} = j`,
-                        `    temp = data[${varT}]`,
-                        `    data[${varT}] = data[i]`,
-                        `    data[i] = temp`
+                    rawLines = [
+                        { indent: 0, text: `# Selection Sort (${mode === 'asc' ? 'Ascending' : 'Descending'}) (Python)` },
+                        { indent: 0, text: `for i in range(n):` },
+                        { indent: 1, text: `${varT} = i` },
+                        { indent: 1, text: `for j in range(i + 1, n):` },
+                        { indent: 2, text: `if data[j] ${op} data[${varT}]:` },
+                        { indent: 3, text: `${varT} = j` },
+                        { indent: 1, text: `temp = data[${varT}]` },
+                        { indent: 1, text: `data[${varT}] = data[i]` },
+                        { indent: 1, text: `data[i] = temp` }
                     ];
                 }
             }
 
-            codeBox.innerHTML = codeLines.map((line, idx) => {
-                let isHL = step.lines && step.lines.includes(idx);
-                let bgClass = isHL ? 'bg-blue-600/50 text-white font-bold px-1 rounded' : 'text-slate-400';
-                return `<div class="${bgClass}">${line.replace(/ /g, '&nbsp;')}</div>`;
+            codeBox.innerHTML = rawLines.map((lineObj, idx) => {
+                let isHighlighted = step.lines && step.lines.includes(idx);
+                let hlClass = isHighlighted ? 'bg-blue-600 text-white font-bold px-2 py-0.5 rounded shadow-sm' : 'text-slate-300 px-2 py-0.5';
+                let indentSpaces = '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(lineObj.indent);
+                return `<div class="${hlClass} whitespace-pre">${indentSpaces}${lineObj.text}</div>`;
             }).join('');
         };
 
-        // --- RACE MODE ANIMATION ---
+        // --- RACE MODE LOGIC ---
         let raceTimer = null;
-        let raceBubbleSteps = [];
-        let raceSelectSteps = [];
+        let raceBubbleState = { arr: [], i: 0, j: 0, comp: 0, swap: 0, done: false, activePair: [], activeType: null };
+        let raceSelectState = { arr: [], i: 0, j: 1, idTarget: 0, comp: 0, swap: 0, done: false, activePair: [], activeType: null };
 
         window.resetRace = function() {
             if (raceTimer) clearInterval(raceTimer);
             raceTimer = null;
+            const data = [65, 23, 89, 12, 45];
+            raceBubbleState = { arr: [...data], i: data.length - 1, j: 0, comp: 0, swap: 0, done: false, activePair: [], activeType: null };
+            raceSelectState = { arr: [...data], i: 0, j: 1, idTarget: 0, comp: 0, swap: 0, done: false, activePair: [], activeType: null };
             
-            const rawData = [45, 12, 89, 23, 3];
-            
-            // Generate Detailed Bubble Steps for Race
-            raceBubbleSteps = [];
-            let bArr = [...rawData];
-            let bComp = 0, bSwap = 0;
-            for (let i = bArr.length - 1; i > 0; i--) {
-                for (let j = 0; j < i; j++) {
-                    bComp++;
-                    let isSwap = bArr[j] > bArr[j + 1];
-                    raceBubbleSteps.push({ arr: [...bArr], comp: bComp, swapCount: bSwap, compare: [j, j + 1], done: false });
-                    if (isSwap) {
-                        let t = bArr[j]; bArr[j] = bArr[j + 1]; bArr[j + 1] = t;
-                        bSwap++;
-                        raceBubbleSteps.push({ arr: [...bArr], comp: bComp, swapCount: bSwap, swap: [j, j + 1], done: false });
-                    }
-                }
-            }
-            raceBubbleSteps.push({ arr: [...bArr], comp: bComp, swapCount: bSwap, done: true });
-
-            // Generate Detailed Selection Steps for Race
-            raceSelectSteps = [];
-            let sArr = [...rawData];
-            let sComp = 0, sSwap = 0;
-            for (let i = 0; i < sArr.length; i++) {
-                let idmin = i;
-                raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, target: idmin, done: false });
-                for (let j = i + 1; j < sArr.length; j++) {
-                    sComp++;
-                    let isNewMin = sArr[j] < sArr[idmin];
-                    raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, compare: [j, idmin], target: idmin, done: false });
-                    if (isNewMin) {
-                        idmin = j;
-                        raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, target: idmin, done: false });
-                    }
-                }
-                if (idmin !== i) {
-                    let t = sArr[idmin]; sArr[idmin] = sArr[i]; sArr[i] = t;
-                    sSwap++;
-                    raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, swap: [i, idmin], done: false });
-                }
-            }
-            raceSelectSteps.push({ arr: [...sArr], comp: sComp, swapCount: sSwap, done: true });
-
+            document.getElementById('race-bubble-status').textContent = 'Siap';
+            document.getElementById('race-select-status').textContent = 'Siap';
             document.getElementById('race-bubble-comp').textContent = '0';
             document.getElementById('race-bubble-swap').textContent = '0';
             document.getElementById('race-select-comp').textContent = '0';
             document.getElementById('race-select-swap').textContent = '0';
-            document.getElementById('race-bubble-status').textContent = 'Siap';
-            document.getElementById('race-select-status').textContent = 'Siap';
             
-            renderRaceBars('race-bubble-bars', { arr: rawData });
-            renderRaceBars('race-select-bars', { arr: rawData });
+            renderRaceBars('race-bubble-bars', raceBubbleState);
+            renderRaceBars('race-select-bars', raceSelectState);
         };
-
-        function renderRaceBars(containerId, stepObj) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            const arr = stepObj.arr;
-            let maxVal = Math.max(...arr, 100);
-
-            container.innerHTML = arr.map((v, idx) => {
-                let barColor = 'bg-indigo-500';
-                if (stepObj.done) barColor = 'bg-emerald-500';
-                else if (stepObj.swap && stepObj.swap.includes(idx)) barColor = 'bg-rose-500';
-                else if (stepObj.target === idx) barColor = 'bg-purple-500';
-                else if (stepObj.compare && stepObj.compare.includes(idx)) barColor = 'bg-amber-400';
-
-                let heightPx = Math.max(16, Math.round((v / maxVal) * 100));
-                return `<div class="${barColor} w-full rounded-t transition-all duration-200" style="height: ${heightPx}px;"></div>`;
-            }).join('');
-        }
 
         window.startRace = function() {
             resetRace();
-            let stepIndex = 0;
-
             document.getElementById('race-bubble-status').textContent = 'Berjalan...';
             document.getElementById('race-select-status').textContent = 'Berjalan...';
-
+            
             raceTimer = setInterval(() => {
-                let bStep = raceBubbleSteps[stepIndex] || raceBubbleSteps[raceBubbleSteps.length - 1];
-                let sStep = raceSelectSteps[stepIndex] || raceSelectSteps[raceSelectSteps.length - 1];
+                let bubbleMoved = stepRaceBubble();
+                let selectMoved = stepRaceSelect();
 
-                let bDone = stepIndex >= raceBubbleSteps.length - 1;
-                let sDone = stepIndex >= raceSelectSteps.length - 1;
+                renderRaceBars('race-bubble-bars', raceBubbleState);
+                renderRaceBars('race-select-bars', raceSelectState);
 
-                renderRaceBars('race-bubble-bars', bStep);
-                document.getElementById('race-bubble-comp').textContent = bStep.comp;
-                document.getElementById('race-bubble-swap').textContent = bStep.swapCount;
-                if (bDone) {
-                    document.getElementById('race-bubble-status').textContent = 'Selesai! ✓';
-                }
+                document.getElementById('race-bubble-comp').textContent = raceBubbleState.comp;
+                document.getElementById('race-bubble-swap').textContent = raceBubbleState.swap;
+                document.getElementById('race-select-comp').textContent = raceSelectState.comp;
+                document.getElementById('race-select-swap').textContent = raceSelectState.swap;
 
-                renderRaceBars('race-select-bars', sStep);
-                document.getElementById('race-select-comp').textContent = sStep.comp;
-                document.getElementById('race-select-swap').textContent = sStep.swapCount;
-                if (sDone) {
-                    document.getElementById('race-select-status').textContent = 'Selesai! ✓';
-                }
+                if (raceBubbleState.done) document.getElementById('race-bubble-status').textContent = 'Selesai! ✓';
+                if (raceSelectState.done) document.getElementById('race-select-status').textContent = 'Selesai! ✓';
 
-                if (bDone && sDone) {
+                if (raceBubbleState.done && raceSelectState.done) {
                     clearInterval(raceTimer);
                     raceTimer = null;
-                } else {
-                    stepIndex++;
                 }
-            }, 300);
+            }, 600);
         };
 
-        // --- GAME LOGIC ---
+        function stepRaceBubble() {
+            let s = raceBubbleState;
+            if (s.done) return false;
+            if (s.i > 0) {
+                if (s.j < s.i) {
+                    s.comp++;
+                    s.activePair = [s.j, s.j + 1];
+                    s.activeType = 'compare';
+                    if (s.arr[s.j] > s.arr[s.j + 1]) {
+                        let t = s.arr[s.j];
+                        s.arr[s.j] = s.arr[s.j + 1];
+                        s.arr[s.j + 1] = t;
+                        s.swap++;
+                        s.activeType = 'swap';
+                    }
+                    s.j++;
+                } else {
+                    s.j = 0;
+                    s.i--;
+                }
+            } else {
+                s.done = true;
+                s.activePair = [];
+                s.activeType = null;
+            }
+            return true;
+        }
+
+        function stepRaceSelect() {
+            let s = raceSelectState;
+            let n = s.arr.length;
+            if (s.done) return false;
+            if (s.i < n - 1) {
+                if (s.j < n) {
+                    s.comp++;
+                    s.activePair = [s.j, s.idTarget];
+                    s.activeType = 'compare';
+                    if (s.arr[s.j] < s.arr[s.idTarget]) {
+                        s.idTarget = s.j;
+                        s.activeType = 'target';
+                    }
+                    s.j++;
+                } else {
+                    if (s.idTarget !== s.i) {
+                        let t = s.arr[s.idTarget];
+                        s.arr[s.idTarget] = s.arr[s.i];
+                        s.arr[s.i] = t;
+                        s.swap++;
+                        s.activePair = [s.i, s.idTarget];
+                        s.activeType = 'swap';
+                    }
+                    s.i++;
+                    s.idTarget = s.i;
+                    s.j = s.i + 1;
+                }
+            } else {
+                s.done = true;
+                s.activePair = [];
+                s.activeType = null;
+            }
+            return true;
+        }
+
+        function renderRaceBars(containerId, state) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            let maxVal = Math.max(...state.arr, 100);
+
+            state.arr.forEach((val, idx) => {
+                let color = 'bg-blue-500';
+                if (state.done) color = 'bg-emerald-500';
+                else if (state.activePair.includes(idx)) {
+                    if (state.activeType === 'swap') color = 'bg-rose-500';
+                    else if (state.activeType === 'target') color = 'bg-purple-500';
+                    else color = 'bg-amber-400';
+                }
+                let heightPx = Math.max(16, Math.round((val / maxVal) * 100));
+                container.innerHTML += `
+                    <div class="flex flex-col items-center flex-1 max-w-[36px]">
+                        <span class="text-[10px] font-bold text-slate-600 mb-0.5">${val}</span>
+                        <div class="${color} w-full rounded-t" style="height: ${heightPx}px;"></div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- GAME LOGIC (4 LEVELS PROGRESSIVE WITH RANDOM ARRAY) ---
+        let currentGameLevel = 1;
+        let maxUnlockedLevel = 1;
         let gameArr = [];
         let selectedIndices = [];
+        let isLevelCompleted = false;
 
-        window.initGame = function() {
-            gameArr = [34, 12, 56, 21, 9];
-            selectedIndices = [];
-            document.getElementById('game-task-desc').textContent = 'Tugas: Urutkan secara Ascending (Kecil ke Besar) menggunakan Bubble Sort!';
-            renderGame();
+        const levelConfigs = {
+            1: { name: "Level 1: Bubble Sort (Ascending)", algo: "bubble", mode: "asc", desc: "Urutkan array dari Kecil ke Besar (Ascending) menggunakan aturan Bubble Sort!" },
+            2: { name: "Level 2: Bubble Sort (Descending)", algo: "bubble", mode: "desc", desc: "Urutkan array dari Besar ke Kecil (Descending) menggunakan aturan Bubble Sort!" },
+            3: { name: "Level 3: Selection Sort (Ascending)", algo: "selection", mode: "asc", desc: "Urutkan array dari Kecil ke Besar (Ascending) menggunakan aturan Selection Sort!" },
+            4: { name: "Level 4: Selection Sort (Descending)", algo: "selection", mode: "desc", desc: "Urutkan array dari Besar ke Kecil (Descending) menggunakan aturan Selection Sort!" }
         };
 
-        function renderGame() {
+        window.initGame = function() {
+            selectGameLevel(currentGameLevel);
+        };
+
+        window.selectGameLevel = function(lvl) {
+            if (lvl > maxUnlockedLevel) return;
+            currentGameLevel = lvl;
+            resetCurrentGameLevel();
+        };
+
+        window.resetCurrentGameLevel = function() {
+            isLevelCompleted = false;
+            selectedIndices = [];
+            
+            const config = levelConfigs[currentGameLevel];
+            
+            // Generate Random Unsorted Array of 5 unique numbers
+            do {
+                gameArr = [];
+                while (gameArr.length < 5) {
+                    let r = Math.floor(Math.random() * 89) + 10;
+                    if (!gameArr.includes(r)) gameArr.push(r);
+                }
+            } while (checkIfSorted(gameArr, config.mode));
+
+            updateGameUI();
+        };
+
+        function checkIfSorted(arr, mode) {
+            for (let i = 0; i < arr.length - 1; i++) {
+                if (mode === 'asc' && arr[i] > arr[i + 1]) return false;
+                if (mode === 'desc' && arr[i] < arr[i + 1]) return false;
+            }
+            return true;
+        }
+
+        function updateGameUI() {
+            const config = levelConfigs[currentGameLevel];
+
+            // Update level buttons state
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`btn-lvl-${i}`);
+                if (!btn) continue;
+                if (i === currentGameLevel) {
+                    btn.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold shadow";
+                    btn.disabled = false;
+                } else if (i <= maxUnlockedLevel) {
+                    btn.className = "px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 font-bold hover:bg-slate-300";
+                    btn.disabled = false;
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg bg-slate-100 text-slate-400 opacity-50 cursor-not-allowed";
+                    btn.disabled = true;
+                }
+            }
+
+            document.getElementById('game-task-desc').innerHTML = `
+                <div class="font-bold text-blue-900">${config.name}</div>
+                <div class="text-slate-600">${config.desc}</div>
+            `;
+
+            document.getElementById('game-next-level-wrapper').classList.add('hidden');
+
+            renderGameCards();
+        }
+
+        function renderGameCards() {
             const container = document.getElementById('game-cards-container');
             container.innerHTML = gameArr.map((val, idx) => {
                 let isSel = selectedIndices.includes(idx);
                 let selClass = isSel ? 'border-2 border-blue-600 bg-blue-50 text-blue-600 font-bold scale-105' : 'bg-white border border-slate-200 text-slate-800';
-                return `<button onclick="clickGameCard(${idx})" class="w-12 h-16 rounded-xl shadow-sm text-base flex items-center justify-center transition-all ${selClass}">${val}</button>`;
+                return `<button onclick="clickGameCard(${idx})" ${isLevelCompleted ? 'disabled' : ''} class="w-12 h-16 rounded-xl shadow-sm text-base flex items-center justify-center transition-all ${selClass}">${val}</button>`;
             }).join('');
-            document.getElementById('game-feedback').textContent = 'Klik dua kartu angka yang ingin kamu tukar posisinya!';
-            document.getElementById('game-feedback').className = 'text-center text-xs font-bold p-3 rounded-xl bg-slate-100 text-slate-600';
+
+            if (!isLevelCompleted) {
+                document.getElementById('game-feedback').textContent = 'Klik dua kartu angka yang ingin kamu tukar posisinya!';
+                document.getElementById('game-feedback').className = 'text-center text-xs font-bold p-3 rounded-xl bg-slate-100 text-slate-600';
+            }
         }
 
         window.clickGameCard = function(idx) {
+            if (isLevelCompleted) return;
+
             if (selectedIndices.includes(idx)) {
                 selectedIndices = selectedIndices.filter(i => i !== idx);
             } else {
                 selectedIndices.push(idx);
             }
-            renderGame();
+            renderGameCards();
 
             if (selectedIndices.length === 2) {
                 let [i1, i2] = selectedIndices;
-                if (Math.abs(i1 - i2) === 1 && ((i1 < i2 && gameArr[i1] > gameArr[i2]) || (i1 > i2 && gameArr[i1] < gameArr[i2]))) {
+                const config = levelConfigs[currentGameLevel];
+                let isValidSwap = false;
+
+                if (config.algo === 'bubble') {
+                    // Bubble Sort requires swapping adjacent elements that violate order
+                    if (Math.abs(i1 - i2) === 1) {
+                        let leftIdx = Math.min(i1, i2);
+                        let rightIdx = Math.max(i1, i2);
+                        if (config.mode === 'asc' && gameArr[leftIdx] > gameArr[rightIdx]) isValidSwap = true;
+                        if (config.mode === 'desc' && gameArr[leftIdx] < gameArr[rightIdx]) isValidSwap = true;
+                    }
+                } else {
+                    // Selection Sort allows swapping the target extremum to its proper place
+                    let leftIdx = Math.min(i1, i2);
+                    let rightIdx = Math.max(i1, i2);
+                    if (config.mode === 'asc' && gameArr[rightIdx] < gameArr[leftIdx]) isValidSwap = true;
+                    if (config.mode === 'desc' && gameArr[rightIdx] > gameArr[leftIdx]) isValidSwap = true;
+                }
+
+                if (isValidSwap) {
                     let temp = gameArr[i1];
                     gameArr[i1] = gameArr[i2];
                     gameArr[i2] = temp;
                     selectedIndices = [];
-                    renderGame();
-                    document.getElementById('game-feedback').textContent = '✓ Benar! Kartu berhasil ditukar.';
-                    document.getElementById('game-feedback').className = 'text-center text-xs font-bold p-3 rounded-xl bg-emerald-100 text-emerald-700';
+                    renderGameCards();
+
+                    if (checkIfSorted(gameArr, config.mode)) {
+                        isLevelCompleted = true;
+                        if (currentGameLevel < 4) {
+                            maxUnlockedLevel = Math.max(maxUnlockedLevel, currentGameLevel + 1);
+                        }
+                        renderGameCards();
+                        showLevelSuccess();
+                    } else {
+                        document.getElementById('game-feedback').textContent = '✓ Benar! Kartu berhasil ditukar. Lanjutkan langkah berikutnya!';
+                        document.getElementById('game-feedback').className = 'text-center text-xs font-bold p-3 rounded-xl bg-emerald-100 text-emerald-700';
+                    }
                 } else {
                     selectedIndices = [];
-                    document.getElementById('game-feedback').textContent = '❌ Kurang Tepat! Pilih 2 kartu bertetangga yang posisinya salah.';
+                    document.getElementById('game-feedback').textContent = '❌ Kurang Tepat! Pilih dua kartu yang posisinya melanggar aturan pengurutan.';
                     document.getElementById('game-feedback').className = 'text-center text-xs font-bold p-3 rounded-xl bg-rose-100 text-rose-700';
                 }
+            }
+        };
+
+        function showLevelSuccess() {
+            const feedbackEl = document.getElementById('game-feedback');
+            const nextWrapper = document.getElementById('game-next-level-wrapper');
+            const nextBtn = document.getElementById('btn-next-level');
+
+            if (currentGameLevel < 4) {
+                feedbackEl.textContent = `🎉 SELAMAT! Kamu berhasil menyelesaikan Level ${currentGameLevel}! Level ${currentGameLevel + 1} Terbuka!`;
+                feedbackEl.className = 'text-center text-xs font-bold p-3 rounded-xl bg-emerald-500 text-white shadow-md';
+                nextBtn.textContent = `Lanjut ke Level ${currentGameLevel + 1} ➔`;
+                nextWrapper.classList.remove('hidden');
+            } else {
+                feedbackEl.innerHTML = `🏆 SELAMAT! Kamu telah menyelesaikan seluruh 4 Level Mini Game dengan Sempurna! Kamu telah menguasai logika Bubble Sort & Selection Sort! 🎉`;
+                feedbackEl.className = 'text-center text-sm font-black p-4 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-500 text-white shadow-lg';
+                nextWrapper.classList.add('hidden');
+            }
+
+            // Refresh level navigation buttons state
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`btn-lvl-${i}`);
+                if (!btn) continue;
+                if (i <= maxUnlockedLevel) {
+                    btn.disabled = false;
+                    if (i === currentGameLevel) {
+                        btn.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold shadow";
+                    } else {
+                        btn.className = "px-3 py-1.5 rounded-lg bg-slate-200 text-slate-700 font-bold hover:bg-slate-300";
+                    }
+                }
+            }
+        }
+
+        window.goToNextLevel = function() {
+            if (currentGameLevel < 4) {
+                currentGameLevel++;
+                resetCurrentGameLevel();
             }
         };
 
