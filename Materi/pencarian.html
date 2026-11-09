@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Algoritma Perulangan</title>
+  <title>Algoritma Pencarian</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -65,8 +65,8 @@
             <i data-lucide="search" class="w-6 h-6"></i>
           </div>
           <div>
-            <h1 class="font-bold text-slate-900 text-lg leading-tight">Algoritma Perulangan <!-- <span class="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-semibold ml-1">Interactive MPI</span> --> </h1>
-            <p class="text-xs text-slate-500"></p>
+            <h1 class="font-bold text-slate-900 text-lg leading-tight">Algoritma Pencarian</h1>
+            <p class="text-xs text-slate-500">Media Pembelajaran Interaktif</p>
           </div>
         </div>
 
@@ -468,28 +468,57 @@ else:
         </div>
       </div>
 
-      <!-- SUB-SECTION: GAME TEBAK ANGKA 1-100 (BINARY INTUITION) -->
+      <!-- SUB-SECTION: GAME TEBAK ANGKA (BINARY INTUITION WITH 2 LEVELS) -->
       <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div>
             <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">Game Binary Search</span>
-            <h3 class="text-lg font-bold text-slate-900 mt-1">Game Tebak Angka 1 - 100 🧠</h3>
+            <h3 id="binaryGameTitle" class="text-lg font-bold text-slate-900 mt-1">Game Tebak Angka 1 - 100 🧠</h3>
           </div>
           
-          <!-- Mode Toggle Game -->
-          <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
-            <button id="btnGameModeA" onclick="switchGuessMode('A')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-emerald-600 shadow-sm transition-all">
-              Mode A: Komputer Menebak
-            </button>
-            <button id="btnGameModeB" onclick="switchGuessMode('B')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all">
-              Mode B: Player Menebak
-            </button>
+          <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            <!-- Level Switcher -->
+            <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button id="btnGameLevel1" onclick="switchGuessLevel(1)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-sm transition-all">
+                Level 1 (1-100)
+              </button>
+              <button id="btnGameLevel2" onclick="switchGuessLevel(2)" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all">
+                Level 2 (1-1000)
+              </button>
+            </div>
+
+            <!-- Mode Toggle Game -->
+            <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button id="btnGameModeA" onclick="switchGuessMode('A')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-emerald-600 shadow-sm transition-all">
+                Mode A: Player Menebak
+              </button>
+              <button id="btnGameModeB" onclick="switchGuessMode('B')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all">
+                Mode B: Komputer Menebak
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- MODE A: COMPUTER GUESSES PLAYER'S NUMBER -->
+        <!-- MODE A: PLAYER GUESSES COMPUTER'S SECRET NUMBER -->
         <div id="gameModeA" class="space-y-4">
-          <p class="text-xs text-slate-600">Pikirkan sebuah angka antara <strong class="font-bold">1 sampai 100</strong>. Komputer akan menebak angka pikiranmu secara efisien menggunakan Binary Search!</p>
+          <p id="gameModeADesc" class="text-xs text-slate-600">Komputer telah menyimpan angka rahasia antara <strong class="font-bold">1 sampai 100</strong>. Giliranmu menebaknya! Gunakan petunjuk dari komputer.</p>
+          
+          <div class="flex items-center space-x-2 max-w-md mx-auto">
+            <input type="number" id="playerGuessInput" min="1" max="100" placeholder="Masukkan tebakanmu..." class="flex-1 px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <button onclick="submitPlayerGuess()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center space-x-1.5">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              <span>Tebak</span>
+            </button>
+          </div>
+
+          <div id="playerGameLog" class="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto">
+            Ketik angka tebakanmu lalu tekan tombol 'Tebak'.
+          </div>
+        </div>
+
+        <!-- MODE B: COMPUTER GUESSES PLAYER'S NUMBER -->
+        <div id="gameModeB" class="space-y-4 hidden">
+          <p id="gameModeBDesc" class="text-xs text-slate-600">Pikirkan sebuah angka antara <strong class="font-bold">1 sampai 100</strong>. Komputer akan menebak angka pikiranmu secara efisien menggunakan Binary Search!</p>
           
           <div class="bg-gradient-to-r from-emerald-50 to-teal-50 p-4 rounded-xl border border-emerald-200 text-center">
             <span class="text-xs font-medium text-emerald-800 uppercase block mb-1">Tebakan Komputer:</span>
@@ -497,7 +526,7 @@ else:
             <div class="text-[11px] text-emerald-600 mt-1 font-mono" id="guessRangeInfo">Rentang Aktif: 1 - 100</div>
           </div>
 
-          <!-- Feedback Buttons for Mode A -->
+          <!-- Feedback Buttons for Mode B -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button onclick="processGuessFeedback('bigger')" id="btnBigger" class="py-2.5 px-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center justify-center space-x-1">
               <i data-lucide="arrow-up" class="w-4 h-4"></i>
@@ -515,23 +544,6 @@ else:
 
           <div id="guessGameLog" class="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium">
             Pikirkan angka 1-100 lalu berikan respon pada tombol di atas.
-          </div>
-        </div>
-
-        <!-- MODE B: PLAYER GUESSES COMPUTER'S SECRET NUMBER -->
-        <div id="gameModeB" class="space-y-4 hidden">
-          <p class="text-xs text-slate-600">Komputer telah menyimpan angka rahasia antara <strong class="font-bold">1 sampai 100</strong>. Giliranmu menebaknya! Gunakan petunjuk dari komputer.</p>
-          
-          <div class="flex items-center space-x-2 max-w-md mx-auto">
-            <input type="number" id="playerGuessInput" min="1" max="100" placeholder="Masukkan tebakanmu..." class="flex-1 px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            <button onclick="submitPlayerGuess()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center space-x-1.5">
-              <i data-lucide="send" class="w-3.5 h-3.5"></i>
-              <span>Tebak</span>
-            </button>
-          </div>
-
-          <div id="playerGameLog" class="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto">
-            Ketik angka tebakanmu lalu tekan tombol 'Tebak'.
           </div>
         </div>
 
@@ -1192,15 +1204,43 @@ else:
     }
 
     // ==========================================
-    // SECTION 3: GAME TEBAK ANGKA 1-100 (BINARY INTUITION)
+    // SECTION 3: GAME TEBAK ANGKA (BINARY INTUITION WITH 2 LEVELS)
     // ==========================================
     let guessMode = 'A'; // 'A' or 'B'
+    let currentLevel = 1; // 1 (1-100) or 2 (1-1000)
+    let maxLevelValue = 100;
     let rangeLow = 1;
     let rangeHigh = 100;
     let computerGuess = 50;
     let secretPlayerNumber = null;
     let secretComputerNumber = null;
     let guessAttempts = 0;
+
+    function switchGuessLevel(lvl) {
+      currentLevel = lvl;
+      maxLevelValue = lvl === 1 ? 100 : 1000;
+
+      const lvl1Btn = document.getElementById('btnGameLevel1');
+      const lvl2Btn = document.getElementById('btnGameLevel2');
+
+      if (lvl === 1) {
+        lvl1Btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-sm transition-all";
+        lvl2Btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all";
+      } else {
+        lvl2Btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-sm transition-all";
+        lvl1Btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all";
+      }
+
+      document.getElementById('binaryGameTitle').innerText = `Game Tebak Angka 1 - ${maxLevelValue} 🧠`;
+      document.getElementById('gameModeADesc').innerHTML = `Komputer telah menyimpan angka rahasia antara <strong class="font-bold">1 sampai ${maxLevelValue}</strong>. Giliranmu menebaknya! Gunakan petunjuk dari komputer.`;
+      document.getElementById('gameModeBDesc').innerHTML = `Pikirkan sebuah angka antara <strong class="font-bold">1 sampai ${maxLevelValue}</strong>. Komputer akan menebak angka pikiranmu secara efisien menggunakan Binary Search!`;
+      
+      const playerInput = document.getElementById('playerGuessInput');
+      playerInput.max = maxLevelValue;
+      playerInput.placeholder = `Masukkan tebakanmu (1-${maxLevelValue})...`;
+
+      resetGuessGame();
+    }
 
     function switchGuessMode(mode) {
       guessMode = mode;
@@ -1249,8 +1289,8 @@ else:
       const val = parseInt(input.value);
       const log = document.getElementById('playerGameLog');
 
-      if (isNaN(val) || val < 1 || val > 100) {
-        alert('Masukkan angka valid antara 1 s.d. 100!');
+      if (isNaN(val) || val < 1 || val > maxLevelValue) {
+        alert(`Masukkan angka valid antara 1 s.d. ${maxLevelValue}!`);
         return;
       }
 
@@ -1271,14 +1311,14 @@ else:
 
     function resetGuessGame() {
       rangeLow = 1;
-      rangeHigh = 100;
-      computerGuess = 50;
+      rangeHigh = maxLevelValue;
+      computerGuess = Math.floor((rangeLow + rangeHigh) / 2);
       guessAttempts = 0;
-      secretComputerNumber = Math.floor(Math.random() * 100) + 1;
+      secretComputerNumber = Math.floor(Math.random() * maxLevelValue) + 1;
 
-      document.getElementById('computerGuessDisplay').innerText = `50 ?`;
-      document.getElementById('guessRangeInfo').innerText = `Rentang Aktif: 1 - 100`;
-      document.getElementById('guessGameLog').innerText = "Pikirkan angka 1-100 lalu berikan respon pada tombol di atas.";
+      document.getElementById('computerGuessDisplay').innerText = `${computerGuess} ?`;
+      document.getElementById('guessRangeInfo').innerText = `Rentang Aktif: 1 - ${maxLevelValue}`;
+      document.getElementById('guessGameLog').innerText = `Pikirkan angka 1-${maxLevelValue} lalu berikan respon pada tombol di atas.`;
       document.getElementById('guessGameLog').className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium";
 
       document.getElementById('playerGameLog').innerText = "Ketik angka tebakanmu lalu tekan tombol 'Tebak'.";
@@ -1657,7 +1697,7 @@ else:
         }
 
         optionsHtml += `
-          <button onclick="selectQuizOption(${oIdx})" ${selected !== null ? 'disabled' : ''} class="w-full text-left p-4 rounded-xl border transition-all flex items-center justify-start ${optStyle}">
+          <button onclick="selectQuizOption(${oIdx})" ${selected !== null ? 'disabled' : ''} class="w-full text-left p-4 rounded-xl border transition-all flex items-start justify-start ${optStyle}">
             ${iconHtml}
             <span class="text-xs sm:text-sm leading-snug">${opt}</span>
           </button>
