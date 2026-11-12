@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Algoritma Pencarian</title>
+  <title>Algoritma Perulangan & Searching</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -65,7 +65,7 @@
             <i data-lucide="search" class="w-6 h-6"></i>
           </div>
           <div>
-            <h1 class="font-bold text-slate-900 text-lg leading-tight">Algoritma Pencarian</h1>
+            <h1 class="font-bold text-slate-900 text-lg leading-tight">Algoritma Perulangan & Pencarian</h1>
             <p class="text-xs text-slate-500">Media Pembelajaran Interaktif</p>
           </div>
         </div>
@@ -210,9 +210,20 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
           <div>
             <span class="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Game Linear Search</span>
-            <h3 class="text-lg font-bold text-slate-900 mt-1">Game Buka Gembok PIN 3 Angka 🔓</h3>
+            <h3 id="lockGameTitle" class="text-lg font-bold text-slate-900 mt-1">Game Buka Gembok PIN 2 Angka 🔓</h3>
           </div>
-          <span id="lockTriesCounter" class="text-xs font-mono font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 self-start sm:self-auto">Percobaan: 0</span>
+          <div class="flex items-center space-x-2 self-start sm:self-auto">
+            <!-- Level Switcher Gembok -->
+            <div class="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button id="btnLockLevel1" onclick="switchLockLevel(1)" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 shadow-sm transition-all">
+                Level 1 (2 Angka)
+              </button>
+              <button id="btnLockLevel2" onclick="switchLockLevel(2)" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all">
+                Level 2 (3 Angka)
+              </button>
+            </div>
+            <span id="lockTriesCounter" class="text-xs font-mono font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200">Percobaan: 0</span>
+          </div>
         </div>
 
         <p class="text-xs text-slate-600">
@@ -227,32 +238,9 @@
             <i data-lucide="lock" id="lockIcon" class="w-8 h-8"></i>
           </div>
 
-          <!-- 3-Digit Spinner Wheels -->
-          <div class="flex items-center justify-center space-x-3 my-2">
-            <!-- Digit 1 -->
-            <div class="flex flex-col items-center">
-              <button onclick="changeLockDigit(0, 1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
-              <span id="lockDigit0" class="w-12 h-14 bg-slate-800 border-2 border-slate-700 rounded-xl text-2xl font-mono font-extrabold flex items-center justify-center my-1 text-amber-400 shadow-inner">0</span>
-              <button onclick="changeLockDigit(0, -1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-            </div>
-
-            <span class="text-xl font-mono text-slate-600 font-bold">-</span>
-
-            <!-- Digit 2 -->
-            <div class="flex flex-col items-center">
-              <button onclick="changeLockDigit(1, 1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
-              <span id="lockDigit1" class="w-12 h-14 bg-slate-800 border-2 border-slate-700 rounded-xl text-2xl font-mono font-extrabold flex items-center justify-center my-1 text-amber-400 shadow-inner">0</span>
-              <button onclick="changeLockDigit(1, -1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-            </div>
-
-            <span class="text-xl font-mono text-slate-600 font-bold">-</span>
-
-            <!-- Digit 3 -->
-            <div class="flex flex-col items-center">
-              <button onclick="changeLockDigit(2, 1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
-              <span id="lockDigit2" class="w-12 h-14 bg-slate-800 border-2 border-slate-700 rounded-xl text-2xl font-mono font-extrabold flex items-center justify-center my-1 text-amber-400 shadow-inner">0</span>
-              <button onclick="changeLockDigit(2, -1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
-            </div>
+          <!-- Dynamic Spinner Wheels -->
+          <div id="lockWheelsContainer" class="flex items-center justify-center space-x-3 my-2">
+            <!-- Rendered dynamically by JS -->
           </div>
 
           <!-- Buttons -->
@@ -272,7 +260,7 @@
         </div>
 
         <div id="lockGameLog" class="p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto">
-          Atur 3 digit angka pada dial di atas lalu tekan 'Uji Kunci PIN'.
+          Atur 2 digit angka pada dial di atas lalu tekan 'Uji Kunci PIN'.
         </div>
 
         <button onclick="resetLockGame()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1.5">
@@ -908,9 +896,13 @@ else:
         el.className = "nav-tab text-slate-600 hover:bg-slate-100 font-medium px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2";
       });
 
-      document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+      const targetSection = document.getElementById(`sec-${tabId}`);
+      if (targetSection) targetSection.classList.remove('hidden');
+      
       const activeTab = document.getElementById(`tab-${tabId}`);
-      activeTab.className = "nav-tab text-sky-600 bg-sky-50 font-semibold px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2";
+      if (activeTab) {
+        activeTab.className = "nav-tab text-sky-600 bg-sky-50 font-semibold px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2";
+      }
     }
 
     function toggleCodeDropdown(accId) {
@@ -933,7 +925,15 @@ else:
       tempTextArea.select();
       document.execCommand('copy');
       document.body.removeChild(tempTextArea);
-      alert('Kode berhasil disalin ke clipboard!');
+      
+      // Custom visual feedback without alert()
+      const btn = event && event.currentTarget;
+      if (btn) {
+        const span = btn.querySelector('span');
+        const orig = span.innerText;
+        span.innerText = 'Tersalin!';
+        setTimeout(() => { span.innerText = orig; }, 1500);
+      }
     }
 
     // ==========================================
@@ -976,7 +976,7 @@ else:
     function revealCard(idx) {
       if (cardGameOver) return;
       const btn = document.getElementById(`card-btn-${idx}`);
-      if (btn.innerText !== "?") return; // already revealed
+      if (btn.innerText !== "?") return;
 
       cardTries++;
       document.getElementById('cardTriesCount').innerText = `Percobaan: ${cardTries}`;
@@ -1000,12 +1000,58 @@ else:
     }
 
     // ==========================================
-    // SECTION 2: GAME GEMBOK PIN (STATIC 679)
+    // SECTION 2: GAME GEMBOK PIN (2 LEVELS - NO HINT)
     // ==========================================
-    const staticLockPin = [7, 3, 6];
-    let currentLockDigits = [0, 0, 0];
+    let currentLockLevel = 1; // 1 = 2 digit, 2 = 3 digit
+    const lockSecretPins = {
+      1: [7, 3],
+      2: [6, 8, 3]
+    };
+    let currentLockDigits = [0, 0];
     let lockTries = 0;
     let autoSolveInterval = null;
+
+    function switchLockLevel(lvl) {
+      currentLockLevel = lvl;
+      const btn1 = document.getElementById('btnLockLevel1');
+      const btn2 = document.getElementById('btnLockLevel2');
+
+      if (lvl === 1) {
+        btn1.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 shadow-sm transition-all";
+        btn2.className = "px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all";
+        document.getElementById('lockGameTitle').innerText = "Game Buka Gembok PIN 2 Angka 🔓";
+      } else {
+        btn2.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 shadow-sm transition-all";
+        btn1.className = "px-2.5 py-1 rounded-lg text-xs font-bold text-slate-600 hover:text-slate-900 transition-all";
+        document.getElementById('lockGameTitle').innerText = "Game Buka Gembok PIN 3 Angka 🔓";
+      }
+      resetLockGame();
+    }
+
+    function renderLockWheels() {
+      const container = document.getElementById('lockWheelsContainer');
+      container.innerHTML = '';
+      const numDigits = currentLockLevel === 1 ? 2 : 3;
+
+      for (let i = 0; i < numDigits; i++) {
+        if (i > 0) {
+          const sep = document.createElement('span');
+          sep.className = "text-xl font-mono text-slate-600 font-bold";
+          sep.innerText = "-";
+          container.appendChild(sep);
+        }
+
+        const wheel = document.createElement('div');
+        wheel.className = "flex flex-col items-center";
+        wheel.innerHTML = `
+          <button onclick="changeLockDigit(${i}, 1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-up" class="w-4 h-4"></i></button>
+          <span id="lockDigit${i}" class="w-12 h-14 bg-slate-800 border-2 border-slate-700 rounded-xl text-2xl font-mono font-extrabold flex items-center justify-center my-1 text-amber-400 shadow-inner">${currentLockDigits[i]}</span>
+          <button onclick="changeLockDigit(${i}, -1)" class="p-1 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg transition-all"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+        `;
+        container.appendChild(wheel);
+      }
+      lucide.createIcons();
+    }
 
     function changeLockDigit(digitIdx, delta) {
       currentLockDigits[digitIdx] = (currentLockDigits[digitIdx] + delta + 10) % 10;
@@ -1015,7 +1061,8 @@ else:
     function testLockPin() {
       lockTries++;
       document.getElementById('lockTriesCounter').innerText = `Percobaan: ${lockTries}`;
-      const isCorrect = currentLockDigits.every((d, i) => d === staticLockPin[i]);
+      const targetPin = lockSecretPins[currentLockLevel];
+      const isCorrect = currentLockDigits.every((d, i) => d === targetPin[i]);
       const log = document.getElementById('lockGameLog');
       const iconContainer = document.getElementById('lockIconContainer');
       const icon = document.getElementById('lockIcon');
@@ -1039,43 +1086,52 @@ else:
     function autoLinearSolveLock() {
       resetLockGame();
       let currentVal = 0;
-      const targetVal = 736;
+      const targetPin = lockSecretPins[currentLockLevel];
+      const maxVal = currentLockLevel === 1 ? 99 : 999;
       
       autoSolveInterval = setInterval(() => {
-        if (currentVal > targetVal) {
+        if (currentVal > maxVal) {
           clearInterval(autoSolveInterval);
           return;
         }
-        const d0 = Math.floor(currentVal / 100);
-        const d1 = Math.floor((currentVal % 100) / 10);
-        const d2 = currentVal % 10;
         
-        currentLockDigits = [d0, d1, d2];
-        document.getElementById('lockDigit0').innerText = d0;
-        document.getElementById('lockDigit1').innerText = d1;
-        document.getElementById('lockDigit2').innerText = d2;
+        if (currentLockLevel === 1) {
+          const d0 = Math.floor(currentVal / 10);
+          const d1 = currentVal % 10;
+          currentLockDigits = [d0, d1];
+          document.getElementById('lockDigit0').innerText = d0;
+          document.getElementById('lockDigit1').innerText = d1;
+        } else {
+          const d0 = Math.floor(currentVal / 100);
+          const d1 = Math.floor((currentVal % 100) / 10);
+          const d2 = currentVal % 10;
+          currentLockDigits = [d0, d1, d2];
+          document.getElementById('lockDigit0').innerText = d0;
+          document.getElementById('lockDigit1').innerText = d1;
+          document.getElementById('lockDigit2').innerText = d2;
+        }
         
         lockTries++;
         document.getElementById('lockTriesCounter').innerText = `Percobaan: ${lockTries}`;
         
-        if (currentVal === targetVal) {
+        const isMatch = currentLockDigits.every((d, i) => d === targetPin[i]);
+        if (isMatch) {
           clearInterval(autoSolveInterval);
           testLockPin();
         } else {
           currentVal++;
         }
-      }, 15);
+      }, currentLockLevel === 1 ? 35 : 15);
     }
 
     function resetLockGame() {
       if(autoSolveInterval) clearInterval(autoSolveInterval);
-      currentLockDigits = [0, 0, 0];
+      const numDigits = currentLockLevel === 1 ? 2 : 3;
+      currentLockDigits = new Array(numDigits).fill(0);
       lockTries = 0;
-      document.getElementById('lockDigit0').innerText = 0;
-      document.getElementById('lockDigit1').innerText = 0;
-      document.getElementById('lockDigit2').innerText = 0;
+      renderLockWheels();
       document.getElementById('lockTriesCounter').innerText = `Percobaan: 0`;
-      document.getElementById('lockGameLog').innerText = "Atur 3 digit angka pada dial di atas lalu tekan 'Uji Kunci PIN'.";
+      document.getElementById('lockGameLog').innerText = `Atur ${numDigits} digit angka pada dial di atas lalu tekan 'Uji Kunci PIN'.`;
       document.getElementById('lockGameLog').className = "p-3 rounded-xl bg-slate-100 text-slate-700 text-xs text-center border border-slate-200 font-medium max-w-md mx-auto";
       const iconContainer = document.getElementById('lockIconContainer');
       const icon = document.getElementById('lockIcon');
