@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antrean & Tumpukan</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    .item-anim {
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-pop-in {
+      animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+  </style>
+</head>
+<body class="h-full font-sans text-slate-800 antialiased flex flex-col bg-slate-50">
+
+  <!-- TOP HEADER & NAVBAR -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-teal-500/20">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h1 class="font-bold text-slate-900 text-base sm:text-lg leading-tight">Antrean (Queue) & Tumpukan (Stack)</h1>
+            <p class="text-xs text-slate-500">Media Pembelajaran Berpikir Komputasional</p>
+          </div>
+        </div>
+
+        <!-- Mode Toggle (Siswa vs Guru) -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button id="modeStudentBtn" onclick="switchUserMode('student')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-teal-600 shadow-sm">
+            <i data-lucide="user" class="w-3.5 h-3.5"></i>
+            <span>Mode Siswa</span>
+          </button>
+          <button id="modeTeacherBtn" onclick="switchUserMode('teacher')" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+            <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
+            <span>Mode Guru</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="flex space-x-1 sm:space-x-3 border-t border-slate-100 py-2 overflow-x-auto no-scrollbar" id="navTabs">
+        <button onclick="switchTab('intro')" id="tab-intro" class="nav-tab text-teal-600 bg-teal-50 font-semibold px-3.5 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+          <span>Apersepsi & Pemanasan</span>
+        </button>
+        <button onclick="switchTab('queue')" id="tab-queue" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-3.5 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="arrow-right-circle" class="w-4 h-4"></i>
+          <span>Antrean (Queue)</span>
+        </button>
+        <button onclick="switchTab('stack')" id="tab-stack" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-3.5 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>Tumpukan (Stack)</span>
+        </button>
+        <button onclick="switchTab('challenges')" id="tab-challenges" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-3.5 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="puzzle" class="w-4 h-4"></i>
+          <span>Tantangan (1 & 2)</span>
+        </button>
+        <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-tab text-slate-600 hover:bg-slate-100 font-medium px-3.5 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2">
+          <i data-lucide="award" class="w-4 h-4"></i>
+          <span>Kuis Evaluasi</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- TEACHER MODE BANNER NOTIFICATION -->
+  <div id="teacherBanner" class="hidden bg-amber-50 border-b border-amber-200 px-4 py-2 text-xs text-amber-800 flex items-center justify-between max-w-7xl mx-auto w-full">
+    <div class="flex items-center space-x-2">
+      <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0"></i>
+      <span><strong class="font-bold">Mode Guru Aktif:</strong> Tombol "Tampilkan Kunci & Pembahasan" terbuka di bagian Tantangan 1 & Tantangan 2 untuk mempermudah pembahasan di kelas.</span>
+    </div>
+    <span class="text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded font-mono shrink-0 ml-2">Teacher Edition</span>
+  </div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ========================================================= -->
+    <!-- SECTION 1: APERSEPSI & PEMANASAN KASUS NYATA              -->
+    <!-- ========================================================= -->
+    <section id="sec-intro" class="tab-content space-y-6">
+      
+      <!-- Welcome Hero Card (Slide 1 & 2) -->
+      <div class="bg-gradient-to-r from-teal-600 via-sky-600 to-indigo-700 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-8 -bottom-8 opacity-10 text-white pointer-events-none">
+          <i data-lucide="layers" class="w-72 h-72"></i>
+        </div>
+        <div class="relative z-10 flex flex-col md:flex-row items-center gap-6">
+          <!-- Illustrated Avatar SVG -->
+          <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/30 flex items-center justify-center shrink-0 shadow-lg">
+            <svg viewBox="0 0 120 120" class="w-20 h-20">
+              <circle cx="60" cy="60" r="54" fill="#e0f2fe"/>
+              <!-- Shirt -->
+              <path d="M22 115 C22 90, 98 90, 98 115 Z" fill="#1e293b"/>
+              <!-- Neck & Face -->
+              <rect x="50" y="74" width="20" height="18" rx="6" fill="#fed7aa"/>
+              <path d="M36 46 C36 26, 84 26, 84 46 L82 66 C82 80, 38 80, 38 66 Z" fill="#ffedd5"/>
+              <!-- Hair -->
+              <path d="M35 46 C33 22, 87 18, 85 46 C82 32, 42 32, 35 46 Z" fill="#0f172a"/>
+              <!-- Glasses -->
+              <rect x="40" y="47" width="17" height="12" rx="3" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+              <rect x="63" y="47" width="17" height="12" rx="3" fill="none" stroke="#0f172a" stroke-width="2.5"/>
+              <line x1="57" y1="52" x2="63" y2="52" stroke="#0f172a" stroke-width="2.5"/>
+              <!-- Eyes & Smile -->
+              <circle cx="48.5" cy="53" r="2" fill="#0f172a"/>
+              <circle cx="71.5" cy="53" r="2" fill="#0f172a"/>
+              <path d="M53 67 Q60 72 67 67" fill="none" stroke="#9a3412" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <div class="text-center md:text-left">
+            <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Konsep Penyimpanan Data</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold mt-2.5 leading-tight">"Hai, ketemu lagi kita!"</h2>
+            <p class="mt-2 text-sky-100 text-sm sm:text-base leading-relaxed max-w-2xl">
+              Hari ini kita akan mempelajari dua konsep penting dalam penyimpanan dan pemrosesan data di ilmu komputer maupun kehidupan sehari-hari, yaitu <strong class="text-white underline decoration-amber-300">Antrean (Queue)</strong> dan <strong class="text-white underline decoration-amber-300">Tumpukan (Stack)</strong>. Sudah siap?
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ringkasan Perbandingan Cepat -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:border-teal-300 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-3 py-1 rounded-lg bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200">Antrean (Queue)</span>
+            <span class="font-mono text-xs font-extrabold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-md">FIFO</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">First In, First Out</h3>
+          <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+            Data atau objek yang <strong class="text-slate-800">lebih dulu datang</strong> akan <strong class="text-teal-700">lebih dahulu dilayani / diproses</strong>. Seperti orang mengantre di loket pelayanan.
+          </p>
+          <button onclick="switchTab('queue')" class="mt-4 text-xs font-bold text-teal-600 hover:text-teal-700 inline-flex items-center space-x-1">
+            <span>Buka Simulasi Antrean</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:border-indigo-300 transition-all">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-200">Tumpukan (Stack)</span>
+            <span class="font-mono text-xs font-extrabold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">FILO / LIFO</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">First In, Last Out</h3>
+          <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+            Data atau objek yang <strong class="text-slate-800">lebih dulu datang</strong> akan <strong class="text-indigo-700">dilayani / diproses belakangan</strong>. Seperti tumpukan kue/piring yang diambil dari paling atas.
+          </p>
+          <button onclick="switchTab('stack')" class="mt-4 text-xs font-bold text-indigo-600 hover:text-indigo-700 inline-flex items-center space-x-1">
+            <span>Buka Simulasi Tumpukan</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- PEMANASAN INTERAKTIF (Slide 11) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Aktivitas Pemanasan</span>
+            <h3 class="text-lg font-bold text-slate-900 mt-1">Klasifikasi Kasus Kehidupan Sehari-hari 🎯</h3>
+            <p class="text-xs text-slate-600 mt-0.5">Tentukan apakah kasus-kasus berikut menerapkan prinsip <strong>Antrean (Queue)</strong> atau <strong>Tumpukan (Stack)</strong>!</p>
+          </div>
+          <div class="flex items-center space-x-2 self-start sm:self-auto">
+            <span id="warmupScoreBadge" class="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-3 py-1.5 rounded-xl border border-teal-200">Benar: 0 / 4</span>
+            <button onclick="resetWarmup()" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition-all" title="Reset Pemanasan">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="warmupListContainer" class="space-y-3">
+          <!-- Rendered dynamically by JS -->
+        </div>
+
+        <div id="warmupFeedbackBanner" class="hidden p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold text-center">
+          🎉 Luar biasa! Kamu berhasil mengelompokkan seluruh contoh kasus Antrean dan Tumpukan dengan tepat!
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 2: ANTREAN (QUEUE) & SIMULASI FIFO                -->
+    <!-- ========================================================= -->
+    <section id="sec-queue" class="tab-content space-y-6 hidden">
+      
+      <!-- Header Penjelasan & Ilustrasi (Slide 3 & 4) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-7 space-y-3">
+            <div class="flex items-center space-x-2">
+              <span class="bg-teal-100 text-teal-800 text-xs font-bold px-2.5 py-1 rounded-md">Materi #1</span>
+              <span class="bg-amber-100 text-amber-800 text-xs font-mono font-extrabold px-2.5 py-1 rounded-md">First In First Out (FIFO)</span>
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-900">Antrean (Queue)</h2>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Konsep <strong class="text-slate-800">Antrean</strong> (dalam Bahasa Inggris dikenal dengan istilah <em>Queue</em>) adalah salah satu metode penyimpanan data di mana data atau objek yang <strong class="text-teal-700">lebih dulu datang akan lebih dahulu dilayani / diproses</strong>.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div class="p-3.5 rounded-xl bg-teal-50 border border-teal-200">
+                <div class="font-mono font-bold text-xs text-teal-800 flex items-center space-x-1.5">
+                  <i data-lucide="log-in" class="w-4 h-4"></i>
+                  <span>Enqueue X</span>
+                </div>
+                <p class="text-xs text-teal-900 mt-1">Digunakan untuk memasukkan nilai <strong>X</strong> pada bagian belakang (Rear) antrean.</p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200">
+                <div class="font-mono font-bold text-xs text-rose-800 flex items-center space-x-1.5">
+                  <i data-lucide="log-out" class="w-4 h-4"></i>
+                  <span>Dequeue</span>
+                </div>
+                <p class="text-xs text-rose-900 mt-1">Digunakan untuk mengeluarkan nilai yang berada di <strong>depan (Front)</strong> antrean.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom SVG Illustration of Loket Antrean -->
+          <div class="lg:col-span-5 bg-gradient-to-br from-sky-50 to-teal-50 p-4 rounded-2xl border border-teal-100 flex flex-col items-center">
+            <svg viewBox="0 0 360 150" class="w-full max-w-sm h-auto">
+              <!-- Desk / Loket -->
+              <rect x="275" y="65" width="70" height="65" rx="6" fill="#0f766e"/>
+              <rect x="270" y="58" width="80" height="10" rx="3" fill="#115e59"/>
+              <text x="310" y="95" text-anchor="middle" fill="#ccfbf1" font-size="11" font-weight="bold" font-family="sans-serif">LOKET</text>
+              <text x="310" y="110" text-anchor="middle" fill="#99f6e4" font-size="8" font-family="sans-serif">PELAYANAN</text>
+
+              <!-- Person 1 (Front - Dilayani duluan) -->
+              <g transform="translate(225, 38)">
+                <circle cx="18" cy="18" r="14" fill="#fed7aa"/>
+                <path d="M6 12 Q18 2 30 12" fill="#1e293b"/>
+                <rect x="6" y="34" width="24" height="55" rx="8" fill="#10b981"/>
+                <text x="18" y="62" text-anchor="middle" fill="white" font-size="10" font-weight="bold">#1</text>
+              </g>
+              <!-- Person 2 -->
+              <g transform="translate(170, 42)">
+                <circle cx="18" cy="18" r="13" fill="#ffedd5"/>
+                <rect x="6" y="33" width="24" height="52" rx="8" fill="#0ea5e9"/>
+                <text x="18" y="60" text-anchor="middle" fill="white" font-size="10" font-weight="bold">#2</text>
+              </g>
+              <!-- Person 3 -->
+              <g transform="translate(115, 42)">
+                <circle cx="18" cy="18" r="13" fill="#fed7aa"/>
+                <rect x="6" y="33" width="24" height="52" rx="8" fill="#6366f1"/>
+                <text x="18" y="60" text-anchor="middle" fill="white" font-size="10" font-weight="bold">#3</text>
+              </g>
+              <!-- Person 4 (Rear - Baru datang) -->
+              <g transform="translate(60, 42)">
+                <circle cx="18" cy="18" r="13" fill="#ffedd5"/>
+                <rect x="6" y="33" width="24" height="52" rx="8" fill="#f59e0b"/>
+                <text x="18" y="60" text-anchor="middle" fill="white" font-size="10" font-weight="bold">#4</text>
+              </g>
+
+              <!-- Arrows -->
+              <path d="M15 80 L50 80" stroke="#0d9488" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+              <text x="32" y="72" text-anchor="middle" fill="#0f766e" font-size="9" font-weight="bold">Masuk</text>
+              <text x="243" y="22" text-anchor="middle" fill="#059669" font-size="9" font-weight="bold">Keluar Duluan (Front)</text>
+              <defs>
+                <marker id="arrowTeal" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#0d9488"/>
+                </marker>
+              </defs>
+            </svg>
+            <p class="text-[11px] text-slate-600 text-center mt-1 font-medium">Orang #1 yang datang paling awal dilayani lebih dulu di loket.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIMULASI INTERAKTIF QUEUE (Slide 5, 6, 7) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Simulator Interaktif Antrean (Queue)</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Masukkan bilangan bulat dengan <strong>Enqueue X</strong> atau keluarkan elemen terdepan dengan <strong>Dequeue</strong>.</p>
+          </div>
+          
+          <!-- Preset Latihan dari Slide -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[11px] font-semibold text-slate-500">Contoh Slide:</span>
+            <button onclick="runQueuePreset(1)" class="px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 rounded-xl text-xs font-bold transition-all">
+              Skenario 1 (Slide 6)
+            </button>
+            <button onclick="runQueuePreset(2)" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition-all">
+              Skenario 2 (Slide 7)
+            </button>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center space-x-2">
+            <input type="number" id="queueInputVal" value="20" onkeydown="if(event.key==='Enter') enqueueItem()" placeholder="Angka X" class="w-28 px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <button onclick="enqueueItem()" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center space-x-1.5">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>Enqueue X</span>
+            </button>
+          </div>
+
+          <button onclick="dequeueItem()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center space-x-1.5">
+            <i data-lucide="minus-circle" class="w-4 h-4"></i>
+            <span>Dequeue (Keluarkan Depan)</span>
+          </button>
+
+          <button onclick="resetQueueSim()" class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-all flex items-center space-x-1.5 ml-auto">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            <span>Kosongkan</span>
+          </button>
+        </div>
+
+        <!-- Visual Queue Pipe -->
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+          <div class="flex items-center justify-between text-xs font-bold mb-3">
+            <span class="text-rose-600 flex items-center space-x-1">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              <span>FRONT / DEPAN (Keluar via Dequeue)</span>
+            </span>
+            <span class="text-teal-600 flex items-center space-x-1">
+              <span>REAR / BELAKANG (Masuk via Enqueue)</span>
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            </span>
+          </div>
+
+          <div class="relative border-y-4 border-slate-300 bg-white py-6 px-4 rounded-xl min-h-[115px] flex items-center justify-start gap-3 overflow-x-auto" id="queueVisualContainer">
+            <!-- Rendered by JS -->
+          </div>
+
+          <div class="flex items-center justify-between mt-3 text-xs text-slate-500 font-mono">
+            <span id="queueSizeInfo">Jumlah Elemen: 0</span>
+            <span id="queueFrontInfo">Elemen Terdepan (Front): -</span>
+          </div>
+        </div>
+
+        <!-- Command History & Log -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs flex items-start space-x-2.5">
+            <i data-lucide="terminal" class="w-4 h-4 text-teal-400 mt-0.5 shrink-0"></i>
+            <div id="queueLogText">Siap menerima instruksi Enqueue X atau Dequeue.</div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Riwayat Perintah Dijalankan:</span>
+            <div id="queueCommandHistory" class="flex flex-wrap gap-1.5 max-h-20 overflow-y-auto">
+              <span class="text-xs text-slate-400 italic">Belum ada perintah</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 3: TUMPUKAN (STACK) & SIMULASI FILO               -->
+    <!-- ========================================================= -->
+    <section id="sec-stack" class="tab-content space-y-6 hidden">
+      
+      <!-- Header Penjelasan & Ilustrasi (Slide 8 & 9) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-7 space-y-3">
+            <div class="flex items-center space-x-2">
+              <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2.5 py-1 rounded-md">Materi #2</span>
+              <span class="bg-amber-100 text-amber-800 text-xs font-mono font-extrabold px-2.5 py-1 rounded-md">First In Last Out (FILO)</span>
+            </div>
+            <h2 class="text-2xl font-extrabold text-slate-900">Tumpukan (Stack)</h2>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Konsep <strong class="text-slate-800">Tumpukan</strong> (dalam Bahasa Inggris dikenal dengan istilah <em>Stack</em>) adalah salah satu metode penyimpanan data di mana data atau objek yang <strong class="text-indigo-700">lebih dulu datang akan dilayani / diproses belakangan</strong> (atau yang terakhir masuk akan keluar pertama / LIFO).
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div class="p-3.5 rounded-xl bg-indigo-50 border border-indigo-200">
+                <div class="font-mono font-bold text-xs text-indigo-800 flex items-center space-x-1.5">
+                  <i data-lucide="arrow-down-to-line" class="w-4 h-4"></i>
+                  <span>Push X</span>
+                </div>
+                <p class="text-xs text-indigo-900 mt-1">Digunakan untuk memasukkan nilai <strong>X</strong> ke posisi paling atas (Top) tumpukan.</p>
+              </div>
+              <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200">
+                <div class="font-mono font-bold text-xs text-rose-800 flex items-center space-x-1.5">
+                  <i data-lucide="arrow-up-from-line" class="w-4 h-4"></i>
+                  <span>Pop</span>
+                </div>
+                <p class="text-xs text-rose-900 mt-1">Digunakan untuk mengeluarkan nilai yang berada di <strong>paling atas (Top)</strong> tumpukan.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom SVG Illustration of Tumpukan Kue / Piring -->
+          <div class="lg:col-span-5 bg-gradient-to-br from-amber-50 to-indigo-50 p-4 rounded-2xl border border-indigo-100 flex flex-col items-center">
+            <svg viewBox="0 0 320 155" class="w-full max-w-xs h-auto">
+              <!-- Wooden Board -->
+              <rect x="20" y="132" width="280" height="12" rx="4" fill="#b45309"/>
+              <!-- Stack of Cookies / Waffles -->
+              <rect x="85" y="112" width="110" height="18" rx="8" fill="#d97706" stroke="#92400e" stroke-width="1.5"/>
+              <text x="140" y="124" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Data #1 (Pertama Masuk)</text>
+
+              <rect x="85" y="92" width="110" height="18" rx="8" fill="#f59e0b" stroke="#b45309" stroke-width="1.5"/>
+              <text x="140" y="104" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Data #2</text>
+
+              <rect x="85" y="72" width="110" height="18" rx="8" fill="#fbbf24" stroke="#d97706" stroke-width="1.5"/>
+              <text x="140" y="84" text-anchor="middle" fill="#78350f" font-size="9" font-weight="bold">Data #3</text>
+
+              <!-- Top Cookie lifted -->
+              <rect x="85" y="42" width="110" height="18" rx="8" fill="#4f46e5" stroke="#312e81" stroke-width="1.5"/>
+              <text x="140" y="54" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Data #4 (TOP)</text>
+
+              <!-- Push / Pop Arrows -->
+              <path d="M225 25 L225 55" stroke="#4f46e5" stroke-width="2.5" marker-end="url(#arrowIndigo)"/>
+              <text x="262" y="42" text-anchor="middle" fill="#3730a3" font-size="9" font-weight="bold">Push (Masuk)</text>
+
+              <path d="M225 95 L225 65" stroke="#e11d48" stroke-width="2.5" marker-end="url(#arrowRose)"/>
+              <text x="260" y="82" text-anchor="middle" fill="#be123c" font-size="9" font-weight="bold">Pop (Keluar)</text>
+
+              <defs>
+                <marker id="arrowIndigo" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#4f46e5"/>
+                </marker>
+                <marker id="arrowRose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#e11d48"/>
+                </marker>
+              </defs>
+            </svg>
+            <p class="text-[11px] text-slate-600 text-center mt-1 font-medium">Data #1 di bagian paling bawah baru bisa diambil setelah tumpukan di atasnya keluar.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIMULASI INTERAKTIF STACK (Slide 10) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Simulator Interaktif Tumpukan (Stack)</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Masukkan bilangan bulat ke atas tumpukan dengan <strong>Push X</strong> atau ambil elemen teratas dengan <strong>Pop</strong>.</p>
+          </div>
+          
+          <!-- Preset Latihan dari Slide 10 -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[11px] font-semibold text-slate-500">Contoh Slide 10:</span>
+            <button onclick="runStackPreset()" class="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition-all">
+              Jalankan Urutan Perintah Slide 10
+            </button>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center space-x-2">
+            <input type="number" id="stackInputVal" value="25" onkeydown="if(event.key==='Enter') pushStackItem()" placeholder="Angka X" class="w-28 px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button onclick="pushStackItem()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center space-x-1.5">
+              <i data-lucide="arrow-down-to-line" class="w-4 h-4"></i>
+              <span>Push X</span>
+            </button>
+          </div>
+
+          <button onclick="popStackItem()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs transition-all shadow-sm flex items-center space-x-1.5">
+            <i data-lucide="arrow-up-from-line" class="w-4 h-4"></i>
+            <span>Pop (Keluarkan Atas)</span>
+          </button>
+
+          <button onclick="resetStackSim()" class="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-all flex items-center space-x-1.5 ml-auto">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            <span>Kosongkan</span>
+          </button>
+        </div>
+
+        <!-- Visual Stack Container & Command Log -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+          <!-- Vertical Bucket -->
+          <div class="md:col-span-6 bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col items-center justify-end">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-600 mb-3 flex items-center space-x-1">
+              <i data-lucide="arrow-up-down" class="w-3.5 h-3.5"></i>
+              <span>Pintu Masuk & Keluar (TOP)</span>
+            </span>
+
+            <!-- Open-top Container -->
+            <div class="w-56 sm:w-64 min-h-[250px] border-x-4 border-b-4 border-slate-400 rounded-b-2xl bg-white p-3 flex flex-col-reverse items-center justify-start gap-2 shadow-inner" id="stackVisualContainer">
+              <!-- Rendered dynamically by JS -->
+            </div>
+
+            <div class="w-56 sm:w-64 flex items-center justify-between mt-3 text-xs text-slate-500 font-mono">
+              <span id="stackSizeInfo">Tinggi: 0</span>
+              <span id="stackTopInfo">TOP: -</span>
+            </div>
+          </div>
+
+          <!-- Logs & Info -->
+          <div class="md:col-span-6 flex flex-col justify-between space-y-4">
+            <div class="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-xs flex items-start space-x-2.5">
+              <i data-lucide="terminal" class="w-4 h-4 text-indigo-400 mt-0.5 shrink-0"></i>
+              <div id="stackLogText">Siap menerima instruksi Push X atau Pop.</div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl flex-1">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Riwayat Perintah Stack:</span>
+              <div id="stackCommandHistory" class="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto">
+                <span class="text-xs text-slate-400 italic">Belum ada perintah</span>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs leading-relaxed">
+              <strong>Ingat Prinsip FILO:</strong> Elemen yang paling pertama masuk berada di dasar wadah, sehingga menjadi elemen yang <strong>paling terakhir</strong> keluar.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 4: TANTANGAN KOMPUTASIONAL (TANTANGAN 1 & 2)      -->
+    <!-- ========================================================= -->
+    <section id="sec-challenges" class="tab-content space-y-8 hidden">
+      
+      <!-- TANTANGAN 1: KARUNG & LIFT (Slide 12, 13, 14) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100 px-2.5 py-1 rounded-md border border-amber-200">Tantangan 1 (Bebras Challenge)</span>
+            <h2 class="text-xl font-extrabold text-slate-900 mt-1.5">Tantangan Mengangkut Karung dengan Lift 🏗️</h2>
+          </div>
+          <span class="text-xs font-mono font-bold bg-rose-50 text-rose-700 border border-rose-200 px-3 py-1.5 rounded-xl self-start sm:self-auto">
+            Kapasitas Lift: 80 – 100 kg ONLY
+          </span>
+        </div>
+
+        <!-- Soal Cerita Lengkap dari Slide 12 -->
+        <div class="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
+          <p>
+            Terdapat sejumlah karung diletakkan di koridor sebelah kiri di dekat suatu lift (elevator). Sekali angkut, <strong>Lift hanya dapat mengangkut karung-karung dengan total berat tidak kurang dari 80 kg dan tidak lebih dari 100 kg</strong>. Setelah terkirim maka lift akan kembali ke lantai tersebut.
+          </p>
+          <ul class="list-disc pl-5 space-y-1 text-slate-600">
+            <li>Saat memuatkan karung ke dalam lift, <strong>karung yang terdekat dengan lift</strong> yang akan diambil terlebih dulu.</li>
+            <li>Seandainya penambahan suatu karung menyebabkan <em>overload</em> (&gt; 100 kg), karung tersebut dipindahkan ke koridor pada <strong>arah berlawanan sejauh-jauhnya</strong> (membentuk antrean/tumpukan baru di sisi kanan).</li>
+            <li>Bila barisan awal telah habis diperiksa, hal yang sama dilakukan pada barisan karung di koridor arah berlawanan (diambil dari yang terdekat dengan lift). Hal ini terus-menerus dilakukan sampai semua karung terkirim.</li>
+          </ul>
+          <p class="font-bold text-slate-900 pt-1">
+            Pertanyaan: Berapa kali lift naik-turun untuk mengangkut seluruh karung tersebut?
+          </p>
+        </div>
+
+        <!-- Interactive Simulator Tantangan 1 -->
+        <div class="bg-slate-900 text-white p-5 rounded-2xl space-y-4 border border-slate-800">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center space-x-3">
+              <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Simulator Lift & Koridor</span>
+              <span id="c1TripsBadge" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono text-xs font-bold">
+                Lift Naik-Turun: 0 kali
+              </span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="stepChallenge1()" id="btnC1Step" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl text-xs transition-all flex items-center space-x-1.5">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                <span>Langkah Berikutnya</span>
+              </button>
+              <button onclick="resetChallenge1()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition-all flex items-center space-x-1">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Visual Corridor -->
+          <div class="overflow-x-auto pb-1">
+            <div class="grid grid-cols-12 gap-2 sm:gap-3 items-center bg-slate-800/80 p-3 sm:p-4 rounded-xl border border-slate-700 min-w-[640px]">
+              <!-- Left Corridor -->
+              <div class="col-span-5 flex flex-col">
+                <span class="text-[10px] font-mono text-slate-400 mb-1.5 text-right">KORIDOR KIRI (Terdekat Lift →)</span>
+                <div id="c1LeftCorridor" class="min-h-[54px] bg-slate-900/90 p-2 rounded-xl border border-slate-700 flex items-center justify-end gap-1.5 overflow-x-auto">
+                  <!-- Sacks rendered here -->
+                </div>
+              </div>
+
+              <!-- Elevator Center -->
+              <div class="col-span-2 flex flex-col items-center justify-center">
+                <div class="w-full py-2.5 px-1.5 rounded-xl bg-emerald-950 border-2 border-emerald-500 text-center shadow-lg">
+                  <span class="text-[10px] font-bold text-emerald-400 block">LIFT</span>
+                  <span class="text-[9px] text-emerald-300/80 block">(80-100kg)</span>
+                  <span id="c1LiftWeight" class="text-sm sm:text-base font-mono font-extrabold text-white mt-0.5 block">0 kg</span>
+                  <div id="c1LiftSacks" class="text-[10px] text-emerald-200 font-mono mt-0.5 truncate">[Kosong]</div>
+                </div>
+              </div>
+
+              <!-- Right Corridor -->
+              <div class="col-span-5 flex flex-col">
+                <span class="text-[10px] font-mono text-slate-400 mb-1.5 text-left">(← Terdekat Lift) KORIDOR KANAN</span>
+                <div id="c1RightCorridor" class="min-h-[54px] bg-slate-900/90 p-2 rounded-xl border border-slate-700 flex items-center justify-start gap-1.5 overflow-x-auto">
+                  <!-- Sacks rendered here -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="c1SimLog" class="text-xs font-mono text-sky-300 bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+            Klik "Langkah Berikutnya" untuk mengamati cara lift memuat karung dan memindahkan karung overload ke koridor seberang.
+          </div>
+        </div>
+
+        <!-- Answer Input & Teacher Toggle -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+          <div class="flex items-center space-x-2">
+            <label class="text-xs font-bold text-slate-700">Jawabanmu (Jumlah Naik-Turun):</label>
+            <input type="number" id="c1AnswerInput" placeholder="?" class="w-20 px-3 py-2 border border-slate-300 rounded-xl text-sm font-bold text-center focus:ring-2 focus:ring-amber-500">
+            <button onclick="checkChallenge1Answer()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition-all">
+              Cek Jawaban
+            </button>
+          </div>
+
+          <button id="btnRevealC1" onclick="toggleReveal('c1ExplanationBox')" class="hidden px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold rounded-xl text-xs transition-all items-center space-x-1.5">
+            <i data-lucide="eye" class="w-4 h-4"></i>
+            <span>Kunci & Pembahasan (Guru)</span>
+          </button>
+        </div>
+
+        <div id="c1AnswerFeedback" class="hidden p-3 rounded-xl text-xs font-semibold"></div>
+
+        <!-- Pembahasan Lengkap Tantangan 1 -->
+        <div id="c1ExplanationBox" class="hidden p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-950 space-y-2">
+          <h4 class="font-bold text-sm text-amber-900">💡 Pembahasan Tantangan 1 (Jawaban: 4 kali naik-turun):</h4>
+          <p>Urutan karung awal dari yang terdekat dengan lift (kanan ke kiri): <strong>40, 20, 34, 55, 50, 23, 45, 30, 10, 25, 30, 15</strong>.</p>
+          <ol class="list-decimal pl-5 space-y-1">
+            <li><strong>Perjalanan 1 (Dari Kiri):</strong> Ambil 40 + 20 + 34 = <strong>94 kg</strong> (Masuk 80-100 kg → <strong>Kirim!</strong>).</li>
+            <li><strong>Perjalanan 2 (Lanjut Kiri):</strong> Ambil 55. Berikutnya 50 (55+50=105 &gt; 100, pindah 50 ke kanan). Ambil 23 (55+23=78). Berikutnya 45 (overload, pindah 45 ke kanan). Berikutnya 30 (overload, pindah 30 ke kanan). Ambil 10 (78+10 = <strong>88 kg</strong> → <strong>Kirim!</strong>). Sisa di kiri: 25, 30, 15 dipindah ke kanan (25, lalu 30, lalu 15 di ujung terjauh).</li>
+            <li><strong>Perjalanan 3 (Dari Kanan, terdekat lift = 50):</strong> Ambil 50 + 45 = <strong>95 kg</strong> (Berikutnya 30, 25, 30, 15 overload & dipindah ke kiri → <strong>Kirim!</strong>).</li>
+            <li><strong>Perjalanan 4 (Dari Kiri, terdekat lift = 30):</strong> Ambil 30 + 25 + 30 + 15 = <strong>100 kg</strong> (Pas batas maksimal → <strong>Kirim!</strong>).</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- TANTANGAN 2: TOPI & MANUSIA SALJU (Slide 15 & 16) -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-sky-700 bg-sky-100 px-2.5 py-1 rounded-md border border-sky-200">Tantangan 2 (Bebras Challenge)</span>
+            <h2 class="text-xl font-extrabold text-slate-900 mt-1.5">Tantangan Tumpukan Topi & Manusia Salju ⛄</h2>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button id="btnRevealC2" onclick="toggleReveal('c2ExplanationBox')" class="hidden px-3.5 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold rounded-xl text-xs transition-all items-center space-x-1.5">
+              <i data-lucide="eye" class="w-4 h-4"></i>
+              <span>Kunci Jawaban (Guru)</span>
+            </button>
+            <button onclick="resetChallenge2()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-all flex items-center space-x-1.5">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              <span>Reset Pasangan</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Soal Cerita Slide 15 -->
+        <div class="bg-sky-50/70 p-4 rounded-xl border border-sky-100 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p>
+            Lima manusia salju berdiri dalam suatu barisan. Mereka semua menginginkan topi yang ukuran/tingginya cocok dengan ukuran tubuh mereka:
+          </p>
+          <p class="mt-1.5 font-medium text-slate-800">
+            Aturan pembagian (<strong>Pop dari Stack</strong>): Manusia salju paling <strong>kiri</strong> mendapat <strong>topi paling atas tumpukan</strong>. Manusia salju berikutnya mendapat topi berikutnya di tumpukan, dan seterusnya sampai manusia salju paling <strong>kanan</strong> mendapat topi paling bawah.
+          </p>
+          <p class="mt-1.5 text-xs text-sky-800 font-bold">
+            Cara Bermain: Klik salah satu Tumpukan Topi di kolom kiri, lalu klik Barisan Manusia Salju yang sesuai di kolom kanan!
+          </p>
+        </div>
+
+        <!-- Interactive Matching Arena -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="c2MatchingGrid">
+          <!-- Left Column: Hat Stacks -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 text-center">Pilih Tumpukan Topi (Atas → Bawah)</h4>
+            <div id="c2StacksList" class="space-y-3">
+              <!-- Rendered dynamically by JS -->
+            </div>
+          </div>
+
+          <!-- Right Column: Snowmen Lineups -->
+          <div class="space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 text-center">Pasangkan ke Barisan Manusia Salju (Kiri → Kanan)</h4>
+            <div id="c2SnowmenList" class="space-y-3">
+              <!-- Rendered dynamically by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div id="c2StatusBanner" class="p-3.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium text-center border border-slate-200">
+          Pasangkan keempat tumpukan topi dengan barisan manusia salju yang tepat!
+        </div>
+
+        <!-- Kunci Jawaban Guru Tantangan 2 -->
+        <div id="c2ExplanationBox" class="hidden p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-950 space-y-1.5">
+          <h4 class="font-bold text-sm text-amber-900">💡 Kunci Jawaban Tantangan 2 (Prinsip Stack / Pop dari Atas ke Bawah):</h4>
+          <ul class="list-disc pl-5 space-y-1">
+            <li><strong>Tumpukan A (Topi Kecil di atas → Besar di bawah):</strong> Cocok untuk barisan manusia salju yang terurut dari <strong>Kecil ke Besar</strong> (Barisan #1).</li>
+            <li><strong>Tumpukan B (Topi Besar di atas → Kecil di bawah):</strong> Cocok untuk barisan manusia salju yang terurut dari <strong>Besar ke Kecil</strong> (Barisan #3).</li>
+            <li><strong>Tumpukan C (Kecil, Kecil, Sedang, Besar, Sedang):</strong> Cocok untuk barisan manusia salju nomor #2.</li>
+            <li><strong>Tumpukan D (Sedang, Kecil, Besar, Sangat Kecil, Kecil):</strong> Cocok untuk barisan manusia salju nomor #4.</li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- SECTION 5: KUIS EVALUASI (10 SOAL)                        -->
+    <!-- ========================================================= -->
+    <section id="sec-quiz" class="tab-content space-y-6 hidden">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Kuis Evaluasi Antrean & Tumpukan 📝</h2>
+            <p class="text-xs text-slate-600 mt-1">Uji pemahamanmu mengenai konsep FIFO, FILO, simulasi operasi Queue/Stack, serta studi kasus komputasional. Batas kelulusan: <strong class="text-emerald-600 font-bold">Nilai 80</strong>.</p>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl text-center shrink-0">
+            <span class="text-[10px] text-slate-400 block font-mono uppercase tracking-wider">SKOR SEMENTARA</span>
+            <span id="quizScoreDisplay" class="text-2xl font-extrabold text-teal-600">0 / 100</span>
+          </div>
+        </div>
+
+        <!-- Quiz Progress Bar & Number Badges -->
+        <div class="mt-6 pt-4 border-t border-slate-100 space-y-3">
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-600">
+            <span id="quizProgressText">Soal 1 dari 10</span>
+            <span id="quizAnsweredCountText" class="text-teal-600">Dijawab: 0 / 10</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div id="quizProgressBar" class="bg-teal-500 h-full w-10/100 transition-all duration-300"></div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 pt-2" id="quizNumberGrid">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Single Question Card -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4" id="quizSingleQuestionCard"></div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex items-center justify-between pt-2" id="quizNavButtons">
+        <button id="quizPrevBtn" onclick="prevQuestion()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition-all flex items-center space-x-1.5">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span>Soal Sebelumnya</span>
+        </button>
+
+        <button id="quizNextBtn" onclick="nextQuestion()" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center space-x-1.5">
+          <span>Soal Berikutnya</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Final Result Card -->
+      <div id="quizFinalResultCard" class="hidden bg-white p-8 rounded-2xl border border-slate-200 shadow-md text-center space-y-4">
+        <div id="quizResultBadge" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-white font-bold shadow-lg"></div>
+        <div>
+          <h3 id="quizResultTitle" class="text-2xl font-extrabold text-slate-900"></h3>
+          <p id="quizResultSubtitle" class="text-xs sm:text-sm text-slate-600 mt-2 max-w-md mx-auto leading-relaxed"></p>
+        </div>
+        <div class="pt-4 flex items-center justify-center space-x-3">
+          <button onclick="resetQuiz()" class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition-all shadow-md inline-flex items-center space-x-2">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            <span>Ulangi Kuis</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+      Media Pembelajaran Interaktif Informatika — Konsep Antrean (Queue) & Tumpukan (Stack)
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // ==========================================
+    // 1. GLOBAL NAVIGATION & MODE SWITCHER
+    // ==========================================
+    let currentUserMode = 'student';
+
+    function switchUserMode(mode) {
+      currentUserMode = mode;
+      const studentBtn = document.getElementById('modeStudentBtn');
+      const teacherBtn = document.getElementById('modeTeacherBtn');
+      const teacherBanner = document.getElementById('teacherBanner');
+      const btnC1 = document.getElementById('btnRevealC1');
+      const btnC2 = document.getElementById('btnRevealC2');
+
+      if (mode === 'teacher') {
+        studentBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all";
+        teacherBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-amber-500 text-white shadow-sm";
+        teacherBanner.classList.remove('hidden');
+        if (btnC1) { btnC1.classList.remove('hidden'); btnC1.classList.add('inline-flex'); }
+        if (btnC2) { btnC2.classList.remove('hidden'); btnC2.classList.add('inline-flex'); }
+      } else {
+        studentBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-teal-600 shadow-sm";
+        teacherBtn.className = "flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all";
+        teacherBanner.classList.add('hidden');
+        if (btnC1) { btnC1.classList.add('hidden'); btnC1.classList.remove('inline-flex'); }
+        if (btnC2) { btnC2.classList.add('hidden'); btnC2.classList.remove('inline-flex'); }
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-tab').forEach(el => {
+        el.className = "nav-tab text-slate-600 hover:bg-slate-100 font-medium px-3.5 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2";
+      });
+
+      const targetSection = document.getElementById(`sec-${tabId}`);
+      if (targetSection) targetSection.classList.remove('hidden');
+      
+      const activeTab = document.getElementById(`tab-${tabId}`);
+      if (activeTab) {
+        activeTab.className = "nav-tab text-teal-600 bg-teal-50 font-semibold px-3.5 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all flex items-center space-x-2";
+      }
+    }
+
+    function toggleReveal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    // ==========================================
+    // 2. PEMANASAN KLASIFIKASI (SLIDE 11)
+    // ==========================================
+    const warmupItems = [
+      {
+        id: 0,
+        title: "Persimpangan lampu lalu lintas",
+        correct: "queue",
+        reason: "Kendaraan yang datang lebih dulu di depan garis berhenti akan melaju lebih dulu saat lampu hijau (FIFO)."
+      },
+      {
+        id: 1,
+        title: "Aktivitas penjelajahan internet (Tombol Back pada Browser)",
+        correct: "stack",
+        reason: "Halaman web yang terakhir dikunjungi akan dibuka kembali paling pertama saat tombol Back ditekan (FILO/LIFO)."
+      },
+      {
+        id: 2,
+        title: "Aktivitas mencetak dokumen menggunakan printer",
+        correct: "queue",
+        reason: "Dokumen yang dikirim ke printer lebih awal akan dicetak lebih dahulu sesuai urutan antrean cetak (FIFO)."
+      },
+      {
+        id: 3,
+        title: "Aktivitas Undo / Redo dalam penyuntingan sebuah dokumen",
+        correct: "stack",
+        reason: "Perubahan/ketikan terakhir yang dilakukan akan dibatalkan pertama kali saat menekan Undo (FILO/LIFO)."
+      }
+    ];
+    let warmupAnswers = [null, null, null, null];
+
+    function renderWarmup() {
+      const container = document.getElementById('warmupListContainer');
+      container.innerHTML = '';
+      let correctCount = 0;
+
+      warmupItems.forEach((item, idx) => {
+        const userAns = warmupAnswers[idx];
+        const isCorrect = userAns === item.correct;
+        if (isCorrect) correctCount++;
+
+        const row = document.createElement('div');
+        row.className = `p-4 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+          userAns === null ? 'bg-slate-50 border-slate-200' :
+          isCorrect ? 'bg-emerald-50/70 border-emerald-300' : 'bg-rose-50/70 border-rose-300'
+        }`;
+
+        row.innerHTML = `
+          <div class="space-y-1">
+            <div class="font-bold text-slate-800 text-xs sm:text-sm">${idx + 1}. ${item.title}</div>
+            ${userAns !== null ? `<p class="text-xs ${isCorrect ? 'text-emerald-800' : 'text-rose-800'} font-medium">${isCorrect ? '✓ Tepat!' : '✕ Kurang tepat.'} ${item.reason}</p>` : ''}
+          </div>
+          <div class="flex items-center space-x-2 shrink-0">
+            <button onclick="answerWarmup(${idx}, 'queue')" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all ${
+              userAns === 'queue'
+                ? (item.correct === 'queue' ? 'bg-teal-600 text-white border-teal-600 shadow-sm' : 'bg-rose-600 text-white border-rose-600')
+                : 'bg-white hover:bg-teal-50 text-slate-700 border-slate-300'
+            }">
+              Antrean (Queue)
+            </button>
+            <button onclick="answerWarmup(${idx}, 'stack')" class="px-3.5 py-2 rounded-xl text-xs font-bold border transition-all ${
+              userAns === 'stack'
+                ? (item.correct === 'stack' ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm' : 'bg-rose-600 text-white border-rose-600')
+                : 'bg-white hover:bg-indigo-50 text-slate-700 border-slate-300'
+            }">
+              Tumpukan (Stack)
+            </button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      document.getElementById('warmupScoreBadge').innerText = `Benar: ${correctCount} / 4`;
+      const banner = document.getElementById('warmupFeedbackBanner');
+      if (correctCount === 4) {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function answerWarmup(idx, choice) {
+      warmupAnswers[idx] = choice;
+      renderWarmup();
+      if (warmupAnswers.every((ans, i) => ans === warmupItems[i].correct)) {
+        confetti({ particleCount: 55, spread: 65, origin: { y: 0.7 } });
+      }
+    }
+
+    function resetWarmup() {
+      warmupAnswers = [null, null, null, null];
+      renderWarmup();
+    }
+
+    // ==========================================
+    // 3. SIMULATOR ANTREAN (QUEUE)
+    // ==========================================
+    let queueData = [];
+    let queueHistory = [];
+
+    function renderQueue() {
+      const container = document.getElementById('queueVisualContainer');
+      container.innerHTML = '';
+
+      if (queueData.length === 0) {
+        container.innerHTML = `<span class="text-xs text-slate-400 italic mx-auto">Antrean kosong — gunakan Enqueue X untuk menambahkan data</span>`;
+      } else {
+        queueData.forEach((val, idx) => {
+          const isFront = idx === 0;
+          const isRear = idx === queueData.length - 1;
+          const card = document.createElement('div');
+          card.className = `item-anim animate-pop-in relative min-w-[68px] h-16 rounded-xl border-2 flex flex-col items-center justify-center shrink-0 shadow-sm ${
+            isFront ? 'bg-teal-500 border-teal-600 text-white font-extrabold scale-105' : 'bg-sky-50 border-sky-300 text-slate-800 font-bold'
+          }`;
+
+          let tag = '';
+          if (isFront && isRear) tag = '<span class="text-[9px] uppercase tracking-tighter bg-black/20 px-1.5 rounded">Front/Rear</span>';
+          else if (isFront) tag = '<span class="text-[9px] uppercase tracking-tighter bg-black/20 px-1.5 rounded">Front</span>';
+          else if (isRear) tag = '<span class="text-[9px] uppercase tracking-tighter bg-sky-200 text-sky-900 px-1.5 rounded">Rear</span>';
+
+          card.innerHTML = `
+            <span class="text-base">${val}</span>
+            ${tag}
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      document.getElementById('queueSizeInfo').innerText = `Jumlah Elemen: ${queueData.length}`;
+      document.getElementById('queueFrontInfo').innerText = `Elemen Terdepan (Front): ${queueData.length > 0 ? queueData[0] : '-'}`;
+
+      const histEl = document.getElementById('queueCommandHistory');
+      if (queueHistory.length === 0) {
+        histEl.innerHTML = `<span class="text-xs text-slate-400 italic">Belum ada perintah</span>`;
+      } else {
+        histEl.innerHTML = queueHistory.map(cmd => {
+          const isEnq = cmd.startsWith('Enqueue');
+          return `<span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold ${isEnq ? 'bg-teal-100 text-teal-800' : 'bg-rose-100 text-rose-800'}">${cmd}</span>`;
+        }).join('');
+      }
+    }
+
+    function enqueueItem(customVal = null) {
+      const input = document.getElementById('queueInputVal');
+      const val = customVal !== null ? customVal : parseInt(input.value);
+      if (isNaN(val)) return;
+
+      queueData.push(val);
+      queueHistory.push(`Enqueue ${val}`);
+      document.getElementById('queueLogText').innerHTML = `<span class="text-teal-400 font-bold">Enqueue ${val}:</span> Angka <strong>${val}</strong> masuk ke bagian belakang antrean.`;
+      if (customVal === null) {
+        input.value = val + 2;
+      }
+      renderQueue();
+    }
+
+    function dequeueItem() {
+      if (queueData.length === 0) {
+        document.getElementById('queueLogText').innerHTML = `<span class="text-amber-400 font-bold">Dequeue Gagal:</span> Antrean sudah kosong, tidak ada elemen yang bisa dikeluarkan.`;
+        return;
+      }
+      const removed = queueData.shift();
+      queueHistory.push('Dequeue');
+      document.getElementById('queueLogText').innerHTML = `<span class="text-rose-400 font-bold">Dequeue:</span> Elemen terdepan (<strong>${removed}</strong>) telah keluar dan dilayani.`;
+      renderQueue();
+    }
+
+    function resetQueueSim() {
+      queueData = [];
+      queueHistory = [];
+      document.getElementById('queueLogText').innerText = "Antrean dikosongkan. Siap menerima instruksi baru.";
+      renderQueue();
+    }
+
+    function runQueuePreset(num) {
+      resetQueueSim();
+      const cmds = num === 1
+        ? [() => enqueueItem(12), () => enqueueItem(14), () => enqueueItem(16), () => dequeueItem()]
+        : [() => enqueueItem(12), () => enqueueItem(14), () => enqueueItem(16), () => dequeueItem(), () => dequeueItem(), () => enqueueItem(18)];
+
+      cmds.forEach((fn, idx) => {
+        setTimeout(fn, idx * 450);
+      });
+    }
+
+    // ==========================================
+    // 4. SIMULATOR TUMPUKAN (STACK)
+    // ==========================================
+    let stackData = [];
+    let stackHistory = [];
+
+    function renderStack() {
+      const container = document.getElementById('stackVisualContainer');
+      container.innerHTML = '';
+
+      if (stackData.length === 0) {
+        container.innerHTML = `<span class="text-xs text-slate-400 italic my-auto text-center">Tumpukan kosong — gunakan Push X</span>`;
+      } else {
+        stackData.forEach((val, idx) => {
+          const isTop = idx === stackData.length - 1;
+          const block = document.createElement('div');
+          block.className = `item-anim animate-pop-in w-full py-2.5 px-4 rounded-xl border-2 flex items-center justify-between shadow-sm ${
+            isTop ? 'bg-indigo-600 border-indigo-700 text-white font-extrabold' : 'bg-indigo-50 border-indigo-200 text-slate-800 font-bold'
+          }`;
+          block.innerHTML = `
+            <span class="text-[10px] font-mono opacity-75">#${idx + 1}</span>
+            <span class="text-sm">${val}</span>
+            <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded ${isTop ? 'bg-white/20 text-white' : 'text-transparent'}">TOP</span>
+          `;
+          container.appendChild(block);
+        });
+      }
+
+      document.getElementById('stackSizeInfo').innerText = `Tinggi: ${stackData.length}`;
+      document.getElementById('stackTopInfo').innerText = `TOP: ${stackData.length > 0 ? stackData[stackData.length - 1] : '-'}`;
+
+      const histEl = document.getElementById('stackCommandHistory');
+      if (stackHistory.length === 0) {
+        histEl.innerHTML = `<span class="text-xs text-slate-400 italic">Belum ada perintah</span>`;
+      } else {
+        histEl.innerHTML = stackHistory.map(cmd => {
+          const isPush = cmd.startsWith('Push');
+          return `<span class="px-2 py-0.5 rounded text-[11px] font-mono font-semibold ${isPush ? 'bg-indigo-100 text-indigo-800' : 'bg-rose-100 text-rose-800'}">${cmd}</span>`;
+        }).join('');
+      }
+    }
+
+    function pushStackItem(customVal = null) {
+      const input = document.getElementById('stackInputVal');
+      const val = customVal !== null ? customVal : parseInt(input.value);
+      if (isNaN(val)) return;
+
+      stackData.push(val);
+      stackHistory.push(`Push ${val}`);
+      document.getElementById('stackLogText').innerHTML = `<span class="text-indigo-400 font-bold">Push ${val}:</span> Angka <strong>${val}</strong> diletakkan di posisi paling atas (TOP).`;
+      if (customVal === null) {
+        input.value = val + 3;
+      }
+      renderStack();
+    }
+
+    function popStackItem() {
+      if (stackData.length === 0) {
+        document.getElementById('stackLogText').innerHTML = `<span class="text-amber-400 font-bold">Pop Gagal:</span> Tumpukan sudah kosong, tidak ada elemen teratas.`;
+        return;
+      }
+      const popped = stackData.pop();
+      stackHistory.push('Pop');
+      document.getElementById('stackLogText').innerHTML = `<span class="text-rose-400 font-bold">Pop:</span> Elemen paling atas (<strong>${popped}</strong>) dikeluarkan dari tumpukan.`;
+      renderStack();
+    }
+
+    function resetStackSim() {
+      stackData = [];
+      stackHistory = [];
+      document.getElementById('stackLogText').innerText = "Tumpukan dikosongkan. Siap menerima instruksi baru.";
+      renderStack();
+    }
+
+    function runStackPreset() {
+      resetStackSim();
+      // Slide 10: Push 5, Push 17, Push 9, Pop, Push 11, Pop, Pop
+      const cmds = [
+        () => pushStackItem(5),
+        () => pushStackItem(17),
+        () => pushStackItem(9),
+        () => popStackItem(),
+        () => pushStackItem(11),
+        () => popStackItem(),
+        () => popStackItem()
+      ];
+      cmds.forEach((fn, idx) => {
+        setTimeout(fn, idx * 450);
+      });
+    }
+
+    // ==========================================
+    // 5. TANTANGAN 1 SIMULATOR (KARUNG & LIFT)
+    // ==========================================
+    // Initial left corridor: [15, 30, 25, 10, 30, 45, 23, 50, 55, 34, 20, 40] (40 is closest to lift on right end)
+    let c1Left = [15, 30, 25, 10, 30, 45, 23, 50, 55, 34, 20, 40];
+    let c1Right = [];
+    let c1Lift = [];
+    let c1ActiveSide = 'left'; // 'left' or 'right'
+    let c1Trips = 0;
+    let c1Done = false;
+
+    function renderChallenge1() {
+      const leftEl = document.getElementById('c1LeftCorridor');
+      const rightEl = document.getElementById('c1RightCorridor');
+
+      leftEl.innerHTML = c1Left.length === 0
+        ? `<span class="text-[10px] text-slate-500 italic px-2">Kosong</span>`
+        : c1Left.map((w, idx) => {
+            const isNext = c1ActiveSide === 'left' && idx === c1Left.length - 1;
+            return `<span class="px-2 py-1.5 rounded-lg font-mono text-xs font-bold shrink-0 ${
+              isNext ? 'bg-amber-500 text-slate-950 ring-2 ring-amber-300' : 'bg-amber-900/60 text-amber-200 border border-amber-700/60'
+            }">${w}</span>`;
+          }).join('');
+
+      rightEl.innerHTML = c1Right.length === 0
+        ? `<span class="text-[10px] text-slate-500 italic px-2">Kosong</span>`
+        : c1Right.map((w, idx) => {
+            const isNext = c1ActiveSide === 'right' && idx === 0;
+            return `<span class="px-2 py-1.5 rounded-lg font-mono text-xs font-bold shrink-0 ${
+              isNext ? 'bg-amber-500 text-slate-950 ring-2 ring-amber-300' : 'bg-amber-900/60 text-amber-200 border border-amber-700/60'
+            }">${w}</span>`;
+          }).join('');
+
+      const liftSum = c1Lift.reduce((a, b) => a + b, 0);
+      document.getElementById('c1LiftWeight').innerText = `${liftSum} kg`;
+      document.getElementById('c1LiftSacks').innerText = c1Lift.length > 0 ? `[${c1Lift.join(' + ')}]` : '[Kosong]';
+      document.getElementById('c1TripsBadge').innerText = `Lift Naik-Turun: ${c1Trips} kali`;
+    }
+
+    function stepChallenge1() {
+      if (c1Done) return;
+      const log = document.getElementById('c1SimLog');
+      const liftSum = c1Lift.reduce((a, b) => a + b, 0);
+
+      // Check if active side is empty -> either send lift if >=80 or switch side
+      if (c1ActiveSide === 'left' && c1Left.length === 0) {
+        if (liftSum >= 80) {
+          c1Trips++;
+          log.innerText = `🚀 Barisan kiri habis & berat lift ${liftSum} kg (80-100 kg). Lift naik mengirim karung! (Total perjalanan: ${c1Trips})`;
+          c1Lift = [];
+          c1ActiveSide = c1Right.length > 0 ? 'right' : 'done';
+        } else if (c1Right.length > 0) {
+          c1ActiveSide = 'right';
+          log.innerText = `↔️ Barisan kiri habis. Beralih memeriksa koridor kanan dari karung terdekat lift (${c1Right[0]} kg).`;
+        } else {
+          c1Done = true;
+          log.innerText = `✅ SELESAI! Seluruh karung berhasil dikirim dalam ${c1Trips} kali perjalanan lift naik-turun.`;
+        }
+        renderChallenge1();
+        return;
+      }
+
+      if (c1ActiveSide === 'right' && c1Right.length === 0) {
+        if (liftSum >= 80) {
+          c1Trips++;
+          log.innerText = `🚀 Barisan kanan habis & berat lift ${liftSum} kg (80-100 kg). Lift naik mengirim karung! (Total perjalanan: ${c1Trips})`;
+          c1Lift = [];
+          c1ActiveSide = c1Left.length > 0 ? 'left' : 'done';
+        } else if (c1Left.length > 0) {
+          c1ActiveSide = 'left';
+          log.innerText = `↔️ Barisan kanan habis. Beralih memeriksa koridor kiri dari karung terdekat lift (${c1Left[c1Left.length - 1]} kg).`;
+        } else {
+          c1Done = true;
+          log.innerText = `✅ SELESAI! Seluruh karung berhasil dikirim dalam ${c1Trips} kali perjalanan lift naik-turun.`;
+        }
+        renderChallenge1();
+        return;
+      }
+
+      // Take next closest sack from active side
+      if (c1ActiveSide === 'left') {
+        const sack = c1Left.pop(); // closest is rightmost in c1Left
+        if (liftSum + sack <= 100) {
+          c1Lift.push(sack);
+          const newSum = liftSum + sack;
+          log.innerText = `📥 Muat karung ${sack} kg dari kiri ke lift. Total berat lift sekarang: ${newSum} kg.`;
+          // If it reaches 80-100 and next would clearly finish or at end
+          if (newSum >= 80 && c1Left.length === 0) {
+            // next step will send
+          }
+        } else {
+          // Overload -> move to farthest end of right corridor (push to end of c1Right)
+          c1Right.push(sack);
+          log.innerText = `⚠️ Karung ${sack} kg menyebabkan overload (${liftSum} + ${sack} = ${liftSum + sack} > 100 kg)! Dipindah ke ujung terjauh koridor kanan.`;
+        }
+      } else if (c1ActiveSide === 'right') {
+        const sack = c1Right.shift(); // closest is leftmost in c1Right
+        if (liftSum + sack <= 100) {
+          c1Lift.push(sack);
+          const newSum = liftSum + sack;
+          log.innerText = `📥 Muat karung ${sack} kg dari kanan ke lift. Total berat lift sekarang: ${newSum} kg.`;
+        } else {
+          // Overload -> move to farthest end of left corridor (unshift to start of c1Left)
+          c1Left.unshift(sack);
+          log.innerText = `⚠️ Karung ${sack} kg menyebabkan overload (${liftSum} + ${sack} = ${liftSum + sack} > 100 kg)! Dipindah ke ujung terjauh koridor kiri.`;
+        }
+      }
+
+      // Check if all finished
+      if (c1Left.length === 0 && c1Right.length === 0 && c1Lift.length === 0) {
+        c1Done = true;
+        log.innerText = `✅ SELESAI! Seluruh karung berhasil dikirim dalam ${c1Trips} kali perjalanan lift naik-turun.`;
+      }
+
+      renderChallenge1();
+    }
+
+    function resetChallenge1() {
+      c1Left = [15, 30, 25, 10, 30, 45, 23, 50, 55, 34, 20, 40];
+      c1Right = [];
+      c1Lift = [];
+      c1ActiveSide = 'left';
+      c1Trips = 0;
+      c1Done = false;
+      document.getElementById('c1SimLog').innerText = `Klik "Langkah Berikutnya" untuk mengamati cara lift memuat karung dan memindahkan karung overload ke koridor seberang.`;
+      renderChallenge1();
+    }
+
+    function checkChallenge1Answer() {
+      const val = parseInt(document.getElementById('c1AnswerInput').value);
+      const fb = document.getElementById('c1AnswerFeedback');
+      fb.classList.remove('hidden');
+
+      if (val === 4) {
+        fb.className = "p-3.5 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300";
+        fb.innerText = "🎉 TEPAT SEKALI! Lift naik-turun sebanyak 4 kali (Perjalanan 1: 94 kg, Perjalanan 2: 88 kg, Perjalanan 3: 95 kg, Perjalanan 4: 100 kg).";
+        confetti({ particleCount: 65, spread: 70, origin: { y: 0.7 } });
+      } else {
+        fb.className = "p-3.5 rounded-xl text-xs font-semibold bg-rose-100 text-rose-900 border border-rose-200";
+        fb.innerText = `❌ Jawaban (${isNaN(val) ? 'kosong' : val}) belum tepat. Coba gunakan simulator di atas langkah demi langkah sampai semua karung terkirim!`;
+      }
+    }
+
+    // ==========================================
+    // 6. TANTANGAN 2 MATCHING (TOPI & MANUSIA SALJU)
+    // ==========================================
+    // Sizes: 1 (Sangat Kecil), 2 (Kecil), 3 (Sedang), 4 (Besar), 5 (Sangat Besar)
+    const c2StacksData = [
+      { id: 'S1', label: 'Tumpukan A', hatsTopToBottom: [1, 2, 3, 4, 5], colors: ['#10b981', '#0ea5e9', '#6366f1', '#ec4899', '#f97316'], matchSnowman: 'M1' },
+      { id: 'S2', label: 'Tumpukan B', hatsTopToBottom: [5, 4, 3, 2, 1], colors: ['#f97316', '#ec4899', '#6366f1', '#0ea5e9', '#10b981'], matchSnowman: 'M3' },
+      { id: 'S3', label: 'Tumpukan C', hatsTopToBottom: [2, 2, 1, 5, 3], colors: ['#a855f7', '#6366f1', '#10b981', '#f97316', '#ef4444'], matchSnowman: 'M2' },
+      { id: 'S4', label: 'Tumpukan D', hatsTopToBottom: [3, 2, 5, 1, 2], colors: ['#ef4444', '#a855f7', '#f97316', '#10b981', '#3b82f6'], matchSnowman: 'M4' }
+    ];
+
+    const c2SnowmenData = [
+      { id: 'M1', label: 'Barisan #1', sizesLeftToRight: [1, 2, 3, 4, 5] },
+      { id: 'M2', label: 'Barisan #2', sizesLeftToRight: [2, 2, 1, 5, 3] },
+      { id: 'M3', label: 'Barisan #3', sizesLeftToRight: [5, 4, 3, 2, 1] },
+      { id: 'M4', label: 'Barisan #4', sizesLeftToRight: [3, 2, 5, 1, 2] }
+    ];
+
+    let selectedStackId = null;
+    let c2SolvedPairs = {}; // { S1: 'M1', ... }
+
+    function renderChallenge2() {
+      const stacksContainer = document.getElementById('c2StacksList');
+      const snowmenContainer = document.getElementById('c2SnowmenList');
+
+      stacksContainer.innerHTML = '';
+      c2StacksData.forEach(st => {
+        const isSolved = Boolean(c2SolvedPairs[st.id]);
+        const isSelected = selectedStackId === st.id;
+
+        const hatsHtml = st.hatsTopToBottom.map((sz, i) => {
+          const widthPx = 22 + sz * 9;
+          return `<div style="width:${widthPx}px; background-color:${st.colors[i]}" class="h-2.5 rounded-t-md mx-auto border border-black/20"></div>`;
+        }).join('');
+
+        const btn = document.createElement('button');
+        btn.onclick = () => selectStackCard(st.id);
+        btn.disabled = isSolved;
+        btn.className = `w-full p-3.5 rounded-xl border-2 transition-all flex items-center justify-between ${
+          isSolved ? 'bg-emerald-50 border-emerald-400 opacity-85 cursor-default' :
+          isSelected ? 'bg-amber-50 border-amber-500 ring-2 ring-amber-400/50 shadow-md' :
+          'bg-white hover:bg-slate-50 border-slate-200'
+        }`;
+
+        btn.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <div class="w-20 py-1.5 px-2 bg-slate-100 rounded-lg border border-slate-200 flex flex-col justify-center space-y-0.5">
+              ${hatsHtml}
+            </div>
+            <div class="text-left">
+              <div class="font-bold text-xs sm:text-sm text-slate-900">${st.label}</div>
+              <div class="text-[11px] text-slate-500">Topi teratas diambil duluan (Pop)</div>
+            </div>
+          </div>
+          <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${
+            isSolved ? 'bg-emerald-500 text-white' : isSelected ? 'bg-amber-500 text-slate-950' : 'bg-slate-100 text-slate-500'
+          }">
+            ${isSolved ? '✓ Cocok' : isSelected ? 'Dipilih' : 'Pilih'}
+          </span>
+        `;
+        stacksContainer.appendChild(btn);
+      });
+
+      snowmenContainer.innerHTML = '';
+      c2SnowmenData.forEach(sm => {
+        const matchedStack = Object.keys(c2SolvedPairs).find(k => c2SolvedPairs[k] === sm.id);
+        const isSolved = Boolean(matchedStack);
+
+        const snowmenSvg = sm.sizesLeftToRight.map(sz => {
+          const scale = 0.55 + sz * 0.11;
+          return `
+            <div class="flex flex-col items-center justify-end" style="transform: scale(${scale}); transform-origin: bottom center;">
+              <div class="w-5 h-5 rounded-full bg-white border border-sky-300 shadow-xs"></div>
+              <div class="w-7 h-7 rounded-full bg-white border border-sky-300 -mt-1 shadow-xs"></div>
+            </div>
+          `;
+        }).join('');
+
+        const btn = document.createElement('button');
+        btn.onclick = () => selectSnowmanCard(sm.id);
+        btn.disabled = isSolved;
+        btn.className = `w-full p-3.5 rounded-xl border-2 transition-all flex items-center justify-between ${
+          isSolved ? 'bg-emerald-50 border-emerald-400 opacity-85 cursor-default' :
+          'bg-sky-50/40 hover:bg-sky-50 border-slate-200 hover:border-sky-400'
+        }`;
+
+        btn.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <div class="w-36 h-14 bg-sky-600 rounded-lg px-2 pb-1.5 flex items-end justify-between border border-sky-700 overflow-hidden">
+              ${snowmenSvg}
+            </div>
+            <div class="text-left">
+              <div class="font-bold text-xs sm:text-sm text-slate-900">${sm.label}</div>
+              <div class="text-[11px] text-slate-500">Kiri ke kanan</div>
+            </div>
+          </div>
+          <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${
+            isSolved ? 'bg-emerald-500 text-white' : 'bg-white border border-slate-200 text-slate-600'
+          }">
+            ${isSolved ? `✓ ${matchedStack}` : 'Pasangkan'}
+          </span>
+        `;
+        snowmenContainer.appendChild(btn);
+      });
+    }
+
+    function selectStackCard(stackId) {
+      if (c2SolvedPairs[stackId]) return;
+      selectedStackId = stackId;
+      const st = c2StacksData.find(s => s.id === stackId);
+      const banner = document.getElementById('c2StatusBanner');
+      banner.className = "p-3.5 rounded-xl bg-amber-50 text-amber-900 text-xs font-semibold text-center border border-amber-200";
+      banner.innerText = `${st.label} dipilih! Sekarang klik Barisan Manusia Salju di sebelah kanan yang sesuai urutan topi dari atas ke bawah.`;
+      renderChallenge2();
+    }
+
+    function selectSnowmanCard(snowmanId) {
+      const banner = document.getElementById('c2StatusBanner');
+      if (!selectedStackId) {
+        banner.className = "p-3.5 rounded-xl bg-rose-50 text-rose-800 text-xs font-semibold text-center border border-rose-200";
+        banner.innerText = "⚠️ Pilih terlebih dahulu salah satu Tumpukan Topi di kolom kiri!";
+        return;
+      }
+
+      const st = c2StacksData.find(s => s.id === selectedStackId);
+      if (st.matchSnowman === snowmanId) {
+        c2SolvedPairs[selectedStackId] = snowmanId;
+        selectedStackId = null;
+        const solvedCount = Object.keys(c2SolvedPairs).length;
+        if (solvedCount === 4) {
+          banner.className = "p-3.5 rounded-xl bg-emerald-100 text-emerald-900 text-xs font-bold text-center border border-emerald-300";
+          banner.innerText = "🎉 SEMPURNA! Semua tumpukan topi berhasil dipasangkan dengan barisan manusia salju yang tepat menggunakan prinsip Stack!";
+          confetti({ particleCount: 70, spread: 70, origin: { y: 0.7 } });
+        } else {
+          banner.className = "p-3.5 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-semibold text-center border border-emerald-200";
+          banner.innerText = `✓ Tepat! ${st.label} cocok dengan barisan tersebut (${solvedCount}/4 terpasang).`;
+        }
+      } else {
+        banner.className = "p-3.5 rounded-xl bg-rose-50 text-rose-800 text-xs font-semibold text-center border border-rose-200";
+        banner.innerText = `✕ Kurang cocok! Ingat: Topi paling ATAS diberikan ke manusia salju paling KIRI, dan topi paling BAWAH ke paling KANAN.`;
+      }
+      renderChallenge2();
+    }
+
+    function resetChallenge2() {
+      selectedStackId = null;
+      c2SolvedPairs = {};
+      const banner = document.getElementById('c2StatusBanner');
+      banner.className = "p-3.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium text-center border border-slate-200";
+      banner.innerText = "Pasangkan keempat tumpukan topi dengan barisan manusia salju yang tepat!";
+      renderChallenge2();
+    }
+
+    // ==========================================
+    // 7. KUIS EVALUASI (10 SOAL)
+    // ==========================================
+    const quizQuestions = [
+      {
+        id: 1,
+        type: "Konsep Queue",
+        question: "Prinsip utama penyimpanan dan pemrosesan data pada struktur Antrean (Queue) dikenal dengan istilah...",
+        options: [
+          "First In Last Out (FILO)",
+          "First In First Out (FIFO)",
+          "Last In First Out (LIFO)",
+          "Random In First Out (RIFO)"
+        ],
+        answer: 1,
+        explanation: "Pada Antrean (Queue), data yang lebih dulu masuk akan lebih dahulu dilayani atau dikeluarkan (First In First Out / FIFO)."
+      },
+      {
+        id: 2,
+        type: "Konsep Stack",
+        question: "Prinsip penyimpanan data pada Tumpukan (Stack) di mana data yang pertama kali masuk akan diproses paling akhir disebut...",
+        options: [
+          "First In First Out (FIFO)",
+          "First In Last Out (FILO)",
+          "First Come First Served (FCFS)",
+          "Sequential Access"
+        ],
+        answer: 1,
+        explanation: "Tumpukan (Stack) bekerja dengan prinsip First In Last Out (FILO) atau Last In First Out (LIFO), seperti tumpukan piring atau kue."
+      },
+      {
+        id: 3,
+        type: "Operasi Queue",
+        question: "Pada simulasi Antrean (Queue), perintah yang digunakan untuk mengeluarkan elemen yang berada di posisi paling depan antrean adalah...",
+        options: ["Push", "Pop", "Enqueue", "Dequeue"],
+        answer: 3,
+        explanation: "Enqueue X digunakan untuk memasukkan nilai X ke belakang antrean, sedangkan Dequeue mengeluarkan nilai yang berada di depan antrean."
+      },
+      {
+        id: 4,
+        type: "Operasi Stack",
+        question: "Pada simulasi Tumpukan (Stack), perintah 'Push 25' memiliki arti...",
+        options: [
+          "Mengeluarkan angka 25 dari dasar tumpukan",
+          "Memasukkan nilai 25 ke posisi paling atas tumpukan",
+          "Memasukkan nilai 25 ke belakang antrean",
+          "Menghapus 25 elemen teratas"
+        ],
+        answer: 1,
+        explanation: "Perintah Push X digunakan untuk menambahkan/memasukkan nilai X ke puncak (posisi paling atas) tumpukan."
+      },
+      {
+        id: 5,
+        type: "Simulasi Queue",
+        question: "Diberikan urutan perintah pada Antrean kosong: Enqueue 12 → Enqueue 14 → Enqueue 16 → Dequeue. Elemen apa saja yang tersisa di dalam antrean (dari depan ke belakang)?",
+        options: [
+          "12, 14",
+          "14, 16",
+          "16, 14",
+          "12, 16"
+        ],
+        answer: 1,
+        explanation: "Setelah Enqueue 12, 14, 16 antrean berisi [12, 14, 16]. Perintah Dequeue mengeluarkan elemen terdepan yaitu 12, sehingga tersisa [14, 16]."
+      },
+      {
+        id: 6,
+        type: "Simulasi Queue",
+        question: "Melanjutkan urutan perintah: Enqueue 12 → Enqueue 14 → Enqueue 16 → Dequeue → Dequeue → Enqueue 18. Elemen manakah yang berada di posisi paling depan (Front) sekarang?",
+        options: ["12", "14", "16", "18"],
+        answer: 2,
+        explanation: "Dequeue pertama mengeluarkan 12, Dequeue kedua mengeluarkan 14, lalu Enqueue 18 masuk di belakang. Isi antrean menjadi [16, 18], sehingga elemen terdepan adalah 16."
+      },
+      {
+        id: 7,
+        type: "Simulasi Stack",
+        question: "Diberikan urutan perintah pada Tumpukan kosong: Push 5 → Push 17 → Push 9 → Pop → Push 11 → Pop. Angka berapakah yang berada di posisi paling atas (TOP) sekarang?",
+        options: ["5", "9", "11", "17"],
+        answer: 3,
+        explanation: "Push 5, 17, 9 -> [5, 17, 9]. Pop mengeluarkan 9 -> [5, 17]. Push 11 -> [5, 17, 11]. Pop mengeluarkan 11 -> [5, 17]. Maka elemen teratas adalah 17."
+      },
+      {
+        id: 8,
+        type: "Studi Kasus",
+        question: "Manakah di antara aktivitas sehari-hari berikut yang menerapkan konsep Tumpukan (Stack)?",
+        options: [
+          "Antrean kendaraan di persimpangan lampu lalu lintas",
+          "Antrean pencetakan dokumen pada mesin printer",
+          "Fitur Undo dan Redo pada aplikasi pengolah kata",
+          "Antrean warga mengurus E-KTP di loket kelurahan"
+        ],
+        answer: 2,
+        explanation: "Fitur Undo/Redo menyimpan riwayat perubahan dalam bentuk Stack: aksi terakhir yang dilakukan akan dibatalkan pertama kali saat Undo ditekan."
+      },
+      {
+        id: 9,
+        type: "Studi Kasus",
+        question: "Ketika kamu mengirim 3 file berbeda secara berurutan ke sebuah printer di laboratorium komputer, file pertama yang kamu kirim akan dicetak lebih dulu. Mekanisme ini menggunakan struktur...",
+        options: [
+          "Stack (FILO)",
+          "Queue (FIFO)",
+          "Binary Tree",
+          "Random Access"
+        ],
+        answer: 1,
+        explanation: "Print spooler pada printer menggunakan Queue (FIFO) agar dokumen yang lebih dulu dikirim dicetak lebih awal."
+      },
+      {
+        id: 10,
+        type: "Analisis Bebras",
+        question: "Pada Tantangan Topi & Manusia Salju, manusia salju paling kiri selalu menerima topi paling atas dari tumpukan, hingga manusia salju paling kanan menerima topi paling bawah. Jika susunan warna topi dari ATAS ke BAWAH adalah Merah, Biru, Hijau, Kuning, Ungu, maka topi yang diterima manusia salju ke-4 dari kiri berwarna...",
+        options: ["Biru", "Hijau", "Kuning", "Ungu"],
+        answer: 2,
+        explanation: "Operasi Pop mengambil dari atas: Ke-1 (Merah), Ke-2 (Biru), Ke-3 (Hijau), Ke-4 (Kuning), Ke-5 (Ungu)."
+      }
+    ];
+
+    let currentQuestionIdx = 0;
+    let userAnswers = new Array(quizQuestions.length).fill(null);
+
+    function renderQuiz() {
+      renderQuizProgress();
+      renderQuizQuestionCard();
+    }
+
+    function renderQuizProgress() {
+      const current = currentQuestionIdx + 1;
+      const total = quizQuestions.length;
+      const answeredCount = userAnswers.filter(ans => ans !== null).length;
+
+      document.getElementById('quizProgressText').innerText = `Soal ${current} dari ${total}`;
+      document.getElementById('quizAnsweredCountText').innerText = `Dijawab: ${answeredCount} / ${total}`;
+      document.getElementById('quizProgressBar').style.width = `${(current / total) * 100}%`;
+
+      const grid = document.getElementById('quizNumberGrid');
+      grid.innerHTML = '';
+      quizQuestions.forEach((q, idx) => {
+        const btn = document.createElement('button');
+        btn.onclick = () => jumpToQuestion(idx);
+        let btnStyle = "bg-slate-100 text-slate-600 hover:bg-slate-200 border-slate-200";
+
+        if (idx === currentQuestionIdx) {
+          btnStyle = "bg-teal-600 text-white font-extrabold ring-2 ring-teal-500 ring-offset-1 border-teal-600";
+        } else if (userAnswers[idx] !== null) {
+          btnStyle = "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold";
+        }
+
+        btn.className = `w-8 h-8 rounded-lg text-xs font-mono transition-all border flex items-center justify-center ${btnStyle}`;
+        btn.innerText = idx + 1;
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderQuizQuestionCard() {
+      const q = quizQuestions[currentQuestionIdx];
+      const selected = userAnswers[currentQuestionIdx];
+      const card = document.getElementById('quizSingleQuestionCard');
+
+      let optionsHtml = '';
+      q.options.forEach((opt, oIdx) => {
+        let optStyle = "bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700";
+        let iconHtml = `<span class="w-6 h-6 rounded-full border border-slate-300 font-mono text-xs flex items-center justify-center bg-white text-slate-500 mr-3 shrink-0">${String.fromCharCode(65 + oIdx)}</span>`;
+
+        if (selected !== null) {
+          if (oIdx === q.answer) {
+            optStyle = "bg-emerald-50 border-emerald-400 text-emerald-900 font-bold";
+            iconHtml = `<span class="w-6 h-6 rounded-full bg-emerald-500 text-white font-bold text-xs flex items-center justify-center mr-3 shrink-0">✓</span>`;
+          } else if (oIdx === selected) {
+            optStyle = "bg-rose-50 border-rose-300 text-rose-900 font-medium";
+            iconHtml = `<span class="w-6 h-6 rounded-full bg-rose-500 text-white font-bold text-xs flex items-center justify-center mr-3 shrink-0">✕</span>`;
+          } else {
+            optStyle = "bg-slate-50 border-slate-200 opacity-50 text-slate-500";
+          }
+        }
+
+        optionsHtml += `
+          <button onclick="selectQuizOption(${oIdx})" ${selected !== null ? 'disabled' : ''} class="w-full text-left p-4 rounded-xl border transition-all flex items-center justify-start ${optStyle}">
+            ${iconHtml}
+            <span class="text-xs sm:text-sm leading-snug">${opt}</span>
+          </button>
+        `;
+      });
+
+      let explanationHtml = '';
+      if (selected !== null) {
+        explanationHtml = `
+          <div class="mt-4 p-4 rounded-xl bg-teal-50 border border-teal-200 text-teal-950 text-xs leading-relaxed">
+            <strong class="font-bold block mb-1">💡 Pembahasan:</strong>
+            ${q.explanation}
+          </div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-teal-700 bg-teal-50 px-2.5 py-1 rounded-md border border-teal-200">${q.type}</span>
+          <span class="text-xs text-slate-400 font-mono">Soal #${q.id}</span>
+        </div>
+        <h3 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">${q.question}</h3>
+        <div class="space-y-2.5 pt-2">${optionsHtml}</div>
+        ${explanationHtml}
+      `;
+
+      const prevBtn = document.getElementById('quizPrevBtn');
+      const nextBtn = document.getElementById('quizNextBtn');
+
+      prevBtn.disabled = currentQuestionIdx === 0;
+      prevBtn.style.opacity = currentQuestionIdx === 0 ? "0.5" : "1";
+
+      if (currentQuestionIdx === quizQuestions.length - 1) {
+        nextBtn.innerHTML = `<span>Lihat Hasil Kuis</span> <i data-lucide="award" class="w-4 h-4"></i>`;
+        nextBtn.className = "px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center space-x-1.5";
+      } else {
+        nextBtn.innerHTML = `<span>Soal Berikutnya</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+        nextBtn.className = "px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl text-xs transition-all shadow-md flex items-center space-x-1.5";
+      }
+      lucide.createIcons();
+    }
+
+    function selectQuizOption(optionIdx) {
+      if (userAnswers[currentQuestionIdx] !== null) return;
+      userAnswers[currentQuestionIdx] = optionIdx;
+      
+      let score = 0;
+      userAnswers.forEach((ans, idx) => {
+        if (ans === quizQuestions[idx].answer) score += 10;
+      });
+      document.getElementById('quizScoreDisplay').innerText = `${score} / 100`;
+      renderQuiz();
+    }
+
+    function jumpToQuestion(idx) {
+      currentQuestionIdx = idx;
+      renderQuiz();
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIdx < quizQuestions.length - 1) {
+        currentQuestionIdx++;
+        renderQuiz();
+      } else {
+        showQuizFinalResult();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        renderQuiz();
+      }
+    }
+
+    function showQuizFinalResult() {
+      document.getElementById('quizSingleQuestionCard').classList.add('hidden');
+      document.getElementById('quizNavButtons').classList.add('hidden');
+      const resultCard = document.getElementById('quizFinalResultCard');
+      resultCard.classList.remove('hidden');
+
+      let correctCount = 0;
+      userAnswers.forEach((ans, idx) => {
+        if (ans === quizQuestions[idx].answer) correctCount++;
+      });
+      const finalScore = correctCount * 10;
+
+      const badge = document.getElementById('quizResultBadge');
+      const title = document.getElementById('quizResultTitle');
+      const subtitle = document.getElementById('quizResultSubtitle');
+
+      if (finalScore >= 80) {
+        badge.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-white font-bold shadow-lg bg-emerald-500 shadow-emerald-500/30";
+        badge.innerHTML = `<i data-lucide="trophy" class="w-8 h-8"></i>`;
+        title.innerHTML = `SELAMAT! KAMU LULUS 🎉`;
+        title.className = "text-2xl font-extrabold text-emerald-600";
+        subtitle.innerText = `Skor Akhir Kamu: ${finalScore} / 100 (Benar ${correctCount} dari 10 Soal). Kamu telah memahami konsep Antrean (Queue) dan Tumpukan (Stack) dengan sangat baik!`;
+        confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+      } else {
+        badge.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-white font-bold shadow-lg bg-amber-500 shadow-amber-500/30";
+        badge.innerHTML = `<i data-lucide="rotate-ccw" class="w-8 h-8"></i>`;
+        title.innerHTML = `BELUM LULUS (Skor: ${finalScore})`;
+        title.className = "text-2xl font-extrabold text-amber-600";
+        subtitle.innerText = `Batas nilai kelulusan adalah 80. Kamu menjawab benar ${correctCount} dari 10 soal. Silakan pelajari kembali simulasi Queue & Stack lalu coba lagi!`;
+      }
+      lucide.createIcons();
+    }
+
+    function resetQuiz() {
+      currentQuestionIdx = 0;
+      userAnswers = new Array(quizQuestions.length).fill(null);
+      document.getElementById('quizScoreDisplay').innerText = `0 / 100`;
+      document.getElementById('quizSingleQuestionCard').classList.remove('hidden');
+      document.getElementById('quizNavButtons').classList.remove('hidden');
+      document.getElementById('quizFinalResultCard').classList.add('hidden');
+      renderQuiz();
+    }
+
+    // ==========================================
+    // INITIALIZE ON LOAD
+    // ==========================================
+    window.onload = function() {
+      renderWarmup();
+      renderQueue();
+      renderStack();
+      renderChallenge1();
+      renderChallenge2();
+      renderQuiz();
+      lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
